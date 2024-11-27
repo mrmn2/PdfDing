@@ -67,7 +67,7 @@
 ### Breaking Changes
 
 * In order to use SSO via OIDC the environment variable `OIDC_ENABLE` needs to be set to `TRUE`.
-  For more information refer to the [configuration](https://codeberg.org/mrmn/PdfDing#configuration) section of the README.
+  For more information refer to the [configuration](https://github.com/mrmn2/PdfDing#configuration) section of the README.
 
 ## 0.1.2 - Colored Themes (Jul 24, 2024)
 

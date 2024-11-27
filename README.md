@@ -48,7 +48,7 @@ Linkding is an excellent selfhostable bookmark manager. If you are unfamiliar wi
 ### Demo Video
 ![Demo gif](screenshots/demo.gif)
 
-More screenshots can be found [here](https://codeberg.org/mrmn/PdfDing/src/branch/master/screenshots).
+More screenshots can be found [here](https://github.com/mrmn2/PdfDing/tree/master/screenshots).
 
 ### Why PdfDing?
 I started developing PdfDing as I was searching for a solution for viewing and managing PDF files.
@@ -99,7 +99,7 @@ If you use selinux it might be necessary to add the `:Z` after the volumes, e.g.
 
 ### Using Docker Compose
 To install linkding using Docker Compose, you can use one of the files in the
-[deploy](https://codeberg.org/mrmn/PdfDing/src/branch/master/deploy) directory and run e.g.:
+[deploy](https://github.com/mrmn2/PdfDing/tree/master/deploy) directory and run e.g.:
 
 ```
 docker-compose -d -f sqlite.docker-compose.yaml
@@ -453,7 +453,7 @@ git commit -m 'some commit message' --no-verify
 
 Clone the repository:
 ```
-git clone https://codeberg.org/mrmn/PdfDing.git
+git clone https://github.com/mrmn2/PdfDing.git
 ```
 
 cd into the project:
