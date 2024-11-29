@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from pdf.models import Pdf, Tag
-from users.forms import CustomThemeColorForm, EmailForm, PdfInvertedForm, PdfsPerPageForm, ThemeForm
+from users import forms
 from users.models import Profile
 
 
@@ -81,48 +81,43 @@ class TestProfileViews(TestCase):
         # target_status_code=302 because the '/' will redirect to the pdf overview
         self.assertRedirects(response, '/', status_code=302, target_status_code=302)
 
-    def test_change_settings_email_get_htmx(self):
-        headers = {'HTTP_HX-Request': 'true'}
-        response = self.client.get(reverse('profile-setting-change', kwargs={'field_name': 'email'}), **headers)
-
-        self.assertIsInstance(response.context['form'], EmailForm)
-        self.assertEqual({'email': 'a@a.com'}, response.context['form'].initial)
-
-    def test_change_settings_dark_mode_get_htmx(self):
+    def test_change_settings_get_htmx(self):
         self.user.profile.dark_mode = 'Light'
         self.user.profile.theme_color = 'Green'
         self.user.profile.save()
 
         headers = {'HTTP_HX-Request': 'true'}
-        response = self.client.get(reverse('profile-setting-change', kwargs={'field_name': 'theme'}), **headers)
 
-        self.assertIsInstance(response.context['form'], ThemeForm)
-        self.assertEqual({'dark_mode': 'Light', 'theme_color': 'Green'}, response.context['form'].initial)
+        field_names = [
+            'pdf_inverted_mode',
+            'custom_theme_color',
+            'pdfs_per_page',
+            'theme',
+            'email',
+            'show_progress_bars',
+        ]
+        form_list = [
+            forms.PdfInvertedForm,
+            forms.CustomThemeColorForm,
+            forms.PdfsPerPageForm,
+            forms.ThemeForm,
+            forms.EmailForm,
+            forms.ProgressBarForm,
+        ]
+        initial_dicts = [
+            {'pdf_inverted_mode': 'Disabled'},
+            {'custom_theme_color': '#ffa385'},
+            {'pdfs_per_page': 25},
+            {'dark_mode': 'Light', 'theme_color': 'Green'},
+            {'email': 'a@a.com'},
+            {'show_progress_bars': 'Enabled'},
+        ]
 
-    def test_change_settings_pdfs_per_page_get_htmx(self):
-        headers = {'HTTP_HX-Request': 'true'}
-        response = self.client.get(reverse('profile-setting-change', kwargs={'field_name': 'pdfs_per_page'}), **headers)
+        for field_name, form, initial_dict in zip(field_names, form_list, initial_dicts):
+            response = self.client.get(reverse('profile-setting-change', kwargs={'field_name': field_name}), **headers)
 
-        self.assertIsInstance(response.context['form'], PdfsPerPageForm)
-        self.assertEqual({'pdfs_per_page': 25}, response.context['form'].initial)
-
-    def test_change_settings_custom_color_get_htmx(self):
-        headers = {'HTTP_HX-Request': 'true'}
-        response = self.client.get(
-            reverse('profile-setting-change', kwargs={'field_name': 'custom_theme_color'}), **headers
-        )
-
-        self.assertIsInstance(response.context['form'], CustomThemeColorForm)
-        self.assertEqual({'custom_theme_color': '#ffa385'}, response.context['form'].initial)
-
-    def test_change_settings_inverted_pdf_colors_get_htmx(self):
-        headers = {'HTTP_HX-Request': 'true'}
-        response = self.client.get(
-            reverse('profile-setting-change', kwargs={'field_name': 'pdf_inverted_mode'}), **headers
-        )
-
-        self.assertIsInstance(response.context['form'], PdfInvertedForm)
-        self.assertEqual({'pdf_inverted_mode': 'Disabled'}, response.context['form'].initial)
+            self.assertIsInstance(response.context['form'], form)
+            self.assertEqual(initial_dict, response.context['form'].initial)
 
     def test_change_settings_post_invalid_form(self):
         # follow=True is needed for getting the message
@@ -192,7 +187,6 @@ class TestProfileViews(TestCase):
             reverse('profile-setting-change', kwargs={'field_name': 'pdfs_per_page'}), data={'pdfs_per_page': 10}
         )
 
-        # get the user and check if dark mode was changed
         user = User.objects.get(username=self.username)
         self.assertEqual(user.profile.pdfs_per_page, 10)
 
@@ -203,9 +197,18 @@ class TestProfileViews(TestCase):
             data={'pdf_inverted_mode': 'Enabled'},
         )
 
-        # get the user and check if dark mode was changed
         user = User.objects.get(username=self.username)
         self.assertEqual(user.profile.pdf_inverted_mode, 'Enabled')
+
+    def test_change_settings_show_progress_bars_post_correct(self):
+        self.assertEqual(self.user.profile.show_progress_bars, 'Enabled')
+        self.client.post(
+            reverse('profile-setting-change', kwargs={'field_name': 'show_progress_bars'}),
+            data={'show_progress_bars': 'Disabled'},
+        )
+
+        user = User.objects.get(username=self.username)
+        self.assertEqual(user.profile.pdf_inverted_mode, 'Disabled')
 
     def test_delete_post(self):
         # in this test we test that the user is successfully deleted

@@ -36,7 +36,8 @@
           {% endif %}
         </div>
         {% endif %}
-        <div x-data="{ tooltip_progress: false }">
+        {% if pdf.owner.show_progress_bars == 'Enabled' %}
+        <div x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
             <div class="pt-1">
                 <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
                      class="w-3/4 md:w-1/2 h-2 bg-slate-200 dark:bg-slate-600 rounded">
@@ -48,6 +49,7 @@
               </span>
             </div>
         </div>
+        {% endif %}
         <div x-data="{ tooltip_date: false }" class="text-gray-500 dark:text-slate-400 space-x-1 text-sm [&>a]:dark:text-slate-400">
           <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
               {{ pdf.natural_age }} |

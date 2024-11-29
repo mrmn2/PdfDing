@@ -147,6 +147,21 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
                 tag = Tag.objects.create(name='tag', owner=self.user.profile)
                 pdf.tags.set([tag])
 
+    def test_progress_bar_on(self):
+        # progress bars are shown by default
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#progressbar-1")).to_be_visible()
+
+    def test_progress_bar_off(self):
+        self.user.profile.show_progress_bars = 'Disabled'
+        self.user.profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#progressbar-1")).not_to_be_visible()
+
     def test_search_tags(self):
         with sync_playwright() as p:
             # display the three pdfs with the tag 'tag'
