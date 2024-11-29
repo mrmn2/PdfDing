@@ -7,7 +7,7 @@ from django.test import TestCase
 from pdf.models import Pdf, SharedPdf
 
 
-class TestModels(TestCase):
+class TestPdf(TestCase):
     @staticmethod
     def create_pdf(username='testuser', password='12345'):
         user = User.objects.create_user(username=username, password=password)
@@ -47,6 +47,17 @@ class TestModels(TestCase):
 
         pdf.creation_date -= timedelta(days=3, hours=2)
         self.assertEqual(pdf.natural_age, '3 days')
+
+    def test_progress(self):
+        pdf = self.create_pdf()
+        pdf.number_of_pages = 1000
+        pdf.save()
+
+        for current_page, expected_progress in [(-2, 0), (0, 0), (202, 20), (995, 100), (1200, 100)]:
+            pdf.current_page = current_page
+            pdf.save()
+
+            self.assertEqual(pdf.progress, expected_progress)
 
 
 class TestSharedPdf(TestCase):
