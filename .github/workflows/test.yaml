@@ -1,0 +1,75 @@
+name: PdfDing Tests
+
+on:
+  pull_request:
+    paths: [ 'pdfding/**/*.py', 'pdfding/**/*.html', 'pyproject.toml', 'package.json' , '.github/workflows/test.yaml' ]
+
+jobs:
+  code_quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+      - name: Install python dependencies
+        run: poetry install --without e2e
+      - name: Run flake8
+        run: poetry run flake8
+      - name: Run black
+        run: poetry run black . --check
+      - name: Run bandit
+        run: poetry run bandit -x "**/tests/*,**/e2e/*" -r .
+
+  unit_tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+      - name: Install python dependencies
+        run: poetry install --without e2e
+      - name: Run tests
+        run: |
+          cd pdfding
+          poetry run pytest admin backup pdf users --cov=admin --cov=backup --cov=pdf --cov=users --cov-fail-under=100
+
+  e2e_tests:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'poetry'
+      - name: Install python dependencies
+        run: |
+          poetry install
+          poetry run playwright install chromium
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - name: Install Node dependencies
+        run: |
+          npm ci
+          npm run build
+          npx --yes tailwindcss -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css -c tailwind.config.js --minify
+      - name: Run tests
+        run: poetry run python -m pytest pdfding/e2e
