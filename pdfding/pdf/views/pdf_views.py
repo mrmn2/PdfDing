@@ -16,6 +16,7 @@ from pdf.service import (
     process_raw_search_query,
     process_tag_names,
 )
+from pypdf import PdfReader
 from users.service import convert_hex_to_rgb
 
 
@@ -44,7 +45,14 @@ class AddPdfMixin(BasePdfMixin):
             pdf.name = create_name_from_file(form.files['file'], request.user.profile)
 
         pdf.owner = request.user.profile
-        pdf.save()
+        pdf.save()  # we need to save otherwise the file will not be found in the next step
+
+        try:
+            reader = PdfReader(pdf.file.path)
+            pdf.number_of_pages = len(reader.pages)
+            pdf.save()
+        except:  # nosec # noqa
+            pass
 
         tag_string = form.data.get('tag_string')
         # get unique tag names

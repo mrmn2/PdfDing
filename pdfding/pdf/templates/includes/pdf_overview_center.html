@@ -36,11 +36,23 @@
           {% endif %}
         </div>
         {% endif %}
-        <div x-data="{ tooltip: false }" class="text-gray-500 space-x-1 text-sm [&>a]:dark:text-slate-400">
-          <span x-on:mouseenter="tooltip = true" x-on:mouseleave="tooltip = false" class="dark:text-slate-400">
+        <div x-data="{ tooltip_progress: false }">
+            <div class="pt-1">
+                <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
+                     class="w-3/4 md:w-1/2 h-2 bg-slate-200 dark:bg-slate-600 rounded">
+                    <div style="width: {{ pdf.progress }}%;" class="h-2 !bg-primary rounded"></div>
+                </div>
+                <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
+                    class="z-50 absolute bg-primary text-gray-100 text-sm rounded-sm p-2 mt-1">
+                 {{ pdf.progress }}% - Page {{ pdf.current_page }} of {{ pdf.number_of_pages }}
+              </span>
+            </div>
+        </div>
+        <div x-data="{ tooltip_date: false }" class="text-gray-500 dark:text-slate-400 space-x-1 text-sm [&>a]:dark:text-slate-400">
+          <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
               {{ pdf.natural_age }} |
           </span>
-          <span x-show="tooltip" x-transition:enter.duration.500ms x-cloak
+          <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
                 class="-left-1 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
             {{ pdf.creation_date }} UTC
           </span>
@@ -64,7 +76,7 @@
     {% endwith %}
     {% endfor %}
     {% if page_obj %}
-    <div class="flex-grow border-t border-gray-400 mt-2 mb-4"></div>
+    <div class="flex-grow border-t border-gray-400 mt-4 mb-4"></div>
     <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
       {% if page_obj.has_previous %}
         <a x-bind:href="combine_url_query('{% url 'pdf_overview_page' page_obj.previous_page_number %}', construct_query_string('{{ raw_search_query }}', '{{ sorting_query }}'))"
