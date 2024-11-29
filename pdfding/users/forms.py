@@ -40,6 +40,14 @@ class PdfInvertedForm(ModelForm):
         fields = ['pdf_inverted_mode']
 
 
+class ProgressBarForm(ModelForm):
+    """The form for setting progress bars"""
+
+    class Meta:
+        model = Profile
+        fields = ['show_progress_bars']
+
+
 class CustomThemeColorForm(ModelForm):
     """The form for setting dark mode"""
 

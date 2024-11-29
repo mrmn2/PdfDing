@@ -10,9 +10,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
+from users import forms
 from users.service import get_color_shades
-
-from .forms import CustomThemeColorForm, EmailForm, PdfInvertedForm, PdfsPerPageForm, ThemeForm
 
 
 def settings(request):
@@ -28,11 +27,12 @@ class ChangeSetting(View):
     """View for changing the settings."""
 
     form_dict = {
-        'email': EmailForm,
-        'pdfs_per_page': PdfsPerPageForm,
-        'theme': ThemeForm,
-        'pdf_inverted_mode': PdfInvertedForm,
-        'custom_theme_color': CustomThemeColorForm,
+        'email': forms.EmailForm,
+        'pdfs_per_page': forms.PdfsPerPageForm,
+        'theme': forms.ThemeForm,
+        'pdf_inverted_mode': forms.PdfInvertedForm,
+        'custom_theme_color': forms.CustomThemeColorForm,
+        'show_progress_bars': forms.ProgressBarForm,
     }
 
     def get(self, request: HttpRequest, field_name: str):
@@ -44,6 +44,7 @@ class ChangeSetting(View):
             'theme': {'dark_mode': request.user.profile.dark_mode, 'theme_color': request.user.profile.theme_color},
             'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
+            'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
         }
 
         if request.htmx:
