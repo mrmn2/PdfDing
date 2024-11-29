@@ -95,7 +95,9 @@ class Pdf(models.Model):
     def progress(self) -> int:
         """Get read progress of the pdf in percent"""
 
-        progress = round(100 * self.current_page / self.number_of_pages)
+        current_page = max(self.current_page, 0)
+
+        progress = round(100 * current_page / self.number_of_pages)
 
         return min(progress, 100)
 
