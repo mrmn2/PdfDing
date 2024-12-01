@@ -1,14 +1,22 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
 {% block content %}
-<content class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 !pt-4 dark:text-slate-200">
-  <div class="w-full md:w-3/4 md:p-8 p-3">
-    {% include 'includes/pdf_overview_top.html' %}
-    {% include 'includes/pdf_overview_center.html' %}
+<content x-data="{ show_tag_name_modal: false }">
+  <div class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 !pt-4 dark:text-slate-200"
+       :class="{ 'opacity-15': show_tag_name_modal }">
+    <div class="w-full md:w-3/4 md:p-8 p-3">
+      {% include 'includes/pdf_overview_top.html' %}
+      {% include 'includes/pdf_overview_center.html' %}
+    </div>
+    <div class="md:w-1/4 md:p-8 p-3 hidden md:block">
+      {% include 'includes/pdf_overview_side.html' %}
+    </div>
   </div>
-  <div class="md:w-1/4 md:p-8 p-3 hidden md:block">
-    {% include 'includes/pdf_overview_side.html' %}
-  </div>
+  <div x-show="show_tag_name_modal" x-cloak
+     @click.away="show_tag_name_modal = false" @keyup.escape.window="show_tag_name_modal = false"
+       class="fixed inset-x-0 top-40  mx-auto my-auto w-80 h-52 z-20">
+      <div id="edit_tag"></div>
+</div>
 </content>
 
 <script>

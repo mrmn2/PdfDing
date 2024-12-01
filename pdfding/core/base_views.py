@@ -117,10 +117,10 @@ class BaseDetails(View):
         return render(request, f'{self.obj_name}_details.html', context)
 
 
-class BaseEdit(View):
+class BaseDetailsEdit(View):
     """
-    The base view for editing fields of an object. The field, that is to be changed, is specified by the
-    'field' argument.
+    The base view for editing fields of an object in the details page. The field, that is to be changed, is specified
+    by the 'field' argument.
     """
 
     def get(self, request: HttpRequest, identifier: str, field_name: str):

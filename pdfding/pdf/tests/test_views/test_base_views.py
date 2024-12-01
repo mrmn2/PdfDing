@@ -9,7 +9,7 @@ from django.http.response import HttpResponse
 from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.urls import path, reverse
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
-from pdf.forms import AddForm
+from pdf.forms import AddForm, DescriptionForm
 from pdf.models import Pdf
 from pdf.tests.test_views import base_view_definitions
 
@@ -168,6 +168,7 @@ class TestViews(TestCase):
             response.context['action_url'],
             reverse('edit_pdf', kwargs={'field_name': 'description', 'identifier': pdf.id}),
         )
+        self.assertIsInstance(response.context['form'], DescriptionForm)
         self.assertTemplateUsed(response, 'partials/details_form.html')
 
     @override_settings(ROOT_URLCONF=__name__)
