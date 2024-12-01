@@ -61,15 +61,18 @@
           <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary"> Details</a>
           <a href="{% url 'share_pdf' pdf.id %}" class="hover:text-primary"> Share</a>
           <a href="{% url 'download_pdf' pdf.id %}" class="hover:text-primary">Download</a>
-          <a x-show="delete{{ loop_id }}" x-cloak
+          <a id="confirm-delete-pdf-{{ loop_id }}"
+             x-show="delete{{ loop_id }}" x-cloak
              hx-delete="{% url 'delete_pdf' pdf.id %}"
              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
              class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
           </a>
-          <button x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
+          <button id="cancel-delete-pdf-{{ loop_id }}"
+                  x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
                   class="button-text-delete dark:!bg-slate-800">Cancel
           </button>
-          <button x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
+          <button id="delete-pdf-{{ loop_id }}"
+                  x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
                   class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
           </button>
         </div>

@@ -3,9 +3,11 @@ import re
 import magic
 from django import forms
 from django.contrib.auth.hashers import check_password, make_password
+
+# from django.core.exceptions import ValidationError
 from django.core.files import File
 
-from .models import Pdf, SharedPdf
+from .models import Pdf, SharedPdf, Tag
 
 
 class AddForm(forms.ModelForm):
@@ -149,7 +151,7 @@ class NameForm(forms.ModelForm):
         return pdf_name
 
 
-class TagsForm(forms.ModelForm):
+class PdfTagsForm(forms.ModelForm):
     """Form for changing the tags of a PDF."""
 
     tag_string = forms.CharField(widget=forms.TextInput())
@@ -336,6 +338,20 @@ class ViewSharedPasswordForm(forms.Form):
             raise forms.ValidationError('Incorrect Password!')
 
         return password
+
+
+class TagNameForm(forms.ModelForm):
+    """Form for changing the name of a tag."""
+
+    class Meta:
+        model = Tag
+        fields = ['name']
+
+    def clean_name(self):
+        # if not self.cleaned_data['name']:
+        #     raise ValidationError('Please use a valid tag name!')
+
+        return self.cleaned_data['name']
 
 
 class CleanHelpers:

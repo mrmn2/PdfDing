@@ -74,7 +74,7 @@ def get_tag_dict(profile: Profile) -> dict[str, list[str]]:
 
     for tag in tags:
         if tag.pdf_set.all():
-            tag_dict[str(tag)[0]].append(str(tag)[1:])
+            tag_dict[tag.name[0]].append(tag)
 
     # needs to be a normal dict, so that the template can handle it
     return dict(tag_dict)

@@ -43,12 +43,15 @@ class TestService(TestCase):
 
     def test_get_tag_dict(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        tags = [
-            Tag.objects.create(name=tag_name, owner=pdf.owner) for tag_name in ['tag3', 'bread', 'tag1', 'banana', 'a']
-        ]
+        tag_a = Tag.objects.create(name='a', owner=pdf.owner)
+        tag_bread = Tag.objects.create(name='bread', owner=pdf.owner)
+        tag_1 = Tag.objects.create(name='tag1', owner=pdf.owner)
+        tag_3 = Tag.objects.create(name='tag3', owner=pdf.owner)
+        tag_banana = Tag.objects.create(name='banana', owner=pdf.owner)
+        tags = [tag_a, tag_bread, tag_banana, tag_3, tag_1]
         pdf.tags.set(tags)
 
-        expected_tag_dict = {'a': [''], 'b': ['anana', 'read'], 't': ['ag1', 'ag3']}
+        expected_tag_dict = {'a': [tag_a], 'b': [tag_banana, tag_bread], 't': [tag_1, tag_3]}
         generated_tag_dict = service.get_tag_dict(self.user.profile)
 
         self.assertEqual(expected_tag_dict, generated_tag_dict)

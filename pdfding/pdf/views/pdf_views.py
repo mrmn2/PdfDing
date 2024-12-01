@@ -1,13 +1,14 @@
 from datetime import datetime, timezone
 
 from core import base_views
+from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
-from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, TagsForm
+from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
 from pdf.models import Pdf, Tag
 from pdf.service import (
     check_object_access_allowed,
@@ -146,6 +147,20 @@ class PdfMixin(BasePdfMixin):
         return pdf
 
 
+class TagMixin:
+    obj_name = 'pdf'
+
+    @staticmethod
+    @check_object_access_allowed
+    def get_object(request: HttpRequest, tag_id: str):
+        """Get the pdf specified by the ID"""
+
+        user_profile = request.user.profile
+        tag = user_profile.tag_set.get(id=tag_id)
+
+        return tag
+
+
 class EditPdfMixin(PdfMixin):
     obj_class = Pdf
     fields_requiring_extra_processing = ['tags']
@@ -154,7 +169,7 @@ class EditPdfMixin(PdfMixin):
     def get_edit_form_dict():
         """Get the forms of the fields that can be edited as a dict."""
 
-        form_dict = {'description': DescriptionForm, 'name': NameForm, 'tags': TagsForm}
+        form_dict = {'description': DescriptionForm, 'name': NameForm, 'tags': PdfTagsForm}
 
         return form_dict
 
@@ -293,7 +308,7 @@ class Details(PdfMixin, base_views.BaseDetails):
     """View for displaying the details page of a PDF."""
 
 
-class Edit(EditPdfMixin, base_views.BaseEdit):
+class Edit(EditPdfMixin, base_views.BaseDetailsEdit):
     """
     The view for editing a PDF's name, tags and description. The field, that is to be changed, is specified by the
     'field' argument.
@@ -306,3 +321,47 @@ class Delete(PdfMixin, base_views.BaseDelete):
 
 class Download(PdfMixin, base_views.BaseDownload):
     """View for downloading the PDF specified by the ID."""
+
+
+class DeleteTag(TagMixin, base_views.BaseDelete):
+    """View for deleting the tag specified by its ID."""
+
+
+class EditTag(View):
+    """
+    The base view for editing fields of an object in the details page. The field, that is to be changed, is specified
+    by the 'field' argument.
+    """
+
+    def get(self, request: HttpRequest, identifier: str):
+        """Triggered by htmx. Display an inline form for editing the correct field."""
+
+        user_profile = request.user.profile
+        tag = user_profile.tag_set.get(id=identifier)
+
+        if request.htmx:
+            return render(
+                request,
+                'partials/tag_name_form.html',
+                {'tag': tag, 'form': TagNameForm(initial={'name': tag.name})},
+            )
+
+        return redirect('pdf_overview')
+
+    def post(self, request: HttpRequest, identifier: str):
+        """
+        POST: Change the Tag name.
+        """
+
+        user_profile = request.user.profile
+        tag = user_profile.tag_set.get(id=identifier)
+        form = TagNameForm(request.POST, instance=tag)
+
+        if form.is_valid():
+            form.save()
+        else:
+            try:
+                messages.warning(request, dict(form.errors)['name'][0])
+            except:  # noqa # pragma: no cover
+                messages.warning(request, 'Input is not valid!')
+        return redirect('pdf_overview')

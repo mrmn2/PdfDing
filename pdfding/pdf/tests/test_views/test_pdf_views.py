@@ -7,9 +7,9 @@ from django.core.files import File
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
-from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, TagsForm
+from pdf import forms
 from pdf.models import Pdf, Tag
-from pdf.views.pdf_views import AddPdfMixin, BulkAddPdfMixin, EditPdfMixin, OverviewMixin, PdfMixin
+from pdf.views import pdf_views
 
 
 def set_up(self):
@@ -27,10 +27,10 @@ class TestAddPDFMixin(TestCase):
         set_up(self)
 
     def test_get_context_get(self):
-        add_pdf_mixin = AddPdfMixin()
+        add_pdf_mixin = pdf_views.AddPdfMixin()
         generated_context = add_pdf_mixin.get_context_get(None, None)
 
-        self.assertEqual({'form': AddForm}, generated_context)
+        self.assertEqual({'form': forms.AddForm}, generated_context)
 
     def test_obj_save(self):
         # do a dummy request so we can get a request object
@@ -39,13 +39,13 @@ class TestAddPDFMixin(TestCase):
         # use the dummy pdf. It has two pages.
         dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
         with dummy_path.open(mode="rb") as f:
-            form = AddForm(
+            form = forms.AddForm(
                 data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'},
                 owner=self.user.profile,
                 files={'file': File(f, name=dummy_path.name)},
             )
 
-            AddPdfMixin.obj_save(form, response.wsgi_request, None)
+            pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.pdf_set.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
@@ -63,13 +63,9 @@ class TestAddPDFMixin(TestCase):
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = AddForm(
-            data={'name': 'some_pdf'},
-            owner=self.user.profile,
-            files={'file': file_mock},
-        )
+        form = forms.AddForm(data={'name': 'some_pdf'}, owner=self.user.profile, files={'file': file_mock})
 
-        AddPdfMixin.obj_save(form, response.wsgi_request, None)
+        pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.pdf_set.get(name='some_pdf')
         self.assertEqual(pdf.number_of_pages, 1)
@@ -80,13 +76,13 @@ class TestAddPDFMixin(TestCase):
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = AddForm(
+        form = forms.AddForm(
             data={'name': 'bla', 'tag_string': 'tag_a tag_2', 'use_file_name': True},
             owner=self.user.profile,
             files={'file': file_mock},
         )
 
-        AddPdfMixin.obj_save(form, response.wsgi_request, None)
+        pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.pdf_set.get(name='test1')
         tag_names = [tag.name for tag in pdf.tags.all()]
@@ -103,10 +99,10 @@ class TestBulkAddPDFMixin(TestCase):
         set_up(self)
 
     def test_get_context_get(self):
-        add_pdf_mixin = BulkAddPdfMixin()
+        add_pdf_mixin = pdf_views.BulkAddPdfMixin()
         generated_context = add_pdf_mixin.get_context_get(None, None)
 
-        self.assertEqual({'form': BulkAddForm}, generated_context)
+        self.assertEqual({'form': forms.BulkAddForm}, generated_context)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_single_file(self, mock_from_buffer):
@@ -114,13 +110,13 @@ class TestBulkAddPDFMixin(TestCase):
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = BulkAddForm(
+        form = forms.BulkAddForm(
             data={'tag_string': 'tag_a tag_2', 'description': ''},
             owner=self.user.profile,
             files=MultiValueDict({'file': [file_mock]}),
         )
 
-        BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
+        pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.pdf_set.get(name='test1')
         tag_names = [tag.name for tag in pdf.tags.all()]
@@ -135,13 +131,13 @@ class TestBulkAddPDFMixin(TestCase):
         file_mock_1.name = 'test1.pdf'
         file_mock_2 = mock.MagicMock(spec=File, name='FileMock2')
         file_mock_2.name = 'test2.pdf'
-        form = BulkAddForm(
+        form = forms.BulkAddForm(
             data={'tag_string': 'tag_a tag_2', 'description': 'description'},
             owner=self.user.profile,
             files=MultiValueDict({'file': [file_mock_1, file_mock_2]}),
         )
 
-        BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
+        pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         for name in ['test1', 'test2']:
             pdf = self.user.profile.pdf_set.get(name=name)
@@ -172,7 +168,7 @@ class TestOverviewMixin(TestCase):
         response = self.client.get(f'{reverse('pdf_overview')}?q=pdf_2+%23tag_2')
         Pdf.objects.create(owner=self.user.profile, name='pdf')
 
-        filtered_pdfs = OverviewMixin.filter_objects(response.wsgi_request)
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
         # pdfs 2, 7 and 12 are starting with 'pdf_2' only the pdf 2 and 7 have a tag
         pdf_names = [pdf.name for pdf in filtered_pdfs]
@@ -182,8 +178,10 @@ class TestOverviewMixin(TestCase):
     def test_get_extra_context(self):
         response = self.client.get(f'{reverse('pdf_overview')}?q=pdf_2+%23tag_2')
 
-        generated_extra_context = OverviewMixin.get_extra_context(response.wsgi_request)
-        expected_extra_context = {'raw_search_query': 'pdf_2 #tag_2', 'tag_dict': {'t': ['ag_2', 'ag_7']}}
+        generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        tag_2 = self.user.profile.tag_set.get(name='tag_2')
+        tag_7 = self.user.profile.tag_set.get(name='tag_7')
+        expected_extra_context = {'raw_search_query': 'pdf_2 #tag_2', 'tag_dict': {'t': [tag_2, tag_7]}}
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
@@ -201,7 +199,7 @@ class TestPdfMixin(TestCase):
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        pdf_retrieved = PdfMixin.get_object(response.wsgi_request, pdf.id)
+        pdf_retrieved = pdf_views.PdfMixin.get_object(response.wsgi_request, pdf.id)
 
         self.assertEqual(pdf, pdf_retrieved)
 
@@ -219,11 +217,11 @@ class TestEditPdfMixin(TestCase):
         tags = [Tag.objects.create(name=f'tag_{i}', owner=self.user.profile) for i in range(2)]
         pdf.tags.set(tags)
 
-        edit_pdf_mixin_object = EditPdfMixin()
+        edit_pdf_mixin_object = pdf_views.EditPdfMixin()
 
         for field, form_class, field_value in zip(
             ['name', 'description', 'tags'],
-            [NameForm, DescriptionForm, TagsForm],
+            [forms.NameForm, forms.DescriptionForm, forms.PdfTagsForm],
             ['pdf_name', 'some_description', 'tag_0 tag_1'],
         ):
             form = edit_pdf_mixin_object.get_edit_form_get(field, pdf)
@@ -241,7 +239,7 @@ class TestEditPdfMixin(TestCase):
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        EditPdfMixin.process_field('tags', pdf, response.wsgi_request, {'tag_string': 'tag_1 tag_3'})
+        pdf_views.EditPdfMixin.process_field('tags', pdf, response.wsgi_request, {'tag_string': 'tag_1 tag_3'})
 
         # get pdf again with the changes
         pdf = self.user.profile.pdf_set.get(id=pdf.id)
@@ -301,3 +299,58 @@ class TestViews(TestCase):
         response = self.client.get(reverse('current_page', kwargs={'identifier': pdf.id}))
 
         self.assertEqual(response.json()['current_page'], 5)
+
+    def test_edit_tag_get(self):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+
+        response = self.client.get(reverse('edit_tag', kwargs={'identifier': tag.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_edit_tag_get_htmx(self):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        headers = {'HTTP_HX-Request': 'true'}
+
+        response = self.client.get(reverse('edit_tag', kwargs={'identifier': tag.id}), **headers)
+
+        self.assertEqual(response.context['tag'], tag)
+        self.assertIsInstance(response.context['form'], forms.TagNameForm)
+        self.assertTemplateUsed(response, 'partials/tag_name_form.html')
+
+    def test_edit_tag_post_invalid_form(self):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+
+        # post is invalid because data is missing
+        # follow=True is needed for getting the message
+        response = self.client.post(reverse('edit_tag', kwargs={'identifier': tag.id}), follow=True)
+        message = list(response.context['messages'])[0]
+
+        self.assertEqual(message.message, 'This field is required.')
+        self.assertEqual(message.tags, 'warning')
+
+    def test_edit_tag_name(self):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+
+        self.client.post(reverse('edit_tag', kwargs={'identifier': tag.id}), data={'name': 'new'})
+
+        # get pdf again with the changes
+        tag = self.user.profile.tag_set.get(id=tag.id)
+
+        self.assertEqual(tag.name, 'new')
+
+
+class TestTagMixin(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        self.user = None
+        set_up(self)
+
+    def test_get_object(self):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        tag_retrieved = pdf_views.TagMixin.get_object(response.wsgi_request, tag.id)
+
+        self.assertEqual(tag, tag_retrieved)

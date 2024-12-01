@@ -129,7 +129,7 @@ class Details(ObjectMixin, base_views.BaseDetails):
     """Details View"""
 
 
-class Edit(EditMixin, base_views.BaseEdit):
+class Edit(EditMixin, base_views.BaseDetailsEdit):
     """Edit View"""
 
 

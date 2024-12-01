@@ -16,7 +16,6 @@
 
 <div class="flex justify-center pt-4">
 <form class="w-3/4" action="{% url 'view_shared_pdf' shared_pdf.id %}" method="post">
-    <!--<input name="name" type="text"/>-->
     {% csrf_token %}
     {% if shared_pdf.password %}
     {{ form.as_p }}

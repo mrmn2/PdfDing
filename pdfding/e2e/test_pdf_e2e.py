@@ -43,8 +43,9 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("now |")
 
             # check tag sidebar
-            for i, tag_string in enumerate(["1", "banana bread", "tag_0 tag_1"]):
-                expect(self.page.locator(f"#tags_{i}")).to_contain_text(tag_string)
+            for i, tags in enumerate([["1"], ["banana", "bread"], ["tag_0", "tag_1"]]):
+                for tag in tags:
+                    expect(self.page.locator(f"#tags_{i}")).to_contain_text(tag)
 
             # check sidebar links
             # first tag starting with character
@@ -117,8 +118,9 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("now |")
 
             # check tag sidebar
-            for i, tag_string in enumerate(["1", "banana bread", "tag_0 tag_1"]):
-                expect(self.page.locator(f"#tags_{i}")).to_contain_text(tag_string)
+            for i, tags in enumerate([["1"], ["banana", "bread"], ["tag_0", "tag_1"]]):
+                for tag in tags:
+                    expect(self.page.locator(f"#tags_{i}")).to_contain_text(tag)
 
             # check sidebar links
             # first tag starting with character
@@ -225,8 +227,8 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             self.open(f"{reverse('pdf_overview')}?q=pdf_2_1", p)
 
             expect(self.page.locator("body")).to_contain_text("pdf_2_1")
-            self.page.get_by_role("button", name="Delete").click()
-            self.page.get_by_text("Confirm").click()
+            self.page.locator("#delete-pdf-1").click()
+            self.page.locator("#confirm-delete-pdf-1").click()
 
             # now there should be no PDFs matching the search criteria
             expect(self.page.locator("body")).to_contain_text("There aren't any PDFs matching the search criteria")
@@ -236,7 +238,17 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             # only display one pdf
             self.open(f"{reverse('pdf_overview')}?q=pdf_2_1", p)
 
-            cancel_delete_helper(self.page)
+            expect(self.page.locator("#confirm-delete-pdf-1")).not_to_be_visible()
+            expect(self.page.locator("#cancel-delete-pdf-1")).not_to_be_visible()
+            expect(self.page.locator("#delete-pdf-1")).to_be_visible()
+            self.page.locator("#delete-pdf-1").click()
+            expect(self.page.locator("#confirm-delete-pdf-1")).to_be_visible()
+            expect(self.page.locator("#cancel-delete-pdf-1")).to_be_visible()
+            expect(self.page.locator("#delete-pdf-1")).not_to_be_visible()
+            self.page.locator("#cancel-delete-pdf-1").click()
+            expect(self.page.locator("#confirm-delete-pdf-1")).not_to_be_visible()
+            expect(self.page.locator("#cancel-delete-pdf-1")).not_to_be_visible()
+            expect(self.page.locator("#delete-pdf-1")).to_be_visible()
 
     def test_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
@@ -315,3 +327,105 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
             cancel_delete_helper(self.page)
+
+
+class TagE2ETestCase(PdfDingE2ETestCase):
+    def setUp(self, login: bool = True) -> None:
+        super().setUp()
+
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        tag = Tag.objects.create(name='bla', owner=self.user.profile)
+        pdf.tags.set([tag])
+
+    def test_delete_tag_cancel(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            self.page.locator("#tag-bla > a").first.click()
+            expect(self.page.locator("#confirm-delete-tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#cancel-delete-tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#delete-tag-bla")).to_be_visible()
+            expect(self.page.locator("#rename-tag-bla")).to_be_visible()
+            self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
+            expect(self.page.locator("#confirm-delete-tag-bla")).to_be_visible()
+            expect(self.page.locator("#cancel-delete-tag-bla")).to_be_visible()
+            expect(self.page.locator("#delete-tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#rename-tag-bla")).not_to_be_visible()
+            self.page.locator("#cancel-delete-tag-bla").click()
+            expect(self.page.locator("#confirm-delete-tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#cancel-delete-tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#delete-tag-bla")).to_be_visible()
+            expect(self.page.locator("#rename-tag-bla")).to_be_visible()
+
+    def test_delete_tag_click_away(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            self.page.locator("#tag-bla > a").first.click()
+            expect(self.page.locator("#delete-tag-bla")).to_be_visible()
+
+            # click somewhere
+            self.page.locator("span").filter(has_text="PDFs").click()
+
+            # tag options should be closed now
+            expect(self.page.locator("#delete-tag-bla")).not_to_be_visible()
+
+    def test_delete_tag(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tags_0")).to_contain_text('bla')
+            expect(self.page.locator("body")).to_contain_text("#bla")
+            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
+            self.page.locator("#confirm-delete-tag-bla").click()
+            expect(self.page.locator("#tags_0")).not_to_be_visible()
+            expect(self.page.locator("body")).not_to_contain_text("#bla")
+
+    def test_rename_tag_click_away(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
+            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
+            expect(self.page.locator("#tag_rename_form")).to_be_visible()
+
+            # click somewhere
+            self.page.locator("span").filter(has_text="PDFs").click()
+
+            # tag rename should be closed now
+            expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
+
+    def test_rename_tag_cancel(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
+            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
+            expect(self.page.locator("#tag_rename_form")).to_be_visible()
+
+            # click cancel
+            self.page.locator("#tag_rename_form").get_by_text("Cancel").click()
+
+            # tag rename should be closed now
+            expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
+
+    def test_rename_tag(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tags_0")).to_contain_text('bla')
+            expect(self.page.locator("body")).to_contain_text("#bla")
+            expect(self.page.locator("body")).not_to_contain_text("#renamed")
+
+            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
+
+            self.page.locator("#id_name").dblclick()
+            self.page.locator("#id_name").fill("renamed")
+            self.page.get_by_role("button", name="Submit").click()
+
+            expect(self.page.locator("#tags_0")).not_to_contain_text('bla')
+            expect(self.page.locator("#tags_0")).to_contain_text('renamed')
+            expect(self.page.locator("body")).to_contain_text("#renamed")
+            expect(self.page.locator("body")).not_to_contain_text("#bla")

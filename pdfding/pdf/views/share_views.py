@@ -238,7 +238,7 @@ class Delete(SharedPdfMixin, base_views.BaseDelete):
     """View for deleting the shared PDF specified by its ID."""
 
 
-class Edit(EditSharedPdfMixin, base_views.BaseEdit):
+class Edit(EditSharedPdfMixin, base_views.BaseDetailsEdit):
     """
     The view for editing a shared PDF's name and description. The field, that is to be changed, is specified by the
     'field' argument.
