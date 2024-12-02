@@ -114,3 +114,34 @@ class TestService(TestCase):
 
         generated_name = service.create_name_from_file(file_mock, user.profile)
         self.assertEqual(generated_name, 'existing_name_12345678')
+
+    def test_adjust_referer_for_tag_view_no_replace(self):
+        # url of searched for #other
+        url = 'http://127.0.0.1:5000/pdf/?q=%23other'
+
+        adjusted_url = service.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
+
+        self.assertEqual(url, adjusted_url)
+
+    def test_adjust_referer_for_tag_view_no_query(self):
+        url = 'http://127.0.0.1:5000/pdf/bla'
+
+        adjusted_url = service.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
+
+        self.assertEqual(url, adjusted_url)
+
+    def test_adjust_referer_for_tag_view_space(self):
+        # url of searched for #other
+        url = 'http://127.0.0.1:5000/pdf/?q=%23other'
+
+        adjusted_url = service.adjust_referer_for_tag_view(url, 'other', '')
+
+        self.assertEqual('http://127.0.0.1:5000/pdf/?q=', adjusted_url)
+
+    def test_adjust_referer_for_tag_view_word(self):
+        # url of searched for #other
+        url = 'http://127.0.0.1:5000/pdf/?q=%23other'
+
+        adjusted_url = service.adjust_referer_for_tag_view(url, 'other', 'another')
+
+        self.assertEqual('http://127.0.0.1:5000/pdf/?q=%23another', adjusted_url)

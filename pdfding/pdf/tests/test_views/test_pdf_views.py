@@ -1,12 +1,14 @@
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
+from django_htmx.http import HttpResponseClientRedirect
 from pdf import forms
 from pdf.models import Pdf, Tag
 from pdf.views import pdf_views
@@ -327,7 +329,8 @@ class TestViews(TestCase):
         self.assertEqual(message.message, 'This field is required.')
         self.assertEqual(message.tags, 'warning')
 
-    def test_edit_tag_name(self):
+    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    def test_edit_tag_name(self, mock_adjust_referer_for_tag_view):
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
 
         self.client.post(reverse('edit_tag', kwargs={'identifier': tag.id}), data={'name': 'new'})
@@ -336,8 +339,10 @@ class TestViews(TestCase):
         tag = self.user.profile.tag_set.get(id=tag.id)
 
         self.assertEqual(tag.name, 'new')
+        mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', 'tag_name', 'new')
 
-    def test_edit_tag_name_existing(self):
+    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    def test_edit_tag_name_existing(self, mock_adjust_referer_for_tag_view):
         tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
         tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
@@ -348,8 +353,10 @@ class TestViews(TestCase):
         self.assertEqual(pdf.tags.count(), 1)
         self.assertEqual(self.user.profile.tag_set.count(), 1)
         self.assertEqual(pdf.tags.first(), tag_1)
+        mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', tag_2.name, tag_1.name)
 
-    def test_edit_tag_name_existing_and_present(self):
+    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    def test_edit_tag_name_existing_and_present(self, mock_adjust_referer_for_tag_view):
         # if the pdf has both tags after one to the other only one should remain
         tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
         tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
@@ -361,6 +368,25 @@ class TestViews(TestCase):
         self.assertEqual(pdf.tags.count(), 1)
         self.assertEqual(self.user.profile.tag_set.count(), 1)
         self.assertEqual(pdf.tags.first(), tag_1)
+        mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', tag_2.name, tag_1.name)
+
+    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    def test_delete_htmx(self, mock_adjust_referer_for_tag_view):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.delete(reverse('delete_tag', kwargs={'identifier': tag.id}), **headers)
+
+        self.assertFalse(self.user.profile.tag_set.filter(id=tag.id).exists())
+        self.assertEqual(type(response), HttpResponseClientRedirect)
+
+        mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', 'tag_name', '')
+
+    def test_delete_no_htmx(self):
+        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+
+        response = self.client.delete(reverse('delete_tag', kwargs={'identifier': tag.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
 
 class TestTagMixin(TestCase):

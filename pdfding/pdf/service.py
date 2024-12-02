@@ -139,3 +139,26 @@ def create_name_from_file(file: File, owner: Profile) -> str:
         name += f'_{str(uuid4())[:8]}'
 
     return name
+
+
+def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: str) -> str:
+    """
+    Adjust the referer url for tag views. If a tag is renamed or deleted, the query part of the tag string will be
+    adjusted accordingly. E.g. for renaming tag 'some' to 'other': 'http://127.0.0.1:5000/pdf/?q=%23some' to
+    'http://127.0.0.1:5000/pdf/?q=%23other'.
+    """
+
+    referer_url_split = referer_url.split('/?q=', maxsplit=1)
+
+    if len(referer_url_split) == 2:
+        if not replace_with:
+            replace_with = ''
+        else:
+            replace_with = f'%23{replace_with}'
+
+        query = referer_url_split[1]
+        query = query.replace(f'%23{replace}', replace_with)
+
+        referer_url = f'{referer_url_split[0]}/?q={query}'
+
+    return referer_url
