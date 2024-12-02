@@ -8,15 +8,10 @@ from django.db.models.functions import Lower
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.views import View
+from django_htmx.http import HttpResponseClientRedirect
+from pdf import service
 from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
 from pdf.models import Pdf, Tag
-from pdf.service import (
-    check_object_access_allowed,
-    create_name_from_file,
-    get_tag_dict,
-    process_raw_search_query,
-    process_tag_names,
-)
 from pypdf import PdfReader
 from users.service import convert_hex_to_rgb
 
@@ -43,7 +38,7 @@ class AddPdfMixin(BasePdfMixin):
         pdf = form.save(commit=False)
 
         if form.data.get('use_file_name'):
-            pdf.name = create_name_from_file(form.files['file'], request.user.profile)
+            pdf.name = service.create_name_from_file(form.files['file'], request.user.profile)
 
         pdf.owner = request.user.profile
         pdf.save()  # we need to save otherwise the file will not be found in the next step
@@ -58,7 +53,7 @@ class AddPdfMixin(BasePdfMixin):
         tag_string = form.data.get('tag_string')
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
-        tags = process_tag_names(tag_names, pdf.owner)
+        tags = service.process_tag_names(tag_names, pdf.owner)
 
         pdf.tags.set(tags)
 
@@ -83,10 +78,10 @@ class BulkAddPdfMixin(BasePdfMixin):
         tag_string = form.data.get('tag_string')
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
-        tags = process_tag_names(tag_names, profile)
+        tags = service.process_tag_names(tag_names, profile)
 
         for file in form.files.getlist('file'):
-            pdf_name = create_name_from_file(file, profile)
+            pdf_name = service.create_name_from_file(file, profile)
             pdf = Pdf.objects.create(owner=profile, name=pdf_name, description=form.data.get('description'), file=file)
             pdf.tags.set(tags)
 
@@ -116,7 +111,7 @@ class OverviewMixin(BasePdfMixin):
         pdfs = request.user.profile.pdf_set
 
         raw_search_query = request.GET.get('q', '')
-        search, tags = process_raw_search_query(raw_search_query)
+        search, tags = service.process_raw_search_query(raw_search_query)
 
         for tag in tags:
             pdfs = pdfs.filter(tags__name=tag)
@@ -130,14 +125,17 @@ class OverviewMixin(BasePdfMixin):
     def get_extra_context(request: HttpRequest) -> dict:
         """get further information that needs to be passed to the template."""
 
-        extra_context = {'raw_search_query': request.GET.get('q', ''), 'tag_dict': get_tag_dict(request.user.profile)}
+        extra_context = {
+            'raw_search_query': request.GET.get('q', ''),
+            'tag_dict': service.get_tag_dict(request.user.profile),
+        }
 
         return extra_context
 
 
 class PdfMixin(BasePdfMixin):
     @staticmethod
-    @check_object_access_allowed
+    @service.check_object_access_allowed
     def get_object(request: HttpRequest, pdf_id: str):
         """Get the pdf specified by the ID"""
 
@@ -151,7 +149,7 @@ class TagMixin:
     obj_name = 'pdf'
 
     @staticmethod
-    @check_object_access_allowed
+    @service.check_object_access_allowed
     def get_object(request: HttpRequest, tag_id: str):
         """Get the pdf specified by the ID"""
 
@@ -201,7 +199,7 @@ class EditPdfMixin(PdfMixin):
                 if tag.name not in tag_names and tag.pdf_set.count() == 1:
                     tag.delete()
 
-            tags = process_tag_names(tag_names, request.user.profile)
+            tags = service.process_tag_names(tag_names, request.user.profile)
 
             pdf.tags.set(tags)
 
@@ -323,10 +321,6 @@ class Download(PdfMixin, base_views.BaseDownload):
     """View for downloading the PDF specified by the ID."""
 
 
-class DeleteTag(TagMixin, base_views.BaseDelete):
-    """View for deleting the tag specified by its ID."""
-
-
 class EditTag(View):
     """
     The base view for editing fields of an object in the details page. The field, that is to be changed, is specified
@@ -353,14 +347,15 @@ class EditTag(View):
         POST: Change the Tag name.
         """
 
+        redirect_url = request.META.get('HTTP_REFERER', 'pdf_overview')
         user_profile = request.user.profile
         tag = user_profile.tag_set.get(id=identifier)
+        original_tag_name = tag.name
         form = TagNameForm(request.POST, instance=tag)
 
         if form.is_valid():
-            tag_name = form.data.get('name')
-
-            existing_tag = user_profile.tag_set.filter(name__iexact=tag_name).first()
+            new_tag_name = form.data.get('name')
+            existing_tag = user_profile.tag_set.filter(name__iexact=new_tag_name).first()
 
             # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
             if existing_tag and str(existing_tag.id) != identifier:
@@ -375,9 +370,32 @@ class EditTag(View):
                 tag.delete()
             else:
                 form.save()
+
+            redirect_url = service.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_tag_name)
         else:
             try:
                 messages.warning(request, dict(form.errors)['name'][0])
             except:  # noqa # pragma: no cover
                 messages.warning(request, 'Input is not valid!')
-        return redirect('pdf_overview')
+
+        return redirect(redirect_url)
+
+
+class DeleteTag(TagMixin, View):
+    """View for deleting the tag specified by its ID."""
+
+    def delete(self, request: HttpRequest, identifier: str):
+        """Delete the specified tag."""
+
+        redirect_url = request.META.get('HTTP_REFERER', 'pdf_overview')
+
+        if request.htmx:
+            tag = self.get_object(request, identifier)
+            tag_name = tag.name
+            tag.delete()
+
+            redirect_url = service.adjust_referer_for_tag_view(redirect_url, tag_name, '')
+
+            return HttpResponseClientRedirect(redirect_url)
+
+        return redirect(redirect_url)
