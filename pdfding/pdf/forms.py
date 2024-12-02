@@ -3,8 +3,7 @@ import re
 import magic
 from django import forms
 from django.contrib.auth.hashers import check_password, make_password
-
-# from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from django.core.files import File
 
 from .models import Pdf, SharedPdf, Tag
@@ -347,11 +346,14 @@ class TagNameForm(forms.ModelForm):
         model = Tag
         fields = ['name']
 
-    def clean_name(self):
-        # if not self.cleaned_data['name']:
-        #     raise ValidationError('Please use a valid tag name!')
+    def clean_name(self) -> str:
+        new_tag_name = self.cleaned_data['name'].strip()
 
-        return self.cleaned_data['name']
+        for disallowed_char, char_name in zip(['#', ' '], ['hashtags', 'spaces']):
+            if disallowed_char in new_tag_name:
+                raise ValidationError(f'Tag names are not allowed to contain {char_name}!')
+
+        return new_tag_name
 
 
 class CleanHelpers:

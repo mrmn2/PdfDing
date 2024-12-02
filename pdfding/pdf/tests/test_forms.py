@@ -142,6 +142,20 @@ class TestViewSharedPasswordForm(TestCase):
             self.assertEqual(form.is_valid(), expected_result)
 
 
+class TestTagForms(TestCase):
+    def test_clean_name_valid(self):
+        # we also test stripping
+        for name in ['some_name', ' some_name ']:
+            form = forms.TagNameForm(data={'name': name})
+            self.assertTrue(form.is_valid())
+
+    def test_clean_name_invalid(self):
+        for char_name, name in zip(['hashtags', 'spaces'], ['#hashtag', 'spac es']):
+            form = forms.TagNameForm(data={'name': name})
+            self.assertFalse(form.is_valid())
+            self.assertEqual(form.errors['name'], [f'Tag names are not allowed to contain {char_name}!'])
+
+
 class TestCleanHelpers(TestCase):
     def test_clean_name(self):
         inputs = ['  this is some    name with whitespaces ', 'simple']
