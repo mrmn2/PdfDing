@@ -113,7 +113,7 @@ class OverviewMixin(BasePdfMixin):
     def filter_objects(request: HttpRequest) -> QuerySet:
         """Filter the PDFs when performing a search in the overview."""
 
-        pdfs = Pdf.objects.filter(owner=request.user.profile).all()
+        pdfs = request.user.profile.pdf_set
 
         raw_search_query = request.GET.get('q', '')
         search, tags = process_raw_search_query(raw_search_query)
@@ -358,7 +358,23 @@ class EditTag(View):
         form = TagNameForm(request.POST, instance=tag)
 
         if form.is_valid():
-            form.save()
+            tag_name = form.data.get('name')
+
+            existing_tag = user_profile.tag_set.filter(name__iexact=tag_name).first()
+
+            # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
+            if existing_tag and str(existing_tag.id) != identifier:
+                pdfs = user_profile.pdf_set
+                pdfs_with_tag = pdfs.filter(tags__id=tag.id)
+
+                for pdf_with_tag in pdfs_with_tag:
+                    # we are safe to use add, even if the pdf already has the tag as the documentation states:
+                    # Using add() on a relation that already exists won’t duplicate the relation,
+                    # but it will still trigger signals.
+                    pdf_with_tag.tags.add(existing_tag)
+                tag.delete()
+            else:
+                form.save()
         else:
             try:
                 messages.warning(request, dict(form.errors)['name'][0])

@@ -337,6 +337,31 @@ class TestViews(TestCase):
 
         self.assertEqual(tag.name, 'new')
 
+    def test_edit_tag_name_existing(self):
+        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
+        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf.tags.set([tag_2])
+
+        self.client.post(reverse('edit_tag', kwargs={'identifier': tag_2.id}), data={'name': tag_1.name})
+
+        self.assertEqual(pdf.tags.count(), 1)
+        self.assertEqual(self.user.profile.tag_set.count(), 1)
+        self.assertEqual(pdf.tags.first(), tag_1)
+
+    def test_edit_tag_name_existing_and_present(self):
+        # if the pdf has both tags after one to the other only one should remain
+        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
+        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf.tags.set([tag_1, tag_2])
+
+        self.client.post(reverse('edit_tag', kwargs={'identifier': tag_2.id}), data={'name': tag_1.name})
+
+        self.assertEqual(pdf.tags.count(), 1)
+        self.assertEqual(self.user.profile.tag_set.count(), 1)
+        self.assertEqual(pdf.tags.first(), tag_1)
+
 
 class TestTagMixin(TestCase):
     username = 'user'
