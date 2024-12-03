@@ -1,13 +1,15 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
 {% block content %}
-<content class="flex justify-between block max-w-5xl mx-auto md:p-12 md:pb-0 !pt-4 dark:text-slate-200">
-  <div class="w-full md:p-8 p-3">
-    {% include 'includes/share_overview_top.html' %}
-    {% include 'includes/share_overview_center.html' %}
+<!--div needed for correct footer alignment-->
+<div>
+  <div class="flex justify-between block max-w-5xl mx-auto md:p-12 md:pb-0 !pt-4 dark:text-slate-200">
+    <div class="w-full md:p-8 p-3">
+      {% include 'includes/share_overview_top.html' %}
+      {% include 'includes/share_overview_center.html' %}
+    </div>
   </div>
-</content>
-
+</div>
 <script>
   // function for copying to the clipboard
   function copy_to_clipboard(input_string)
