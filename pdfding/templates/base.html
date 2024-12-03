@@ -30,12 +30,18 @@
     </style>
     {% endif %}
 </head>
-<body class="dark:bg-slate-800 {% block class %}{% endblock %}">
+<content class="flex flex-col min-h-screen">
+    {% include 'includes/header.html' %}
+    <body class="dark:bg-slate-800">
 
-    {% include 'includes/messages.html' %}
+        {% include 'includes/messages.html' %}
 
-    {% block layout %}
-    {% endblock %}
+        {% block layout %}
+        {% endblock %}
 
-</body>
+    </body>
+    <!--div needed for correct footer alignment-->
+    <div class="flex-grow"></div>
+{% include 'includes/footer.html' %}
+</content>
 </html>

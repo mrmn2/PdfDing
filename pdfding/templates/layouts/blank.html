@@ -2,14 +2,9 @@
 
 {% block layout %}
 
-<content class="block w-full">
-    {% include 'includes/header.html' %}
-
+<div class="block w-full">
     {% block content %}
     {% endblock %}
-
-    {% include 'includes/footer.html' %}
-
-</content>
+</div>
 
 {% endblock %}
