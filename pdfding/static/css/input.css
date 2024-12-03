@@ -144,22 +144,16 @@ input[name="remember"] {
 .alert-success { @apply bg-secondary }
 .alert-warning { @apply bg-red-500 }
 .alert-danger { @apply bg-red-500 }
-.allauth content a {
-    @apply underline underline-offset-2
-}
-.allauth content a:hover {
-    @apply text-indigo-500
-}
-.allauth form[action="/accountsignup/"] ul {
+form[action="/accountsignup/"] ul {
     @apply hidden
 }
-.allauth form[action="/accountsignup/"] ul.errorlist {
+form[action="/accountsignup/"] ul.errorlist {
     @apply block
 }
-.allauth form[action="/accountpassword/change/"] ul {
+form[action="/accountpassword/change/"] ul {
     @apply hidden
 }
-.allauth form[action="/accountpassword/change/"] ul.errorlist {
+form[action="/accountpassword/change/"] ul.errorlist {
     @apply block
 }
 .allauth .helptext {
