@@ -21,3 +21,9 @@ class TestService(TestCase):
         generated_url = construct_query_overview_url(referer_url, '', 'another', 'pdf')
 
         self.assertEqual(generated_url, f'{reverse('pdf_overview')}?q=another&sort=title_desc')
+
+    def test_construct_query_overview_url_remove_ampersand(self):
+        referer_url = f'{reverse('pdf_overview')}?q=searching&sort=title_desc'
+        generated_url = construct_query_overview_url(referer_url, '', 'another', 'pdf')
+
+        self.assertEqual(generated_url, f'{reverse('pdf_overview')}?q=another&sort=title_desc')

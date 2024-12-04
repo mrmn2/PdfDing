@@ -15,6 +15,8 @@ def construct_query_overview_url(referer_url: str, sort_query: str, search_query
     if sort_query:
         referer_query_parameters['sort'] = [sort_query]
     elif search_query:
+        # remove "&" from search query because otherwise it will remove everything after it from the search
+        search_query = search_query.replace('&', '')
         referer_query_parameters['q'] = search_query.split(' ')
     else:
         # empty search -> remove so search is cleared
