@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from core import base_views
+from base import base_views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.db.models import QuerySet

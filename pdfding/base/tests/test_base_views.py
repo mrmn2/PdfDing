@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from base.tests import base_view_definitions
 from core.settings import MEDIA_ROOT
 from core.urls import urlpatterns as base_patterns
 from django.contrib.auth.models import User
@@ -11,7 +12,6 @@ from django.urls import path, reverse
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf.forms import AddForm, DescriptionForm
 from pdf.models import Pdf
-from pdf.tests.test_views import base_view_definitions
 
 test_patterns = [
     path('test/add/<identifier>', base_view_definitions.Add.as_view(), name='test_add'),
@@ -94,7 +94,7 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'pdf_overview.html')
 
     @override_settings(ROOT_URLCONF=__name__)
-    @patch('core.base_views.construct_query_overview_url')
+    @patch('base.base_views.construct_query_overview_url')
     def test_overview_query_get(self, mock_construct_query_overview_url):
         mock_return_value = f'{reverse('pdf_overview')}?sort=title_desc'
         mock_construct_query_overview_url.return_value = mock_return_value
@@ -104,7 +104,7 @@ class TestViews(TestCase):
         self.assertRedirects(response, mock_return_value, status_code=302)
 
     @override_settings(ROOT_URLCONF=__name__)
-    @patch('core.base_views.serve')
+    @patch('base.base_views.serve')
     def test_serve_get(self, mock_serve):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
         pdf.file.name = f'{self.user}/pdf_name'

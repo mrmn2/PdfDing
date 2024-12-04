@@ -1,5 +1,5 @@
 from admin.service import get_latest_version
-from core import base_views
+from base import base_views
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User

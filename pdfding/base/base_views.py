@@ -1,4 +1,4 @@
-from core.service import construct_query_overview_url
+from base.service import construct_query_overview_url
 from core.settings import MEDIA_ROOT
 from django.contrib import messages
 from django.core.paginator import Paginator

@@ -1,4 +1,4 @@
-from core import base_views
+from base import base_views
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from django.http import HttpRequest
