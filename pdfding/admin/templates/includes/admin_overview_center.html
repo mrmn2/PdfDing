@@ -1,7 +1,7 @@
 {% for user in page_obj %}
 {% with loop_id=forloop.counter %}
 <div x-data="{ delete{{ loop_id }}: false, admin{{ loop_id }}: false }" class="pb-1">
-  <ul>
+  <ul class="relative">
     <div class="text font-bold text-tertiary1 dark:text-tertiary2">
         {% if user.is_superuser and request.user.is_staff %}
         <span id="user-{{ loop_id }}">{{ user.email }} | Admin</span>
@@ -9,8 +9,14 @@
         <span id="user-{{ loop_id }}">{{ user.email }}</span>
         {% endif %}
     </div>
-    <div class="text-gray-500  text-sm">
-      <span>Registered: {{ user.date_joined.date }} | PDFs: {{ user.profile.pdf_set.all.count }}</span>
+    <div x-data="{ tooltip_date: false }" class="text-gray-500  text-sm">
+      <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
+          Registered: {{ user.date_joined.date }} | PDFs: {{ user.profile.pdf_set.all.count }}
+      </span>
+      <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
+            class="left-0 bottom-0 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
+          {{ user.date_joined }} UTC
+      </span>
     </div>
     <div class="text-gray-500 text-sm [&>a]:dark:text-slate-400">
       <a id="admin-confirm-{{ loop_id }}"
