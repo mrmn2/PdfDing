@@ -170,8 +170,10 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
 
     def test_search_tags(self):
         with sync_playwright() as p:
+            # trigger search by clicking on sidebar
             # display the three pdfs with the tag 'tag'
-            self.open(f"{reverse('pdf_overview')}?q=%23tag", p)
+            self.open(reverse('pdf_overview'), p)
+            self.page.get_by_role("link", name="#tag").first.click()
 
             delete_buttons = self.page.get_by_role("button", name="Delete")
 
@@ -185,7 +187,7 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
     def test_search_names(self):
         with sync_playwright() as p:
             # display the three pdfs with the tag 'tag'
-            self.open(f"{reverse('pdf_overview')}?q=pdf_2_", p)
+            self.open(f"{reverse('pdf_overview')}?search=pdf_2_", p)
 
             delete_buttons = self.page.get_by_role("button", name="Delete")
 
@@ -199,7 +201,7 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
     def test_search_names_and_tags(self):
         with sync_playwright() as p:
             # display the three pdfs with the tag 'tag'
-            self.open(f"{reverse('pdf_overview')}?q=pdf_1_1+%23tag", p)
+            self.open(f"{reverse('pdf_overview')}?search=pdf_1_1&tags=tag", p)
 
             delete_buttons = self.page.get_by_role("button", name="Delete")
 
@@ -208,6 +210,22 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             # pdfs are by default sorted from newest to oldest
             expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_11")
             expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_1_1")
+
+    def test_search_filters(self):
+        with sync_playwright() as p:
+            self.open(f"{reverse('pdf_overview')}?search=pdf_1_1&tags=tag", p)
+
+            # check that filters have the correct text and are visible
+            expect(self.page.locator("#search_filter")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#tag_tag_filter")).to_contain_text("#tag")
+            expect(self.page.locator("#search_filter")).to_be_visible()
+            expect(self.page.locator("#tag_tag_filter")).to_be_visible()
+
+            # check that filters are invisible
+            self.page.locator("#search_filter").get_by_role("img").click()
+            self.page.locator("#tag_tag_filter").get_by_role("img").click()
+            expect(self.page.locator("#search_filter")).not_to_be_visible()
+            expect(self.page.locator("#tag_tag_filter")).not_to_be_visible()
 
     def test_sort(self):
         # we test if sorting works with most viewed
@@ -228,7 +246,7 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
     def test_delete(self):
         with sync_playwright() as p:
             # only display one pdf
-            self.open(f"{reverse('pdf_overview')}?q=pdf_2_1", p)
+            self.open(f"{reverse('pdf_overview')}?search=pdf_2_1", p)
 
             expect(self.page.locator("body")).to_contain_text("pdf_2_1")
             self.page.locator("#delete-pdf-1").click()
@@ -240,7 +258,7 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
     def test_cancel_delete(self):
         with sync_playwright() as p:
             # only display one pdf
-            self.open(f"{reverse('pdf_overview')}?q=pdf_2_1", p)
+            self.open(f"{reverse('pdf_overview')}?search=pdf_2_1", p)
 
             expect(self.page.locator("#confirm-delete-pdf-1")).not_to_be_visible()
             expect(self.page.locator("#cancel-delete-pdf-1")).not_to_be_visible()

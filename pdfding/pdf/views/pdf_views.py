@@ -110,8 +110,10 @@ class OverviewMixin(BasePdfMixin):
 
         pdfs = request.user.profile.pdf_set
 
-        raw_search_query = request.GET.get('q', '')
-        search, tags = service.process_raw_search_query(raw_search_query)
+        search = request.GET.get('search', '')
+        tags = request.GET.get('tags', [])
+        if tags:
+            tags = tags.split(' ')
 
         for tag in tags:
             pdfs = pdfs.filter(tags__name=tag)
@@ -125,8 +127,13 @@ class OverviewMixin(BasePdfMixin):
     def get_extra_context(request: HttpRequest) -> dict:
         """get further information that needs to be passed to the template."""
 
+        tag_query = request.GET.get('tags', [])
+        if tag_query:
+            tag_query = tag_query.split(' ')
+
         extra_context = {
-            'raw_search_query': request.GET.get('q', ''),
+            'search_query': request.GET.get('search', ''),
+            'tag_query': tag_query,
             'tag_dict': service.get_tag_dict(request.user.profile),
         }
 

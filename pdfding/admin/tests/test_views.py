@@ -32,10 +32,10 @@ class TestOverviewMixin(TestCase):
     def test_filter_objects(self):
         for search_query, expected_result in zip(
             # also use some spaces in the admin search to verify this also works
-            ['b@a.com&sort=oldest', '@a++++%23admin'],
+            ['search=b@a.com&sort=oldest', 'search=@a&tags=admin'],
             [['1_b@a.com', '2_b@a.com', '3_b@a.com'], ['a@a.com']],
         ):
-            response = self.client.get(f'{reverse('admin_overview')}?q={search_query}')
+            response = self.client.get(f'{reverse('admin_overview')}?{search_query}')
             filtered_users = OverviewMixin.filter_objects(response.wsgi_request)
             user_emails = [user.email for user in filtered_users]
 
@@ -43,11 +43,28 @@ class TestOverviewMixin(TestCase):
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_get_extra_context(self, mock_get_latest_version):
-        response = self.client.get(f'{reverse('admin_overview')}?q=@a++++%23admin')
+        response = self.client.get(f'{reverse('admin_overview')}?search=@a&tags=admin')
 
         generated_extra_context = OverviewMixin.get_extra_context(response.wsgi_request)
         expected_extra_context = {
-            'raw_search_query': '@a    #admin',
+            'search_query': '@a',
+            'tag_query': ['admin'],
+            'number_of_users': 4,
+            'number_of_pdfs': 0,
+            'current_version': 'DEV',
+            'latest_version': '0.0.0',
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+    @patch('admin.views.get_latest_version', return_value='0.0.0')
+    def test_get_extra_context_empty_queries(self, mock_get_latest_version):
+        response = self.client.get(reverse('admin_overview'))
+
+        generated_extra_context = OverviewMixin.get_extra_context(response.wsgi_request)
+        expected_extra_context = {
+            'search_query': '',
+            'tag_query': [],
             'number_of_users': 4,
             'number_of_pdfs': 0,
             'current_version': 'DEV',

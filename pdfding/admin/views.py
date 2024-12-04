@@ -49,17 +49,16 @@ class OverviewMixin(BaseAdminMixin):
 
         users = User.objects.all()
 
-        raw_search_query = request.GET.get('q', '')
+        search = request.GET.get('search', '')
+        tags = request.GET.get('tags', [])
+        if tags:
+            tags = tags.split(' ')
 
-        if raw_search_query:
-            search_words = raw_search_query.split()
+        if 'admin' in tags:
+            users = users.filter(is_superuser=True)
 
-            if '#admin' in search_words:
-                users = users.filter(is_superuser=True)
-                search_words.remove('#admin')
-
-            search_query = ' '.join(search_words)
-            users = users.filter(email__icontains=search_query)
+        if search:
+            users = users.filter(email__icontains=search)
 
         return users
 
@@ -71,8 +70,13 @@ class OverviewMixin(BaseAdminMixin):
         number_of_pdfs = Pdf.objects.all().count()
         latest_version = get_latest_version()
 
+        tag_query = request.GET.get('tags', [])
+        if tag_query:
+            tag_query = tag_query.split(' ')
+
         extra_context = {
-            'raw_search_query': request.GET.get('q', ''),
+            'search_query': request.GET.get('search', ''),
+            'tag_query': tag_query,
             'number_of_users': number_of_users,
             'number_of_pdfs': number_of_pdfs,
             'current_version': settings.VERSION,

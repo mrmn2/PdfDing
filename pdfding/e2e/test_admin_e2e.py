@@ -84,17 +84,33 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
     def test_search_admin(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?q=%23admin", p)
+            self.open(f"{reverse('admin_overview')}?tags=admin", p)
             expect(self.page.locator("#user-1")).to_contain_text("a@a.com | Admin")
 
             expect(self.page.get_by_role("button", name="Delete")).to_have_count(1)
 
     def test_search_email(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?q=1@a.", p)
+            self.open(f"{reverse('admin_overview')}?search=1@a.", p)
             expect(self.page.locator("#user-1")).to_contain_text("1@a.com")
 
             expect(self.page.get_by_role("button", name="Delete")).to_have_count(1)
+
+    def test_search_filters(self):
+        with sync_playwright() as p:
+            self.open(f"{reverse('admin_overview')}?search=a@a&tags=admin", p)
+
+            # check that filters have the correct text and are visible
+            expect(self.page.locator("#search_filter")).to_contain_text("a@a")
+            expect(self.page.locator("#tag_admin_filter")).to_contain_text("#admin")
+            expect(self.page.locator("#search_filter")).to_be_visible()
+            expect(self.page.locator("#tag_admin_filter")).to_be_visible()
+
+            # check that filters are invisible
+            self.page.locator("#search_filter").get_by_role("img").click()
+            self.page.locator("#tag_admin_filter").get_by_role("img").click()
+            expect(self.page.locator("#search_filter")).not_to_be_visible()
+            expect(self.page.locator("#tag_admin_filter")).not_to_be_visible()
 
     def test_sort(self):
         with sync_playwright() as p:
@@ -134,7 +150,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
     def test_add_remove_admin_rights(self):
         with sync_playwright() as p:
             # only display one user
-            self.open(f"{reverse('admin_overview')}?q=1@a.", p)
+            self.open(f"{reverse('admin_overview')}?search=1@a.", p)
 
             expect(self.page.locator("body")).to_contain_text("1@a.com")
             expect(self.page.locator("#admin-action-1")).to_contain_text("Add Admin Rights")

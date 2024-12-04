@@ -167,7 +167,7 @@ class TestOverviewMixin(TestCase):
                 pdf.tags.set([tag])
 
     def test_filter_objects(self):
-        response = self.client.get(f'{reverse('pdf_overview')}?q=pdf_2+%23tag_2')
+        response = self.client.get(f'{reverse('pdf_overview')}?search=pdf_2&tags=tag_2')
         Pdf.objects.create(owner=self.user.profile, name='pdf')
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
@@ -178,12 +178,30 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(pdf_names, ['pdf_2_2'])
 
     def test_get_extra_context(self):
-        response = self.client.get(f'{reverse('pdf_overview')}?q=pdf_2+%23tag_2')
+        response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
         tag_2 = self.user.profile.tag_set.get(name='tag_2')
         tag_7 = self.user.profile.tag_set.get(name='tag_7')
-        expected_extra_context = {'raw_search_query': 'pdf_2 #tag_2', 'tag_dict': {'t': [tag_2, tag_7]}}
+        expected_extra_context = {
+            'search_query': 'searching',
+            'tag_query': ['tagging'],
+            'tag_dict': {'t': [tag_2, tag_7]},
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+    def test_get_extra_context_empty_queries(self):
+        response = self.client.get(reverse('pdf_overview'))
+
+        generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        tag_2 = self.user.profile.tag_set.get(name='tag_2')
+        tag_7 = self.user.profile.tag_set.get(name='tag_7')
+        expected_extra_context = {
+            'search_query': '',
+            'tag_query': [],
+            'tag_dict': {'t': [tag_2, tag_7]},
+        }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 

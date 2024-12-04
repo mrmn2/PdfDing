@@ -22,7 +22,7 @@ class Tag(models.Model):
         if not tag_string:
             return []
 
-        for forbidden_char in ['#', '&']:
+        for forbidden_char in ['#', '&', '+']:
             tag_string = tag_string.replace(forbidden_char, '')
 
         names = tag_string.strip().split(' ')
