@@ -234,6 +234,10 @@ class Overview(OverviewMixin, base_views.BaseOverview):
     """
 
 
+class OverviewQuery(BaseShareMixin, base_views.BaseOverviewQuery):
+    """View for performing searches and sorting on the shared PDF overview page."""
+
+
 class Delete(SharedPdfMixin, base_views.BaseDelete):
     """View for deleting the shared PDF specified by its ID."""
 

@@ -54,9 +54,9 @@ class OverviewMixin(BaseAdminMixin):
         if raw_search_query:
             search_words = raw_search_query.split()
 
-            if '#admins' in search_words:
+            if '#admin' in search_words:
                 users = users.filter(is_superuser=True)
-                search_words.remove('#admins')
+                search_words.remove('#admin')
 
             search_query = ' '.join(search_words)
             users = users.filter(email__icontains=search_query)
@@ -92,9 +92,15 @@ class AdminMixin(BaseAdminMixin):
 
 class Overview(BaseAdminRequiredMixin, OverviewMixin, base_views.BaseOverview):
     """
-    View for the PDF overview page. This view performs the searching and sorting of the PDFs. It's also responsible for
-    paginating the PDFs.
+    View for the user overview page. This view performs the searching and sorting of the users. It's also responsible
+    for paginating the users.
     """
+
+
+class OverviewQuery(base_views.BaseOverviewQuery):
+    """View for performing searches and sorting on the user overview page."""
+
+    obj_name = 'admin'
 
 
 class DeleteProfile(BaseAdminRequiredMixin, AdminMixin, base_views.BaseDelete):

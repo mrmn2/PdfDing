@@ -32,7 +32,7 @@ class TestOverviewMixin(TestCase):
     def test_filter_objects(self):
         for search_query, expected_result in zip(
             # also use some spaces in the admin search to verify this also works
-            ['b@a.com&sort=oldest', '@a++++%23admins'],
+            ['b@a.com&sort=oldest', '@a++++%23admin'],
             [['1_b@a.com', '2_b@a.com', '3_b@a.com'], ['a@a.com']],
         ):
             response = self.client.get(f'{reverse('admin_overview')}?q={search_query}')
@@ -43,11 +43,11 @@ class TestOverviewMixin(TestCase):
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_get_extra_context(self, mock_get_latest_version):
-        response = self.client.get(f'{reverse('admin_overview')}?q=@a++++%23admins')
+        response = self.client.get(f'{reverse('admin_overview')}?q=@a++++%23admin')
 
         generated_extra_context = OverviewMixin.get_extra_context(response.wsgi_request)
         expected_extra_context = {
-            'raw_search_query': '@a    #admins',
+            'raw_search_query': '@a    #admin',
             'number_of_users': 4,
             'number_of_pdfs': 0,
             'current_version': 'DEV',

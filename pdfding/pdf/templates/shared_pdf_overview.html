@@ -16,31 +16,5 @@
   {
     navigator.clipboard.writeText(input_string);
   }
-
-  // function for getting the current sorting
-  function get_active_sorting(sorting_string)
-  {
-    if (sorting_string === "") {
-      return "newest";
-    }
-    else {
-      return sorting_string;
-    }
-  }
-
-  // function for combining the url and its query to a single url
-  function combine_url_query(url, query) {
-    return `${url}${query}`;
-  }
-
-  // function for constructing the url query string from the search and sorting strings
-  function construct_query_string(sorting_string)
-  {
-    if (sorting_string === "")
-      return "";
-    else {
-      return `?sort=${sorting_string}`;
-    }
-  }
 </script>
 {% endblock %}

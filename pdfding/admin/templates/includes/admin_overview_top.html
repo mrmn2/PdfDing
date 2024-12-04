@@ -1,46 +1,43 @@
 {% load static %}
 <div class="flex justify-between items-center">
     <span class="text-2xl font-bold pr-4">Users</span>
-<!--    x-data necessary otherwise alpine js will not trigger-->
-    <div x-data="{}" class="flex justify-end h-10 mr-2">
-        <input class="border border-primary h-10 !rounded-r-none align-text-center"
-                type="text" placeholder="Search for email or #admins"
-                value="{{ raw_search_query }}"
-                id="search_input"
-                @keyup.enter="update_search_query(); document.getElementById('search_form').submit()"/>
-        <form action="{% url 'admin_overview' %}" method="GET" id="search_form">
-        <input type="hidden" name=q value='' id="search_q">
-        {% if sorting_query %}
-        <input type="hidden" name=sort value="{{ sorting_query }}">
-        {% endif %}
-        <button @click="update_search_query" type="submit"
-                class="button h-10 !rounded-l-none !rounded-md !item-center !py-2 !px-2"
-                style="display:inline-block">
-            <img src="{% static 'images/search.svg' %}" width="35">
-        </button>
+    <div class="flex justify-end h-10 mr-2">
+        <form class="flex" action="{% url 'admin_overview_query' %}" method="GET" id="search_form">
+            <input class="border border-primary h-10 !rounded-r-none align-text-center"
+                    type="text" placeholder="Search for email or #admin"
+                    value="{{ raw_search_query }}"
+                    id="search_input"
+                    name="search"
+                    @keyup.enter="document.getElementById('search_form').submit()"/>
+
+            <button type="submit"
+                    class="button h-10 !rounded-l-none !rounded-md !item-center !py-2 !px-2"
+                    style="display:inline-block">
+                <img src="{% static 'images/search.svg' %}" width="35">
+            </button>
         </form>
         <div x-data="{ sortdropdownOpen: false }" class="relative">
-        <a @click="sortdropdownOpen = !sortdropdownOpen" @click.away="sortdropdownOpen = false" class="cursor-pointer select-none">
-            <img class="w-10 h-10 bg-primary hover:bg-secondary rounded-md ml-2 px-2 mx-2 "
-                x-bind:class="sortdropdownOpen && 'duration-300'"
-                src="{% static 'images/sort.svg' %}"/>
-        </a>
-        <div x-show="sortdropdownOpen" x-cloak class="absolute right-0 origin-top-right bg-white dark:bg-slate-700 text-black shadow rounded-lg w-40 p-2 mt-1 z-20"
-            x-transition:enter="duration-300 ease-out"
-            x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
-            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-            >
-            <ul class="hoverlist [&>li>*]:justify-left [&>li>*]:rounded-md">
-            <li><a x-bind:href="construct_query_string('{{ raw_search_query }}', 'newest')"
-                   x-bind:class="get_active_sorting('{{ sorting_query }}') === 'newest' ? 'bg-primary' : 'dummy'">Newest</a></li>
-            <li><a x-bind:href="construct_query_string('{{ raw_search_query }}', 'oldest')"
-                   x-bind:class="get_active_sorting('{{ sorting_query }}') === 'oldest' ? 'bg-primary' : 'dummy'">Oldest</a></li>
-            <li><a x-bind:href="construct_query_string('{{ raw_search_query }}', 'title_asc')"
-                   x-bind:class="get_active_sorting('{{ sorting_query }}') === 'title_asc' ? 'bg-primary' : 'dummy'">A --- Z</a></li>
-            <li><a x-bind:href="construct_query_string('{{ raw_search_query }}', 'title_desc')"
-                   x-bind:class="get_active_sorting('{{ sorting_query }}') === 'title_desc' ? 'bg-primary' : 'dummy'">Z --- A</a></li>
-            </ul>
-        </div>
+            <a @click="sortdropdownOpen = !sortdropdownOpen" @click.away="sortdropdownOpen = false" class="cursor-pointer select-none">
+                <img class="w-10 h-10 bg-primary hover:bg-secondary rounded-md ml-2 px-2 mx-2 "
+                    x-bind:class="sortdropdownOpen && 'duration-300'"
+                    src="{% static 'images/sort.svg' %}"/>
+            </a>
+            <div x-show="sortdropdownOpen" x-cloak class="absolute right-0 origin-top-right bg-white dark:bg-slate-700 text-black shadow rounded-lg w-40 p-2 mt-1 z-20"
+                x-transition:enter="duration-300 ease-out"
+                x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                >
+                <ul class="hoverlist [&>li>*]:justify-left [&>li>*]:rounded-md">
+                <li><a href="{% url 'admin_overview_query' %}?sort=newest"
+                       x-bind:class="('{{ sorting_query }}' === 'newest' || '{{ sorting_query }}' === '') ? 'bg-primary' : 'dummy'">Newest</a></li>
+                <li><a href="{% url 'admin_overview_query' %}?sort=oldest"
+                       x-bind:class="'{{ sorting_query }}' === 'oldest' ? 'bg-primary' : 'dummy'">Oldest</a></li>
+                <li><a href="{% url 'admin_overview_query' %}?sort=title_asc"
+                       x-bind:class="'{{ sorting_query }}' === 'title_asc' ? 'bg-primary' : 'dummy'">A --- Z</a></li>
+                <li><a href="{% url 'admin_overview_query' %}?sort=title_desc"
+                       x-bind:class="'{{ sorting_query }}' === 'title_desc' ? 'bg-primary' : 'dummy'">Z --- A</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

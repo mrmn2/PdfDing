@@ -16,6 +16,7 @@ from pdf.tests.test_views import base_view_definitions
 test_patterns = [
     path('test/add/<identifier>', base_view_definitions.Add.as_view(), name='test_add'),
     path('test/overview', base_view_definitions.Overview.as_view(), name='test_overview'),
+    path('test/overview_query', base_view_definitions.OverviewQuery.as_view(), name='test_overview_query'),
     path('test/serve/<identifier>', base_view_definitions.Serve.as_view(), name='test_serve'),
     path('test/download/<identifier>', base_view_definitions.Download.as_view(), name='test_download'),
     path('test/details/<identifier>', base_view_definitions.Details.as_view(), name='test_details'),
@@ -91,6 +92,16 @@ class TestViews(TestCase):
         self.assertEqual(response.context['other'], 1234)
         self.assertEqual(response.context['sorting_query'], 'title_desc')
         self.assertTemplateUsed(response, 'pdf_overview.html')
+
+    @override_settings(ROOT_URLCONF=__name__)
+    @patch('core.base_views.construct_query_overview_url')
+    def test_overview_query_get(self, mock_construct_query_overview_url):
+        mock_return_value = f'{reverse('pdf_overview')}?sort=title_desc'
+        mock_construct_query_overview_url.return_value = mock_return_value
+        response = self.client.get(f'{reverse('test_overview_query')}?sort=title_desc')
+
+        mock_construct_query_overview_url.assert_called_once_with('pdf_overview', 'title_desc', '', 'pdf')
+        self.assertRedirects(response, mock_return_value, status_code=302)
 
     @override_settings(ROOT_URLCONF=__name__)
     @patch('core.base_views.serve')

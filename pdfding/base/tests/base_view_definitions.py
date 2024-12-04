@@ -109,6 +109,10 @@ class Overview(OverviewMixin, base_views.BaseOverview):
     """Overview view"""
 
 
+class OverviewQuery(BaseMixin, base_views.BaseOverviewQuery):
+    """Overview query view"""
+
+
 class Serve(ObjectMixin, base_views.BaseServe):
     """Serve view"""
 

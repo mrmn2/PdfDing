@@ -4,6 +4,7 @@ from django.urls import path
 
 urlpatterns = [
     path('', pdf_views.Overview.as_view(), name='pdf_overview'),
+    path('query/', pdf_views.OverviewQuery.as_view(), name='pdf_overview_query'),
     path('<int:page>/', pdf_views.Overview.as_view(), name='pdf_overview_page'),
     path('add', pdf_views.Add.as_view(), name='add_pdf'),
     path('bulk_add', pdf_views.BulkAdd.as_view(), name='bulk_add_pdfs'),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('view/<identifier>', pdf_views.ViewerView.as_view(), name='view_pdf'),
     path('share/<identifier>', share_views.Share.as_view(), name='share_pdf'),
     path('shared/overview/', share_views.Overview.as_view(), name='shared_pdf_overview'),
+    path('shared/overview/query/', share_views.OverviewQuery.as_view(), name='shared_pdf_overview_query'),
     path('shared/overview/<int:page>/', share_views.Overview.as_view(), name='shared_pdf_overview_page'),
     path('shared/delete/<identifier>', share_views.Delete.as_view(), name='delete_shared_pdf'),
     path('shared/details/<identifier>', share_views.Details.as_view(), name='shared_pdf_details'),

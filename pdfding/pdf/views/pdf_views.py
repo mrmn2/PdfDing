@@ -290,6 +290,10 @@ class Overview(OverviewMixin, base_views.BaseOverview):
     """
 
 
+class OverviewQuery(BasePdfMixin, base_views.BaseOverviewQuery):
+    """View for performing searches and sorting on the PDF overview page."""
+
+
 class Serve(PdfMixin, base_views.BaseServe):
     """View used for serving PDF files specified by the PDF id"""
 
