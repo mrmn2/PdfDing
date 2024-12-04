@@ -31,16 +31,6 @@ class TestService(TestCase):
 
         self.assertEqual(tags, [])
 
-    def test_process_raw_search_query(self):
-        input_str_list = ['#tag_1 #tag_2 search_str_1 search_str_2', '#tag_1 #', 'search_str_1', '']
-        expected_search_list = ['search_str_1 search_str_2', '', 'search_str_1', '']
-        expected_tags_list = [['tag_1', 'tag_2'], ['tag_1'], [], []]
-
-        for input_str, expected_search, expected_tags in zip(input_str_list, expected_search_list, expected_tags_list):
-            generated_search, generated_tags = service.process_raw_search_query(input_str)
-            self.assertEqual(generated_search, expected_search)
-            self.assertEqual(generated_tags, expected_tags)
-
     def test_get_tag_dict(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
         tag_a = Tag.objects.create(name='a', owner=pdf.owner)

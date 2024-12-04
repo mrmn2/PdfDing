@@ -150,7 +150,7 @@ class TestTagForms(TestCase):
             self.assertTrue(form.is_valid())
 
     def test_clean_name_invalid(self):
-        for char_name, name in zip(['hashtags', '&', 'spaces'], ['#hashtag', 'ampersand&', 'spac es']):
+        for char_name, name in zip(['hashtags', '&', '+', 'spaces'], ['#hashtag', 'ampersand&', 'pl+us', 'spac es']):
             form = forms.TagNameForm(data={'name': name})
             self.assertFalse(form.is_valid())
             self.assertEqual(form.errors['name'], [f'Tag names are not allowed to contain "{char_name}"!'])

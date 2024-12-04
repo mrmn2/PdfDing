@@ -16,7 +16,7 @@ class TestPdf(TestCase):
         return pdf
 
     def test_parse_tag_string(self):
-        input_tag_str = '#Tag1  ###tag2      ta&g3 tag4'
+        input_tag_str = '#Tag1  ###tag2      ta&g3 ta+g4'
         expected_tags = ['tag1', 'tag2', 'tag3', 'tag4']
         generated_tags = models.Tag.parse_tag_string(input_tag_str)
 

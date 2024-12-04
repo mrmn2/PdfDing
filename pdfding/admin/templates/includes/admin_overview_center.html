@@ -1,3 +1,10 @@
+{% if not page_obj %}
+<div class="pt-10 [&>*]:flex [&>*]:justify-center">
+  <span class="text-2xl">There aren't any users matching the search criteria</span>
+  <span class="pt-4 text-lg">Please try a different search.</span>
+</div>
+{% endif %}
+
 {% for user in page_obj %}
 {% with loop_id=forloop.counter %}
 <div x-data="{ delete{{ loop_id }}: false, admin{{ loop_id }}: false }" class="pb-1">

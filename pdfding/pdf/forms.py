@@ -349,7 +349,7 @@ class TagNameForm(forms.ModelForm):
     def clean_name(self) -> str:
         new_tag_name = self.cleaned_data['name'].strip()
 
-        for disallowed_char, char_name in zip(['#', '&', ' '], ['hashtags', '&', 'spaces']):
+        for disallowed_char, char_name in zip(['#', '&', '+', ' '], ['hashtags', '&', '+', 'spaces']):
             if disallowed_char in new_tag_name:
                 raise ValidationError(f'Tag names are not allowed to contain "{char_name}"!')
 

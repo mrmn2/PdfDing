@@ -98,9 +98,23 @@ class TestViews(TestCase):
     def test_overview_query_get(self, mock_construct_query_overview_url):
         mock_return_value = f'{reverse('pdf_overview')}?sort=title_desc'
         mock_construct_query_overview_url.return_value = mock_return_value
-        response = self.client.get(f'{reverse('test_overview_query')}?sort=title_desc')
+        response = self.client.get(
+            f'{reverse('test_overview_query')}?sort=title_desc&search=searching&tags=tag&remove=other_tag'
+        )
 
-        mock_construct_query_overview_url.assert_called_once_with('pdf_overview', 'title_desc', '', 'pdf')
+        mock_construct_query_overview_url.assert_called_once_with(
+            'pdf_overview', 'title_desc', 'searching', 'other_tag', 'pdf'
+        )
+        self.assertRedirects(response, mock_return_value, status_code=302)
+
+    @override_settings(ROOT_URLCONF=__name__)
+    @patch('base.base_views.construct_query_overview_url')
+    def test_overview_query_get_no_queries(self, mock_construct_query_overview_url):
+        mock_return_value = f'{reverse('pdf_overview')}?sort=title_desc'
+        mock_construct_query_overview_url.return_value = mock_return_value
+        response = self.client.get(reverse('test_overview_query'))
+
+        mock_construct_query_overview_url.assert_called_once_with('pdf_overview', '', '', '', 'pdf')
         self.assertRedirects(response, mock_return_value, status_code=302)
 
     @override_settings(ROOT_URLCONF=__name__)
