@@ -1,7 +1,7 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
 {% block content %}
-<content x-data="{ show_tag_name_modal: false }">
+<div x-data="{ show_tag_name_modal: false }">
   <div class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 !pt-4 dark:text-slate-200"
        :class="{ 'opacity-15': show_tag_name_modal }">
     <div class="w-full md:w-3/4 md:p-8 p-3">
@@ -17,57 +17,6 @@
        class="fixed inset-x-0 top-40  mx-auto my-auto w-80 h-52 z-20">
       <div id="edit_tag"></div>
 </div>
-</content>
+</div>
 
-<script>
-
-  // function for updating the search query specified by the searchbar input
-  function update_search_query()
-  {
-      var search_input = document.getElementById('search_input').value;
-      var search_q = document.getElementById('search_q');
-      search_q.value = search_input;
-  }
-
-  // function for getting the current sorting
-  function get_active_sorting(sorting_string)
-  {
-    if (sorting_string === "") {
-      return "newest";
-    }
-    else {
-      return sorting_string;
-    }
-  }
-
-  // function for combining the url and its query to a single url
-  function combine_url_query(url, query) {
-    return `${url}${query}`;
-  }
-
-  function prepare_search_string(search_string) {
-    search_string = search_string.replace(/\s/g, "+");
-    search_string = search_string.replace("#", "%23");
-
-    return search_string;
-  }
-
-  // function for constructing the url query string from the search and sorting strings
-  function construct_query_string(search_string, sorting_string)
-  {
-    search_string = prepare_search_string(search_string);
-
-    if (search_string === "" && sorting_string === "")
-      return "";
-    else if (search_string === "") {
-      return `?sort=${sorting_string}`;
-    }
-    else if (sorting_string === "") {
-      return `?q=${search_string}`;
-    }
-    else {
-      return `?q=${search_string}&sort=${sorting_string}`;
-    }
-  }
-</script>
 {% endblock %}

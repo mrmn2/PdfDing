@@ -24,9 +24,9 @@
         {% if pdf.description or pdf.tags.all %}
         <div class="truncate [&>span]:text-gray-800 [&>span]:dark:text-slate-100 -mb-1">
           {% for tag in pdf.tags.all|dictsort:"name" %}
-          <a x-data="{}"
-             x-bind:href="combine_url_query('{% url 'pdf_overview' %}', construct_query_string('%23{{ tag.name }}', '{{ sorting_query }}'))"
-             class="text-primary hover:text-secondary hover:underline text-sm">#{{ tag.name }}</a>
+          <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
+             class="text-primary hover:text-secondary hover:underline text-sm">#{{ tag.name }}
+          </a>
           {% endfor %}
           {% if pdf.description %}
           {% if pdf.tags.all %}
@@ -84,17 +84,27 @@
     <div class="flex-grow border-t border-gray-400 mt-4 mb-4"></div>
     <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
       {% if page_obj.has_previous %}
-        <a x-bind:href="combine_url_query('{% url 'pdf_overview_page' page_obj.previous_page_number %}', construct_query_string('{{ raw_search_query }}', '{{ sorting_query }}'))"
-           class="hover:text-secondary">
-            Prev
+        <a class="hover:text-secondary"
+            {% if request.META.QUERY_STRING %}
+            href="{% url 'pdf_overview_page' page_obj.previous_page_number %}?{{ request.META.QUERY_STRING }}"
+            {% else %}
+            href="{% url 'pdf_overview_page' page_obj.previous_page_number %}"
+            {% endif %}
+        >
+             Prev
         </a>
       {% else %}
       <span>Prev</span>
       {% endif %}
       <span class="bg-primary !text-gray-100 px-2 rounded-sm">{{ page_obj.number }}</span>
       {% if page_obj.has_next %}
-        <a x-bind:href="combine_url_query('{% url 'pdf_overview_page' page_obj.next_page_number %}', construct_query_string('{{ raw_search_query }}', '{{ sorting_query }}'))"
-           class="hover:text-secondary">
+        <a class="hover:text-secondary"
+            {% if request.META.QUERY_STRING %}
+            href="{% url 'pdf_overview_page' page_obj.next_page_number %}?{{ request.META.QUERY_STRING }}"
+            {% else %}
+            href="{% url 'pdf_overview_page' page_obj.next_page_number %}"
+            {% endif %}
+        >
             Next
         </a>
       {% else %}

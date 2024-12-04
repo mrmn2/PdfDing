@@ -84,7 +84,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
     def test_search_admin(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?q=%23admins", p)
+            self.open(f"{reverse('admin_overview')}?q=%23admin", p)
             expect(self.page.locator("#user-1")).to_contain_text("a@a.com | Admin")
 
             expect(self.page.get_by_role("button", name="Delete")).to_have_count(1)

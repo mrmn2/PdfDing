@@ -57,19 +57,29 @@
 <div class="flex-grow border-t border-gray-400 mt-2 mb-4"></div>
 <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
   {% if page_obj.has_previous %}
-    <a x-bind:href="combine_url_query('{% url 'admin_overview_page' page_obj.previous_page_number %}', construct_query_string('{{ raw_search_query }}', '{{ sorting_query }}'))"
-       class="hover:text-secondary">
-        Prev
-    </a>
+    <a class="hover:text-secondary"
+            {% if request.META.QUERY_STRING %}
+            href="{% url 'admin_overview_page' page_obj.previous_page_number %}?{{ request.META.QUERY_STRING }}"
+            {% else %}
+            href="{% url 'admin_overview_page' page_obj.previous_page_number %}"
+            {% endif %}
+        >
+             Prev
+        </a>
   {% else %}
   <span>Prev</span>
   {% endif %}
   <span class="bg-primary !text-gray-100 px-2 rounded-sm">{{ page_obj.number }}</span>
   {% if page_obj.has_next %}
-    <a x-bind:href="combine_url_query('{% url 'admin_overview_page' page_obj.next_page_number %}', construct_query_string('{{ raw_search_query }}', '{{ sorting_query }}'))"
-       class="hover:text-secondary">
-        Next
-    </a>
+    <a class="hover:text-secondary"
+            {% if request.META.QUERY_STRING %}
+            href="{% url 'admin_overview_page' page_obj.next_page_number %}?{{ request.META.QUERY_STRING }}"
+            {% else %}
+            href="{% url 'admin_overview_page' page_obj.next_page_number %}"
+            {% endif %}
+        >
+            Next
+        </a>
   {% else %}
     <span>Next</span>
   {% endif %}

@@ -49,10 +49,12 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
             # check sidebar links
             # first tag starting with character
-            expect(self.page.get_by_role("link", name="1", exact=True)).to_have_attribute("href", "/pdf/?q=%231")
+            expect(self.page.get_by_role("link", name="1", exact=True)).to_have_attribute(
+                "href", "/pdf/query/?search=%231"
+            )
             # non first tag starting with character
             expect(self.page.get_by_role("link", name="bread", exact=True)).to_have_attribute(
-                "href", "/pdf/?q=%23bread"
+                "href", "/pdf/query/?search=%23bread"
             )
 
         dummy_file_path.unlink()
@@ -124,10 +126,12 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
             # check sidebar links
             # first tag starting with character
-            expect(self.page.get_by_role("link", name="1", exact=True)).to_have_attribute("href", "/pdf/?q=%231")
+            expect(self.page.get_by_role("link", name="1", exact=True)).to_have_attribute(
+                "href", "/pdf/query/?search=%231"
+            )
             # non first tag starting with character
             expect(self.page.get_by_role("link", name="bread", exact=True)).to_have_attribute(
-                "href", "/pdf/?q=%23bread"
+                "href", "/pdf/query/?search=%23bread"
             )
 
         for path in dummy_file_paths:

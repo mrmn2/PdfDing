@@ -1,3 +1,4 @@
+from core.service import construct_query_overview_url
 from core.settings import MEDIA_ROOT
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -59,6 +60,20 @@ class BaseOverview(View):
         context |= self.get_extra_context(request)
 
         return render(request, f'{self.obj_name}_overview.html', context)
+
+
+class BaseOverviewQuery(View):
+    """Base view for performing searches and sorting on the overview pages."""
+
+    def get(self, request: HttpRequest):
+        referer_url = request.META.get('HTTP_REFERER', f'{self.obj_name}_overview')
+
+        sort_query = request.GET.get('sort', '')
+        search_query = request.GET.get('search', '')
+
+        redirect_url = construct_query_overview_url(referer_url, sort_query, search_query, self.obj_name)
+
+        return redirect(redirect_url)
 
 
 class BaseServe(View):
