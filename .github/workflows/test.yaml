@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         run: |
           cd pdfding
-          poetry run pytest admin backup base pdf users --cov=admin --cov=backup --cov=base --cov=pdf --cov=users
+          poetry run pytest admin backup base pdf users --cov=admin --cov=backup --cov=base --cov=pdf --cov=users --cov-fail-under=100
 
   e2e_tests:
     name: E2E tests
