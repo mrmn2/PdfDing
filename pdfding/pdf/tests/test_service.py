@@ -80,30 +80,47 @@ class TestService(TestCase):
         self.assertEqual(service.get_future_datetime(''), None)
 
     def test_create_name_from_file_no_suffix(self):
-        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'some_name'
 
-        generated_name = service.create_name_from_file(file_mock, user.profile)
+        generated_name = service.create_name_from_file(file_mock)
         self.assertEqual(generated_name, 'some_name')
 
-    def test_create_name_from_file_suffix(self):
-        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+    def test_create_name_from_file_different_suffix(self):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'some_name.PdF'
+        file_mock.name = 'some.name'
 
-        generated_name = service.create_name_from_file(file_mock, user.profile)
-        self.assertEqual(generated_name, 'some_name')
+        generated_name = service.create_name_from_file(file_mock)
+        self.assertEqual(generated_name, 'some.name')
 
+    def test_create_name_from_file_pdf_suffix(self):
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'some.name.PdF'
+
+        generated_name = service.create_name_from_file(file_mock)
+        self.assertEqual(generated_name, 'some.name')
+
+    @mock.patch('pdf.service.create_name_from_file', return_value='existing_name')
     @mock.patch('pdf.service.uuid4', return_value='123456789')
-    def test_create_name_from_file_existing_name(self, mock_uuid4):
+    def test_create_unique_name_from_file_existing_name(self, mock_uuid4, mock_create_name_from_file):
         user = User.objects.create_user(username='user', password='12345', email='a@a.com')
         Pdf.objects.create(owner=user.profile, name='existing_name')
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'existing_name.pdf'
 
-        generated_name = service.create_name_from_file(file_mock, user.profile)
+        generated_name = service.create_unique_name_from_file(file_mock, user.profile)
         self.assertEqual(generated_name, 'existing_name_12345678')
+        mock_create_name_from_file.assert_called_once_with(file_mock)
+
+    @mock.patch('pdf.service.create_name_from_file', return_value='not_existing_name')
+    def test_create_unique_name_from_file_not_existing_name(self, mock_create_name_from_file):
+        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'not_existing_name.pdf'
+
+        generated_name = service.create_unique_name_from_file(file_mock, user.profile)
+        self.assertEqual(generated_name, 'not_existing_name')
+        mock_create_name_from_file.assert_called_once_with(file_mock)
 
     def test_adjust_referer_for_tag_view_no_replace(self):
         # url of searched for #other

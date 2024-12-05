@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
@@ -107,7 +108,7 @@ class TestBulkAddPDFMixin(TestCase):
         self.assertEqual({'form': forms.BulkAddForm}, generated_context)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_single_file(self, mock_from_buffer):
+    def test_obj_save_single_file_no_skipping(self, mock_from_buffer):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -126,7 +127,7 @@ class TestBulkAddPDFMixin(TestCase):
         self.assertEqual(pdf.owner, self.user.profile)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_multiple_files(self, mock_from_buffer):
+    def test_obj_save_multiple_files_no_skipping(self, mock_from_buffer):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock_1 = mock.MagicMock(spec=File, name='FileMock1')
@@ -147,6 +148,48 @@ class TestBulkAddPDFMixin(TestCase):
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
             self.assertEqual('description', 'description')
             self.assertEqual(pdf.owner, self.user.profile)
+
+    @mock.patch('pdf.service.uuid4', return_value='123456789')
+    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_obj_save_multiple_files_skipping(self, mock_from_buffer, mock_uuid4):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+
+        # create pdfs test1 and test2
+        old_pdfs = []
+        for i in range(1, 3):
+            file_contents = bytes('contents' * i, encoding='utf-8')
+            simple_file = SimpleUploadedFile(f'test{i}.pdf', file_contents)
+            old_pdf = Pdf.objects.create(owner=self.user.profile, name=f'test{i}', file=simple_file)
+            old_pdfs.append(old_pdf)
+
+        files = []
+
+        # file1: same name and size -> should not be created
+        # file2: same name, different size -> should be created with different name
+        # file3: different name, same size -> should be created with original name
+        for i in range(1, 4):
+            file_contents = bytes('contents', encoding='utf-8')
+            simple_file = SimpleUploadedFile(f'test{i}.pdf', file_contents)
+            files.append(simple_file)
+
+        form = forms.BulkAddForm(
+            data={'tag_string': 'tag_a tag_2', 'description': 'description', 'skip_existing': 'on'},
+            owner=self.user.profile,
+            files=MultiValueDict({'file': files}),
+        )
+
+        pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
+
+        print(self.user.profile.pdf_set.all())
+
+        expected_pdf_names = ['test1', 'test2', 'test2_12345678', 'test3']
+        generated_pdf_names = [pdf.name for pdf in self.user.profile.pdf_set.all()]
+        self.assertEqual(expected_pdf_names, generated_pdf_names)
+
+        # also check date the test1 and test2 are unchanged
+        for i in range(2):
+            self.assertEqual(old_pdfs[i], self.user.profile.pdf_set.get(name=f'test{i + 1}'))
 
 
 class TestOverviewMixin(TestCase):

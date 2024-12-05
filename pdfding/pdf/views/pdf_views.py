@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from pathlib import Path
 
 from base import base_views
 from django.contrib import messages
@@ -38,7 +39,7 @@ class AddPdfMixin(BasePdfMixin):
         pdf = form.save(commit=False)
 
         if form.data.get('use_file_name'):
-            pdf.name = service.create_name_from_file(form.files['file'], request.user.profile)
+            pdf.name = service.create_unique_name_from_file(form.files['file'], request.user.profile)
 
         pdf.owner = request.user.profile
         pdf.save()  # we need to save otherwise the file will not be found in the next step
@@ -74,16 +75,29 @@ class BulkAddPdfMixin(BasePdfMixin):
         """Save the multiple PDFs based on the submitted form."""
 
         profile = request.user.profile
-
         tag_string = form.data.get('tag_string')
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
         tags = service.process_tag_names(tag_names, profile)
 
+        pdf_info_list = []
+
+        if form.data.get('skip_existing'):
+            for pdf in profile.pdf_set.all():
+                pdf_size = Path(pdf.file.path).stat().st_size
+                pdf_info_list.append((pdf.name, pdf_size))
+
         for file in form.files.getlist('file'):
-            pdf_name = service.create_name_from_file(file, profile)
-            pdf = Pdf.objects.create(owner=profile, name=pdf_name, description=form.data.get('description'), file=file)
-            pdf.tags.set(tags)
+            # add file unless skipping existing is set and a PDF with the same name and file size already exists
+            if not (
+                form.data.get('skip_existing') and (service.create_name_from_file(file), file.size) in pdf_info_list
+            ):
+                pdf_name = service.create_unique_name_from_file(file, profile)
+
+                pdf = Pdf.objects.create(
+                    owner=profile, name=pdf_name, description=form.data.get('description'), file=file
+                )
+                pdf.tags.set(tags)
 
 
 class OverviewMixin(BasePdfMixin):

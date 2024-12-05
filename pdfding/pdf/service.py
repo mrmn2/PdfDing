@@ -93,10 +93,9 @@ def get_future_datetime(time_input: str) -> datetime | None:
     return future_date
 
 
-def create_name_from_file(file: File, owner: Profile) -> str:
+def create_name_from_file(file: File) -> str:
     """
-    Get the file name from the file name. Will remove the '.pdf' from the file name. If there is already
-    a pdf with the same name then it will add a random 8 characters long suffix.
+    Get the file name from the file name. Will remove the '.pdf' from the file name.
     """
 
     name = file.name
@@ -104,6 +103,17 @@ def create_name_from_file(file: File, owner: Profile) -> str:
 
     if len(split_name) > 1 and str.lower(split_name[-1]) == 'pdf':
         name = split_name[0]
+
+    return name
+
+
+def create_unique_name_from_file(file: File, owner: Profile) -> str:
+    """
+    Get the file name from the file name. Will remove the '.pdf' from the file name. If there is already
+    a pdf with the same name then it will add a random 8 characters long suffix.
+    """
+
+    name = create_name_from_file(file)
 
     existing_pdf = Pdf.objects.filter(owner=owner, name=name).first()
 
