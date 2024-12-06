@@ -204,6 +204,8 @@ HUEY = {
     },
 }
 
+log_level = os.environ.get('LOG_LEVEL', 'ERROR')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -212,22 +214,26 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
     },
+    'root': {
+        'handlers': ['console'],
+        'level': log_level,
+    },
     'django': {
         'handlers': ['console'],
-        'level': 'WARN',
+        'level': log_level,
         'propagate': True,
     },
     'django.request': {
         'handlers': ['mail_admins'],
         'filters': ['require_debug_false'],
-        'level': 'ERROR',
+        'level': log_level,
         'propagate': False,
     },
     'loggers': {
         'recover_data': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': True,
+            'propagate': False,
         },
     },
 }

@@ -402,7 +402,10 @@ Should be to a large random value! Example: `some_secret`
 ### `BACKUP_ENCRYPTION_SALT`
 Values: `string` | Default: `pdfding`
 
-Salt used for generating the encryption key. Example: `some_salt`
+### `LOG_LEVEL`
+Values: `DEBUG`, `INFO`, `WARNING`, `ERROR` | Default: `ERROR`
+
+Set the log level.
 
 
 ## Tech Stack

@@ -9,6 +9,7 @@
 * Tags can be renamed and deleted
 * Add option to skip existing files when bulk uploading
 * Add date tooltips to admin overview
+* Add environment variable for setting the log level
 
 ## 0.5.0 - Inverted Color Mode and Bulk Upload  (Nov 23, 2024)
 * Inverted color mode for reading PDFs
