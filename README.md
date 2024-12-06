@@ -38,6 +38,7 @@ Linkding is an excellent selfhostable bookmark manager. If you are unfamiliar wi
 * SSO support via OIDC
 * Share PDFs with an external audience via a link or a QR Code
 * Shared PDFs can be password protected and access can be controlled with a maximum number of views and an expiration date
+* Progress bars show the reading progress of each PDF at a quick glance
 * Automated and encrypted backups to S3 compatible storage
 * PDF bulk upload
 * Every user can upload its own PDFs. There is no admin curating the content.

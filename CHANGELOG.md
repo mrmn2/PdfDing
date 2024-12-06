@@ -1,6 +1,15 @@
 # Changelog
 <hr>
 
+## 0.6.0 - Overview improvements (Dec 06, 2024)
+* Searches and applied tags are now displayed as filters. Closing the filter will
+  remove the respective search / tag from the filtering.
+* Optional progress bars show the reading process for each PDF
+  at a quick glance on the overview
+* Tags can be renamed and deleted
+* Add option to skip existing files when bulk uploading
+* Add date tooltips to admin overview
+
 ## 0.5.0 - Inverted Color Mode and Bulk Upload  (Nov 23, 2024)
 * Inverted color mode for reading PDFs
 * Bulk uploading for PDFs
