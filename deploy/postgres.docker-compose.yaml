@@ -16,14 +16,14 @@ services:
       # the domain where you want to access PdfDing, e.g. pdfding.com
       HOST_NAME: 127.0.0.1
       # In production set to TRUE
-      CSRF_COOKIE_SECURE: FALSE
+      CSRF_COOKIE_SECURE: 'FALSE'
       # In production set to TRUE
-      SESSION_COOKIE_SECURE: FALSE
+      SESSION_COOKIE_SECURE: 'FALSE'
       DATABASE_TYPE: POSTGRES
       POSTGRES_PASSWORD: pdfding
       POSTGRES_HOST: postgres
 #      # use this if you want to use OIDC
-#      OIDC_ENABLE: TRUE
+#      OIDC_ENABLE: 'TRUE'
 #      OIDC_CLIENT_ID: pdfding
 #      OIDC_CLIENT_SECRET: client_secret
 #      OIDC_AUTH_URL: https://auth.pdfding.com/.well-known/openid-configuration
