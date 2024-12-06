@@ -107,24 +107,27 @@ class TestBulkAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.BulkAddForm}, generated_context)
 
-    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_single_file_no_skipping(self, mock_from_buffer):
+    # @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_obj_save_single_file_no_skipping(self):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.pdf'
-        form = forms.BulkAddForm(
-            data={'tag_string': 'tag_a tag_2', 'description': ''},
-            owner=self.user.profile,
-            files=MultiValueDict({'file': [file_mock]}),
-        )
 
-        pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
+        # dummy file has to pages
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            form = forms.BulkAddForm(
+                data={'tag_string': 'tag_a tag_2', 'description': ''},
+                owner=self.user.profile,
+                files=MultiValueDict({'file': [File(f, name=dummy_path.name)]}),
+            )
 
-        pdf = self.user.profile.pdf_set.get(name='test1')
+            pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
+
+        pdf = self.user.profile.pdf_set.get(name='dummy')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.number_of_pages, 2)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_multiple_files_no_skipping(self, mock_from_buffer):
@@ -148,6 +151,9 @@ class TestBulkAddPDFMixin(TestCase):
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
             self.assertEqual('description', 'description')
             self.assertEqual(pdf.owner, self.user.profile)
+            # check that pdf pages are set to 1 in case of exception.
+            # in this test there should be an exception as a mock file is used.
+            self.assertEqual(pdf.number_of_pages, 1)
 
     @mock.patch('pdf.service.uuid4', return_value='123456789')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')

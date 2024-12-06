@@ -99,6 +99,13 @@ class BulkAddPdfMixin(BasePdfMixin):
                 )
                 pdf.tags.set(tags)
 
+                try:
+                    reader = PdfReader(pdf.file.path)
+                    pdf.number_of_pages = len(reader.pages)
+                    pdf.save()
+                except:  # nosec # noqa
+                    pass
+
 
 class OverviewMixin(BasePdfMixin):
     @staticmethod
