@@ -1,5 +1,4 @@
 # PdfDing
-<hr>
 
 ## Overview
 
@@ -16,7 +15,6 @@
 - [Contributing](#contributing)
 
 ## Introduction
-<hr>
 
 PdfDing is a PDF manager and viewer that you can host yourself. It offers a seamless user experience on multiple
 devices. It's designed be to be minimal, fast, and easy to set up using Docker. As all data stays on your server
@@ -45,10 +43,10 @@ Linkding is an excellent selfhostable bookmark manager. If you are unfamiliar wi
 * Every user can upload its own PDFs. There is no admin curating the content.
 * Simple Admin area for user management
 
-### Demo Video
-![Demo gif](screenshots/demo.gif)
+### Screenshots
+![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
 
-More screenshots can be found [here](https://github.com/mrmn2/PdfDing/tree/master/screenshots).
+More screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
 
 ### Why PdfDing?
 I started developing PdfDing as I was searching for a solution for viewing and managing PDF files.

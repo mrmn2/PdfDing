@@ -1,4 +1,0 @@
-screenshots/overview_light_green.png filter=lfs diff=lfs merge=lfs -text
-screenshots/viewer_dark_blue.png filter=lfs diff=lfs merge=lfs -text
-screenshots/demo.gif filter=lfs diff=lfs merge=lfs -text
-screenshots/overview_dark_blue.png filter=lfs diff=lfs merge=lfs -text
