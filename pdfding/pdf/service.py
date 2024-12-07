@@ -1,11 +1,13 @@
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
+from django.urls import reverse
 from users.models import Profile
 
 from .models import Pdf, Tag
@@ -131,17 +133,26 @@ def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: st
     'http://127.0.0.1:5000/pdf/?q=%23other'.
     """
 
-    referer_url_split = referer_url.split('/?q=', maxsplit=1)
+    parsed_referer_url = urlparse(referer_url)
+    query_parameters = parse_qs(parsed_referer_url.query)
 
-    if len(referer_url_split) == 2:
-        if not replace_with:
-            replace_with = ''
-        else:
-            replace_with = f'%23{replace_with}'
+    tag_query = []
 
-        query = referer_url_split[1]
-        query = query.replace(f'%23{replace}', replace_with)
+    for tag in query_parameters.get('tags', [''])[0].split(' '):
+        if tag and tag != replace:
+            tag_query.append(tag)
+        elif tag and replace_with:
+            tag_query.append(replace_with)
 
-        referer_url = f'{referer_url_split[0]}/?q={query}'
+    query_parameters['tags'] = tag_query
 
-    return referer_url
+    query_string = '&'.join(
+        f'{key}={"+".join(query)}' for key, query in query_parameters.items() if query not in [[], ['']]
+    )
+
+    overview_url = reverse('pdf_overview')
+
+    if query_string:
+        overview_url = f'{overview_url}?{query_string}'
+
+    return overview_url
