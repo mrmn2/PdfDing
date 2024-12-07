@@ -12,6 +12,9 @@ COPY package.json package-lock.json tailwind.config.js ./
 # pdfding is needed as tailwind creates the css files based on pdfding's html files
 COPY pdfding ./pdfding
 
+# don't build if dev.py is present
+RUN if [ -f pdfding/core/settings/dev.py ]; then exit 1; fi
+
 RUN apt-get update && apt-get install curl unzip -y
 # get pdfjs
 RUN curl -L https://github.com/mozilla/pdf.js/releases/download/v$PDFJS_VERSION/pdfjs-$PDFJS_VERSION-dist.zip > pdfjs.zip
