@@ -1,7 +1,15 @@
 # Changelog
 <hr>
 
-## 0.6.0 - Overview improvements (Dec 06, 2024)
+## 0.6.1 - Fix settings (Dec 07, 2024)
+* Fix: Use prod settings file
+* Fix: Set correct overview queries after renaming or deleting tag
+* Update django to address vulnarabilities
+
+## YANKED! 0.6.0 - Overview improvements (Dec 06, 2024)
+Migrating from woodpecker CI to gh actions resulted in a faulty publish pipeline.
+The publish workflow did not use the .dockerignore file which caused the dev settings to be used.
+
 * Searches and applied tags are now displayed as filters. Closing the filter will
   remove the respective search / tag from the filtering.
 * Optional progress bars show the reading process for each PDF
