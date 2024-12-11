@@ -275,6 +275,7 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
     def test_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
         pdf.views = 1001
+        pdf.number_of_pages = 10
         pdf.save()
 
         # only check for date, time is not easily reproducible
@@ -290,7 +291,7 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#name")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
             expect(self.page.locator("#tags")).to_contain_text("#tag")
-            expect(self.page.locator("#progress")).to_contain_text("100% - Page 1 of 1")
+            expect(self.page.locator("#progress")).to_contain_text("10% - Page 1 of 10")
             expect(self.page.locator("content")).to_contain_text("1001")
             expect(self.page.locator("content")).to_contain_text(creation_date)
 

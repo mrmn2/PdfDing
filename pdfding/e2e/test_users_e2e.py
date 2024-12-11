@@ -141,6 +141,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
                 '#custom_theme_color_edit',
                 '#pdf_inverted_mode_edit',
                 '#pdfs_per_page_edit',
+                '#show_progress_bars_edit',
             ]:
                 self.page.locator(name).click()
                 expect(self.page.locator(name)).to_contain_text('Cancel')

@@ -51,13 +51,27 @@ class TestPdf(TestCase):
     def test_progress(self):
         pdf = self.create_pdf()
         pdf.number_of_pages = 1000
+        pdf.views = 1  # setting this to 1 will cause current_page_for_progress to be equal to current_page
         pdf.save()
 
-        for current_page, expected_progress in [(-2, 0), (0, 0), (202, 20), (995, 100), (1200, 100)]:
+        for current_page, expected_progress in [(0, 0), (202, 20), (995, 100), (1200, 100)]:
             pdf.current_page = current_page
             pdf.save()
 
             self.assertEqual(pdf.progress, expected_progress)
+
+    def test_current_page_for_progress(self):
+        pdf = self.create_pdf()
+        pdf.save()
+        self.assertEqual(pdf.current_page_for_progress, 0)
+
+        pdf.views = 1
+        pdf.save()
+        self.assertEqual(pdf.current_page_for_progress, 1)
+
+        pdf.current_page = -1
+        pdf.save()
+        self.assertEqual(pdf.current_page_for_progress, 0)
 
 
 class TestSharedPdf(TestCase):

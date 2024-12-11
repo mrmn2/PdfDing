@@ -98,11 +98,24 @@ class Pdf(models.Model):
     def progress(self) -> int:
         """Get read progress of the pdf in percent"""
 
-        current_page = max(self.current_page, 0)
-
-        progress = round(100 * current_page / self.number_of_pages)
+        progress = round(100 * self.current_page_for_progress / self.number_of_pages)
 
         return min(progress, 100)
+
+    @property
+    def current_page_for_progress(self) -> int:
+        """
+        Get the current page for progress calculations. If there are zero views the current page should be zero. If
+        there are views we use the current page of the pdf. If the current page is negative for some reason we also
+        return 0
+        """
+
+        if self.views == 0:
+            current_page = 0
+        else:
+            current_page = self.current_page
+
+        return max(current_page, 0)
 
 
 class SharedPdf(models.Model):
