@@ -1,6 +1,12 @@
 # Changelog
 <hr>
 
+## 0.6.2 - Progress Bars improvements (Dec 11, 2024)
+* Only display the progress bar if a PDF's number of pages are valid
+* Set the current page in the reading progress to 0 if it is unopened
+* Slight refactoring for getting the number of pages in a PDF. Hopefully,
+  this will fix some problems regarding this topic.
+
 ## 0.6.1 - Fix settings (Dec 07, 2024)
 * Fix: Use prod settings file
 * Fix: Set correct overview queries after renaming or deleting tag
