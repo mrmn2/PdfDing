@@ -36,7 +36,7 @@
       {% endif %}
     </div>
     {% endif %}
-    {% if pdf.owner.show_progress_bars == 'Enabled' %}
+    {% if pdf.owner.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 %}
     <div x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
         <div class="pt-1">
             <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
