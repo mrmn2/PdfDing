@@ -8,7 +8,7 @@ from django.db import connection
 from django.test import TestCase
 from pdf.models import Pdf
 
-add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0007_add_number_of_pdf_pages')
+add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0009_readd_number_of_pages_with_new_default')
 
 
 class TestMigrations(TestCase):
@@ -20,7 +20,7 @@ class TestMigrations(TestCase):
         # as I cannot mock the migration file since it has an illegal name and applying the migration
         # in the test did not work either I am using a dummy pdf file -.-. The dummy file has two pages.
 
-        self.assertEqual(self.pdf.number_of_pages, 1)
+        self.assertEqual(self.pdf.number_of_pages, -1)
 
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
         with dummy_path.open(mode="rb") as f:
@@ -33,5 +33,5 @@ class TestMigrations(TestCase):
         self.assertEqual(pdf.number_of_pages, 2)
 
     def test_fill_number_of_pages_exception_caught(self):
-        self.assertEqual(self.pdf.number_of_pages, 1)
+        self.assertEqual(self.pdf.number_of_pages, -1)
         add_number_of_pdf_pages.fill_number_of_pages(apps, connection.schema_editor())

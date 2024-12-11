@@ -167,7 +167,7 @@ class TestService(TestCase):
 
     def test_set_number_of_pages(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        self.assertEqual(pdf.number_of_pages, 1)
+        self.assertEqual(pdf.number_of_pages, -1)
 
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
         with dummy_path.open(mode="rb") as f:
@@ -189,4 +189,4 @@ class TestService(TestCase):
 
         service.set_number_of_pages(pdf)
         pdf = self.user.profile.pdf_set.get(name=pdf.name)
-        self.assertEqual(pdf.number_of_pages, 1)
+        self.assertEqual(pdf.number_of_pages, -1)

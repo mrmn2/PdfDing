@@ -71,7 +71,7 @@ class Pdf(models.Model):
     last_viewed_date = models.DateTimeField(
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
     )
-    number_of_pages = models.IntegerField(default=1)
+    number_of_pages = models.IntegerField(default=-1)
 
     def __str__(self):
         return self.name  # pragma: no cover

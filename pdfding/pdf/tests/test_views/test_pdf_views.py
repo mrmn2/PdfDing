@@ -139,7 +139,7 @@ class TestBulkAddPDFMixin(TestCase):
             self.assertEqual(pdf.owner, self.user.profile)
             # check that pdf pages are set to 1 in case of exception.
             # in this test there should be an exception as a mock file is used.
-            self.assertEqual(pdf.number_of_pages, 1)
+            self.assertEqual(pdf.number_of_pages, -1)
 
     @mock.patch('pdf.service.uuid4', return_value='123456789')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
