@@ -154,15 +154,30 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
                 pdf.tags.set([tag])
 
     def test_progress_bar_on(self):
-        # progress bars are shown by default
+        pdf = Pdf.objects.get(name='pdf_4_14')
+        pdf.number_of_pages = 1
+        pdf.save()
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#progressbar-1")).to_be_visible()
 
-    def test_progress_bar_off(self):
+    def test_progress_bar_off_settings(self):
+        pdf = Pdf.objects.get(name='pdf_4_14')
+        pdf.number_of_pages = 1
+        pdf.save()
+
         self.user.profile.show_progress_bars = 'Disabled'
         self.user.profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#progressbar-1")).not_to_be_visible()
+
+    def test_progress_bar_off_number_pages(self):
+        pdf = Pdf.objects.get(name='pdf_1_1')
+        pdf.number_of_pages = -1
+        pdf.save()
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
@@ -292,6 +307,29 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).to_contain_text("10% - Page 1 of 10")
+            expect(self.page.locator("content")).to_contain_text("1001")
+            expect(self.page.locator("content")).to_contain_text(creation_date)
+
+    def test_details_progress_not_visible(self):
+        pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
+        pdf.views = 1001
+        pdf.number_of_pages = -1
+        pdf.save()
+
+        # only check for date, time is not easily reproducible
+        creation_date = pdf.creation_date.strftime('%b. %-d, %Y')
+        # months that are not shortened do not need the dot
+        if 'May' in creation_date or 'July' in creation_date or 'June' in creation_date:
+            creation_date.replace('.', '')
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
+
+            expect(self.page.locator("content")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#name")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#description")).to_contain_text("this is number 1")
+            expect(self.page.locator("#tags")).to_contain_text("#tag")
+            expect(self.page.locator("#progress")).not_to_be_visible()
             expect(self.page.locator("content")).to_contain_text("1001")
             expect(self.page.locator("content")).to_contain_text(creation_date)
 
