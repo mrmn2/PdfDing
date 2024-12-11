@@ -1,5 +1,5 @@
 from django.db import migrations, models
-from pypdf import PdfReader
+from pdf.service import set_number_of_pages
 
 
 def fill_number_of_pages(apps, schema_editor):
@@ -8,13 +8,7 @@ def fill_number_of_pages(apps, schema_editor):
     pdf_model = apps.get_model("pdf", "Pdf")
 
     for pdf in pdf_model.objects.all():
-        # try to set the page numbers
-        try:
-            reader = PdfReader(pdf.file.path)
-            pdf.number_of_pages = len(reader.pages)
-            pdf.save()
-        except:  # noqa
-            print(f'Could not get number of pages from PDF "{pdf.name}" of user "{pdf.owner.user.email}".')
+        set_number_of_pages(pdf)
 
 
 def reverse_func(apps, schema_editor):  # pragma: no cover

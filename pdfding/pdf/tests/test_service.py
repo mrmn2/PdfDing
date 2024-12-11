@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from unittest import mock
 from uuid import uuid4
 
@@ -163,3 +164,29 @@ class TestService(TestCase):
         expected_url = f'{reverse("pdf_overview")}?tags=another'
 
         self.assertEqual(expected_url, adjusted_url)
+
+    def test_set_number_of_pages(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        self.assertEqual(pdf.number_of_pages, 1)
+
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            pdf.file = File(f, name=dummy_path.name)
+            pdf.save()
+
+        service.set_number_of_pages(pdf)
+
+        pdf = self.user.profile.pdf_set.get(name=pdf.name)
+        self.assertEqual(pdf.number_of_pages, 2)
+
+    def test_set_number_of_pages_exception(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'test1.pdf'
+        pdf.file = file_mock
+        pdf.save()
+
+        service.set_number_of_pages(pdf)
+        pdf = self.user.profile.pdf_set.get(name=pdf.name)
+        self.assertEqual(pdf.number_of_pages, 1)

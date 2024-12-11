@@ -1,5 +1,7 @@
+import traceback
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from logging import getLogger
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
@@ -8,9 +10,11 @@ from django.core.files import File
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
+from pdf.models import Pdf, Tag
+from pypdf import PdfReader
 from users.models import Profile
 
-from .models import Pdf, Tag
+logger = getLogger(__file__)
 
 
 def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]:
@@ -156,3 +160,15 @@ def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: st
         overview_url = f'{overview_url}?{query_string}'
 
     return overview_url
+
+
+def set_number_of_pages(pdf: Pdf):
+    """Set the number of pages in a pdf file. If the extraction is not successful, it will leave the default value."""
+
+    try:
+        reader = PdfReader(pdf.file.path)
+        pdf.number_of_pages = reader.get_num_pages()
+        pdf.save()
+    except Exception as e:  # nosec # noqa
+        logger.info(f'Could not determine number of pages for "{pdf.name}" of user "{pdf.owner.user.email}"')
+        logger.info(traceback.format_exc())

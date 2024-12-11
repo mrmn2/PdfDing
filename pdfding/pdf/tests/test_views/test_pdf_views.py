@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest import mock
 from unittest.mock import patch
 
@@ -21,6 +20,11 @@ def set_up(self):
     self.client.login(username=self.username, password=self.password)
 
 
+def mock_set_number_of_pages(pdf):
+    pdf.number_of_pages = 3
+    pdf.save()
+
+
 class TestAddPDFMixin(TestCase):
     username = 'user'
     password = '12345'
@@ -35,43 +39,26 @@ class TestAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.AddForm}, generated_context)
 
-    def test_obj_save(self):
+    @mock.patch('pdf.views.pdf_views.service.set_number_of_pages', mock_set_number_of_pages)
+    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_obj_save(self, mock_from_buffer):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'test1.pdf'
+        form = forms.AddForm(
+            data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'},
+            owner=self.user.profile,
+            files={'file': file_mock},
+        )
 
-        # use the dummy pdf. It has two pages.
-        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
-        with dummy_path.open(mode="rb") as f:
-            form = forms.AddForm(
-                data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'},
-                owner=self.user.profile,
-                files={'file': File(f, name=dummy_path.name)},
-            )
-
-            pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
+        pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.pdf_set.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
-        self.assertEqual(pdf.number_of_pages, 2)
-
-    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_exception_caught(self, mock_from_buffer):
-        # check that the exception is caught when there is a problem with getting the number of files
-        # since we use a file mock object pypdf cannot determine the number of pages in the pdf and
-        # the number of pages stays at the default 1.
-
-        # do a dummy request so we can get a request object
-        response = self.client.get(reverse('pdf_overview'))
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.pdf'
-        form = forms.AddForm(data={'name': 'some_pdf'}, owner=self.user.profile, files={'file': file_mock})
-
-        pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
-
-        pdf = self.user.profile.pdf_set.get(name='some_pdf')
-        self.assertEqual(pdf.number_of_pages, 1)
+        self.assertEqual(pdf.number_of_pages, 3)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_use_file_name(self, mock_from_buffer):
@@ -107,27 +94,26 @@ class TestBulkAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.BulkAddForm}, generated_context)
 
-    # @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_single_file_no_skipping(self):
+    @mock.patch('pdf.views.pdf_views.service.set_number_of_pages', mock_set_number_of_pages)
+    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_obj_save_single_file_no_skipping(self, mock_from_buffer):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'test1.pdf'
+        form = forms.BulkAddForm(
+            data={'tag_string': 'tag_a tag_2', 'description': ''},
+            owner=self.user.profile,
+            files=MultiValueDict({'file': [file_mock]}),
+        )
 
-        # dummy file has to pages
-        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
-        with dummy_path.open(mode="rb") as f:
-            form = forms.BulkAddForm(
-                data={'tag_string': 'tag_a tag_2', 'description': ''},
-                owner=self.user.profile,
-                files=MultiValueDict({'file': [File(f, name=dummy_path.name)]}),
-            )
+        pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-            pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
-
-        pdf = self.user.profile.pdf_set.get(name='dummy')
+        pdf = self.user.profile.pdf_set.get(name='test1')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
-        self.assertEqual(pdf.number_of_pages, 2)
+        self.assertEqual(pdf.number_of_pages, 3)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_multiple_files_no_skipping(self, mock_from_buffer):

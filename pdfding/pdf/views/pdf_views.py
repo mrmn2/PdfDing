@@ -13,7 +13,6 @@ from django_htmx.http import HttpResponseClientRedirect
 from pdf import service
 from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
 from pdf.models import Pdf, Tag
-from pypdf import PdfReader
 from users.service import convert_hex_to_rgb
 
 
@@ -44,12 +43,7 @@ class AddPdfMixin(BasePdfMixin):
         pdf.owner = request.user.profile
         pdf.save()  # we need to save otherwise the file will not be found in the next step
 
-        try:
-            reader = PdfReader(pdf.file.path)
-            pdf.number_of_pages = len(reader.pages)
-            pdf.save()
-        except:  # nosec # noqa
-            pass
+        service.set_number_of_pages(pdf)
 
         tag_string = form.data.get('tag_string')
         # get unique tag names
@@ -99,12 +93,7 @@ class BulkAddPdfMixin(BasePdfMixin):
                 )
                 pdf.tags.set(tags)
 
-                try:
-                    reader = PdfReader(pdf.file.path)
-                    pdf.number_of_pages = len(reader.pages)
-                    pdf.save()
-                except:  # nosec # noqa
-                    pass
+                service.set_number_of_pages(pdf)
 
 
 class OverviewMixin(BasePdfMixin):
