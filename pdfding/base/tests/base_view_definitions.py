@@ -120,14 +120,6 @@ class Serve(ObjectMixin, base_views.BaseServe):
 class Download(ObjectMixin, base_views.BaseDownload):
     """Download view"""
 
-    @staticmethod
-    def get_suffix():  # pragma: no cover
-        """
-        Return suffix
-        """
-
-        return '.suffix'
-
 
 class Details(ObjectMixin, base_views.BaseDetails):
     """Details View"""

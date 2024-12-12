@@ -139,7 +139,7 @@ class TestViews(TestCase):
 
         pdf_path.unlink()
 
-        self.assertEqual(response.filename, f'{pdf.name}.suffix')
+        self.assertEqual(response.filename, f'{pdf.name}.pdf')
         self.assertTrue(response.as_attachment)
 
     @override_settings(ROOT_URLCONF=__name__)

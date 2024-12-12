@@ -100,7 +100,7 @@ class BaseDownload(View):
         but instead the build browser pdf view is opened.
         """
 
-        return ''
+        return '.pdf'
 
     def get(self, request: HttpRequest, identifier: str):
         """Return the specified file as a FileResponse."""
