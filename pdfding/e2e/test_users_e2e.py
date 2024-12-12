@@ -171,9 +171,10 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
             self.page.get_by_role("banner").get_by_role("list").locator("li").filter(
-                has_text="Logged in as a@a.com Settings"
+                has_text="Logged in as a@a.com User ID:"
             ).locator("a").first.click()
             expect(self.page.get_by_role("banner")).to_contain_text("a@a.com")
+            expect(self.page.get_by_role("banner")).to_contain_text(f"User ID: {self.user.id}")
 
     def test_header_non_admin(self):
         with sync_playwright() as p:
