@@ -190,3 +190,17 @@ class TestService(TestCase):
         service.set_number_of_pages(pdf)
         pdf = self.user.profile.pdf_set.get(name=pdf.name)
         self.assertEqual(pdf.number_of_pages, -1)
+
+    def test_get_pdf_info_list(self):
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+
+        for i in range(3):
+            pdf = Pdf.objects.create(owner=self.user.profile, name=f'pdf_{i}')
+            with dummy_path.open(mode="rb") as f:
+                pdf.file = File(f, name=dummy_path.name)
+                pdf.save()
+
+        generated_info_list = service.get_pdf_info_list(self.user.profile)
+        expected_info_list = [(f'pdf_{i}', 8885) for i in range(3)]
+
+        self.assertEqual(generated_info_list, expected_info_list)

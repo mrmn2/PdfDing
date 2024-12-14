@@ -2,6 +2,7 @@ import traceback
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from logging import getLogger
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
@@ -99,7 +100,7 @@ def get_future_datetime(time_input: str) -> datetime | None:
     return future_date
 
 
-def create_name_from_file(file: File) -> str:
+def create_name_from_file(file: File | Path) -> str:
     """
     Get the file name from the file name. Will remove the '.pdf' from the file name.
     """
@@ -172,3 +173,18 @@ def set_number_of_pages(pdf: Pdf):
     except Exception as e:  # nosec # noqa
         logger.info(f'Could not determine number of pages for "{pdf.name}" of user "{pdf.owner.user.email}"')
         logger.info(traceback.format_exc())
+
+
+def get_pdf_info_list(profile: Profile) -> list[tuple]:
+    """
+    Get the pdf info list of a profile. It contains information (name + file size) of each pdf of the profile. Each
+    element is a tuple with (pdf name, pdf size).
+    """
+
+    pdf_info_list = []
+
+    for pdf in profile.pdf_set.all():
+        pdf_size = Path(pdf.file.path).stat().st_size
+        pdf_info_list.append((pdf.name, pdf_size))
+
+    return pdf_info_list

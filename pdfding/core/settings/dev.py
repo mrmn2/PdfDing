@@ -37,13 +37,17 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 DEFAULT_FROM_EMAIL = 'info@localhost'
 SIGNUP_CLOSED = False
 
-BACKUP_ENABLE = True
+BACKUP_ENABLED = True
 BACKUP_SECURE = False
 BACKUP_ENDPOINT = '127.0.0.1:9000'
 BACKUP_BUCKET_NAME = 'pdfding'
 BACKUP_SCHEDULE = '*/1 * * * *'
 BACKUP_ENCRYPTION_ENABLED = True
 BACKUP_ENCRYPTION_SALT = 'pdfding'
+
+CONSUME_ENABLED = True
+CONSUME_TAG_STRING = 'consumed file'
+CONSUME_SKIP_EXISTING = True
 
 # check if minio access and secret keys are set in dev_secrets
 if 'BACKUP_ACCESS_KEY' not in locals():

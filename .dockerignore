@@ -2,6 +2,7 @@ dev.docker-compose.yaml
 
 pdfding/core/settings/dev_secrets.py
 pdfding/core/settings/dev.py
+pdfding/consume/*
 pdfding/db/db.sqlite3
 pdfding/media
 pdfding/static/js

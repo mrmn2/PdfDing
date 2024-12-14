@@ -204,6 +204,8 @@ HUEY = {
     },
 }
 
+CONSUME_DIR = BASE_DIR / 'consume'
+
 log_level = os.environ.get('LOG_LEVEL', 'ERROR')
 
 LOGGING = {

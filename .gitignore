@@ -6,6 +6,7 @@ node_modules
 dev.docker-compose.yaml
 
 pdfding/core/settings/dev_secrets.py
+pdfding/consume/
 pdfding/db/*
 !pdfding/db/.gitkeep
 pdfding/media/

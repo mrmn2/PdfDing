@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 
 from base import base_views
 from django.contrib import messages
@@ -74,12 +73,10 @@ class BulkAddPdfMixin(BasePdfMixin):
         tag_names = Tag.parse_tag_string(tag_string)
         tags = service.process_tag_names(tag_names, profile)
 
-        pdf_info_list = []
-
         if form.data.get('skip_existing'):
-            for pdf in profile.pdf_set.all():
-                pdf_size = Path(pdf.file.path).stat().st_size
-                pdf_info_list.append((pdf.name, pdf_size))
+            pdf_info_list = service.get_pdf_info_list(profile)
+        else:
+            pdf_info_list = []
 
         for file in form.files.getlist('file'):
             # add file unless skipping existing is set and a PDF with the same name and file size already exists

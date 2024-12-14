@@ -38,9 +38,10 @@ if os.environ.get('HOST_NAME'):
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-
+# backup settings
 if os.environ.get('BACKUP_ENABLE') == 'TRUE':
     # without a dummy value, huey will not start
+    BACKUP_ENABLED = True
     BACKUP_ENDPOINT = os.environ.get('BACKUP_ENDPOINT', 'minio.pdfding.com')
     BACKUP_ACCESS_KEY = os.environ.get('BACKUP_ACCESS_KEY')
     BACKUP_SECRET_KEY = os.environ.get('BACKUP_SECRET_KEY')
@@ -60,6 +61,21 @@ if os.environ.get('BACKUP_ENABLE') == 'TRUE':
         # set to none, so that backups.tasks.backup_function raises no attribute error
         BACKUP_ENCRYPTION_PASSWORD = None
         BACKUP_ENCRYPTION_SALT = None
+else:
+    BACKUP_ENABLED = False
+    BACKUP_SCHEDULE = '*/1 * * * *'
+
+# consume settings
+if os.environ.get('CONSUME_ENABLE') == 'TRUE':
+    CONSUME_ENABLED = True
+    CONSUME_TAG_STRING = os.environ.get('CONSUME_TAGS')
+    if os.environ.get('CONSUME_SKIP_EXISTING') == 'FALSE':
+        CONSUME_SKIP_EXISTING = False
+    else:
+        CONSUME_SKIP_EXISTING = True
+else:
+    CONSUME_ENABLED = False
+    CONSUME_SKIP_EXISTING = False
 
 if os.environ.get('CSRF_COOKIE_SECURE', 'TRUE') == 'TRUE':
     CSRF_COOKIE_SECURE = True

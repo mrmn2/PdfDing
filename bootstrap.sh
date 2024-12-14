@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-if [ "$BACKUP_ENABLE" = "TRUE" ]; then
+if [ "$BACKUP_ENABLE" = "TRUE"  ] || [ "$CONSUME_ENABLE" = "TRUE"  ]; then
   python .venv/bin/supervisord -c supervisord.conf
 fi
 

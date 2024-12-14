@@ -11,12 +11,14 @@ from minio import Minio
 from pdf.models import Pdf, SharedPdf
 
 logger = logging.getLogger('huey')
-minio_client = Minio(
-    endpoint=settings.BACKUP_ENDPOINT,
-    secure=settings.BACKUP_SECURE,
-    access_key=settings.BACKUP_ACCESS_KEY,
-    secret_key=settings.BACKUP_SECRET_KEY,
-)
+
+if settings.BACKUP_ENABLED:
+    minio_client = Minio(
+        endpoint=settings.BACKUP_ENDPOINT,
+        secure=settings.BACKUP_SECURE,
+        access_key=settings.BACKUP_ACCESS_KEY,
+        secret_key=settings.BACKUP_SECRET_KEY,
+    )
 
 
 def parse_cron_schedule(cron_schedule: str) -> dict[str, str]:
@@ -41,7 +43,7 @@ def backup_task():  # pragma: no cover
     Backup will only be created if at least one user and one PDF are present in the database.
     """
 
-    if check_backup_requirements():
+    if check_backup_requirements() and settings.BACKUP_ENABLED:
         backup_function()
 
 
