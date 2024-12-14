@@ -3,7 +3,6 @@
 ## Overview
 - [Introduction](#introduction)
 - [Installation](#installation)
-
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledements)
