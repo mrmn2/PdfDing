@@ -1,4 +1,13 @@
 # PdfDing
+PdfDing is a selfhosted PDF manager and viewer offering a seamless user experience on multiple devices.
+
+[![GitHub Repo Stars](https://img.shields.io/github/stars/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mrmn/pdfding?style=flat&logo=docker)](https://hub.docker.com/r/mrmn/pdfding)
+[![Version](https://img.shields.io/github/v/release/mrmn2/PdfDing?style=flat&label=version)](https://github.com/mrmn2/PdfDing/releases)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mrmn2/PdfDing/test.yaml?style=flat&logo=github&label=ci)](https://github.com/mrmn2/PdfDing/actions)
+[![Last Commit](https://img.shields.io/github/last-commit/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing/commits/master/)
+
+![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
 
 ## Overview
 - [Introduction](#introduction)
@@ -38,9 +47,7 @@ your PDFs. The name and PdfDing's design are inspired by the excellent bookmark 
 * Simple Admin area for user management
 
 ### Screenshots
-![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
-
-More screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
+Screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
 
 ### Why PdfDing?
 I started developing PdfDing as I was searching for a solution for viewing and managing PDF files.
