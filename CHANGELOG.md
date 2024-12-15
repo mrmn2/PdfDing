@@ -1,13 +1,18 @@
 # Changelog
 <hr>
 
-## 0.6.2 - Progress Bars improvements (Dec 11, 2024)
+## 0.7.0 - Consumption Directory (Dec 15, 2024)
+* Add consumption directory as an alternative way for adding PDF files
+* Show user ID in the header dropdown menu
+* Fix: set extension to ".pdf" when downloading a PDF
+
+## 0.6.2 - Progress Bars Improvements (Dec 11, 2024)
 * Only display the progress bar if a PDF's number of pages are valid
 * Set the current page in the reading progress to 0 if it is unopened
 * Slight refactoring for getting the number of pages in a PDF. Hopefully,
   this will fix some problems regarding this topic.
 
-## 0.6.1 - Fix settings (Dec 07, 2024)
+## 0.6.1 - Fix Settings (Dec 07, 2024)
 * Fix: Use prod settings file
 * Fix: Set correct overview queries after renaming or deleting tag
 * Update django to address vulnarabilities

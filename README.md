@@ -2,7 +2,7 @@
 PdfDing is a selfhosted PDF manager and viewer offering a seamless user experience on multiple devices.
 
 [![GitHub Repo Stars](https://img.shields.io/github/stars/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mrmn/pdfding?style=flat&logo=docker)](https://hub.docker.com/r/mrmn/pdfding)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mrmn/pdfding?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/mrmn/pdfding)
 [![Version](https://img.shields.io/github/v/release/mrmn2/PdfDing?style=flat&label=version)](https://github.com/mrmn2/PdfDing/releases)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mrmn2/PdfDing/test.yaml?style=flat&logo=github&label=ci)](https://github.com/mrmn2/PdfDing/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing/commits/master/)
@@ -41,9 +41,9 @@ your PDFs. The name and PdfDing's design are inspired by the excellent bookmark 
 * Share PDFs with an external audience via a link or a QR Code
 * Shared PDFs can be password protected and access can be controlled with a maximum number of views and an expiration date
 * Progress bars show the reading progress of each PDF at a quick glance
-* Automated and encrypted backups to S3 compatible storage
-* PDF bulk upload
 * Every user can upload its own PDFs. There is no admin curating the content.
+* Automated and encrypted backups to S3 compatible storage
+* Consumption directory as an alternative way to add PDFs
 * Simple Admin area for user management
 
 ### Screenshots

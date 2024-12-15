@@ -10,13 +10,14 @@ configuration option is set via environment variables.
 - [SSO via OIDC](#sso-via-oidc)
 - [Emails](#emails)
 - [Customization](#customization)
+- [Consumption Directory](#consumption-directory)
 - [Backups](#backups)
 
 ## General
 By using the following environment variables the admin can control general settings of his PdfDing instance.
 
 ### `HOST_NAME`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 The host/domain name where PdfDing will be reachable. Example: `pdfding.com`
 
@@ -44,7 +45,7 @@ Flag for disabling user signup. By setting this value to `TRUE` user signup will
 By using the following environment variables different security related settings can be adjusted.
 
 ### `SECRET_KEY`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 This value is the key to securing signed data. Should be to a large random value! Example: `some_secret`
 
@@ -82,17 +83,17 @@ The default protocol for account related URLs, e.g. for the password forgotten p
 Specifies the used database type and related settings.
 
 ### `DATABASE_TYPE`
-Values: `SQLITE`, `POSTGRES` | Default `POSTGRES`
+Values: `SQLITE`, `POSTGRES` | Default: `POSTGRES`
 
 Specify which database type should be used.
 
 ### `POSTGRES_HOST`
-Values: `string` | Default = `postgres`
+Values: `string` | Default: `postgres`
 
 The host of the postgres DB: Example: `postgres.pdfding.com`
 
 ### `POSTGRES_PASSWORD`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 The password for the postgres DB: Example: `password`
 
@@ -120,17 +121,17 @@ Values: `TRUE`, `FALSE` | Default: `FALSE`
 Flag for enabling SSO via OIDC. By setting this value to `TRUE` OIDC will be activated.
 
 ### `OIDC_CLIENT_ID`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 PdfDing's OIDC client id. Example: `pdfding`
 
 ### `OIDC_CLIENT_SECRET`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 PdfDing's OIDC client secret. Should be a large random value! Example: `another_long_secret`
 
 ### `OIDC_AUTH_URL`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 The URL to the OpenID configuration of the auth server. Example:
 `https://auth.pdfding.com/.well-known/openid-configuration`
@@ -141,7 +142,7 @@ Values: `TRUE`, `FALSE` | Default: `TRUE`
 By setting this to `TRUE` users will only be able to authenticate using OIDC.
 
 ### `OIDC_PROVIDER_NAME`
-Values: `string` | Default = `OIDC`
+Values: `string` | Default: `OIDC`
 
 The name of the OIDC provider. The name will be displayed on the login screen as `OIDC_LOG IN VIA <PROVIDER_NAME>`.
 Example: `Authelia`
@@ -192,7 +193,7 @@ Whether to send account related emails, e.g a password reset or account verifica
 server.
 
 ### `SMTP_HOST`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 The host/domain name of the SMTP server. Example: `pdfding.com`
 
@@ -202,12 +203,12 @@ Values: `integer` | Default: `587`
 The port of the SMTP server.
 
 ### `SMTP_USER`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 The username used for logging into the SMTP server.
 
 ### `SMTP_PASSWORD`
-Values: `string` | Default = `None`
+Values: `string` | Default: `None`
 
 The password used for logging into the SMTP server.
 
@@ -228,14 +229,42 @@ By using these options the admin can control the looks of PdfDing for not logged
 instance (login page, signup page, etc ...). This will also set the theme of newly signed-up users.
 
 ### `DEFAULT_THEME`
-Values: `light`, `dark` | Default `light`
+Values: `light`, `dark` | Default: `light`
 
 Specify the default theme.
 
 ### `DEFAULT_THEME_COLOR`
-Values: `green`, `blue`, `gray`, `red`, `pink`, `orange` | Default `green`
+Values: `green`, `blue`, `gray`, `red`, `pink`, `orange` | Default: `green`
 
 Specify the default theme color.
+
+## Consumption Directory
+As an alternative to the UI based approach PDF files can be added to PdfDing by putting them into the
+consumption directory of the running container. This feature is not activated by default and must be configured
+via the environment variables listed below.
+
+As PdfDing is created with multiple users in mind, each user has its own subfolder for adding PDF files.
+The path of these subfolders is: `/home/nonroot/pdfding/consume/<user_id>`. `<user_id>` needs to be replaced with
+the ID of the respective user. The user ID can be found in the dropdown menu that gets opened by clicking
+on the user icon in the header. The subfolders are not created automatically and need to be created by the
+administrator (e.g.: via the shell or docker volumes). The administrator might also want to make the consumption
+directory persistent, for example via docker volumes.
+
+### `CONSUME_ENABLE`
+Values: `TRUE`, `FALSE` | Default: `FALSE`
+
+Flag for enabling the consumption folder as an alternative way for adding PDFs.
+
+### `CONSUME_SKIP_EXISTING`
+Values: `TRUE`, `FALSE` | Default: `TRUE`
+
+Flag for skipping the addition PDF files if the user already has PDF with the same name and file size.
+
+### `CONSUME_TAGS`
+Values: `string` | Default: `None`
+
+The tags that should be added to PDFs created via the consumption folder. The tags should be
+separated via a comma. Example: `tag1,tag2`
 
 ## Backups
 PdfDing supports automated backups to S3 compatible storage. During backups the Sqlite database and uploaded
