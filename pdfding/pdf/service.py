@@ -1,5 +1,5 @@
 import traceback
-from collections import defaultdict
+from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from logging import getLogger
 from pathlib import Path
@@ -8,6 +8,7 @@ from uuid import uuid4
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
+from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
@@ -36,28 +37,39 @@ def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]
     return tags
 
 
-def get_tag_dict(profile: Profile) -> dict[str, list[str]]:
+def get_tag_dict(profile: Profile) -> dict[str, dict]:
     """
-    Get the tag dict used for displaying the tags in the pdf overview.
-
-    Keys of the returned dict are the first characters, values the tags without the first character, e.g:
-    {'b': ['anana', 'read'], 't': ['ag_1', 'ag_3']}. This format was chosen, so it is possible to capitalize, change
-     the font weight and color the first occurrence of character. In the frontend the example will look:
-
-     **B**anana bread
-     **T**ag_1, tag_3
+    Get the tag dict used for displaying the tags in the pdf overview. Key: name of the tag. Value: Information
+    about the tag (level, has_children, tree_only, parent)
     """
 
-    # relies on deterministic 3.7+ key ordering
-    tags = profile.tag_set.all().order_by('name')
-    tag_dict = defaultdict(list)
+    # it is important that the tags are sorted. As parent tags need come before children,
+    # e.g. "programming" before "programming/python"
+    tags = profile.tag_set.all().order_by(Lower('name'))
+    tag_dict = OrderedDict()
 
     for tag in tags:
-        if tag.pdf_set.all():
-            tag_dict[tag.name[0]].append(tag)
+        tag_split = tag.name.split('/', maxsplit=2)
+        current = ''
+        words = []
 
-    # needs to be a normal dict, so that the template can handle it
-    return dict(tag_dict)
+        for level, word in enumerate(tag_split):
+            prev = current
+            words.append(word)
+            current = '/'.join(words)
+
+            if level:
+                tag_dict[prev]['has_children'] = True
+
+            if current not in tag_dict:
+                if level == len(tag_split) - 1:
+                    tree_only = False
+                else:
+                    tree_only = True
+
+                tag_dict[current] = {'level': level, 'has_children': False, 'tree_only': tree_only, 'parent': prev}
+
+    return tag_dict
 
 
 def check_object_access_allowed(get_object):

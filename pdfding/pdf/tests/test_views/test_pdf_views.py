@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime, timezone
 from unittest import mock
 from unittest.mock import patch
@@ -216,12 +217,16 @@ class TestOverviewMixin(TestCase):
         response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
-        tag_2 = self.user.profile.tag_set.get(name='tag_2')
-        tag_7 = self.user.profile.tag_set.get(name='tag_7')
+        tag_dict = OrderedDict(
+            [
+                ('tag_2', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+                ('tag_7', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+            ]
+        )
         expected_extra_context = {
             'search_query': 'searching',
             'tag_query': ['tagging'],
-            'tag_dict': {'t': [tag_2, tag_7]},
+            'tag_dict': tag_dict,
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -230,12 +235,16 @@ class TestOverviewMixin(TestCase):
         response = self.client.get(reverse('pdf_overview'))
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
-        tag_2 = self.user.profile.tag_set.get(name='tag_2')
-        tag_7 = self.user.profile.tag_set.get(name='tag_7')
+        tag_dict = OrderedDict(
+            [
+                ('tag_2', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+                ('tag_7', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+            ]
+        )
         expected_extra_context = {
             'search_query': '',
             'tag_query': [],
-            'tag_dict': {'t': [tag_2, tag_7]},
+            'tag_dict': tag_dict,
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -358,25 +367,25 @@ class TestViews(TestCase):
     def test_edit_tag_get(self):
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
 
-        response = self.client.get(reverse('edit_tag', kwargs={'identifier': tag.id}))
+        response = self.client.get(f"{reverse('edit_tag')}?tag_name={tag.name}")
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_edit_tag_get_htmx(self):
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
         headers = {'HTTP_HX-Request': 'true'}
 
-        response = self.client.get(reverse('edit_tag', kwargs={'identifier': tag.id}), **headers)
+        response = self.client.get(f"{reverse('edit_tag')}?tag_name={tag.name}", **headers)
 
         self.assertEqual(response.context['tag'], tag)
         self.assertIsInstance(response.context['form'], forms.TagNameForm)
         self.assertTemplateUsed(response, 'partials/tag_name_form.html')
 
-    def test_edit_tag_post_invalid_form(self):
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+    def test_edit_tag_name_post_invalid_form(self):
+        Tag.objects.create(name='tag_name', owner=self.user.profile)
 
         # post is invalid because data is missing
         # follow=True is needed for getting the message
-        response = self.client.post(reverse('edit_tag', kwargs={'identifier': tag.id}), follow=True)
+        response = self.client.post(reverse('edit_tag'), follow=True)
         message = list(response.context['messages'])[0]
 
         self.assertEqual(message.message, 'This field is required.')
@@ -386,7 +395,7 @@ class TestViews(TestCase):
     def test_edit_tag_name(self, mock_adjust_referer_for_tag_view):
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
 
-        self.client.post(reverse('edit_tag', kwargs={'identifier': tag.id}), data={'name': 'new'})
+        self.client.post(reverse('edit_tag'), data={'name': 'new', 'current_name': 'tag_name'})
 
         # get pdf again with the changes
         tag = self.user.profile.tag_set.get(id=tag.id)
@@ -401,7 +410,7 @@ class TestViews(TestCase):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
         pdf.tags.set([tag_2])
 
-        self.client.post(reverse('edit_tag', kwargs={'identifier': tag_2.id}), data={'name': tag_1.name})
+        self.client.post(reverse('edit_tag'), data={'name': tag_1.name, 'current_name': tag_2.name})
 
         self.assertEqual(pdf.tags.count(), 1)
         self.assertEqual(self.user.profile.tag_set.count(), 1)
@@ -416,7 +425,7 @@ class TestViews(TestCase):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
         pdf.tags.set([tag_1, tag_2])
 
-        self.client.post(reverse('edit_tag', kwargs={'identifier': tag_2.id}), data={'name': tag_1.name})
+        self.client.post(reverse('edit_tag'), data={'name': tag_1.name, 'current_name': tag_2.name})
 
         self.assertEqual(pdf.tags.count(), 1)
         self.assertEqual(self.user.profile.tag_set.count(), 1)
@@ -424,11 +433,11 @@ class TestViews(TestCase):
         mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', tag_2.name, tag_1.name)
 
     @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
-    def test_delete_htmx(self, mock_adjust_referer_for_tag_view):
+    def test_delete_tag_htmx(self, mock_adjust_referer_for_tag_view):
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
 
         headers = {'HTTP_HX-Request': 'true'}
-        response = self.client.delete(reverse('delete_tag', kwargs={'identifier': tag.id}), **headers)
+        response = self.client.post(reverse('delete_tag'), **headers, data={'tag_name': tag.name})
 
         self.assertFalse(self.user.profile.tag_set.filter(id=tag.id).exists())
         self.assertEqual(type(response), HttpResponseClientRedirect)
@@ -436,9 +445,9 @@ class TestViews(TestCase):
         mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', 'tag_name', '')
 
     def test_delete_no_htmx(self):
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        Tag.objects.create(name='tag_name', owner=self.user.profile)
 
-        response = self.client.delete(reverse('delete_tag', kwargs={'identifier': tag.id}))
+        response = self.client.post(reverse('delete_tag'))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
 
@@ -450,11 +459,11 @@ class TestTagMixin(TestCase):
         self.user = None
         set_up(self)
 
-    def test_get_object(self):
+    def test_get_tag_by_name(self):
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        tag_retrieved = pdf_views.TagMixin.get_object(response.wsgi_request, tag.id)
+        tag_retrieved = pdf_views.TagMixin.get_tag_by_name(response.wsgi_request, tag.name)
 
         self.assertEqual(tag, tag_retrieved)

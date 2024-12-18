@@ -160,15 +160,13 @@ class PdfMixin(BasePdfMixin):
 
 
 class TagMixin:
-    obj_name = 'pdf'
-
     @staticmethod
     @service.check_object_access_allowed
-    def get_object(request: HttpRequest, tag_id: str):
+    def get_tag_by_name(request: HttpRequest, identifier: str):
         """Get the pdf specified by the ID"""
 
         user_profile = request.user.profile
-        tag = user_profile.tag_set.get(id=tag_id)
+        tag = user_profile.tag_set.filter(name__iexact=identifier).first()
 
         return tag
 
@@ -339,19 +337,19 @@ class Download(PdfMixin, base_views.BaseDownload):
     """View for downloading the PDF specified by the ID."""
 
 
-class EditTag(View):
+class EditTag(TagMixin, View):
     """
     The base view for editing fields of an object in the details page. The field, that is to be changed, is specified
     by the 'field' argument.
     """
 
-    def get(self, request: HttpRequest, identifier: str):
+    def get(self, request: HttpRequest):
         """Triggered by htmx. Display an inline form for editing the correct field."""
 
-        user_profile = request.user.profile
-        tag = user_profile.tag_set.get(id=identifier)
-
         if request.htmx:
+            tag_name = request.GET.get('tag_name', '')
+            tag = self.get_tag_by_name(request, tag_name)
+
             return render(
                 request,
                 'partials/tag_name_form.html',
@@ -360,15 +358,15 @@ class EditTag(View):
 
         return redirect('pdf_overview')
 
-    def post(self, request: HttpRequest, identifier: str):
+    def post(self, request: HttpRequest):
         """
         POST: Change the Tag name.
         """
 
         redirect_url = request.META.get('HTTP_REFERER', 'pdf_overview')
         user_profile = request.user.profile
-        tag = user_profile.tag_set.get(id=identifier)
-        original_tag_name = tag.name
+        original_tag_name = request.POST.get('current_name', '')
+        tag = self.get_tag_by_name(request, original_tag_name)
         form = TagNameForm(request.POST, instance=tag)
 
         if form.is_valid():
@@ -376,7 +374,7 @@ class EditTag(View):
             existing_tag = user_profile.tag_set.filter(name__iexact=new_tag_name).first()
 
             # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
-            if existing_tag and str(existing_tag.id) != identifier:
+            if existing_tag and str(existing_tag.id) != tag.id:
                 pdfs = user_profile.pdf_set
                 pdfs_with_tag = pdfs.filter(tags__id=tag.id)
 
@@ -402,14 +400,14 @@ class EditTag(View):
 class DeleteTag(TagMixin, View):
     """View for deleting the tag specified by its ID."""
 
-    def delete(self, request: HttpRequest, identifier: str):
+    def post(self, request: HttpRequest):
         """Delete the specified tag."""
 
         redirect_url = request.META.get('HTTP_REFERER', 'pdf_overview')
 
         if request.htmx:
-            tag = self.get_object(request, identifier)
-            tag_name = tag.name
+            tag_name = request.POST.get('tag_name', '')
+            tag = self.get_tag_by_name(request, tag_name)
             tag.delete()
 
             redirect_url = service.adjust_referer_for_tag_view(redirect_url, tag_name, '')

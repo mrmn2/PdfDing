@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
@@ -35,21 +36,56 @@ class TestService(TestCase):
 
     def test_get_tag_dict(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        tag_a = Tag.objects.create(name='a', owner=pdf.owner)
-        tag_bread = Tag.objects.create(name='bread', owner=pdf.owner)
-        tag_1 = Tag.objects.create(name='tag1', owner=pdf.owner)
-        tag_3 = Tag.objects.create(name='tag3', owner=pdf.owner)
-        tag_banana = Tag.objects.create(name='banana', owner=pdf.owner)
-        tags = [tag_a, tag_bread, tag_banana, tag_3, tag_1]
+
+        tag_names = [
+            'programming/python/django',
+            'programming/python',
+            'programming/java/springboot',
+            'programming/python/flask',
+            'hobbies/sports/team',
+            'No_children',
+            'programming2',
+            'programming',
+        ]
+
+        tags = []
+
+        for tag_name in tag_names:
+            tag = Tag.objects.create(name=tag_name, owner=pdf.owner)
+            tags.append(tag)
+
         pdf.tags.set(tags)
 
-        expected_tag_dict = {'a': [tag_a], 'b': [tag_banana, tag_bread], 't': [tag_1, tag_3]}
         generated_tag_dict = service.get_tag_dict(self.user.profile)
+        expected_tag_dict = OrderedDict(
+            [
+                ('hobbies', {'level': 0, 'has_children': True, 'tree_only': True, 'parent': ''}),
+                ('hobbies/sports', {'level': 1, 'has_children': True, 'tree_only': True, 'parent': 'hobbies'}),
+                (
+                    'hobbies/sports/team',
+                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'hobbies/sports'},
+                ),
+                ('No_children', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+                ('programming', {'level': 0, 'has_children': True, 'tree_only': False, 'parent': ''}),
+                ('programming/java', {'level': 1, 'has_children': True, 'tree_only': True, 'parent': 'programming'}),
+                (
+                    'programming/java/springboot',
+                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'programming/java'},
+                ),
+                ('programming/python', {'level': 1, 'has_children': True, 'tree_only': False, 'parent': 'programming'}),
+                (
+                    'programming/python/django',
+                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'programming/python'},
+                ),
+                (
+                    'programming/python/flask',
+                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'programming/python'},
+                ),
+                ('programming2', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+            ]
+        )
 
         self.assertEqual(expected_tag_dict, generated_tag_dict)
-
-        # make sure first characters are sorted correctly
-        self.assertEqual(['a', 'b', 't'], list(generated_tag_dict.keys()))
 
     @staticmethod
     @service.check_object_access_allowed

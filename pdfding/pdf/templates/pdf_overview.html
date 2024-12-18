@@ -4,11 +4,11 @@
 <div x-data="{ show_tag_name_modal: false }">
   <div class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 !pt-4 dark:text-slate-200"
        :class="{ 'opacity-15': show_tag_name_modal }">
-    <div class="w-full md:w-3/4 md:p-8 p-3">
+    <div class="w-full md:w-[70%] md:p-8 p-3">
       {% include 'includes/pdf_overview_top.html' %}
       {% include 'includes/pdf_overview_center.html' %}
     </div>
-    <div class="md:w-1/4 md:p-8 p-3 hidden md:block">
+    <div class="md:w-[30%] md:p-8 p-3 hidden md:block">
       {% include 'includes/pdf_overview_side.html' %}
     </div>
   </div>

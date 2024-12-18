@@ -2,7 +2,7 @@
             shadow-black dark:shadow-white dark:text-slate-200 w-full !h-52">
     <div class="p-6">
         <h2 class="pb-2">Rename Tag</h2>
-        <form action="{% url 'edit_tag' tag.id %}"
+        <form action="{% url 'edit_tag' %}"
               method="post"
               class="text-black dark:text-slate-200 [&>input]:h-4 w-11/12 [&>input]:bg-slate-100 [&>input]:dark:bg-slate-600"
               autocomplete="off">
@@ -16,6 +16,7 @@
                    class="button !flex items-center justify-center h-10 w-20
                    !bg-slate-300 hover:!bg-slate-400 dark:!bg-slate-400 hover:dark:!bg-slate-500">Cancel</a>
             </div>
+            <input type="hidden" name="current_name" value="{{ tag.name }}"/>
         </form>
     </div>
 </div>

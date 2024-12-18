@@ -43,9 +43,8 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("now |")
 
             # check tag sidebar
-            for i, tags in enumerate([["1"], ["banana", "bread"], ["tag_0", "tag_1"]]):
-                for tag in tags:
-                    expect(self.page.locator(f"#tags_{i}")).to_contain_text(tag)
+            for tag in ["1", "banana", "bread", "tag_0", "tag_1"]:
+                expect(self.page.locator(f"#tag-{tag}")).to_contain_text(tag)
 
             # check sidebar links
             # first tag starting with character
@@ -120,9 +119,8 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("now |")
 
             # check tag sidebar
-            for i, tags in enumerate([["1"], ["banana", "bread"], ["tag_0", "tag_1"]]):
-                for tag in tags:
-                    expect(self.page.locator(f"#tags_{i}")).to_contain_text(tag)
+            for tag in ["1", "banana", "bread", "tag_0", "tag_1"]:
+                expect(self.page.locator(f"#tag-{tag}")).to_contain_text(tag)
 
             # check sidebar links
             # first tag starting with character
@@ -433,12 +431,12 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
 
-            expect(self.page.locator("#tags_0")).to_contain_text('bla')
+            expect(self.page.locator("#tag-bla")).to_contain_text('bla')
             expect(self.page.locator("body")).to_contain_text("#bla")
             self.page.locator("#tag-bla > a").first.click()
             self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
             self.page.locator("#confirm-delete-tag-bla").click()
-            expect(self.page.locator("#tags_0")).not_to_be_visible()
+            expect(self.page.locator("#tag-bla")).not_to_be_visible()
             expect(self.page.locator("body")).not_to_contain_text("#bla")
 
     def test_rename_tag_click_away(self):
@@ -475,7 +473,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
 
-            expect(self.page.locator("#tags_0")).to_contain_text('bla')
+            expect(self.page.locator("#tag-bla")).to_contain_text('bla')
             expect(self.page.locator("body")).to_contain_text("#bla")
             expect(self.page.locator("body")).not_to_contain_text("#renamed")
 
@@ -486,7 +484,8 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_name").fill("renamed")
             self.page.get_by_role("button", name="Submit").click()
 
-            expect(self.page.locator("#tags_0")).not_to_contain_text('bla')
-            expect(self.page.locator("#tags_0")).to_contain_text('renamed')
+            expect(self.page.locator("#tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#tag-renamed")).to_be_visible()
+            expect(self.page.locator("#tag-renamed")).to_contain_text('renamed')
             expect(self.page.locator("body")).to_contain_text("#renamed")
             expect(self.page.locator("body")).not_to_contain_text("#bla")
