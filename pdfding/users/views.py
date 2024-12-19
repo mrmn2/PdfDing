@@ -33,6 +33,7 @@ class ChangeSetting(View):
         'pdf_inverted_mode': forms.PdfInvertedForm,
         'custom_theme_color': forms.CustomThemeColorForm,
         'show_progress_bars': forms.ProgressBarForm,
+        'tags_tree_mode': forms.TagsTreeModeForm,
     }
 
     def get(self, request: HttpRequest, field_name: str):
@@ -45,6 +46,7 @@ class ChangeSetting(View):
             'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
             'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
+            'tags_tree_mode': {'tags_tree_mode': request.user.profile.tags_tree_mode},
         }
 
         if request.htmx:

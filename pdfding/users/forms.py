@@ -48,6 +48,14 @@ class ProgressBarForm(ModelForm):
         fields = ['show_progress_bars']
 
 
+class TagsTreeModeForm(ModelForm):
+    """The form for setting tag tree mode"""
+
+    class Meta:
+        model = Profile
+        fields = ['tags_tree_mode']
+
+
 class CustomThemeColorForm(ModelForm):
     """The form for setting dark mode"""
 

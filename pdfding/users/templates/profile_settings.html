@@ -131,6 +131,28 @@
     </div>
     <div>
         <div class="w-1/4">
+            <span>Tree Mode</span>
+        </div>
+        <div class="flex justify-between w-3/4 pl-4">
+            <div class="w-5/6">
+                {% if user.profile.tags_tree_mode == 'Enabled' %}
+                <span id="tags_tree_mode">Tags tree mode is enabled</span>
+                {% else %}
+                <span id="tags_tree_mode">Tags tree mode is disabled</span>
+                {% endif %}
+            </div>
+            <div class="w-1/6 pl-2 md:pl-6">
+                <a id="tags_tree_mode_edit" class="hover:underline"
+                    hx-get="{% url 'profile-setting-change' 'tags_tree_mode' %}"
+                    hx-target="#tags_tree_mode"
+                    hx-swap="innerHTML">
+                    Edit
+                </a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="w-1/4">
             <span>Pdfs per Page </span>
         </div>
         <div class="flex justify-between w-3/4 pl-4">

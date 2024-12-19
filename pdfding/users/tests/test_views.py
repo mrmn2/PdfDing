@@ -95,6 +95,7 @@ class TestProfileViews(TestCase):
             'theme',
             'email',
             'show_progress_bars',
+            'tags_tree_mode',
         ]
         form_list = [
             forms.PdfInvertedForm,
@@ -111,6 +112,7 @@ class TestProfileViews(TestCase):
             {'dark_mode': 'Light', 'theme_color': 'Green'},
             {'email': 'a@a.com'},
             {'show_progress_bars': 'Enabled'},
+            {'tags_tree_mode': 'Enabled'},
         ]
 
         for field_name, form, initial_dict in zip(field_names, form_list, initial_dicts):
@@ -181,34 +183,24 @@ class TestProfileViews(TestCase):
         self.assertEqual(user.profile.dark_mode, 'Dark')
         self.assertEqual(user.profile.theme_color, 'Blue')
 
-    def test_change_settings_pdfs_per_page_post_correct(self):
-        self.assertEqual(self.user.profile.pdfs_per_page, 25)
-        self.client.post(
-            reverse('profile-setting-change', kwargs={'field_name': 'pdfs_per_page'}), data={'pdfs_per_page': 10}
-        )
+    def test_change_settings_normal_post_correct(self):
+        for field_name, val_before, val_after in zip(
+            [
+                'pdfs_per_page',
+                'pdf_inverted_mode',
+                'tags_tree_mode',
+                'show_progress_bars',
+            ],
+            [25, 'Disabled', 'Enabled', 'Enabled'],
+            [10, 'Enabled', 'Disabled', 'Disabled'],
+        ):
+            self.assertEqual(getattr(self.user.profile, field_name), val_before)
+            self.client.post(
+                reverse('profile-setting-change', kwargs={'field_name': field_name}), data={field_name: val_after}
+            )
 
-        user = User.objects.get(username=self.username)
-        self.assertEqual(user.profile.pdfs_per_page, 10)
-
-    def test_change_settings_inverted_pdf_colors_post_correct(self):
-        self.assertEqual(self.user.profile.pdf_inverted_mode, 'Disabled')
-        self.client.post(
-            reverse('profile-setting-change', kwargs={'field_name': 'pdf_inverted_mode'}),
-            data={'pdf_inverted_mode': 'Enabled'},
-        )
-
-        user = User.objects.get(username=self.username)
-        self.assertEqual(user.profile.pdf_inverted_mode, 'Enabled')
-
-    def test_change_settings_show_progress_bars_post_correct(self):
-        self.assertEqual(self.user.profile.show_progress_bars, 'Enabled')
-        self.client.post(
-            reverse('profile-setting-change', kwargs={'field_name': 'show_progress_bars'}),
-            data={'show_progress_bars': 'Disabled'},
-        )
-
-        user = User.objects.get(username=self.username)
-        self.assertEqual(user.profile.pdf_inverted_mode, 'Disabled')
+            user = User.objects.get(username=self.username)
+            self.assertEqual(getattr(user.profile, field_name), val_after)
 
     def test_delete_post(self):
         # in this test we test that the user is successfully deleted
