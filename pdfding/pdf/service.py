@@ -37,21 +37,53 @@ def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]
     return tags
 
 
-def get_tag_dict(profile: Profile) -> dict[str, dict]:
+def get_tag_info_dict(profile: Profile) -> dict[str, dict]:
     """
-    Get the tag dict used for displaying the tags in the pdf overview. Key: name of the tag. Value: Information
-    about the tag (level, has_children, tree_only, parent)
+    Get the tag info dict used for displaying the tags in the pdf overview.
+    """
+
+    if profile.tags_tree_mode == 'Enabled':
+        tag_info_dict = get_tag_info_dict_tree_mode(profile)
+    else:
+        tag_info_dict = get_tag_info_dict_normal_mode(profile)
+
+    return tag_info_dict
+
+
+def get_tag_info_dict_normal_mode(profile: Profile) -> dict[str, dict]:
+    """
+    Get the tag info dict used for displaying the tags in the pdf overview when normal mode is activated.
+    Key: name of the tag. Value: display name of the tag
     """
 
     # it is important that the tags are sorted. As parent tags need come before children,
     # e.g. "programming" before "programming/python"
     tags = profile.tag_set.all().order_by(Lower('name'))
-    tag_dict = OrderedDict()
+    tag_info_dict = OrderedDict()
+
+    for tag in tags:
+        tag_info_dict[tag.name] = {'display_name': tag.name}
+
+    return tag_info_dict
+
+
+def get_tag_info_dict_tree_mode(profile: Profile) -> dict[str, dict]:
+    """
+    Get the tag info dict used for displaying the tags in the pdf overview when tree mode is activated.
+    Key: name of the tag. Value: Information about the tag necessary for displaying it in tree mode, e.g. display name,
+    indent level, has_children, slug and the condition for showing it via alpine js.
+    """
+
+    # it is important that the tags are sorted. As parent tags need come before children,
+    # e.g. "programming" before "programming/python"
+    tags = profile.tag_set.all().order_by(Lower('name'))
+    tag_info_dict = OrderedDict()
 
     for tag in tags:
         tag_split = tag.name.split('/', maxsplit=2)
         current = ''
         words = []
+        show_conditions = []
 
         for level, word in enumerate(tag_split):
             prev = current
@@ -59,17 +91,20 @@ def get_tag_dict(profile: Profile) -> dict[str, dict]:
             current = '/'.join(words)
 
             if level:
-                tag_dict[prev]['has_children'] = True
+                tag_info_dict[prev]['has_children'] = True
 
-            if current not in tag_dict:
-                if level == len(tag_split) - 1:
-                    tree_only = False
-                else:
-                    tree_only = True
+            if current not in tag_info_dict:
+                tag_info_dict[current] = {
+                    'display_name': current.rsplit('/', 1)[-1],
+                    'indent': level * 6,
+                    'has_children': False,
+                    'show_cond': ' && '.join(show_conditions),
+                    'slug': current.replace('-', '_').replace('/', '___'),
+                }
 
-                tag_dict[current] = {'level': level, 'has_children': False, 'tree_only': tree_only, 'parent': prev}
+            show_conditions.append(f'{current.replace('-', '_').replace('/', '___')}_show_children')
 
-    return tag_dict
+    return tag_info_dict
 
 
 def check_object_access_allowed(get_object):

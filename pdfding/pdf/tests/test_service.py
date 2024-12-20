@@ -34,7 +34,25 @@ class TestService(TestCase):
 
         self.assertEqual(tags, [])
 
-    def test_get_tag_dict(self):
+    @mock.patch('pdf.service.get_tag_info_dict_tree_mode')
+    def test_get_tag_info_dict_tree_mode_enabled(self, mock_get_tag_info_dict_tree_mode):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Enabled'
+        profile.save()
+
+        service.get_tag_info_dict(profile)
+        mock_get_tag_info_dict_tree_mode.assert_called_once_with(profile)
+
+    @mock.patch('pdf.service.get_tag_info_dict_normal_mode')
+    def test_get_tag_info_dict_tree_mode_disabled(self, mock_get_tag_info_dict_normal_mode):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Disabled'
+        profile.save()
+
+        service.get_tag_info_dict(profile)
+        mock_get_tag_info_dict_normal_mode.assert_called_once_with(profile)
+
+    def test_get_tag_info_dict_normal_mode(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
 
         tag_names = [
@@ -56,32 +74,141 @@ class TestService(TestCase):
 
         pdf.tags.set(tags)
 
-        generated_tag_dict = service.get_tag_dict(self.user.profile)
+        generated_tag_dict = service.get_tag_info_dict_normal_mode(self.user.profile)
+        create_list = [(tag_name, {'display_name': tag_name}) for tag_name in sorted(tag_names, key=str.casefold)]
+        expected_tag_dict = OrderedDict(create_list)
+
+        self.assertEqual(expected_tag_dict, generated_tag_dict)
+
+    def test_get_tag_info_dict_tree_mode(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+
+        tag_names = [
+            'programming/python/django',
+            'programming/python',
+            'programming/java/springboot',
+            'programming/python/flask',
+            'hobbies/sports/team',
+            'No-children',
+            'programming2',
+            'programming',
+        ]
+
+        tags = []
+
+        for tag_name in tag_names:
+            tag = Tag.objects.create(name=tag_name, owner=pdf.owner)
+            tags.append(tag)
+
+        pdf.tags.set(tags)
+
+        generated_tag_dict = service.get_tag_info_dict_tree_mode(self.user.profile)
         expected_tag_dict = OrderedDict(
             [
-                ('hobbies', {'level': 0, 'has_children': True, 'tree_only': True, 'parent': ''}),
-                ('hobbies/sports', {'level': 1, 'has_children': True, 'tree_only': True, 'parent': 'hobbies'}),
+                (
+                    'hobbies',
+                    {'display_name': 'hobbies', 'indent': 0, 'has_children': True, 'show_cond': '', 'slug': 'hobbies'},
+                ),
+                (
+                    'hobbies/sports',
+                    {
+                        'display_name': 'sports',
+                        'indent': 6,
+                        'has_children': True,
+                        'show_cond': 'hobbies_show_children',
+                        'slug': 'hobbies___sports',
+                    },
+                ),
                 (
                     'hobbies/sports/team',
-                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'hobbies/sports'},
+                    {
+                        'display_name': 'team',
+                        'indent': 12,
+                        'has_children': False,
+                        'show_cond': 'hobbies_show_children && hobbies___sports_show_children',
+                        'slug': 'hobbies___sports___team',
+                    },
                 ),
-                ('No_children', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
-                ('programming', {'level': 0, 'has_children': True, 'tree_only': False, 'parent': ''}),
-                ('programming/java', {'level': 1, 'has_children': True, 'tree_only': True, 'parent': 'programming'}),
+                (
+                    'No-children',
+                    {
+                        'display_name': 'No-children',
+                        'indent': 0,
+                        'has_children': False,
+                        'show_cond': '',
+                        'slug': 'No_children',
+                    },
+                ),
+                (
+                    'programming',
+                    {
+                        'display_name': 'programming',
+                        'indent': 0,
+                        'has_children': True,
+                        'show_cond': '',
+                        'slug': 'programming',
+                    },
+                ),
+                (
+                    'programming/java',
+                    {
+                        'display_name': 'java',
+                        'indent': 6,
+                        'has_children': True,
+                        'show_cond': 'programming_show_children',
+                        'slug': 'programming___java',
+                    },
+                ),
                 (
                     'programming/java/springboot',
-                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'programming/java'},
+                    {
+                        'display_name': 'springboot',
+                        'indent': 12,
+                        'has_children': False,
+                        'show_cond': 'programming_show_children && programming___java_show_children',
+                        'slug': 'programming___java___springboot',
+                    },
                 ),
-                ('programming/python', {'level': 1, 'has_children': True, 'tree_only': False, 'parent': 'programming'}),
+                (
+                    'programming/python',
+                    {
+                        'display_name': 'python',
+                        'indent': 6,
+                        'has_children': True,
+                        'show_cond': 'programming_show_children',
+                        'slug': 'programming___python',
+                    },
+                ),
                 (
                     'programming/python/django',
-                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'programming/python'},
+                    {
+                        'display_name': 'django',
+                        'indent': 12,
+                        'has_children': False,
+                        'show_cond': 'programming_show_children && programming___python_show_children',
+                        'slug': 'programming___python___django',
+                    },
                 ),
                 (
                     'programming/python/flask',
-                    {'level': 2, 'has_children': False, 'tree_only': False, 'parent': 'programming/python'},
+                    {
+                        'display_name': 'flask',
+                        'indent': 12,
+                        'has_children': False,
+                        'show_cond': 'programming_show_children && programming___python_show_children',
+                        'slug': 'programming___python___flask',
+                    },
                 ),
-                ('programming2', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
+                (
+                    'programming2',
+                    {
+                        'display_name': 'programming2',
+                        'indent': 0,
+                        'has_children': False,
+                        'show_cond': '',
+                        'slug': 'programming2',
+                    },
+                ),
             ]
         )
 

@@ -136,9 +136,11 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             path.unlink()
 
 
-class PdfE2ETestCase(PdfDingE2ETestCase):
+class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
+
+        tag = Tag.objects.create(name='tag', owner=self.user.profile)
 
         # create some pdfs
         for i in range(1, 15):
@@ -148,7 +150,6 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
 
             # add a tag to pdf 1, 6
             if i % 5 == 1:
-                tag = Tag.objects.create(name='tag', owner=self.user.profile)
                 pdf.tags.set([tag])
 
     def test_progress_bar_on(self):
@@ -284,6 +285,90 @@ class PdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#confirm-delete-pdf-1")).not_to_be_visible()
             expect(self.page.locator("#cancel-delete-pdf-1")).not_to_be_visible()
             expect(self.page.locator("#delete-pdf-1")).to_be_visible()
+
+    def test_sidebar_tags_normal_mode(self):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Disabled'
+        profile.save()
+
+        tags = []
+        tag_names = ['hobbies/sports', 'programming/python/django', 'other']
+
+        for tag_name in tag_names:
+            tag = Tag.objects.create(name=tag_name, owner=self.user.profile)
+            tags.append(tag)
+
+        pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
+        pdf.tags.set(tags)
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            # playwright has problems parsing "/" in locators
+            playwright_tag_names = ['hobbies\\/sports', 'programming\\/python\\/django', 'other']
+
+            for playwright_tag_name, tag_name in zip(playwright_tag_names, tag_names):
+                expect(self.page.locator(f"#tag-{playwright_tag_name}")).to_contain_text(tag_name)
+                expect(self.page.locator(f"#tag-{playwright_tag_name}")).to_be_visible()
+
+            # no tags were created with parent names, so they should not exist
+            for tag_name in ['hobbies', 'programming\\/python']:
+                expect(self.page.locator(f"#tag-{tag_name}")).not_to_be_visible()
+
+    def test_sidebar_tags_tree_mode(self):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Enabled'
+        profile.save()
+
+        tags = []
+        tag_names = ['programming/python/django', 'other']
+
+        for tag_name in tag_names:
+            tag = Tag.objects.create(name=tag_name, owner=self.user.profile)
+            tags.append(tag)
+
+        pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
+        pdf.tags.set(tags)
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            for tag_name in ['programming', 'other']:
+                expect(self.page.locator(f"#tag-{tag_name}")).to_contain_text(tag_name)
+                expect(self.page.locator(f"#tag-{tag_name}")).to_be_visible()
+
+            # children not open so they should not be visible
+            for tag_name in ['programming\\/python', 'programming\\/python\\/django']:
+                expect(self.page.locator(f"#tag-{tag_name}")).not_to_be_visible()
+
+            # only programming should have open button
+            expect(self.page.locator("#open-children-programming")).to_be_visible()
+            expect(self.page.locator("#open-children-other")).not_to_be_visible()
+
+            # click open programming
+            self.page.locator("#open-children-programming").click()
+            expect(self.page.locator("#tag-programming\\/python")).to_be_visible()
+            expect(self.page.locator("#tag-programming\\/python\\/django")).not_to_be_visible()
+
+            # click open programming/python
+            self.page.locator("#open-children-programming\\/python").click()
+            expect(self.page.locator("#tag-programming\\/python\\/django")).to_be_visible()
+
+            # click close programming
+            self.page.locator("#open-children-programming").click()
+            expect(self.page.locator("#tag-programming\\/python")).not_to_be_visible()
+            expect(self.page.locator("#tag-programming\\/python\\/django")).not_to_be_visible()
+
+
+class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
+    def setUp(self, login: bool = True) -> None:
+        super().setUp()
+
+        # create some pdfs
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1_1', description='this is number 1')
+
+        tag = Tag.objects.create(name='tag', owner=self.user.profile)
+        pdf.tags.set([tag])
 
     def test_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')

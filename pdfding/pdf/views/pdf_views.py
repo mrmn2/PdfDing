@@ -141,7 +141,7 @@ class OverviewMixin(BasePdfMixin):
         extra_context = {
             'search_query': request.GET.get('search', ''),
             'tag_query': tag_query,
-            'tag_dict': service.get_tag_dict(request.user.profile),
+            'tag_info_dict': service.get_tag_info_dict(request.user.profile),
         }
 
         return extra_context

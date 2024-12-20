@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from datetime import datetime, timezone
 from unittest import mock
 from unittest.mock import patch
@@ -213,38 +212,28 @@ class TestOverviewMixin(TestCase):
 
         self.assertEqual(pdf_names, ['pdf_2_2'])
 
-    def test_get_extra_context(self):
+    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    def test_get_extra_context(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
-        tag_dict = OrderedDict(
-            [
-                ('tag_2', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
-                ('tag_7', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
-            ]
-        )
         expected_extra_context = {
             'search_query': 'searching',
             'tag_query': ['tagging'],
-            'tag_dict': tag_dict,
+            'tag_info_dict': 'tag_info_dict',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
-    def test_get_extra_context_empty_queries(self):
+    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    def test_get_extra_context_empty_queries(self, mock_get_tag_info_dict):
         response = self.client.get(reverse('pdf_overview'))
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
-        tag_dict = OrderedDict(
-            [
-                ('tag_2', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
-                ('tag_7', {'level': 0, 'has_children': False, 'tree_only': False, 'parent': ''}),
-            ]
-        )
         expected_extra_context = {
             'search_query': '',
             'tag_query': [],
-            'tag_dict': tag_dict,
+            'tag_info_dict': 'tag_info_dict',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
