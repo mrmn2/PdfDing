@@ -12,6 +12,7 @@ from django_htmx.http import HttpResponseClientRedirect
 from pdf import service
 from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
 from pdf.models import Pdf, Tag
+from users.models import Profile
 from users.service import convert_hex_to_rgb
 
 
@@ -163,12 +164,30 @@ class TagMixin:
     @staticmethod
     @service.check_object_access_allowed
     def get_tag_by_name(request: HttpRequest, identifier: str):
-        """Get the pdf specified by the ID"""
+        """Get the tag specified by the name"""
 
         user_profile = request.user.profile
         tag = user_profile.tag_set.filter(name__iexact=identifier).first()
 
         return tag
+
+    @staticmethod
+    @service.check_object_access_allowed
+    def get_tags_by_name(request: HttpRequest, identifier: str):
+        """Get the pdf specified by the name and its children"""
+
+        user_profile = request.user.profile
+
+        tag_exact = user_profile.tag_set.filter(name__iexact=identifier).first()
+
+        if tag_exact:
+            tags = [tag_exact]
+        else:
+            tags = []
+
+        tags.extend(user_profile.tag_set.filter(name__istartswith=f'{identifier}/'))
+
+        return tags
 
 
 class EditPdfMixin(PdfMixin):
@@ -348,12 +367,11 @@ class EditTag(TagMixin, View):
 
         if request.htmx:
             tag_name = request.GET.get('tag_name', '')
-            tag = self.get_tag_by_name(request, tag_name)
 
             return render(
                 request,
                 'partials/tag_name_form.html',
-                {'tag': tag, 'form': TagNameForm(initial={'name': tag.name})},
+                {'tag_name': tag_name, 'form': TagNameForm(initial={'name': tag_name})},
             )
 
         return redirect('pdf_overview')
@@ -366,28 +384,26 @@ class EditTag(TagMixin, View):
         redirect_url = request.META.get('HTTP_REFERER', 'pdf_overview')
         user_profile = request.user.profile
         original_tag_name = request.POST.get('current_name', '')
-        tag = self.get_tag_by_name(request, original_tag_name)
-        form = TagNameForm(request.POST, instance=tag)
+        form = TagNameForm(request.POST)
 
         if form.is_valid():
-            new_tag_name = form.data.get('name')
-            existing_tag = user_profile.tag_set.filter(name__iexact=new_tag_name).first()
+            new_name = form.data.get('name')
 
-            # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
-            if existing_tag and str(existing_tag.id) != tag.id:
-                pdfs = user_profile.pdf_set
-                pdfs_with_tag = pdfs.filter(tags__id=tag.id)
+            if user_profile.tags_tree_mode == 'Enabled':
+                tags = self.get_tags_by_name(request, original_tag_name)
 
-                for pdf_with_tag in pdfs_with_tag:
-                    # we are safe to use add, even if the pdf already has the tag as the documentation states:
-                    # Using add() on a relation that already exists won’t duplicate the relation,
-                    # but it will still trigger signals.
-                    pdf_with_tag.tags.add(existing_tag)
-                tag.delete()
+                for tag in tags:
+                    # change
+                    new_tag_name = new_name
+                    if tag.name != new_name:
+                        new_tag_name = tag.name.replace(original_tag_name, new_tag_name)
+
+                    self.rename_tag(tag, new_tag_name, user_profile)
             else:
-                form.save()
+                tag = self.get_tag_by_name(request, original_tag_name)
+                self.rename_tag(tag, new_name, user_profile)
 
-            redirect_url = service.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_tag_name)
+            redirect_url = service.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_name)
         else:
             try:
                 messages.warning(request, dict(form.errors)['name'][0])
@@ -395,6 +411,29 @@ class EditTag(TagMixin, View):
                 messages.warning(request, 'Input is not valid!')
 
         return redirect(redirect_url)
+
+    @staticmethod
+    def rename_tag(tag: Tag, new_tag_name: str, profile: Profile):
+        """
+        Rename a tag. If tag name already exist merge.
+        """
+
+        existing_tag = profile.tag_set.filter(name__iexact=new_tag_name).first()
+
+        # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
+        if existing_tag and str(existing_tag.id) != tag.id:
+            pdfs = profile.pdf_set
+            pdfs_with_tag = pdfs.filter(tags__id=tag.id)
+
+            for pdf_with_tag in pdfs_with_tag:
+                # we are safe to use add, even if the pdf already has the tag as the documentation states:
+                # Using add() on a relation that already exists won’t duplicate the relation,
+                # but it will still trigger signals.
+                pdf_with_tag.tags.add(existing_tag)
+            tag.delete()
+        else:
+            tag.name = new_tag_name
+            tag.save()
 
 
 class DeleteTag(TagMixin, View):
@@ -407,8 +446,14 @@ class DeleteTag(TagMixin, View):
 
         if request.htmx:
             tag_name = request.POST.get('tag_name', '')
-            tag = self.get_tag_by_name(request, tag_name)
-            tag.delete()
+
+            if request.user.profile.tags_tree_mode == 'Enabled':
+                tags = self.get_tags_by_name(request, tag_name)
+            else:
+                tags = [self.get_tag_by_name(request, tag_name)]
+
+            for tag in tags:
+                tag.delete()
 
             redirect_url = service.adjust_referer_for_tag_view(redirect_url, tag_name, '')
 

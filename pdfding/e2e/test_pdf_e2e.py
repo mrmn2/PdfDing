@@ -478,8 +478,8 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         super().setUp()
 
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-        tag = Tag.objects.create(name='bla', owner=self.user.profile)
-        pdf.tags.set([tag])
+        self.tag = Tag.objects.create(name='bla', owner=self.user.profile)
+        pdf.tags.set([self.tag])
 
     def test_delete_tag_cancel(self):
         with sync_playwright() as p:
@@ -512,7 +512,13 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             # tag options should be closed now
             expect(self.page.locator("#delete-tag-bla")).not_to_be_visible()
 
-    def test_delete_tag(self):
+    def test_delete_tag_normal_mode(self):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Disabled'
+        profile.save()
+
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
+
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
 
@@ -523,6 +529,32 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#confirm-delete-tag-bla").click()
             expect(self.page.locator("#tag-bla")).not_to_be_visible()
             expect(self.page.locator("body")).not_to_contain_text("#bla")
+
+        self.assertFalse(self.user.profile.tag_set.filter(id=self.tag.id).exists())
+        self.assertTrue(self.user.profile.tag_set.filter(id=tag_2.id).exists())
+
+    def test_delete_tag_tree_mode(self):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Enabled'
+        profile.save()
+
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tag-bla")).to_contain_text('bla')
+            expect(self.page.locator("body")).to_contain_text("#bla")
+            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
+            self.page.locator("#confirm-delete-tag-bla").click()
+            expect(self.page.locator("#tag-bla")).not_to_be_visible()
+            expect(self.page.locator("body")).not_to_contain_text("#bla")
+            expect(self.page.locator("#tag-bla\\/child")).not_to_be_visible()
+            expect(self.page.locator("body")).not_to_contain_text("#bla/child")
+
+        self.assertFalse(self.user.profile.tag_set.filter(id=self.tag.id).exists())
+        self.assertFalse(self.user.profile.tag_set.filter(id=tag_2.id).exists())
 
     def test_rename_tag_click_away(self):
         with sync_playwright() as p:
@@ -554,7 +586,13 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             # tag rename should be closed now
             expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
 
-    def test_rename_tag(self):
+    def test_rename_tag_normal_mode(self):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Disabled'
+        profile.save()
+
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
+
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
 
@@ -574,3 +612,36 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag-renamed")).to_contain_text('renamed')
             expect(self.page.locator("body")).to_contain_text("#renamed")
             expect(self.page.locator("body")).not_to_contain_text("#bla")
+
+        self.assertEqual(self.user.profile.tag_set.filter(id=self.tag.id).first().name, 'renamed')
+        self.assertEqual(self.user.profile.tag_set.filter(id=tag_2.id).first().name, tag_2.name)
+
+    def test_rename_tag_tree_mode(self):
+        profile = self.user.profile
+        profile.tags_tree_mode = 'Enabled'
+        profile.save()
+
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tag-bla")).to_contain_text('bla')
+            expect(self.page.locator("body")).to_contain_text("#bla")
+            expect(self.page.locator("body")).not_to_contain_text("#renamed")
+
+            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
+
+            self.page.locator("#id_name").dblclick()
+            self.page.locator("#id_name").fill("renamed")
+            self.page.get_by_role("button", name="Submit").click()
+
+            expect(self.page.locator("#tag-bla")).not_to_be_visible()
+            expect(self.page.locator("#tag-renamed")).to_be_visible()
+            expect(self.page.locator("#tag-renamed")).to_contain_text('renamed')
+            expect(self.page.locator("body")).to_contain_text("#renamed")
+            expect(self.page.locator("body")).not_to_contain_text("#bla")
+
+        self.assertEqual(self.user.profile.tag_set.filter(id=self.tag.id).first().name, 'renamed')
+        self.assertEqual(self.user.profile.tag_set.filter(id=tag_2.id).first().name, 'renamed/child')

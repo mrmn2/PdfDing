@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.core.files import File
 
-from .models import Pdf, SharedPdf, Tag
+from .models import Pdf, SharedPdf
 
 
 class AddForm(forms.ModelForm):
@@ -348,12 +348,13 @@ class ViewSharedPasswordForm(forms.Form):
         return password
 
 
-class TagNameForm(forms.ModelForm):
+class TagNameForm(forms.Form):
     """Form for changing the name of a tag."""
 
-    class Meta:
-        model = Tag
-        fields = ['name']
+    name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+    )
 
     def clean_name(self) -> str:
         new_tag_name = self.cleaned_data['name'].strip()
