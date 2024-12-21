@@ -197,7 +197,9 @@ class BaseDetailsEdit(View):
                 form.save()
         else:
             try:
-                messages.warning(request, dict(form.errors)[field_name][0])
+                error_dict = dict(form.errors)
+                error_field = list(error_dict.keys())[0]
+                messages.warning(request, error_dict[error_field][0])
             except:  # noqa # pragma: no cover
                 messages.warning(request, 'Input is not valid!')
         return redirect(f'{self.obj_name}_details', identifier=identifier)

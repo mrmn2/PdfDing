@@ -69,6 +69,9 @@ class AddForm(forms.ModelForm):
 
         return CleanHelpers.clean_file(self.cleaned_data['file'])
 
+    def clean_tag_string(self) -> str:  # pragma: no cover
+        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+
 
 class MultipleFileInput(forms.ClearableFileInput):  # pragma: no cover
     allow_multiple_selected = True
@@ -127,6 +130,9 @@ class BulkAddForm(forms.Form):
         for file in self.cleaned_data['file']:
             CleanHelpers.clean_file(file)
 
+    def clean_tag_string(self) -> str:  # pragma: no cover
+        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+
 
 class DescriptionForm(forms.ModelForm):
     """Form for changing the description of a PDF."""
@@ -158,6 +164,9 @@ class PdfTagsForm(forms.ModelForm):
     class Meta:
         model = Pdf
         fields = []
+
+    def clean_tag_string(self) -> str:  # pragma: no cover
+        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
 
 
 class ShareForm(forms.ModelForm):
@@ -349,9 +358,10 @@ class TagNameForm(forms.ModelForm):
     def clean_name(self) -> str:
         new_tag_name = self.cleaned_data['name'].strip()
 
-        for disallowed_char, char_name in zip(['#', '&', '+', ' '], ['hashtags', '&', '+', 'spaces']):
-            if disallowed_char in new_tag_name:
-                raise ValidationError(f'Tag names are not allowed to contain "{char_name}"!')
+        if ' ' in new_tag_name:
+            raise ValidationError('Tag names are not allowed to contain spaces!')
+
+        new_tag_name = CleanHelpers.clean_tag_string(new_tag_name)
 
         return new_tag_name
 
@@ -404,3 +414,23 @@ class CleanHelpers:
             raise forms.ValidationError('Wrong format! Format needs to be _d_h_m!')
 
         return time_input
+
+    @staticmethod
+    def clean_tag_string(tag_string):
+        if tag_string:
+            for char in tag_string:
+                if not (char.isalnum() or char in ['/', '-', '_', ' ']):
+                    raise forms.ValidationError('Only letters, numbers, "/", "-" and "_" are valid tag characters!')
+
+            tag_string_split = tag_string.split(' ')
+
+            for tag in tag_string_split:
+                tag = tag.strip()
+
+                if tag[0] == '/' or tag[-1] == '/':
+                    raise forms.ValidationError('Tags cannot begin or end with "/"!')
+
+                if re.search(r'/{2,}', tag):
+                    raise forms.ValidationError('Tags are not allowed to contain consecutive "/" characters!')
+
+        return tag_string
