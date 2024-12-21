@@ -25,7 +25,7 @@
     <div class="truncate [&>span]:text-gray-800 [&>span]:dark:text-slate-100 -mb-1">
       {% for tag in pdf.tags.all|dictsort:"name" %}
       <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
-         class="text-primary hover:text-secondary hover:underline text-sm">#{{ tag.name }}
+         class="text-primary hover:text-secondary text-sm">#{{ tag.name }}
       </a>
       {% endfor %}
       {% if pdf.description %}
