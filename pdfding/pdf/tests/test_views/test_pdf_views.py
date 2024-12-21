@@ -173,8 +173,6 @@ class TestBulkAddPDFMixin(TestCase):
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        print(self.user.profile.pdf_set.all())
-
         expected_pdf_names = ['test1', 'test2', 'test2_12345678', 'test3']
         generated_pdf_names = [pdf.name for pdf in self.user.profile.pdf_set.all()]
         self.assertEqual(expected_pdf_names, generated_pdf_names)
@@ -202,15 +200,24 @@ class TestOverviewMixin(TestCase):
                 pdf.tags.set([tag])
 
     def test_filter_objects(self):
-        response = self.client.get(f'{reverse('pdf_overview')}?search=pdf_2&tags=tag_2')
-        Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1')
+        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
+        pdf_3 = Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
+        tags = []
+
+        for name in ['programming', 'programming/python', 'programming/python/django', 'programming/python/flask']:
+            tag = Tag.objects.create(name=name, owner=self.user.profile)
+            tags.append(tag)
+
+        pdf_1.tags.set(tags)
+        pdf_2.tags.set(tags[2:3])
+        pdf_3.tags.set(tags)
+
+        response = self.client.get(f'{reverse('pdf_overview')}?search=pdf_&tags=programming/python')
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
-        # pdfs 2, 7 and 12 are starting with 'pdf_2' only the pdf 2 and 7 have a tag
-        pdf_names = [pdf.name for pdf in filtered_pdfs]
-
-        self.assertEqual(pdf_names, ['pdf_2_2'])
+        self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
 
     @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):

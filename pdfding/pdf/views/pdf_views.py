@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from base import base_views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -124,7 +124,7 @@ class OverviewMixin(BasePdfMixin):
             tags = tags.split(' ')
 
         for tag in tags:
-            pdfs = pdfs.filter(tags__name=tag)
+            pdfs = pdfs.filter(Q(tags__name=tag) | Q(tags__name__startswith=f'{tag}/')).distinct()
 
         if search:
             pdfs = pdfs.filter(name__icontains=search)

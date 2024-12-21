@@ -12,7 +12,13 @@
 {% for tag_name, tag_info in tag_info_dict.items %}
     <div {% if tag_info.indent != 0 %} x-show="{{ tag_info.show_cond }}" x-cloak {% endif %}
        class="flex justify-between items-center ml-{{ tag_info.indent }} relative">
-        <div id="tag-{{ tag_name }}" x-data="{ hashtag_hovered: false, tag_options: false}" class="pr-2 py-1 flex justify-left items-center truncate">
+        <div id="tag-{{ tag_name }}" x-data="{ hashtag_hovered: false, tag_options: false}"
+             {% if tag_info.indent != 0 %}
+             class="pr-2 flex justify-left items-center truncate"
+             {% else %}
+             class="pr-2 py-1 flex justify-left items-center truncate"
+             {% endif %}
+            >
             {% include 'includes/tag.html' %}
         </div>
         {% if tag_info.has_children %}
