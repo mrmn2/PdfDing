@@ -27,9 +27,10 @@
           {% else %}
           PDFViewerApplication.open({ url: "{% url 'serve_shared_pdf' shared_pdf_id %}" });
           {% endif %}
-          setTimeout(function() {
-              document.title = "PdfDing"
-          }, 2000);
+          PDFViewerApplication.setTitle = function set_new_title(new_title) {
+            const editorIndicator = this._hasAnnotationEditors;
+            document.title = `${editorIndicator ? "* " : ""}${"{{ tab_title }}"}`;
+          }
       });
 
       // set properties

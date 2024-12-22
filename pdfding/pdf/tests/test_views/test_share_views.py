@@ -258,6 +258,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['shared_pdf_id'], self.shared_pdf.id)
         # assert orange colored theme is used
         self.assertEqual(response.context['theme_color_rgb'], '255 203 133')
+        self.assertEqual(response.context['tab_title'], 'PdfDing')
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')
 

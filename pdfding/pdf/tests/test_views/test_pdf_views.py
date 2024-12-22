@@ -338,6 +338,7 @@ class TestViews(TestCase):
         self.assertLess(time_diff.total_seconds(), 1)
 
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
+        self.assertEqual(response.context['tab_title'], str(pdf.name))
         self.assertEqual(response.context['theme_color_rgb'], '255 179 165')
         self.assertEqual(response.context['user_view_bool'], True)
 

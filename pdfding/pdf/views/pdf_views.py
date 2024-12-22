@@ -277,6 +277,7 @@ class ViewerView(PdfMixin, View):
             'viewer.html',
             {
                 'pdf_id': identifier,
+                'tab_title': pdf.name,
                 'theme_color_rgb': theme_color_rgb_dict[request.user.profile.theme_color],
                 'user_view_bool': True,
             },
