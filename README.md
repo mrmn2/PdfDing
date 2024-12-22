@@ -12,6 +12,7 @@ PdfDing is a selfhosted PDF manager and viewer offering a seamless user experien
 ## Overview
 - [Introduction](#introduction)
 - [Installation](#installation)
+- [Guides](#guides)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledements)
@@ -32,7 +33,7 @@ your PDFs. The name and PdfDing's design are inspired by the excellent bookmark 
 
 ### Feature Overview
 * Seamless browser based PDF viewing on multiple devices
-* Organize PDFs with tags
+* Organize PDFs with multi-level tags
 * Clean and responsive UI
 * Dark Mode, colored themes and custom theme colors
 * Inverted color mode for reading PDFs
@@ -102,6 +103,10 @@ To install PdfDing using Docker Compose, you can use one of the files in the
 ```
 docker-compose -d -f sqlite.docker-compose.yaml
 ```
+
+## Guides
+Guides about various aspects of PdfDing can be found in the
+[guides](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md) section of the docs.
 
 ## Configuration
 Information about the different configuration options can be found in the

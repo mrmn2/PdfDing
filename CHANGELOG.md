@@ -1,6 +1,18 @@
 # Changelog
 <hr>
 
+## 0.8.0 - Tag Tree Mode (Dec 22, 2024)
+* Add tree mode for tags. Pdfs can now be organized with hierarchical tags. Instructions
+  can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md#tags).
+* Minor UI improvements
+
+### Breaking Changes
+* Due to the internal workings of the tree mode for tags, naming of tags had to be restricted.
+  From now on tags can only contain letters, numbers, '/', '-' and '_'. Furthermore, names cannot
+  start or end with '/' and consecutive occurrences of '/' are also not allowed. These restrictions
+  are only enforced for newly created tags. For existing tags users will need to activate normal
+  mode for tags and manually adjust the tags, so they are valid. Otherwise, tree mode will not work.
+
 ## 0.7.0 - Consumption Directory (Dec 15, 2024)
 * Add consumption directory as an alternative way for adding PDF files
 * Show user ID in the header dropdown menu
