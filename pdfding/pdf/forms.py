@@ -426,12 +426,15 @@ class CleanHelpers:
             tag_string_split = tag_string.split(' ')
 
             for tag in tag_string_split:
-                tag = tag.strip()
+                # only process non-empty tags
+                # if a tag string has multiple spaces between tags this would cause a IndexError otherwise.
+                if tag:
+                    tag = tag.strip()
 
-                if tag[0] == '/' or tag[-1] == '/':
-                    raise forms.ValidationError('Tags cannot begin or end with "/"!')
+                    if tag[0] == '/' or tag[-1] == '/':
+                        raise forms.ValidationError('Tags cannot begin or end with "/"!')
 
-                if re.search(r'/{2,}', tag):
-                    raise forms.ValidationError('Tags are not allowed to contain consecutive "/" characters!')
+                    if re.search(r'/{2,}', tag):
+                        raise forms.ValidationError('Tags are not allowed to contain consecutive "/" characters!')
 
         return tag_string

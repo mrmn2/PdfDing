@@ -220,3 +220,8 @@ class TestCleanHelpers(TestCase):
             ValidationError, expected_message='Tags are not allowed to contain consecutive "/" characters!'
         ):
             CleanHelpers.clean_tag_string('inval//id')
+
+    def test_clean_tag_string_multiple_spaces_between(self):
+        tag_string = 'programming/python/django   ot-h_er'
+
+        self.assertEqual(tag_string, CleanHelpers.clean_tag_string(tag_string))
