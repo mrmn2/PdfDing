@@ -14,6 +14,7 @@ urlpatterns = [
     path('edit/<identifier>/<field_name>', pdf_views.Edit.as_view(), name='edit_pdf'),
     path('get/<identifier>', pdf_views.Serve.as_view(), name='serve_pdf'),
     path('update_page', pdf_views.UpdatePage.as_view(), name='update_page'),
+    path('update_pdf', pdf_views.UpdatePdf.as_view(), name='update_pdf'),
     path('view/<identifier>', pdf_views.ViewerView.as_view(), name='view_pdf'),
     path('share/<identifier>', share_views.Share.as_view(), name='share_pdf'),
     path('shared/overview/', share_views.Overview.as_view(), name='shared_pdf_overview'),

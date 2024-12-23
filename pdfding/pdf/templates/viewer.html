@@ -21,6 +21,7 @@
           {% else %}
           PDFViewerApplication.open({ url: "{% url 'serve_shared_pdf' shared_pdf_id %}" });
           {% endif %}
+          // overwrite setTitle so that PdfDing controls the tab's title
           PDFViewerApplication.setTitle = function set_new_title(new_title) {
             const editorIndicator = this._hasAnnotationEditors;
             document.title = `${editorIndicator ? "* " : ""}${"{{ tab_title }}"}`;
@@ -61,6 +62,46 @@
           },
         });
       }
+
+      {% if user_view_bool %}
+      // send file via the fetch api to the backend
+      function send_pdf_file(file) {
+        var form_data = new FormData();
+        form_data.append('updated_pdf', file);
+        form_data.append('pdf_id', '{{ pdf_id }}')
+
+        fetch("{% url 'update_pdf'%}", {
+          method: "POST",
+          body: form_data,
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+        });
+      }
+
+      // function for updating the pdf file in the backend
+      async function update_pdf() {
+        if (PDFViewerApplication._saveInProgress) {
+          return;
+        }
+        PDFViewerApplication._saveInProgress = true;
+        await PDFViewerApplication.pdfScriptingManager.dispatchWillSave();
+
+        try {
+          const data = await PDFViewerApplication.pdfDocument.saveDocument();
+          const updated_pdf = new Blob([data], {type: "application/pdf"});
+          send_pdf_file(updated_pdf);
+          PDFViewerApplication._hasAnnotationEditors = false;
+          // removes "*" from the tab title in order to signal that the file was successfully saved
+          PDFViewerApplication.setTitle("{{ tab_title }}");
+        } catch (reason) {
+          console.error(`Error when saving the document: ${reason.message}`);
+        } finally {
+          await PDFViewerApplication.pdfScriptingManager.dispatchDidSave();
+          PDFViewerApplication._saveInProgress = false;
+        }
+      }
+      {% endif %}
     </script>
     <style>
       select:hover option:hover {
@@ -125,6 +166,13 @@
       .pdfSidebarNotification::after {
         background-color: rgb({{ theme_color_rgb }});
       }
+      .editorParamsToolbarContainer {
+        background-color:rgb(54 52 64);
+      }
+      .splitToolbarButtonSeparator{
+        border-left:1px solid rgb(243,244,246);
+        opacity: 0.6
+      }
       {% if request.user.profile.pdf_inverted_mode == 'Enabled' %}
       #viewerContainer > #viewer .page {
         filter: grayscale(100%);
@@ -169,7 +217,7 @@
             <div id="toolbarViewer" class="toolbarHorizontalGroup">
               <div id="toolbarViewerLeft" class="toolbarHorizontalGroup">
                 <button id="sidebarToggleButton" class="toolbarButton" type="button"></button>
-                <div class="toolbarButtonSpacer"></div>
+                <img class="hiddenSmallView" src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.5">
                 <div class="toolbarButtonWithContainer">
                   <button id="viewFindButton" class="toolbarButton" type="button"></button>
                   <div class="hidden doorHanger toolbarHorizontalGroup" id="findbar">
@@ -246,17 +294,72 @@
               <div id="toolbarViewerRight">
                 <div class="toolbarHorizontalGroup toolbarLabel hiddenSmallView">
                   <img src="{% static 'images/logo.svg' %}" width="22" style="opacity: 0.9;padding: 3px 4px 0;margin: 2px 1px;">
-                  <span style="font-size: medium;font-weight: bold">PdfDing</span>
+                  <span style="font-size: medium;font-weight: bold; opacity: 0.8; padding-top: 4px">PdfDing</span>
                   <div class="toolbarButtonSpacer"></div>
                 </div>
-                <div class="toolbarHorizontalGroup">
+                <div class="toolbarHorizontalGroup" >
                   {% if user_view_bool %}
                   <button onclick="location.href='{% url 'download_pdf' pdf_id %}'" class="button1">
-                  {% else %}
-                  <button onclick="location.href='{% url 'download_shared_pdf' shared_pdf_id %}'" class="button1">
-                  {% endif %}
                     <img src="{% static 'images/download.svg' %}" width="22" style="opacity: 0.6">
                   </button>
+                  <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.5">
+                  <button onclick="update_pdf()" class="button1">
+                    <img src="{% static 'images/save.svg' %}" width="22" style="opacity: 0.6">
+                  </button>
+                  {% else %}
+                  <button onclick="location.href='{% url 'download_shared_pdf' shared_pdf_id %}'" class="button1">
+                    <img src="{% static 'images/download.svg' %}" width="22" style="opacity: 0.6">
+                  </button>
+                  {% endif %}
+                </div>
+                {% if user_view_bool %}
+                <div id="editorModeButtons" class="toolbarHorizontalGroup" role="radiogroup">
+                  <div id="editorHighlight" class="toolbarButtonWithContainer">
+                    <button id="editorHighlightButton" class="button1" type="button">
+                      <img src="{% static 'images/brush.svg' %}" width="22" style="opacity: 0.6">
+                    </button>
+                    <div class="editorParamsToolbar hidden doorHangerRight" id="editorHighlightParamsToolbar">
+                      <div id="highlightParamsToolbarContainer" class="editorParamsToolbarContainer">
+                        <div id="editorHighlightColorPicker" class="colorPicker">
+                          <span id="highlightColorPickerLabel" class="editorParamsLabel" >Highlight color</span>
+                        </div>
+                        <div id="editorHighlightThickness">
+                          <label for="editorFreeHighlightThickness" class="editorParamsLabel">Thickness</label>
+                          <div class="thicknessPicker">
+                            <input type="range" id="editorFreeHighlightThickness" class="editorParamsSlider" value="12" min="8" max="24" step="1">
+                          </div>
+                        </div>
+                        <div id="editorHighlightVisibility">
+                          <div class="divider"></div>
+                          <div class="toggler">
+                            <label for="editorHighlightShowAll" class="editorParamsLabel">Show all</label>
+                            <button id="editorHighlightShowAll" class="toggle-button" type="button" aria-pressed="true" tabindex="0"></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="editorFreeText" class="toolbarButtonWithContainer">
+                    <button id="editorFreeTextButton" class="button1" type="button">
+                      <img src="{% static 'images/text.svg' %}" width="22" style="opacity: 0.6">
+                    </button>
+                    <div class="editorParamsToolbar hidden doorHangerRight" id="editorFreeTextParamsToolbar">
+                      <div class="editorParamsToolbarContainer">
+                        <div class="editorParamsSetter">
+                          <label for="editorFreeTextColor" class="editorParamsLabel">Color</label>
+                          <input type="color" id="editorFreeTextColor" class="editorParamsColor">
+                        </div>
+                        <div class="editorParamsSetter">
+                          <label for="editorFreeTextFontSize" class="editorParamsLabel">Size</label>
+                          <input type="range" id="editorFreeTextFontSize" class="editorParamsSlider" value="10" min="5" max="100" step="1">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                <div class="toolbarHorizontalGroup hiddenSmallView">
+                  <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.6">
                   {% if 'pdf/view' in request.META.HTTP_REFERER %}
                   <button onclick="location.href='{% url 'pdf_overview' %}'" class="button1">
                   {% else %}
@@ -296,11 +399,14 @@
     </div> <!-- outerContainer -->
   </body>
 
-  <div id="viewAttachments"></div><div id="viewLayers"></div><div id="editorHighlightShowAll"></div>
-  <div id="editorFreeHighlightThickness"></div><div id="editorHighlightButton"></div>
+  {% if not user_view_bool %}
   <div id="editorFreeTextButton"></div><div id="editorFreeTextColor"></div><div id="editorFreeTextFontSize"></div>
+  <div id="editorFreeHighlightThickness"></div><div id="editorHighlightButton"></div>
+  <div id="editorHighlightShowAll"></div>
+  {% endif %}
   <div id="editorInkButton"></div><div id="editorInkColor"></div><div id="editorInkThickness"></div>
-  <div id="editorInkOpacity"></div><div id="editorStampButton"></div><div id="editorStampAddImage"></div>
+  <div id="viewAttachments"></div><div id="viewLayers"></div><div id="editorInkOpacity"></div>
+  <div id="editorStampButton"></div><div id="editorStampAddImage"></div><div id="altTextDialog"></div>
   <div id="downloadButton"></div><div id="printButton"></div><div id="secondaryToolbarToggleButton"></div>
   <div id="secondaryOpenFile"></div><div id="secondaryPrint"></div><div id="secondaryDownload"></div>
   <div id="presentationMode"></div><div id="viewBookmark"></div><div id="firstPage"></div>
@@ -310,5 +416,5 @@
   <div id="spreadNone"></div><div id="spreadOdd"></div><div id="spreadEven"></div><div id="imageAltTextSettings"></div>
   <div id="documentProperties"></div><div id="documentPropertiesDialog"></div><div id="documentPropertiesClose"></div>
   <div id="descriptionButton"></div><div id="decorativeButton"></div><div id="altTextCancel"></div>
-  <div id="altTextSave"></div><div id="altTextDialog"></div>
+  <div id="altTextSave"></div>
 </html>
