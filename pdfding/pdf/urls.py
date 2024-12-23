@@ -8,7 +8,6 @@ urlpatterns = [
     path('<int:page>/', pdf_views.Overview.as_view(), name='pdf_overview_page'),
     path('add', pdf_views.Add.as_view(), name='add_pdf'),
     path('bulk_add', pdf_views.BulkAdd.as_view(), name='bulk_add_pdfs'),
-    path('current_page/<identifier>', pdf_views.CurrentPage.as_view(), name='current_page'),
     path('delete/<identifier>', pdf_views.Delete.as_view(), name='delete_pdf'),
     path('details/<identifier>', pdf_views.Details.as_view(), name='pdf_details'),
     path('download/<identifier>', pdf_views.Download.as_view(), name='download_pdf'),

@@ -256,6 +256,7 @@ class TestLoginNotRequiredViews(TestCase):
 
         response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': self.shared_pdf.id}))
         self.assertEqual(response.context['shared_pdf_id'], self.shared_pdf.id)
+        self.assertEqual(response.context['current_page'], 1)
         # assert orange colored theme is used
         self.assertEqual(response.context['theme_color_rgb'], '255 203 133')
         self.assertEqual(response.context['tab_title'], 'PdfDing')

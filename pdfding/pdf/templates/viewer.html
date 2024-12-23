@@ -9,15 +9,9 @@
     <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo.svg' %}">
     <script src="../../static/pdfjs/web/viewer.mjs" type="module"></script>
-    <script src="{% static 'js/jquery.min.js' %}"></script>
     <script>
       // get the start page
-      var page_number;
-      {% if user_view_bool %}
-      get_current_page(async=false);
-      {% else %}
-      page_number = 1;
-      {% endif %}
+      var page_number = {{ current_page }};
 
       // open pdf on the start page
       window.addEventListener('load', function() {
@@ -48,38 +42,23 @@
       // function for updating the remote page
       function update_remote_page() {
         if (PDFViewerApplication.pdfViewer.currentPageNumber != page_number) {
-          page_number = PDFViewerApplication.pdfViewer.currentPageNumber
-          set_current_page(page_number)
+          page_number = PDFViewerApplication.pdfViewer.currentPageNumber;
+          set_current_page(page_number);
         }
-      }
-
-      // function for getting the page this pdf was last viewed on
-      function get_current_page(async=true) {
-        var response = $.ajax({
-            url: "{% url 'current_page' pdf_id %}",
-            dataType: 'json',
-            type: "GET",
-            async: async,
-            success: function (data) {
-              page_number = data.current_page;
-            },
-            failure: function (data) {
-              page_number = 1;
-            }
-        });
       }
       {% endif %}
 
-      // function for updating the page this pdf was last viewed on
       function set_current_page(current_page) {
-        $.ajax({
-            url: "{% url 'update_page'%}",
-            'data': {
-                'pdf_id': '{{ pdf_id }}',
-                'current_page': current_page,
-                'csrfmiddlewaretoken': '{{ csrf_token }}',
-            },
-            type: "POST",
+        var form_data = new FormData();
+        form_data.append('pdf_id', '{{ pdf_id }}')
+        form_data.append('current_page', current_page)
+
+        fetch("{% url 'update_page'%}", {
+          method: "POST",
+          body: form_data,
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
         });
       }
     </script>

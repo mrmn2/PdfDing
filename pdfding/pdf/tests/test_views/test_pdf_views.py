@@ -326,6 +326,8 @@ class TestViews(TestCase):
         profile.save()
 
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf.current_page = '4'
+        pdf.save()
         self.assertEqual(pdf.views, 0)
         self.assertEqual(pdf.last_viewed_date, datetime(2000, 1, 1, tzinfo=timezone.utc))
 
@@ -339,6 +341,7 @@ class TestViews(TestCase):
 
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
         self.assertEqual(response.context['tab_title'], str(pdf.name))
+        self.assertEqual(response.context['current_page'], 4)
         self.assertEqual(response.context['theme_color_rgb'], '255 179 165')
         self.assertEqual(response.context['user_view_bool'], True)
 
@@ -351,15 +354,6 @@ class TestViews(TestCase):
         pdf = self.user.profile.pdf_set.get(id=pdf.id)
 
         self.assertEqual(pdf.current_page, 10)
-
-    def test_current_page_get(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-        pdf.current_page = 5
-        pdf.save()
-
-        response = self.client.get(reverse('current_page', kwargs={'identifier': pdf.id}))
-
-        self.assertEqual(response.json()['current_page'], 5)
 
 
 class TestTagViews(TestCase):
