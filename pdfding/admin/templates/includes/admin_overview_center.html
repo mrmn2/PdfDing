@@ -18,7 +18,10 @@
     </div>
     <div x-data="{ tooltip_date: false }" class="text-gray-500  text-sm">
       <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
-          Registered: {{ user.date_joined.date }} | PDFs: {{ user.profile.pdf_set.all.count }}
+          Registered: {{ user.date_joined.date }}
+      </span>
+      <span>
+          | PDFs: {{ user.profile.pdf_set.all.count }}
       </span>
       <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
             class="left-0 bottom-0 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
