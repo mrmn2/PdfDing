@@ -182,7 +182,7 @@
     </style>
   </head>
 
-  <body tabindex="0">
+  <body>
     <div id="outerContainer">
       <div id="sidebarContainer">
         <div id="toolbarSidebar" class="toolbarHorizontalGroup">
@@ -291,7 +291,7 @@
                   <span id="numPages" class="toolbarLabel"></span>
                 </div>
               </div>
-              <div id="toolbarViewerRight">
+              <div id="toolbarViewerRight" class="toolbarHorizontalGroup">
                 <div class="toolbarHorizontalGroup toolbarLabel hiddenSmallView">
                   <img src="{% static 'images/logo.svg' %}" width="22" style="opacity: 0.9;padding: 3px 4px 0;margin: 2px 1px;">
                   <span style="font-size: medium;font-weight: bold; opacity: 0.8; padding-top: 4px">PdfDing</span>
@@ -315,13 +315,13 @@
                 {% if user_view_bool %}
                 <div id="editorModeButtons" class="toolbarHorizontalGroup" role="radiogroup">
                   <div id="editorHighlight" class="toolbarButtonWithContainer">
-                    <button id="editorHighlightButton" class="button1" type="button">
-                      <img src="{% static 'images/brush.svg' %}" width="22" style="opacity: 0.6">
+                    <button id="editorHighlightButton" class="toolbarButton" type="button">
+                      <span>Highlight</span>
                     </button>
                     <div class="editorParamsToolbar hidden doorHangerRight" id="editorHighlightParamsToolbar">
                       <div id="highlightParamsToolbarContainer" class="editorParamsToolbarContainer">
                         <div id="editorHighlightColorPicker" class="colorPicker">
-                          <span id="highlightColorPickerLabel" class="editorParamsLabel" >Highlight color</span>
+                          <span id="highlightColorPickerLabel" class="editorParamsLabel">Highlight color</span>
                         </div>
                         <div id="editorHighlightThickness">
                           <label for="editorFreeHighlightThickness" class="editorParamsLabel">Thickness</label>
@@ -333,15 +333,15 @@
                           <div class="divider"></div>
                           <div class="toggler">
                             <label for="editorHighlightShowAll" class="editorParamsLabel">Show all</label>
-                            <button id="editorHighlightShowAll" class="toggle-button" type="button" aria-pressed="true" tabindex="0"></button>
+                            <button id="editorHighlightShowAll" class="toggle-button" type="button" aria-pressed="true"></button>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div id="editorFreeText" class="toolbarButtonWithContainer">
-                    <button id="editorFreeTextButton" class="button1" type="button">
-                      <img src="{% static 'images/text.svg' %}" width="22" style="opacity: 0.6">
+                    <button id="editorFreeTextButton" class="toolbarButton" type="button">
+                      <span>Text</span>
                     </button>
                     <div class="editorParamsToolbar hidden doorHangerRight" id="editorFreeTextParamsToolbar">
                       <div class="editorParamsToolbarContainer">
@@ -352,6 +352,27 @@
                         <div class="editorParamsSetter">
                           <label for="editorFreeTextFontSize" class="editorParamsLabel">Size</label>
                           <input type="range" id="editorFreeTextFontSize" class="editorParamsSlider" value="10" min="5" max="100" step="1">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="editorInk" class="toolbarButtonWithContainer">
+                    <button id="editorInkButton" class="toolbarButton" type="button">
+                      <span>Draw</span>
+                    </button>
+                    <div class="editorParamsToolbar hidden doorHangerRight" id="editorInkParamsToolbar">
+                      <div class="editorParamsToolbarContainer">
+                        <div class="editorParamsSetter">
+                          <label for="editorInkColor" class="editorParamsLabel">Color</label>
+                          <input type="color" id="editorInkColor" class="editorParamsColor">
+                        </div>
+                        <div class="editorParamsSetter">
+                          <label for="editorInkThickness" class="editorParamsLabel">Thickness</label>
+                          <input type="range" id="editorInkThickness" class="editorParamsSlider" value="1" min="1" max="20" step="1">
+                        </div>
+                        <div class="editorParamsSetter">
+                          <label for="editorInkOpacity" class="editorParamsLabel">Opacity</label>
+                          <input type="range" id="editorInkOpacity" class="editorParamsSlider" value="1" min="0.05" max="1" step="0.05">
                         </div>
                       </div>
                     </div>
@@ -370,6 +391,7 @@
                 </div>
               </div>
             </div>
+            <div id="secondaryToolbar"></div>
             <div id="loadingBar">
               <div class="progress">
                 <div class="glimmer">
@@ -378,7 +400,7 @@
             </div>
           </div>
         </div>
-        <div id="viewerContainer" tabindex="0">
+        <div id="viewerContainer">
           <div id="viewer" class="pdfViewer"></div>
         </div>
       </div> <!-- mainContainer -->
@@ -396,16 +418,31 @@
           </div>
         </dialog>
       </div>  <!-- dialogContainer -->
+      <div id="editorUndoBar" class="messageBar" role="status" aria-labelledby="editorUndoBarMessage" tabindex="-1" hidden>
+        <div>
+          <div>
+            <span id="editorUndoBarMessage" class="description"></span>
+          </div>
+          <button id="editorUndoBarUndoButton" class="undoButton" type="button" title="Undo">
+            <span>Undo</span>
+          </button>
+          <button id="editorUndoBarCloseButton" class="closeButton" type="button" title="Close">
+            <span>Close</span>
+          </button>
+        </div>
+      </div> <!-- editorUndoBar -->
+
     </div> <!-- outerContainer -->
   </body>
 
   {% if not user_view_bool %}
   <div id="editorFreeTextButton"></div><div id="editorFreeTextColor"></div><div id="editorFreeTextFontSize"></div>
   <div id="editorFreeHighlightThickness"></div><div id="editorHighlightButton"></div>
-  <div id="editorHighlightShowAll"></div>
+  <div id="editorHighlightShowAll"></div><div id="editorInkButton"></div><div id="editorInkColor">
+  </div><div id="editorInkThickness"></div><div id="editorInkOpacity"></div>
   {% endif %}
-  <div id="editorInkButton"></div><div id="editorInkColor"></div><div id="editorInkThickness"></div>
-  <div id="viewAttachments"></div><div id="viewLayers"></div><div id="editorInkOpacity"></div>
+
+  <div id="viewAttachments"></div><div id="viewLayers"></div><div id="altTextSave"></div>
   <div id="editorStampButton"></div><div id="editorStampAddImage"></div><div id="altTextDialog"></div>
   <div id="downloadButton"></div><div id="printButton"></div><div id="secondaryToolbarToggleButton"></div>
   <div id="secondaryOpenFile"></div><div id="secondaryPrint"></div><div id="secondaryDownload"></div>
@@ -416,5 +453,4 @@
   <div id="spreadNone"></div><div id="spreadOdd"></div><div id="spreadEven"></div><div id="imageAltTextSettings"></div>
   <div id="documentProperties"></div><div id="documentPropertiesDialog"></div><div id="documentPropertiesClose"></div>
   <div id="descriptionButton"></div><div id="decorativeButton"></div><div id="altTextCancel"></div>
-  <div id="altTextSave"></div>
 </html>
