@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "alpinejs": "3.14.3",
-    "htmx.org": "2.0.3",
-    "tailwindcss": "3.4.15",
-    "terser": "5.36.0"
+    "alpinejs": "3.14.8",
+    "htmx.org": "2.0.4",
+    "tailwindcss": "3.4.17",
+    "terser": "5.37.0"
   },
   "scripts": {
     "build:alpine": "cp node_modules/alpinejs/dist/cdn.min.js pdfding/static/js/alpine.min.js",
