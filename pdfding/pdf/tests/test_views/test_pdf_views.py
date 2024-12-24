@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from pathlib import Path
 from unittest import mock
 from unittest.mock import patch
 
@@ -326,6 +327,8 @@ class TestViews(TestCase):
         profile.save()
 
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf.current_page = '4'
+        pdf.save()
         self.assertEqual(pdf.views, 0)
         self.assertEqual(pdf.last_viewed_date, datetime(2000, 1, 1, tzinfo=timezone.utc))
 
@@ -338,27 +341,54 @@ class TestViews(TestCase):
         self.assertLess(time_diff.total_seconds(), 1)
 
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
+        self.assertEqual(response.context['tab_title'], str(pdf.name))
+        self.assertEqual(response.context['current_page'], 4)
         self.assertEqual(response.context['theme_color_rgb'], '255 179 165')
         self.assertEqual(response.context['user_view_bool'], True)
 
     def test_update_page_post(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
 
-        self.client.post(reverse('update_page'), data={'pdf_id': pdf.id, 'current_page': 10})
+        response = self.client.post(reverse('update_page'), data={'pdf_id': pdf.id, 'current_page': 10})
 
         # get pdf again with the changes
         pdf = self.user.profile.pdf_set.get(id=pdf.id)
 
         self.assertEqual(pdf.current_page, 10)
+        self.assertEqual(200, response.status_code)
 
-    def test_current_page_get(self):
+    def test_update_pdf_post_wrong_file_type(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-        pdf.current_page = 5
-        pdf.save()
 
-        response = self.client.get(reverse('current_page', kwargs={'identifier': pdf.id}))
+        file_path = Path(__file__)
+        with file_path.open(mode="rb") as f:
+            file = File(f, name='dummy')
+            response = self.client.post(reverse('update_pdf'), data={'pdf_id': pdf.id, 'updated_pdf': file})
 
-        self.assertEqual(response.json()['current_page'], 5)
+        self.assertEqual(response.status_code, 422)
+
+    def test_update_pdf_post_correct(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        # assign empty file and check size
+        init_file_path = Path(__file__).parents[1] / '__init__.py'
+        with init_file_path.open(mode="rb") as f:
+            file = File(f, name='dummy')
+            pdf.file = file
+            pdf.save()
+
+        self.assertEqual(pdf.file.size, 0)
+
+        # change the file and check size
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            file = File(f, name='dummy')
+            response = self.client.post(reverse('update_pdf'), data={'pdf_id': pdf.id, 'updated_pdf': file})
+
+        pdf = Pdf.objects.get(id=pdf.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(pdf.file.size, 8885)
 
 
 class TestTagViews(TestCase):

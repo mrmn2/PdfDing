@@ -5,12 +5,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.forms import ValidationError
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect
 from pdf import service
-from pdf.forms import AddForm, BulkAddForm, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
+from pdf.forms import AddForm, BulkAddForm, CleanHelpers, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
 from pdf.models import Pdf, Tag
 from users.models import Profile
 from users.service import convert_hex_to_rgb
@@ -276,7 +277,9 @@ class ViewerView(PdfMixin, View):
             request,
             'viewer.html',
             {
+                'current_page': pdf.current_page,
                 'pdf_id': identifier,
+                'tab_title': pdf.name,
                 'theme_color_rgb': theme_color_rgb_dict[request.user.profile.theme_color],
                 'user_view_bool': True,
             },
@@ -303,15 +306,27 @@ class UpdatePage(PdfMixin, View):
         return HttpResponse(status=200)
 
 
-class CurrentPage(PdfMixin, View):
-    """View for getting the current page of a PDF."""
+class UpdatePdf(PdfMixin, View):
+    """
+    View for updating the PDF file. This is triggered everytime the user saves a modified PDF.
+    """
 
-    def get(self, request: HttpRequest, identifier: str):
-        """Get the current page of the specified PDF."""
+    def post(self, request: HttpRequest):
+        """Change the current page."""
 
-        pdf = self.get_object(request, identifier)
+        pdf_id = request.POST.get('pdf_id')
+        pdf = self.get_object(request, pdf_id)
 
-        return JsonResponse({'current_page': pdf.current_page}, status=200)
+        updated_pdf = request.FILES.get('updated_pdf')
+
+        try:
+            updated_pdf = CleanHelpers.clean_file(updated_pdf)
+            pdf.file = updated_pdf
+            pdf.save()
+
+            return HttpResponse(status=200)
+        except ValidationError:
+            return HttpResponse(status=422)
 
 
 class Overview(OverviewMixin, base_views.BaseOverview):

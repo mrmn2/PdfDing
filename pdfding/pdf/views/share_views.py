@@ -325,6 +325,8 @@ class ViewShared(BaseSharedPdfPublicView):
             request,
             'viewer.html',
             {
+                'tab_title': 'PdfDing',
+                'current_page': 1,
                 'shared_pdf_id': shared_pdf.id,
                 'theme_color_rgb': theme_color_rgb_dict[settings.DEFAULT_THEME_COLOR],
                 'user_view_bool': False,
