@@ -1,5 +1,11 @@
 # Changelog
-<hr>
+
+## 0.9.0 - Annotations, Highlighting and Drawings  (Dec 22, 2024)
+* Add editing functionality to the PDF viewer. Users can add annotations, highlighting and drawings to PDFs
+  and save them. More information can be found
+  [here](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md#editing).
+* Show pdf name as the site title.
+* Update dependencies
 
 ## 0.8.0 - Tag Tree Mode (Dec 22, 2024)
 * Add tree mode for tags. Pdfs can now be organized with hierarchical tags. Instructions

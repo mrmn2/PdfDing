@@ -1,6 +1,7 @@
 ## Overview
 - [SSO via OIDC](#sso-via-oidc)
 - [Tags](#tags)
+- [Editing](#editing)
 - [Admin Users](#admin-users)
 - [Consumption Directory](#consumption-directory)
 - [Backups](#backups)
@@ -56,6 +57,22 @@ Here are some examples of tags for a better understanding.
 * Find the Tags section on the right sidebar.
 * Hover over the # sign next to the tag, it will change to ⁝.
 * Click on the menu button and then choose "Rename" or "Delete".
+
+## Editing
+PdfDing supports editing PDFs inside the PDF Viewer. Users can add annotations, highlighting and drawings
+to PDFs.
+
+### Usage
+To start editing simply press one of the corresponding buttons on the right side of the navigation
+bar. When the PDF was changed, the character `*` is placed before the PDF name in the site title as an visual
+indicator. Once finished, press the save button to save the changes to PdfDing.
+
+### Considerations
+* Currently, everytime a user presses save, the whole file gets send to the backend. Thus, it might be better
+  not to spam the save button, when editing bigger files.
+* Rarely, on some browsers reopening the PDF will not show the newest changes after saving and closing the edited
+  PDF. The changes are still saved to the backend, which can be verified by opening the page in a private Window
+  or downloading it.
 
 ## Admin Users
 If needed or wished it is possible to create an admin user. Admin users can view and delete users.

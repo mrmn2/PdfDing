@@ -2,6 +2,7 @@
 
 - [PDF Overview](#pdf-overview)
 - [PDF Viewer](#pdf-viewer)
+- [PDF Viewer - Editing](#pdf-viewer---editing)
 - [PDF Viewer - Inverted Colors](#pdf-viewer---inverted-colors)
 - [Sharing](#sharing)
 - [Mobile Experience](#mobile-experience)
@@ -19,6 +20,11 @@ The overview page displays the uploaded PDFs and shows the reading progress of e
 The integrated PDF viewer follows your selected theme.
 
 ![viewer](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_viewer_blue.png)
+
+## PDF Viewer - Editing
+Use the integrated editor to add annotations, highlighting and drawings
+
+![viewer_editor](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_viewer_editing.png)
 
 ## PDF Viewer - Inverted Colors
 Use the inverted color mode in order to protect your eyes.

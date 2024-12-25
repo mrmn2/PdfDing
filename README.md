@@ -1,5 +1,5 @@
 # PdfDing
-PdfDing is a selfhosted PDF manager and viewer offering a seamless user experience on multiple devices.
+PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices.
 
 [![GitHub Repo Stars](https://img.shields.io/github/stars/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mrmn/pdfding?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/mrmn/pdfding)
@@ -18,7 +18,7 @@ PdfDing is a selfhosted PDF manager and viewer offering a seamless user experien
 - [Acknowledgements](#acknowledements)
 
 ## Introduction
-PdfDing is a PDF manager and viewer that you can host yourself. It offers a seamless user experience on multiple
+PdfDing is a PDF manager, viewer and editor that you can host yourself. It offers a seamless user experience on multiple
 devices. It's designed be to be minimal, fast, and easy to set up using Docker. As all data stays on your server
 you have full control over your data and privacy.
 
@@ -34,7 +34,7 @@ your PDFs. The name and PdfDing's design are inspired by the excellent bookmark 
 ### Feature Overview
 * Seamless browser based PDF viewing on multiple devices
 * Organize PDFs with multi-level tags
-* Clean and responsive UI
+* Edit PDFs by adding annotations, highlighting and drawings
 * Dark Mode, colored themes and custom theme colors
 * Inverted color mode for reading PDFs
 * Remembers current position - continue where you stopped reading
