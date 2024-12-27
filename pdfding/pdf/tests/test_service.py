@@ -86,6 +86,7 @@ class TestService(TestCase):
         tag_names = [
             'programming/python/django',
             'programming/python',
+            'programming/python/django/tutorials',
             'programming/java/springboot',
             'programming/python/flask',
             'hobbies/sports/team',
@@ -107,13 +108,13 @@ class TestService(TestCase):
             [
                 (
                     'hobbies',
-                    {'display_name': 'hobbies', 'indent': 0, 'has_children': True, 'show_cond': '', 'slug': 'hobbies'},
+                    {'display_name': 'hobbies', 'level': 0, 'has_children': True, 'show_cond': '', 'slug': 'hobbies'},
                 ),
                 (
                     'hobbies/sports',
                     {
                         'display_name': 'sports',
-                        'indent': 6,
+                        'level': 1,
                         'has_children': True,
                         'show_cond': 'hobbies_show_children',
                         'slug': 'hobbies___sports',
@@ -123,7 +124,7 @@ class TestService(TestCase):
                     'hobbies/sports/team',
                     {
                         'display_name': 'team',
-                        'indent': 12,
+                        'level': 2,
                         'has_children': False,
                         'show_cond': 'hobbies_show_children && hobbies___sports_show_children',
                         'slug': 'hobbies___sports___team',
@@ -133,7 +134,7 @@ class TestService(TestCase):
                     'No-children',
                     {
                         'display_name': 'No-children',
-                        'indent': 0,
+                        'level': 0,
                         'has_children': False,
                         'show_cond': '',
                         'slug': 'No_children',
@@ -143,7 +144,7 @@ class TestService(TestCase):
                     'programming',
                     {
                         'display_name': 'programming',
-                        'indent': 0,
+                        'level': 0,
                         'has_children': True,
                         'show_cond': '',
                         'slug': 'programming',
@@ -153,7 +154,7 @@ class TestService(TestCase):
                     'programming/java',
                     {
                         'display_name': 'java',
-                        'indent': 6,
+                        'level': 1,
                         'has_children': True,
                         'show_cond': 'programming_show_children',
                         'slug': 'programming___java',
@@ -163,7 +164,7 @@ class TestService(TestCase):
                     'programming/java/springboot',
                     {
                         'display_name': 'springboot',
-                        'indent': 12,
+                        'level': 2,
                         'has_children': False,
                         'show_cond': 'programming_show_children && programming___java_show_children',
                         'slug': 'programming___java___springboot',
@@ -173,7 +174,7 @@ class TestService(TestCase):
                     'programming/python',
                     {
                         'display_name': 'python',
-                        'indent': 6,
+                        'level': 1,
                         'has_children': True,
                         'show_cond': 'programming_show_children',
                         'slug': 'programming___python',
@@ -183,17 +184,27 @@ class TestService(TestCase):
                     'programming/python/django',
                     {
                         'display_name': 'django',
-                        'indent': 12,
+                        'level': 2,
                         'has_children': False,
                         'show_cond': 'programming_show_children && programming___python_show_children',
                         'slug': 'programming___python___django',
                     },
                 ),
                 (
+                    'programming/python/django/tutorials',
+                    {
+                        'display_name': 'django/tutorials',
+                        'level': 2,
+                        'has_children': False,
+                        'show_cond': 'programming_show_children && programming___python_show_children',
+                        'slug': 'programming___python___django___tutorials',
+                    },
+                ),
+                (
                     'programming/python/flask',
                     {
                         'display_name': 'flask',
-                        'indent': 12,
+                        'level': 2,
                         'has_children': False,
                         'show_cond': 'programming_show_children && programming___python_show_children',
                         'slug': 'programming___python___flask',
@@ -203,7 +214,7 @@ class TestService(TestCase):
                     'programming2',
                     {
                         'display_name': 'programming2',
-                        'indent': 0,
+                        'level': 0,
                         'has_children': False,
                         'show_cond': '',
                         'slug': 'programming2',

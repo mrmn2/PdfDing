@@ -95,8 +95,8 @@ def get_tag_info_dict_tree_mode(profile: Profile) -> dict[str, dict]:
 
             if current not in tag_info_dict:
                 tag_info_dict[current] = {
-                    'display_name': current.rsplit('/', 1)[-1],
-                    'indent': level * 6,
+                    'display_name': current.split('/', level)[-1],
+                    'level': level,
                     'has_children': False,
                     'show_cond': ' && '.join(show_conditions),
                     'slug': current.replace('-', '_').replace('/', '___'),
