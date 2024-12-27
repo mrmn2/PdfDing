@@ -1,9 +1,9 @@
 <form action="{{ action_url }}"
       method="post"
       {% if field_name != "description" %}
-      class="flex gap-2 text-black dark:text-slate-200 h-8 w-11/12"
+      class="flex gap-x-2 text-black dark:text-slate-200 h-8 w-11/12"
       {% else %}
-      class="flex gap-2 text-black dark:text-slate-200 w-11/12"
+      class="flex gap-y-1 flex-col text-black dark:text-slate-200"
       {% endif %}
       autocomplete="off">
     {% csrf_token %}

@@ -139,6 +139,7 @@ class DescriptionForm(forms.ModelForm):
 
     class Meta:
         model = Pdf
+        widgets = {'description': forms.Textarea(attrs={'rows': 3})}
         fields = ['description']
 
 
@@ -252,6 +253,7 @@ class SharedDescriptionForm(forms.ModelForm):
 
     class Meta:
         model = SharedPdf
+        widgets = {'description': forms.Textarea(attrs={'rows': 5})}
         fields = ['description']
 
 

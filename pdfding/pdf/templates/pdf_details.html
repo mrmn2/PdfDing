@@ -1,4 +1,4 @@
-{% extends 'layouts/box.html' %}
+{% extends 'layouts/box_large.html' %}
 {% block content %}
 <div class="[&>div]:flex [&>div]:justify-between [&>div]:py-4
             [&>div]:border-b [&>div]:border-slate-200 [&>div]:dark:border-slate-600
@@ -40,7 +40,7 @@
             <span class="hyphens-manual">Des&shy;cription</span>
         </div>
         <div class="flex justify-between w-5/6 pl-4">
-            <div class="w-5/6 pr-6">
+            <div class="w-5/6">
                 <span id="description">
                 {% if pdf.description %}
                 {{ pdf.description }}
