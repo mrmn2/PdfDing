@@ -205,10 +205,10 @@
         <div id="toolbarSidebar" class="toolbarHorizontalGroup">
           <div id="toolbarSidebarLeft">
             <div id="sidebarViewButtons" class="toolbarHorizontalGroup toggled">
-              <button id="viewThumbnail" class="toolbarButton toggled" type="button">
+              <button id="viewThumbnail" class="toolbarButton toggled" type="button" title="Thumbnails">
                  <span>Thumbnails</span>
               </button>
-              <button id="viewOutline" class="toolbarButton" type="button">
+              <button id="viewOutline" class="toolbarButton" type="button" title="Table of Contents">
                  <span>Document Outline</span>
               </button>
             </div>
@@ -216,7 +216,7 @@
           <div id="toolbarSidebarRight">
             <div id="outlineOptionsContainer" class="toolbarHorizontalGroup">
               <div class="verticalToolbarSeparator"></div>
-              <button id="currentOutlineItem" class="toolbarButton" type="button" disabled="disabled">
+              <button id="currentOutlineItem" class="toolbarButton" type="button" disabled="disabled" title="Current Position">
                 <span>Current Outline Item</span>
               </button>
             </div>
@@ -236,16 +236,16 @@
                 <button id="sidebarToggleButton" class="toolbarButton" type="button"></button>
                 <img class="hiddenSmallView" src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.5">
                 <div class="toolbarButtonWithContainer">
-                  <button id="viewFindButton" class="toolbarButton" type="button"></button>
+                  <button id="viewFindButton" class="toolbarButton" type="button" title="Search"></button>
                   <div class="hidden doorHanger toolbarHorizontalGroup" id="findbar">
                     <div id="findInputContainer" class="toolbarHorizontalGroup">
                       <span class="loadingInput end toolbarHorizontalGroup">
                         <input id="findInput" class="toolbarField" placeholder="Search for">
                       </span>
                       <div class="toolbarHorizontalGroup">
-                        <button id="findPreviousButton" class="toolbarButton" type="button"></button>
+                        <button id="findPreviousButton" class="toolbarButton" type="button" title="Find Previous"></button>
                         <div class="splitToolbarButtonSeparator"></div>
-                        <button id="findNextButton" class="toolbarButton" type="button"></button>
+                        <button id="findNextButton" class="toolbarButton" type="button" title="Find Next"></button>
                       </div>
                     </div>
                     <div id="findbarOptionsOneContainer" class="toolbarHorizontalGroup">
@@ -278,9 +278,9 @@
               </div>
               <div id="toolbarViewerMiddle" class="toolbarHorizontalGroup">
                 <div class="toolbarHorizontalGroup">
-                  <button id="zoomOutButton" class="toolbarButton" type="button"></button>
+                  <button id="zoomOutButton" class="toolbarButton" type="button" title="Zoom Out"></button>
                   <div class="splitToolbarButtonSeparator"></div>
-                  <button id="zoomInButton" class="toolbarButton" type="button"></button>
+                  <button id="zoomInButton" class="toolbarButton" type="button" title="Zoom In"></button>
                 </div>
                 <span id="scaleSelectContainer" class="dropdownToolbarButton">
                   <select id="scaleSelect">
@@ -297,9 +297,9 @@
                 </span>
                 <div class="toolbarButtonSpacer"></div>
                 <div class="toolbarHorizontalGroup hiddenSmallView">
-                  <button class="toolbarButton" type="button" id="previous"></button>
+                  <button class="toolbarButton" type="button" id="previous" title="Previous Page"></button>
                   <div class="splitToolbarButtonSeparator"></div>
-                  <button class="toolbarButton" type="button" id="next"></button>
+                  <button class="toolbarButton" type="button" id="next" title="Next Page"></button>
                 </div>
                 <div class="toolbarHorizontalGroup">
                   <span class="loadingInput start toolbarHorizontalGroup">
@@ -316,15 +316,15 @@
                 </div>
                 <div class="toolbarHorizontalGroup" >
                   {% if user_view_bool %}
-                  <button onclick="location.href='{% url 'download_pdf' pdf_id %}'" class="button1">
+                  <button onclick="location.href='{% url 'download_pdf' pdf_id %}'" class="button1" title="Download">
                     <img src="{% static 'images/download.svg' %}" width="22" style="opacity: 0.6">
                   </button>
                   <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.5" class="hiddenSmallView">
-                  <button onclick="update_pdf()" class="button1">
+                  <button onclick="update_pdf()" class="button1" title="Save">
                     <img src="{% static 'images/save.svg' %}" width="22" style="opacity: 0.6">
                   </button>
                   {% else %}
-                  <button onclick="location.href='{% url 'download_shared_pdf' shared_pdf_id %}'" class="button1">
+                  <button onclick="location.href='{% url 'download_shared_pdf' shared_pdf_id %}'" class="button1"  title="Download">
                     <img src="{% static 'images/download.svg' %}" width="22" style="opacity: 0.6">
                   </button>
                   {% endif %}
@@ -332,7 +332,7 @@
                 {% if user_view_bool %}
                 <div id="editorModeButtons" class="toolbarHorizontalGroup" role="radiogroup">
                   <div id="editorHighlight" class="toolbarButtonWithContainer">
-                    <button id="editorHighlightButton" class="toolbarButton" type="button">
+                    <button id="editorHighlightButton" class="toolbarButton" type="button" title="Highlight">
                       <span>Highlight</span>
                     </button>
                     <div class="editorParamsToolbar hidden doorHangerRight" id="editorHighlightParamsToolbar">
@@ -357,7 +357,7 @@
                     </div>
                   </div>
                   <div id="editorFreeText" class="toolbarButtonWithContainer">
-                    <button id="editorFreeTextButton" class="toolbarButton" type="button">
+                    <button id="editorFreeTextButton" class="toolbarButton" type="button" title="Annotation">
                       <span>Text</span>
                     </button>
                     <div class="editorParamsToolbar hidden doorHangerRight" id="editorFreeTextParamsToolbar">
@@ -374,7 +374,7 @@
                     </div>
                   </div>
                   <div id="editorInk" class="toolbarButtonWithContainer">
-                    <button id="editorInkButton" class="toolbarButton" type="button">
+                    <button id="editorInkButton" class="toolbarButton" type="button" title="Draw">
                       <span>Draw</span>
                     </button>
                     <div class="editorParamsToolbar hidden doorHangerRight" id="editorInkParamsToolbar">
@@ -399,9 +399,9 @@
                 <div class="toolbarHorizontalGroup hiddenSmallView">
                   <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.6">
                   {% if 'pdf/view' in request.META.HTTP_REFERER %}
-                  <button onclick="location.href='{% url 'pdf_overview' %}'" class="button1">
+                  <button onclick="location.href='{% url 'pdf_overview' %}'" class="button1" title="Close">
                   {% else %}
-                  <button onclick="history.back()" class="button1">
+                  <button onclick="history.back()" class="button1" title="Close">
                   {% endif %}
                     <img src="{% static 'images/close_white.svg' %}" width="22" style="opacity: 0.6">
                   </button>
