@@ -104,6 +104,23 @@
       {% endif %}
     </script>
     <style>
+      @media all and (max-width: 900px){
+        #outerContainer .hiddenMediumView{
+          display:none !important;
+        }
+        #outerContainer .visibleMediumView:not(.hidden, [hidden]){
+          display:inline-block !important;
+        }
+      }
+      @media all and (max-width: 750px){
+        .hiddenSmallView,
+        .hiddenSmallView *{
+          display:none !important;
+        }
+        #toolbarContainer #toolbarViewer .toolbarButtonSpacer{
+          width:0;
+        }
+      }
       select:hover option:hover {
           background-color: red !important;
           color: white !important;
@@ -292,7 +309,7 @@
                 </div>
               </div>
               <div id="toolbarViewerRight" class="toolbarHorizontalGroup">
-                <div class="toolbarHorizontalGroup toolbarLabel hiddenSmallView">
+                <div class="toolbarHorizontalGroup toolbarLabel hiddenSmallView hiddenMediumView">
                   <img src="{% static 'images/logo.svg' %}" width="22" style="opacity: 0.9;padding: 3px 4px 0;margin: 2px 1px;">
                   <span style="font-size: medium;font-weight: bold; opacity: 0.8; padding-top: 4px">PdfDing</span>
                   <div class="toolbarButtonSpacer"></div>
@@ -302,7 +319,7 @@
                   <button onclick="location.href='{% url 'download_pdf' pdf_id %}'" class="button1">
                     <img src="{% static 'images/download.svg' %}" width="22" style="opacity: 0.6">
                   </button>
-                  <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.5">
+                  <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.5" class="hiddenSmallView">
                   <button onclick="update_pdf()" class="button1">
                     <img src="{% static 'images/save.svg' %}" width="22" style="opacity: 0.6">
                   </button>
