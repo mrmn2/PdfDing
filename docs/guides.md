@@ -83,6 +83,12 @@ python pdfding/manage.py make_admin -e admin@pdfding.com
 inside the shell of the running container and specify the correct email address.
 Admin users can can also give other users admin rights via the ui.
 
+Alternatively, you can directly create an admin user by entering the shell of the running container, executing
+```
+python pdfding/manage.py createsuperuser
+```
+and following the prompt.
+
 ## Consumption Directory
 As an alternative to the UI based approach PDF files can be added to PdfDing by putting them into the
 consumption directory of the running container. This feature is not activated by default and must be configured
