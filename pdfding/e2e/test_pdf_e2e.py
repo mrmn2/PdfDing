@@ -442,8 +442,9 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).to_contain_text("10% - Page 1 of 10")
-            expect(self.page.locator("content")).to_contain_text("1001")
-            expect(self.page.locator("content")).to_contain_text(creation_date)
+            expect(self.page.locator("#views")).to_contain_text("1001")
+            expect(self.page.locator("#creation_date")).to_contain_text(creation_date)
+            expect(self.page.locator("#pdf_id")).to_contain_text(str(pdf.id))
 
     def test_details_progress_not_visible(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')

@@ -108,7 +108,7 @@
             <span>Date added</span>
         </div>
         <div class="flex justify-between w-5/6 pl-4">
-            <div class="w-5/6">
+            <div id="creation_date" class="w-5/6">
                 <span>{{ pdf.creation_date }}</span>
             </div>
             <div class="w-1/6">
@@ -120,8 +120,20 @@
             <span>Views</span>
         </div>
         <div class="flex justify-between w-5/6 pl-4">
-            <div class="w-5/6">
+            <div id="views" class="w-5/6">
                 <span>{{ pdf.views }}</span>
+            </div>
+            <div class="w-1/6">
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="w-1/6">
+            <span>ID</span>
+        </div>
+        <div class="flex justify-between w-5/6 pl-4">
+            <div id="pdf_id" class="w-5/6">
+                <span>{{ pdf.id }}</span>
             </div>
             <div class="w-1/6">
             </div>
