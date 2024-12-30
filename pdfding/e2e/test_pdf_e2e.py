@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.test import override_settings
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase, cancel_delete_helper
 from pdf.models import Pdf, Tag
@@ -86,6 +87,24 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         dummy_file_path.unlink()
 
+    @override_settings(DEMO_MODE=True)
+    def test_add_pdf_demo_mode(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            self.page.get_by_role("link", name="Add PDF").click()
+            self.page.get_by_label("Use File Name:").check()
+            self.page.get_by_placeholder("Add Description").click()
+            self.page.get_by_placeholder("Add Description").fill("Some Description")
+            self.page.get_by_placeholder("Add Tags").click()
+            self.page.get_by_placeholder("Add Tags").fill("bread tag_1 banana tag_0 1")
+            expect(self.page.locator("#id_file")).not_to_be_visible()
+            self.page.get_by_role("button", name="Submit").click()
+
+            expect(self.page.locator("body")).to_contain_text("demo")
+            expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
+            expect(self.page.locator("body")).to_contain_text("Some Description")
+            expect(self.page.locator("body")).to_contain_text("now |")
+
     @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_bulk_add_pdf(self, mock_from_buffer):
         # this also tests the overview
@@ -134,6 +153,39 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         for path in dummy_file_paths:
             path.unlink()
+
+    @override_settings(DEMO_MODE=True)
+    def test_bulk_add_pdf_demo(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            self.page.get_by_role("link", name="Add PDF").click()
+            self.page.get_by_role("link", name="Bulk").click()
+            self.page.get_by_placeholder("Add Description").click()
+            self.page.get_by_placeholder("Add Description").fill("Some Description")
+            self.page.get_by_placeholder("Add Tags").click()
+            self.page.get_by_placeholder("Add Tags").fill("bread tag_1 banana tag_0 1")
+            expect(self.page.locator("#id_file")).not_to_be_visible()
+            self.page.get_by_role("button", name="Submit").click()
+
+            # check center
+            expect(self.page.locator("body")).to_contain_text("demo")
+            expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
+            expect(self.page.locator("body")).to_contain_text("Some Description")
+            expect(self.page.locator("body")).to_contain_text("now |")
+
+            # check tag sidebar
+            for tag in ["1", "banana", "bread", "tag_0", "tag_1"]:
+                expect(self.page.locator(f"#tag-{tag}")).to_contain_text(tag)
+
+            # check sidebar links
+            # first tag starting with character
+            expect(self.page.get_by_role("link", name="1", exact=True)).to_have_attribute(
+                "href", "/pdf/query/?search=%231"
+            )
+            # non first tag starting with character
+            expect(self.page.get_by_role("link", name="bread", exact=True)).to_have_attribute(
+                "href", "/pdf/query/?search=%23bread"
+            )
 
 
 class PdfOverviewE2ETestCase(PdfDingE2ETestCase):

@@ -3,7 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 from pdf.models import SharedPdf
 
-logger = logging.getLogger('recover_data')
+logger = logging.getLogger('management')
 
 
 class Command(BaseCommand):

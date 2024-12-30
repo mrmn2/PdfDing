@@ -62,3 +62,6 @@ if 'BACKUP_ENCRYPTION_PASSWORD' not in locals():
 # themes
 DEFAULT_THEME = 'dark'
 DEFAULT_THEME_COLOR = 'Red'
+
+# demo mode
+DEMO_MODE = False

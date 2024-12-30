@@ -13,7 +13,7 @@ minio_client = Minio(
     secret_key=settings.BACKUP_SECRET_KEY,
 )
 
-logger = logging.getLogger('recover_data')
+logger = logging.getLogger('management')
 
 
 class Command(BaseCommand):

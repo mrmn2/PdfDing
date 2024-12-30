@@ -232,7 +232,7 @@ LOGGING = {
         'propagate': False,
     },
     'loggers': {
-        'recover_data': {
+        'management': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,

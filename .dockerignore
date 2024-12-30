@@ -4,7 +4,8 @@ pdfding/core/settings/dev_secrets.py
 pdfding/core/settings/dev.py
 pdfding/consume/*
 pdfding/db/db.sqlite3
-pdfding/media
+pdfding/media/*
+!pdfding/media/demo/
 pdfding/static/js
 pdfding/static/css/*
 !pdfding/static/css/input.css

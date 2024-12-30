@@ -6,13 +6,15 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 from django_htmx.http import HttpResponseClientRedirect
 from pdf import forms
 from pdf.models import Pdf, Tag
 from pdf.views import pdf_views
+
+DEMO_FILE_SIZE = 26140
 
 
 def set_up(self):
@@ -60,6 +62,7 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.number_of_pages, 3)
+        self.assertEqual(pdf.file.size, 0)  # mock file has size 0
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_use_file_name(self, mock_from_buffer):
@@ -79,6 +82,20 @@ class TestAddPDFMixin(TestCase):
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
+
+    @override_settings(DEMO_MODE=True)
+    def test_obj_save_demo_mode(self):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        form = forms.AddFormNoFile(data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'}, owner=self.user.profile)
+
+        pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
+
+        pdf = self.user.profile.pdf_set.get(name='some_pdf')
+        tag_names = [tag.name for tag in pdf.tags.all()]
+        self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
+        self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
 
 
 class TestBulkAddPDFMixin(TestCase):
@@ -115,6 +132,7 @@ class TestBulkAddPDFMixin(TestCase):
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.number_of_pages, 3)
+        self.assertEqual(pdf.file.size, 0)  # mock file has size 0
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_multiple_files_no_skipping(self, mock_from_buffer):
@@ -138,7 +156,7 @@ class TestBulkAddPDFMixin(TestCase):
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
             self.assertEqual('description', 'description')
             self.assertEqual(pdf.owner, self.user.profile)
-            # check that pdf pages are set to 1 in case of exception.
+            # check that pdf pages are set to -1 in case of exception.
             # in this test there should be an exception as a mock file is used.
             self.assertEqual(pdf.number_of_pages, -1)
 
@@ -181,6 +199,23 @@ class TestBulkAddPDFMixin(TestCase):
         # also check date the test1 and test2 are unchanged
         for i in range(2):
             self.assertEqual(old_pdfs[i], self.user.profile.pdf_set.get(name=f'test{i + 1}'))
+
+    @override_settings(DEMO_MODE=True)
+    def test_obj_save_demo_mode(self):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        form = forms.BulkAddFormNoFile(
+            data={'tag_string': 'tag_a tag_2', 'description': 'description'}, owner=self.user.profile
+        )
+
+        pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
+
+        pdf = self.user.profile.pdf_set.get(name='demo')
+        tag_names = [tag.name for tag in pdf.tags.all()]
+        self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
+        self.assertEqual('description', 'description')
+        self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
 
 
 class TestOverviewMixin(TestCase):
@@ -389,6 +424,26 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pdf.file.size, 8885)
+
+    @override_settings(DEMO_MODE=True)
+    def test_update_pdf_post_demo_mode(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        # assign empty file and check size
+        init_file_path = Path(__file__).parents[1] / '__init__.py'
+        with init_file_path.open(mode="rb") as f:
+            file = File(f, name='dummy')
+            pdf.file = file
+            pdf.save()
+
+        self.assertEqual(pdf.file.size, 0)
+
+        response = self.client.post(reverse('update_pdf'), data={'pdf_id': pdf.id})
+
+        pdf = Pdf.objects.get(id=pdf.id)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
 
 
 class TestTagViews(TestCase):

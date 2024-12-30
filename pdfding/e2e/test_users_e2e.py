@@ -220,6 +220,9 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             self.page.get_by_role('button', name='Sign In', exact=True).click()
             expect(self.page.locator('body')).to_contain_text('PDFs')
 
+            # demo mode info should not be visible
+            expect(self.page.locator("#demo_mode")).not_to_be_visible()
+
     def test_login_header_normal(self):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
@@ -252,3 +255,9 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Blue')
             expect(self.page.locator('body')).to_have_css('background-color', 'rgb(30, 41, 59)')
             expect(self.page.locator('header')).to_have_css('background-color', 'rgb(71, 147, 204)')
+
+    @override_settings(DEMO_MODE=True)
+    def test_login_demo_mode(self):
+        with sync_playwright() as p:
+            self.open(reverse('home'), p)
+            expect(self.page.locator("#demo_mode")).to_be_visible()

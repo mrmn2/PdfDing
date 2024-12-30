@@ -9,8 +9,8 @@ from django.core.files import File
 from .models import Pdf, SharedPdf
 
 
-class AddForm(forms.ModelForm):
-    """Class for creating the form for adding PDFs."""
+class AddFormNoFile(forms.ModelForm):
+    """Class for creating the form for adding PDFs in the demo mode."""
 
     tag_string = forms.CharField(
         required=False,
@@ -26,10 +26,9 @@ class AddForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Add PDF Name'}),
             'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Add Description'}),
-            'file': forms.ClearableFileInput(attrs={'accept': 'application/pdf'}),
         }
 
-        fields = ['name', 'description', 'file']
+        fields = ['name', 'description']
 
     def __init__(self, *args, **kwargs):
         """
@@ -39,7 +38,7 @@ class AddForm(forms.ModelForm):
 
         self.owner = kwargs.pop('owner', None)
 
-        super(AddForm, self).__init__(*args, **kwargs)
+        super(AddFormNoFile, self).__init__(*args, **kwargs)
 
     def clean(self):
         if not self.owner:
@@ -64,13 +63,25 @@ class AddForm(forms.ModelForm):
 
         return pdf_name
 
+    def clean_tag_string(self) -> str:  # pragma: no cover
+        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+
+
+class AddForm(AddFormNoFile):
+    """Class for creating the form for adding PDFs."""
+
+    class Meta(AddFormNoFile.Meta):
+        model = Pdf
+        widgets = AddFormNoFile.Meta.widgets
+        widgets['file'] = forms.ClearableFileInput(attrs={'accept': 'application/pdf'})
+
+        fields = AddFormNoFile.Meta.fields
+        fields.append('file')
+
     def clean_file(self) -> File:  # pragma: no cover
         """Clean the submitted pdf file. Checks if the file is a pdf."""
 
         return CleanHelpers.clean_file(self.cleaned_data['file'])
-
-    def clean_tag_string(self) -> str:  # pragma: no cover
-        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
 
 
 class MultipleFileInput(forms.ClearableFileInput):  # pragma: no cover
@@ -91,11 +102,8 @@ class MultipleFileField(forms.FileField):  # pragma: no cover
         return result
 
 
-class BulkAddForm(forms.Form):
-    file = MultipleFileField(
-        required=True,
-        widget=MultipleFileInput(attrs={'accept': 'application/pdf'}),
-    )
+class BulkAddFormNoFile(forms.Form):
+    """Class for creating the form for bulk adding PDFs in the demo mode."""
 
     description = forms.CharField(
         required=False,
@@ -118,7 +126,7 @@ class BulkAddForm(forms.Form):
 
         self.owner = kwargs.pop('owner', None)
 
-        super(BulkAddForm, self).__init__(*args, **kwargs)
+        super(BulkAddFormNoFile, self).__init__(*args, **kwargs)
 
     def clean(self):
         if not self.owner:
@@ -132,6 +140,15 @@ class BulkAddForm(forms.Form):
 
     def clean_tag_string(self) -> str:  # pragma: no cover
         return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+
+
+class BulkAddForm(BulkAddFormNoFile):
+    """Class for creating the form for bulk adding PDFs."""
+
+    file = MultipleFileField(
+        required=True,
+        widget=MultipleFileInput(attrs={'accept': 'application/pdf'}),
+    )
 
 
 class DescriptionForm(forms.ModelForm):

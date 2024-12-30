@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from base import base_views
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.db.models import Q, QuerySet
@@ -10,8 +11,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect
-from pdf import service
-from pdf.forms import AddForm, BulkAddForm, CleanHelpers, DescriptionForm, NameForm, PdfTagsForm, TagNameForm
+from pdf import forms, service
 from pdf.models import Pdf, Tag
 from users.models import Profile
 from users.service import convert_hex_to_rgb
@@ -22,8 +22,12 @@ class BasePdfMixin:
 
 
 class AddPdfMixin(BasePdfMixin):
-    form = AddForm
-    template_name = 'add_pdf.html'
+    def __init__(self):
+        self.template_name = 'add_pdf.html'
+        if settings.DEMO_MODE:  # pragma: no cover
+            self.form = forms.AddFormNoFile
+        else:
+            self.form = forms.AddForm
 
     def get_context_get(self, _, __):
         """Get the context needed to be passed to the template containing the form for adding a PDF."""
@@ -33,13 +37,19 @@ class AddPdfMixin(BasePdfMixin):
         return context
 
     @staticmethod
-    def obj_save(form: AddForm, request: HttpRequest, __):
+    def obj_save(form: forms.AddForm | forms.AddFormNoFile, request: HttpRequest, __):
         """Save the PDF based on the submitted form."""
 
         pdf = form.save(commit=False)
 
+        if settings.DEMO_MODE:
+            pdf_file = service.get_demo_pdf()
+            pdf.file = pdf_file
+        else:
+            pdf_file = form.files['file']
+
         if form.data.get('use_file_name'):
-            pdf.name = service.create_unique_name_from_file(form.files['file'], request.user.profile)
+            pdf.name = service.create_unique_name_from_file(pdf_file, request.user.profile)
 
         pdf.owner = request.user.profile
         pdf.save()  # we need to save otherwise the file will not be found in the next step
@@ -55,8 +65,12 @@ class AddPdfMixin(BasePdfMixin):
 
 
 class BulkAddPdfMixin(BasePdfMixin):
-    form = BulkAddForm
-    template_name = 'bulk_add_pdf.html'
+    def __init__(self):
+        self.template_name = 'bulk_add_pdf.html'
+        if settings.DEMO_MODE:  # pragma: no cover
+            self.form = forms.BulkAddFormNoFile
+        else:
+            self.form = forms.BulkAddForm
 
     def get_context_get(self, _, __):
         """Get the context needed to be passed to the template containing the form for bulk adding PDFs."""
@@ -66,7 +80,7 @@ class BulkAddPdfMixin(BasePdfMixin):
         return context
 
     @staticmethod
-    def obj_save(form: BulkAddForm, request: HttpRequest, __):
+    def obj_save(form: forms.BulkAddForm | forms.BulkAddFormNoFile, request: HttpRequest, __):
         """Save the multiple PDFs based on the submitted form."""
 
         profile = request.user.profile
@@ -80,7 +94,12 @@ class BulkAddPdfMixin(BasePdfMixin):
         else:
             pdf_info_list = []
 
-        for file in form.files.getlist('file'):
+        if settings.DEMO_MODE:
+            files = [service.get_demo_pdf()]
+        else:
+            files = form.files.getlist('file')
+
+        for file in files:
             # add file unless skipping existing is set and a PDF with the same name and file size already exists
             if not (
                 form.data.get('skip_existing') and (service.create_name_from_file(file), file.size) in pdf_info_list
@@ -199,7 +218,7 @@ class EditPdfMixin(PdfMixin):
     def get_edit_form_dict():
         """Get the forms of the fields that can be edited as a dict."""
 
-        form_dict = {'description': DescriptionForm, 'name': NameForm, 'tags': PdfTagsForm}
+        form_dict = {'description': forms.DescriptionForm, 'name': forms.NameForm, 'tags': forms.PdfTagsForm}
 
         return form_dict
 
@@ -317,10 +336,13 @@ class UpdatePdf(PdfMixin, View):
         pdf_id = request.POST.get('pdf_id')
         pdf = self.get_object(request, pdf_id)
 
-        updated_pdf = request.FILES.get('updated_pdf')
+        if settings.DEMO_MODE:
+            updated_pdf = service.get_demo_pdf()
+        else:
+            updated_pdf = request.FILES.get('updated_pdf')
 
         try:
-            updated_pdf = CleanHelpers.clean_file(updated_pdf)
+            updated_pdf = forms.CleanHelpers.clean_file(updated_pdf)
             pdf.file = updated_pdf
             pdf.save()
 
@@ -386,7 +408,7 @@ class EditTag(TagMixin, View):
             return render(
                 request,
                 'partials/tag_name_form.html',
-                {'tag_name': tag_name, 'form': TagNameForm(initial={'name': tag_name})},
+                {'tag_name': tag_name, 'form': forms.TagNameForm(initial={'name': tag_name})},
             )
 
         return redirect('pdf_overview')
@@ -399,7 +421,7 @@ class EditTag(TagMixin, View):
         redirect_url = request.META.get('HTTP_REFERER', 'pdf_overview')
         user_profile = request.user.profile
         original_tag_name = request.POST.get('current_name', '')
-        form = TagNameForm(request.POST)
+        form = forms.TagNameForm(request.POST)
 
         if form.is_valid():
             new_name = form.data.get('name')

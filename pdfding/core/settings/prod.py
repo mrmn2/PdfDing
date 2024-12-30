@@ -167,3 +167,9 @@ else:
         f'Provided DEFAULT_THEME_COLOR value {os.environ.get('DEFAULT_THEME_COLOR')} is not valid. '
         f'Valid values are: {", ".join(theme_colors)}.'
     )
+
+# demo mode
+if os.environ.get('DEMO_MODE', 'FALSE') == 'TRUE':
+    DEMO_MODE = True
+else:
+    DEMO_MODE = False

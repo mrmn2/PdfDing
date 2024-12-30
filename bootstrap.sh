@@ -23,5 +23,8 @@ fi
 HOST_PORT="${HOST_PORT:-8000}"
 
 python manage.py migrate
+if [ "$DEMO_MODE" = "TRUE"  ]; then
+  python manage.py create_demo_data
+fi
 python manage.py clean_up_shared_pdfs
 python -m gunicorn --bind 0.0.0.0:$HOST_PORT --workers 3 core.wsgi:application
