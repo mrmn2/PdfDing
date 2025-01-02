@@ -1,6 +1,16 @@
 # Changelog
 
-## 0.9.0 - Annotations, Highlighting and Drawings  (Dec 22, 2024)
+## 0.9.1 - Demo Mode  (Jan 2, 2025)
+* Introduce demo mode
+* Add hover tooltips to the buttons of the viewer
+* make parent-children relationships for tags in tree mode clearer by adding guiding lines
+* Add PDF ID to details page
+* minor UI improvements for PDF details page
+* fix: Adjust viewer navigation bar for mobile devices
+* fix: Display correct version in admin area. This did not work due to the migration from
+  woodpacker to gh actions.
+
+## 0.9.0 - Annotations, Highlighting and Drawings  (Dec 25, 2024)
 * Add editing functionality to the PDF viewer. Users can add annotations, highlighting and drawings to PDFs
   and save them. More information can be found
   [here](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md#editing).

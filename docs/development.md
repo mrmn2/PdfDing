@@ -13,8 +13,7 @@ Other than that the code should be self-explanatory / standard Django stuff 🙂
 ## Tech Stack
 * The web app is build using the Python web framework [Django](https://www.djangoproject.com/)
 * Mozilla's [PDF.js](https://mozilla.github.io/pdf.js/) is used for viewing PDF files in the browser
-* The frondend is build using [Alpine.js](https://alpinejs.dev/), [htmx](https://htmx.org/),
-[jQuery](https://jquery.com/) and [Tailwind CSS](https://tailwindcss.com/)
+* The frondend is build using [Alpine.js](https://alpinejs.dev/), [htmx](https://htmx.org/) and [Tailwind CSS](https://tailwindcss.com/)
 * Authentication, registration, account management and OIDC is achieved by [django-allauth](https://docs.allauth.org/en/latest/)
 
 ## Prerequisites

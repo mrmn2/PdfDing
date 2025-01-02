@@ -51,7 +51,8 @@ Here are some examples of tags for a better understanding.
 * `#hobbies` This is the simplest form of a tag and is used to categorize PDFs related to hobbies.
 * `#programming/python` Multi-level tags are supported. It helps you organize PDFs about Python programming
   under the "programming" category. Note that tree mode needs to activated for a visual representation of
-  hierarchical tags
+  hierarchical tags. Sub tags can only be created up to two levels deep, meaning `a/b/c` is supported while
+  `a/b/c/d` is not.
 
 ### Renaming and Deleting tags
 * Find the Tags section on the right sidebar.
@@ -76,18 +77,21 @@ indicator. Once finished, press the save button to save the changes to PdfDing.
 
 ## Admin Users
 If needed or wished it is possible to create an admin user. Admin users can view and delete users.
-Creating an admin user is optional. To give a user admin rights execute
+Creating an admin user is optional. To give a user admin rights enter the shell of the running container
+with
 ```
-python pdfding/manage.py make_admin -e admin@pdfding.com
+docker exec -it <container_id_or_name> /bin/sh
 ```
-inside the shell of the running container and specify the correct email address.
-Admin users can can also give other users admin rights via the ui.
-
-Alternatively, you can directly create an admin user by entering the shell of the running container, executing
+and execute:
+```
+python pdfding/manage.py make_admin -e <email_address>
+```
+Admin users can can also give other users admin rights via the ui. Alternatively, you can directly create an
+admin user by executing
 ```
 python pdfding/manage.py createsuperuser
 ```
-and following the prompt.
+in the container's shell and following the prompt.
 
 ## Consumption Directory
 As an alternative to the UI based approach PDF files can be added to PdfDing by putting them into the

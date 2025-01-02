@@ -16,6 +16,7 @@ PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user 
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledements)
+- [Comparison with Stirling PDF](#comparison-with-stirling-pdf)
 
 ## Introduction
 PdfDing is a PDF manager, viewer and editor that you can host yourself. It offers a seamless user experience on multiple
@@ -120,6 +121,15 @@ project's goals or that I don't want to maintain.
 
 If you are interested in contributing more information can be found in the
 [development](https://github.com/mrmn2/PdfDing/blob/master/docs/development.md) section of the docs.
+
+## Comparison with Stirling PDF
+While [Stirling PDF](https://github.com/Stirling-Tools/Stirling-PDF) and PdfDing are both self-hosted web
+applications centered around PDF files, they still differ in their use case. Stirling PDF focuses on
+performing various operations like splitting, cropping and rotating on your PDFs. PdfDing however has a
+different focus, it is all about reading and organizing your PDFs. All features are added with the goal of
+improving the reading experience or making the management of your PDF collection simpler. PdfDing's editing
+functionalities were added with the same idea in mind. You can add annotations, highlighting and drawings to
+PDFs, so that you can highlight or add information that will be beneficial to your reading experience.
 
 ## Acknowledements
 * This project started by adjusting the django starter of Andreas Jud: [django-starter](https://github.com/andyjud/django-starter), [django-starter-assets](https://github.com/andyjud/django-starter-assets)
