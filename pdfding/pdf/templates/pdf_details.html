@@ -3,7 +3,7 @@
 <div class="[&>div]:flex [&>div]:justify-between [&>div]:py-4
             [&>div]:border-b [&>div]:border-slate-200 [&>div]:dark:border-slate-600
             [&>div>div>span]:font-bold [&>div>div>span]:text-gray-900 dark:[&>div>div>span]:text-slate-200
-            [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-gray-500 dark:[&>div>div>div>span]:text-slate-300
+            [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-slate-800 dark:[&>div>div>div>span]:text-slate-300
             [&>div>div>div>a]:text-sm [&>div>div>div>a]:cursor-pointer [&>div>div>div>a]:text-primary">
     <div class="!pb-0 !border-none">
         <a href="{% url 'view_pdf' pdf.id %}" class="text-3xl font-bold hover:text-primary hover:underline truncate">{{ pdf.name }}</a>
@@ -37,6 +37,36 @@
     </div>
     <div>
         <div class="w-1/6">
+            <span>Tags</span>
+        </div>
+        <div class="flex justify-between w-5/6 pl-4">
+            <div class="w-5/6">
+                <span id="tags">
+                {% if pdf.tags.all %}
+                    {% for tag in pdf.tags.all|dictsort:"name" %}
+                        {% if sort_query %}
+                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}&sort={{ sort_query }}">#{{ tag }}</a>
+                        {% else %}
+                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}">#{{ tag }}</a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    no tags available
+                {% endif%}
+                </span>
+            </div>
+            <div class="w-1/6 pl-2 md:pl-8">
+                <a id="tags-edit" class="hover:underline"
+                    hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='tags' %}"
+                    hx-target="#tags"
+                    hx-swap="innerHTML" >
+                    Edit
+                </a>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="w-1/6">
             <span class="hyphens-manual">Des&shy;cription</span>
         </div>
         <div class="flex justify-between w-5/6 pl-4">
@@ -61,28 +91,24 @@
     </div>
     <div>
         <div class="w-1/6">
-            <span>Tags</span>
+            <span>Notes</span>
         </div>
         <div class="flex justify-between w-5/6 pl-4">
             <div class="w-5/6">
-                <span id="tags">
-                {% if pdf.tags.all %}
-                    {% for tag in pdf.tags.all|dictsort:"name" %}
-                        {% if sort_query %}
-                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}&sort={{ sort_query }}">#{{ tag }}</a>
-                        {% else %}
-                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}">#{{ tag }}</a>
-                        {% endif %}
-                    {% endfor %}
+                {% if pdf.notes %}
+                <div id="notes" class="markdown">
+                    {{ pdf.notes_html }}
+                </div>
                 {% else %}
-                    no tags available
-                {% endif%}
+                <span id="notes">
+                no notes available
                 </span>
+                {% endif%}
             </div>
             <div class="w-1/6 pl-2 md:pl-8">
-                <a id="tags-edit" class="hover:underline"
-                    hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='tags' %}"
-                    hx-target="#tags"
+                <a id="notes-edit" class="hover:underline"
+                    hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='notes' %}"
+                    hx-target="#notes"
                     hx-swap="innerHTML" >
                     Edit
                 </a>

@@ -107,7 +107,11 @@ class BulkAddPdfMixin(BasePdfMixin):
                 pdf_name = service.create_unique_name_from_file(file, profile)
 
                 pdf = Pdf.objects.create(
-                    owner=profile, name=pdf_name, description=form.data.get('description'), file=file
+                    owner=profile,
+                    name=pdf_name,
+                    description=form.data.get('description'),
+                    notes=form.data.get('notes'),
+                    file=file,
                 )
                 pdf.tags.set(tags)
 
@@ -218,7 +222,12 @@ class EditPdfMixin(PdfMixin):
     def get_edit_form_dict():
         """Get the forms of the fields that can be edited as a dict."""
 
-        form_dict = {'description': forms.DescriptionForm, 'name': forms.NameForm, 'tags': forms.PdfTagsForm}
+        form_dict = {
+            'description': forms.DescriptionForm,
+            'name': forms.NameForm,
+            'tags': forms.PdfTagsForm,
+            'notes': forms.NotesForm,
+        }
 
         return form_dict
 
@@ -230,6 +239,7 @@ class EditPdfMixin(PdfMixin):
         initial_dict = {
             'name': {'name': pdf.name},
             'description': {'description': pdf.description},
+            'notes': {'notes': pdf.notes},
             'tags': {'tag_string': ' '.join(sorted([tag.name for tag in pdf.tags.all()]))},
         }
 
@@ -303,6 +313,20 @@ class ViewerView(PdfMixin, View):
                 'user_view_bool': True,
             },
         )
+
+
+class GetNotes(PdfMixin, View):
+    """View for getting a pdf's markdown notes as html, so it can be displayed via htmx."""
+
+    def get(self, request: HttpRequest, identifier: str):
+        """Get a pdf's markdown notes as html"""
+
+        if request.htmx:
+            pdf = self.get_object(request, identifier)
+
+            return render(request, 'partials/notes.html', {'pdf_notes': pdf.notes_html})
+
+        return redirect('pdf_overview')
 
 
 class UpdatePage(PdfMixin, View):

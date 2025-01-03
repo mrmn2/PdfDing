@@ -50,7 +50,12 @@ class TestAddPDFMixin(TestCase):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
         form = forms.AddForm(
-            data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'},
+            data={
+                'name': 'some_pdf',
+                'tag_string': 'tag_a tag_2',
+                'description': 'some_description',
+                'notes': 'some_notes',
+            },
             owner=self.user.profile,
             files={'file': file_mock},
         )
@@ -60,6 +65,8 @@ class TestAddPDFMixin(TestCase):
         pdf = self.user.profile.pdf_set.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
+        self.assertEqual(pdf.notes, 'some_notes')
+        self.assertEqual(pdf.description, 'some_description')
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.number_of_pages, 3)
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
@@ -143,7 +150,7 @@ class TestBulkAddPDFMixin(TestCase):
         file_mock_2 = mock.MagicMock(spec=File, name='FileMock2')
         file_mock_2.name = 'test2.pdf'
         form = forms.BulkAddForm(
-            data={'tag_string': 'tag_a tag_2', 'description': 'description'},
+            data={'tag_string': 'tag_a tag_2', 'description': 'some_description', 'notes': 'some_notes'},
             owner=self.user.profile,
             files=MultiValueDict({'file': [file_mock_1, file_mock_2]}),
         )
@@ -154,7 +161,8 @@ class TestBulkAddPDFMixin(TestCase):
             pdf = self.user.profile.pdf_set.get(name=name)
             tag_names = [tag.name for tag in pdf.tags.all()]
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
-            self.assertEqual('description', 'description')
+            self.assertEqual(pdf.description, 'some_description')
+            self.assertEqual(pdf.notes, 'some_notes')
             self.assertEqual(pdf.owner, self.user.profile)
             # check that pdf pages are set to -1 in case of exception.
             # in this test there should be an exception as a mock file is used.
@@ -309,16 +317,18 @@ class TestEditPdfMixin(TestCase):
         set_up(self)
 
     def test_get_edit_form_get(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_name', description='some_description')
+        pdf = Pdf.objects.create(
+            owner=self.user.profile, name='pdf_name', description='some_description', notes='some_note'
+        )
         tags = [Tag.objects.create(name=f'tag_{i}', owner=self.user.profile) for i in range(2)]
         pdf.tags.set(tags)
 
         edit_pdf_mixin_object = pdf_views.EditPdfMixin()
 
         for field, form_class, field_value in zip(
-            ['name', 'description', 'tags'],
-            [forms.NameForm, forms.DescriptionForm, forms.PdfTagsForm],
-            ['pdf_name', 'some_description', 'tag_0 tag_1'],
+            ['name', 'description', 'tags', 'notes'],
+            [forms.NameForm, forms.DescriptionForm, forms.PdfTagsForm, forms.NotesForm],
+            ['pdf_name', 'some_description', 'tag_0 tag_1', 'some_note'],
         ):
             form = edit_pdf_mixin_object.get_edit_form_get(field, pdf)
             self.assertIsInstance(form, form_class)
@@ -380,6 +390,22 @@ class TestViews(TestCase):
         self.assertEqual(response.context['current_page'], 4)
         self.assertEqual(response.context['theme_color_rgb'], '255 179 165')
         self.assertEqual(response.context['user_view_bool'], True)
+
+    def test_get_notes_no_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        response = self.client.get(reverse('get_notes', kwargs={'identifier': pdf.id}))
+
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    # @patch('pdf.models.Pdf.notes_html', return_value='<p>PdfDing</p>')
+    def test_get_notes_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', notes='PdfDing')
+        headers = {'HTTP_HX-Request': 'true'}
+
+        response = self.client.get(reverse('get_notes', kwargs={'identifier': pdf.id}), **headers)
+
+        self.assertEqual(response.context['pdf_notes'], '<p>PdfDing</p>')
+        self.assertTemplateUsed(response, 'partials/notes.html')
 
     def test_update_page_post(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')

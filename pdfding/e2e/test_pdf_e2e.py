@@ -69,8 +69,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             f.write('Some text')
 
         with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            self.page.get_by_role("link", name="Add PDF").click()
+            self.open(reverse('add_pdf'), p)
             self.page.get_by_label("Use File Name:").check()
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
@@ -87,11 +86,44 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         dummy_file_path.unlink()
 
+    @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_add_pdf_notes(self, mock_from_buffer):
+        # this also tests the overview
+
+        # just use some dummy file for uploading
+        dummy_file_path = Path(__file__).parent / 'dummy.pdf'
+        with open(dummy_file_path, 'w') as f:
+            f.write('Some text')
+
+        with sync_playwright() as p:
+            self.open(reverse('add_pdf'), p)
+
+            # assert notes field not visible at the beginning
+            expect(self.page.locator("#notes")).not_to_be_visible()
+
+            # add pdf and open notes field
+            self.page.get_by_label("Use File Name:").check()
+            self.page.locator("#id_file").click()
+            self.page.locator("#id_file").set_input_files(dummy_file_path)
+            self.page.locator("#show_notes").click()
+            expect(self.page.locator("#notes")).to_be_visible()
+            self.page.get_by_placeholder("Add Notes").click()
+            self.page.get_by_placeholder("Add Notes").fill("some note")
+
+            # assert collapsing notes field is working
+            self.page.locator("#show_notes").click()
+            expect(self.page.locator("#notes")).not_to_be_visible()
+
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("body")).to_contain_text("dummy")
+            expect(self.page.locator("#show-notes-1")).to_be_visible()
+
+        dummy_file_path.unlink()
+
     @override_settings(DEMO_MODE=True)
     def test_add_pdf_demo_mode(self):
         with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            self.page.get_by_role("link", name="Add PDF").click()
+            self.open(reverse('add_pdf'), p)
             self.page.get_by_label("Use File Name:").check()
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
@@ -122,8 +154,8 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
             self.page.get_by_role("link", name="Add PDF").click()
             self.page.get_by_role("link", name="Bulk").click()
-            self.page.get_by_label("File:").click()
-            self.page.get_by_label("File:").set_input_files(dummy_file_paths)
+            self.page.locator("#id_file").click()
+            self.page.locator("#id_file").set_input_files(dummy_file_paths)
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
             self.page.get_by_placeholder("Add Tags").click()
@@ -154,12 +186,42 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
         for path in dummy_file_paths:
             path.unlink()
 
+    @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_bulk_add_notes(self, mock_from_buffer):
+        # just use some dummy file for uploading
+        dummy_file_path = Path(__file__).parent / 'dummy.pdf'
+        with open(dummy_file_path, 'w') as f:
+            f.write('Some text')
+
+        with sync_playwright() as p:
+            self.open(reverse('bulk_add_pdfs'), p)
+
+            # assert notes field not visible at the beginning
+            expect(self.page.locator("#notes")).not_to_be_visible()
+
+            # add pdf and open notes field
+            self.page.locator("#id_file").click()
+            self.page.locator("#id_file").set_input_files([dummy_file_path])
+
+            self.page.locator("#show_notes").click()
+            expect(self.page.locator("#notes")).to_be_visible()
+            self.page.get_by_placeholder("Add Notes").click()
+            self.page.get_by_placeholder("Add Notes").fill("some note")
+
+            # assert collapsing notes field is working
+            self.page.locator("#show_notes").click()
+            expect(self.page.locator("#notes")).not_to_be_visible()
+
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("body")).to_contain_text("dummy")
+            expect(self.page.locator("#show-notes-1")).to_be_visible()
+
+        dummy_file_path.unlink()
+
     @override_settings(DEMO_MODE=True)
     def test_bulk_add_pdf_demo(self):
         with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            self.page.get_by_role("link", name="Add PDF").click()
-            self.page.get_by_role("link", name="Bulk").click()
+            self.open(reverse('bulk_add_pdfs'), p)
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
             self.page.get_by_placeholder("Add Tags").click()
@@ -224,6 +286,30 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#progressbar-1")).not_to_be_visible()
+
+    def test_notes(self):
+        pdf = Pdf.objects.get(name='pdf_4_14')
+        pdf.notes = 'some markdown notes'
+        pdf.save()
+
+        with sync_playwright() as p:
+            self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
+            expect(self.page.locator("#show-notes-1")).to_be_visible()
+            expect(self.page.locator("#notes-1")).not_to_be_visible()
+            self.page.locator("#show-notes-1").click()
+            expect(self.page.locator("#notes-1")).to_be_visible()
+            expect(self.page.locator("#notes-1")).to_contain_text("some markdown notes")
+            self.page.locator("#show-notes-1").click()
+            expect(self.page.locator("#notes-1")).not_to_be_visible()
+
+    def test_no_notes(self):
+        pdf = Pdf.objects.get(name='pdf_4_14')
+        pdf.notes = ''
+        pdf.save()
+
+        with sync_playwright() as p:
+            self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
+            expect(self.page.locator("#show-notes-1")).not_to_be_visible()
 
     def test_progress_bar_off_number_pages(self):
         pdf = Pdf.objects.get(name='pdf_1_1')
@@ -417,7 +503,9 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         super().setUp()
 
         # create some pdfs
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1_1', description='this is number 1')
+        pdf = Pdf.objects.create(
+            owner=self.user.profile, name='pdf_1_1', description='this is number 1', notes='some notes'
+        )
 
         tag = Tag.objects.create(name='tag', owner=self.user.profile)
         pdf.tags.set([tag])
@@ -440,6 +528,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("content")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#name")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
+            expect(self.page.locator("#notes")).to_contain_text("some notes")
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).to_contain_text("10% - Page 1 of 10")
             expect(self.page.locator("#views")).to_contain_text("1001")
@@ -471,26 +560,51 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
 
     def test_change_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
+        pdf.notes = ''
+        pdf.description = ''
+        pdf.save()
+        pdf.tags.set([])
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
+            # edit name
             self.page.locator("#name-edit").click()
             self.page.locator("#id_name").dblclick()
             self.page.locator("#id_name").fill("other name")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("content")).to_contain_text("other name")
             expect(self.page.locator("#name")).to_contain_text("other name")
+
+            # edit description
+            expect(self.page.locator("#description")).to_contain_text("no description available")
             self.page.locator("#description-edit").click()
             self.page.locator("#id_description").click()
             self.page.locator("#id_description").fill("other description")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#description")).to_contain_text("other description")
+
+            # edit notes
+            expect(self.page.locator("#notes")).to_contain_text("no notes available")
+            self.page.locator("#notes-edit").click()
+            self.page.locator("#id_notes").click()
+            self.page.locator("#id_notes").fill("other notes")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#notes")).to_contain_text("other notes")
+
+            # edit tags
+            expect(self.page.locator("#tags")).to_contain_text("no tags available")
             self.page.locator("#tags-edit").click()
             self.page.locator("#id_tag_string").click()
             self.page.locator("#id_tag_string").fill("other")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#tags")).to_contain_text("#other")
+            # also test setting empty tag
+            self.page.locator("#tags-edit").click()
+            self.page.locator("#id_tag_string").click()
+            self.page.locator("#id_tag_string").fill("")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#tags")).to_contain_text("no tags available")
 
     def test_cancel_change_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
@@ -498,7 +612,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
-            for edit_name in ['#name-edit', '#description-edit', '#tags-edit']:
+            for edit_name in ['#name-edit', '#description-edit', '#notes-edit', '#tags-edit']:
                 expect(self.page.locator(edit_name)).to_contain_text("Edit")
                 self.page.locator(edit_name).click()
                 expect(self.page.locator(edit_name)).to_contain_text("Cancel")

@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
+import markdown
+import nh3
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 from django.db.models import DateTimeField
+from django.utils.safestring import mark_safe
 from users.models import Profile
 
 
@@ -64,6 +67,7 @@ class Pdf(models.Model):
     name = models.CharField(max_length=150, null=True, blank=False)
     file = models.FileField(upload_to=get_file_path, blank=False)
     description = models.TextField(null=True, blank=True, help_text='Optional')
+    notes = models.TextField(null=True, blank=True, help_text='Optional, supports Markdown')
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     tags = models.ManyToManyField(Tag, blank=True)
     current_page = models.IntegerField(default=1)
@@ -116,6 +120,21 @@ class Pdf(models.Model):
             current_page = self.current_page
 
         return max(current_page, 0)
+
+    @property
+    def notes_html(self) -> str:
+        """Converts markdown notes to html and sanitizes them, so that they can be displayed in the PDF overview."""
+
+        notes_html = markdown.markdown(str(self.notes), extensions=['fenced_code', 'nl2br'])
+        cleaned_notes_html = nh3.clean(
+            notes_html,
+            attributes=MarkdownHelper.get_allowed_markdown_attributes(),
+            tags=MarkdownHelper.get_allowed_markdown_tags(),
+        )
+
+        # bandit will report a vulnerability because of the usage of mark_safe of XSS and cross-site scripting
+        # vulnerabilities. since nh3 is used to clean the generated markdown we can ignore the warning
+        return mark_safe(cleaned_notes_html)  # nosec
 
 
 class SharedPdf(models.Model):
@@ -204,3 +223,31 @@ class SharedPdf(models.Model):
             return f'{self.views}/{self.max_views} Views'
         else:
             return f'{self.views} Views'
+
+
+class MarkdownHelper:  # pragma: no cover
+    @staticmethod
+    def get_allowed_markdown_tags() -> set[str]:
+        """Get the html tags that are allowed when sanitizing the markdown html"""
+
+        # fmt: off
+        markdown_tags = {
+            "h1", "h2", "h3", "h4", "h5", "h6",
+            "b", "i", "strong", "em", "tt",
+            "p", "br",
+            "span", "div", "blockquote", "code", "pre", "hr",
+            "ul", "ol", "li", "dd", "dt",
+            "a",
+            "sub", "sup",
+        }
+        # fmt: on
+
+        return set(markdown_tags)
+
+    @staticmethod
+    def get_allowed_markdown_attributes() -> dict[str, set[str]]:
+        """Get the html attributes that are allowed when sanitizing the markdown html"""
+
+        markdown_attrs = {"*": {"id"}, "a": {"href", "alt", "title"}}
+
+        return markdown_attrs

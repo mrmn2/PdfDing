@@ -15,7 +15,7 @@ class AddFormNoFile(forms.ModelForm):
     tag_string = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Tags'}),
-        help_text='Enter any number of tags separated by space and without the hash (#). '
+        help_text='Optional, enter any number of tags separated by space and without the hashtag (#). '
         'If a tag does not exist it will be automatically created.',
     )
 
@@ -25,10 +25,11 @@ class AddFormNoFile(forms.ModelForm):
         model = Pdf
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Add PDF Name'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Add Description'}),
+            'description': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Add Description'}),
+            'notes': forms.Textarea(attrs={'rows': 8, 'placeholder': 'Add Notes'}),
         }
 
-        fields = ['name', 'description']
+        fields = ['name', 'description', 'notes']
 
     def __init__(self, *args, **kwargs):
         """
@@ -111,10 +112,16 @@ class BulkAddFormNoFile(forms.Form):
         help_text='Optional',
     )
 
+    notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 8, 'placeholder': 'Add Notes'}),
+        help_text='Optional, supports Markdown',
+    )
+
     tag_string = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Tags'}),
-        help_text='Enter any number of tags separated by space and without the hash (#). '
+        help_text='Optional, enter any number of tags separated by space and without the hashtag (#). '
         'If a tag does not exist it will be automatically created.',
     )
 
@@ -160,6 +167,15 @@ class DescriptionForm(forms.ModelForm):
         fields = ['description']
 
 
+class NotesForm(forms.ModelForm):
+    """Form for changing the notes of a PDF."""
+
+    class Meta:
+        model = Pdf
+        widgets = {'notes': forms.Textarea(attrs={'rows': 20})}
+        fields = ['notes']
+
+
 class NameForm(forms.ModelForm):
     """Form for changing the name of a PDF."""
 
@@ -177,7 +193,7 @@ class NameForm(forms.ModelForm):
 class PdfTagsForm(forms.ModelForm):
     """Form for changing the tags of a PDF."""
 
-    tag_string = forms.CharField(widget=forms.TextInput())
+    tag_string = forms.CharField(widget=forms.TextInput(), required=False)
 
     class Meta:
         model = Pdf

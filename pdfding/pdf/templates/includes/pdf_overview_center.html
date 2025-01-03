@@ -12,7 +12,7 @@
 
 {% for pdf in page_obj %}
 {% with loop_id=forloop.counter %}
-<div x-data="{ delete{{ loop_id }}: false }" class="pb-1">
+<div x-data="{ delete{{ loop_id }}: false, show_notes_{{ loop_id }}: false }" class="pb-1">
   <ul class="relative">
     <div class="!-mb-1 truncate">
       <a id="pdf-link-{{ loop_id }}"
@@ -50,9 +50,11 @@
         </div>
     </div>
     {% endif %}
+    <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
+    </div>
     <div x-data="{ tooltip_date: false }" class="text-gray-500 dark:text-slate-400 space-x-1 text-sm [&>a]:dark:text-slate-400">
       <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
-          {{ pdf.natural_age }} |
+          {{ pdf.natural_age }} &hairsp; |
       </span>
       <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
             class="-left-1 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
@@ -75,6 +77,17 @@
               x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
               class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
       </button>
+      {% if pdf.notes %}
+      <span>|</span>
+      <button id="show-notes-{{ loop_id }}"
+              @click="show_notes_{{ loop_id }} = !show_notes_{{ loop_id }}" type="button"
+              class="button-text dark:!bg-slate-800 dark:!text-slate-400"
+              hx-get="{% url 'get_notes' identifier=pdf.id %}"
+              hx-target="#notes-{{ loop_id }}"
+              hx-swap="innerHTML" >
+      Notes
+      </button>
+      {% endif %}
     </div>
   </ul>
 </div>

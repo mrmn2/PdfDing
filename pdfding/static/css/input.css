@@ -163,3 +163,64 @@ form[action="/accountpassword/change/"] ul.errorlist {
 .allauth content a:hover {
     @apply text-primary
 }
+
+.markdown {
+    @apply text-slate-800 dark:text-slate-300;
+    & p,
+    & ol,
+    & ul,
+    & span,
+    & pre,
+    & blockquote,
+    & a {
+        @apply text-sm
+    }
+
+    &>ul, &>ol {
+        @apply pb-2
+    }
+
+    & ol {
+        @apply list-decimal ml-4 pt-1
+    }
+
+    & ul {
+        @apply list-disc ml-4
+    }
+
+    & p {
+        @apply !mb-3
+    }
+
+    & h1, h2 {
+        @apply mb-5
+    }
+
+    & h3, h4 {
+        @apply mb-3
+    }
+
+    & a {
+        @apply text-primary
+    }
+
+    & a:hover {
+        @apply underline
+    }
+
+    & pre {
+        @apply pl-3 my-3 py-2 mt-1 mb-2 bg-slate-200 dark:bg-slate-600
+    }
+
+    & pre code {
+        @apply bg-slate-200 dark:bg-slate-600
+    }
+
+    & code {
+        @apply bg-slate-200 dark:bg-slate-600 px-1 pt-1
+    }
+
+    & blockquote {
+        @apply border-l-2 border-primary pl-4 pt-3 pb-1 mb-2 rounded-r bg-slate-200 dark:bg-slate-600
+    }
+}

@@ -8,12 +8,9 @@ from pdf.models import Pdf, SharedPdf
 
 
 class TestPdf(TestCase):
-    @staticmethod
-    def create_pdf(username='testuser', password='12345'):
-        user = User.objects.create_user(username=username, password=password)
-        pdf = models.Pdf(owner=user.profile, name='pdf')
-
-        return pdf
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.pdf = models.Pdf(owner=self.user.profile, name='pdf')
 
     def test_parse_tag_string(self):
         input_tag_str = '#Tag1  ###tag2      ta&g3 ta+g4'
@@ -29,49 +26,51 @@ class TestPdf(TestCase):
 
     @patch('pdf.models.uuid4', return_value='uuid')
     def test_get_file_path(self, mock_uuid4):
-        pdf = self.create_pdf()
-        generated_filepath = models.get_file_path(pdf, '')
+        generated_filepath = models.get_file_path(self.pdf, '')
 
         self.assertEqual(generated_filepath, '1/uuid.pdf')
 
     def test_get_qrcode_file_path(self):
-        pdf = self.create_pdf()
-        generated_filepath = models.get_qrcode_file_path(pdf, '')
+        generated_filepath = models.get_qrcode_file_path(self.pdf, '')
 
-        self.assertEqual(generated_filepath, f'1/qr/{pdf.id}.svg')
+        self.assertEqual(generated_filepath, f'1/qr/{self.pdf.id}.svg')
 
     def test_natural_age(self):
-        pdf = self.create_pdf()
-        pdf.creation_date = datetime.now() - timedelta(minutes=5)
-        self.assertEqual(pdf.natural_age, '5 minutes')
+        self.pdf.creation_date = datetime.now() - timedelta(minutes=5)
+        self.assertEqual(self.pdf.natural_age, '5 minutes')
 
-        pdf.creation_date -= timedelta(days=3, hours=2)
-        self.assertEqual(pdf.natural_age, '3 days')
+        self.pdf.creation_date -= timedelta(days=3, hours=2)
+        self.assertEqual(self.pdf.natural_age, '3 days')
 
     def test_progress(self):
-        pdf = self.create_pdf()
-        pdf.number_of_pages = 1000
-        pdf.views = 1  # setting this to 1 will cause current_page_for_progress to be equal to current_page
-        pdf.save()
+        self.pdf.number_of_pages = 1000
+        self.pdf.views = 1  # setting this to 1 will cause current_page_for_progress to be equal to current_page
+        self.pdf.save()
 
         for current_page, expected_progress in [(0, 0), (202, 20), (995, 100), (1200, 100)]:
-            pdf.current_page = current_page
-            pdf.save()
+            self.pdf.current_page = current_page
+            self.pdf.save()
 
-            self.assertEqual(pdf.progress, expected_progress)
+            self.assertEqual(self.pdf.progress, expected_progress)
 
     def test_current_page_for_progress(self):
-        pdf = self.create_pdf()
-        pdf.save()
-        self.assertEqual(pdf.current_page_for_progress, 0)
+        self.assertEqual(self.pdf.current_page_for_progress, 0)
 
-        pdf.views = 1
-        pdf.save()
-        self.assertEqual(pdf.current_page_for_progress, 1)
+        self.pdf.views = 1
+        self.pdf.save()
+        self.assertEqual(self.pdf.current_page_for_progress, 1)
 
-        pdf.current_page = -1
-        pdf.save()
-        self.assertEqual(pdf.current_page_for_progress, 0)
+        self.pdf.current_page = -1
+        self.pdf.save()
+        self.assertEqual(self.pdf.current_page_for_progress, 0)
+
+    def test_notes_html(self):
+        self.pdf.notes = '**Code:** `print("PdfDing")`'
+        self.assertEqual(self.pdf.notes_html, '<p><strong>Code:</strong> <code>print("PdfDing")</code></p>')
+
+    def test_notes_html_sanitize(self):
+        self.pdf.notes = '**Danger:** <script>alert("test")</script>'
+        self.assertEqual(self.pdf.notes_html, '<p><strong>Danger:</strong> </p>')
 
 
 class TestSharedPdf(TestCase):
