@@ -51,11 +51,43 @@ class Command(BaseCommand):
 
                 with demo_file_path.open(mode="rb") as f:
                     pdf_file = File(f, name=demo_file_path.name)
+
+                    if pdf_name == 'Self-hosting Guide':
+                        notes = get_example_notes()
+                    else:
+                        notes = ''
+
                     pdf = Pdf.objects.create(
                         owner=user.profile,
                         name=pdf_name,
                         file=pdf_file,
                         description=description,
+                        notes=notes,
                         number_of_pages=5,
                     )
                     pdf.tags.set(tags)
+
+
+def get_example_notes():  # pragma: no cover
+    notes = '''
+## **`Example Note`**
+
+In the notes you can add further information about your PDF. Notes support markdown, so it is possible to use `inline code` or [links](https://github.com/mrmn2/PdfDing). You can also use lists:
+
+* here is an example element
+    * nested lists are also possible
+* here is another one
+
+Of course you can also use code blocks
+
+```
+# example code
+def example_code():
+    print('hi')
+```
+or block quotes
+> this is a block quote
+>> with a nested block quote
+'''  # noqa: E501
+
+    return notes
