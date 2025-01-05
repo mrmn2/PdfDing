@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0 - Markdown Notes  (Jan 5, 2025)
+* Add markdown notes to PDFs. The notes can be shown in the PDF overview.
+* Add healthz endpoint. This endpoint is primarily used for restarting the demo instance
+  every `x` minutes.
+* Improve design of view shared PDF prompt page
+
 ## 0.9.1 - Demo Mode  (Jan 2, 2025)
 * Introduce demo mode
 * Add hover tooltips to the buttons of the viewer

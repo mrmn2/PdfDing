@@ -42,11 +42,11 @@ your PDFs. The name and PdfDing's design are inspired by the excellent bookmark 
 * SSO support via OIDC
 * Share PDFs with an external audience via a link or a QR Code
 * Shared PDFs can be password protected and access can be controlled with a maximum number of views and an expiration date
+* Markdown Notes
 * Progress bars show the reading progress of each PDF at a quick glance
 * Every user can upload its own PDFs. There is no admin curating the content.
 * Automated and encrypted backups to S3 compatible storage
 * Consumption directory as an alternative way to add PDFs
-* Simple Admin area for user management
 
 ### Screenshots
 Screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
