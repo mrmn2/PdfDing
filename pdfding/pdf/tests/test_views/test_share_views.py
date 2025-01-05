@@ -239,6 +239,7 @@ class TestLoginNotRequiredViews(TestCase):
 
         self.assertTemplateUsed(response, 'view_shared_info.html')
         self.assertEqual(response.context['shared_pdf'], self.shared_pdf)
+        self.assertEqual(response.context['host'], 'testserver')
         self.assertEqual(response.context['form'], ViewSharedPasswordForm)
 
     def test_view_get_inactive(self):

@@ -1,26 +1,23 @@
 {% extends 'layouts/box.html' %}
-
+{% load static %}
 {% block content %}
 
-<div class="[&>*]:flex [&>*]:justify-center">
-  <h1>View Shared PDF</h1>
-  <span class="p-2">PdfDing member {{ shared_pdf.owner.user.email }} shared the PDF</span>
+<div class="[&>*]:flex [&>*]:justify-left">
+    <div>
+        <img class="w-28 h-28 pb-10 -ml-7" src="{% static 'images/logo.svg' %}"/>
+    </div>
+    <h1>View Shared PDF</h1>
+    <span class="pb-2">{{ host }} member <span class="font-bold px-1">{{ shared_pdf.owner.user.email }}</span> shared the following PDF with you</span>
+    <span class="text-2xl font-bold pt-4 pb-8">{{ shared_pdf.pdf.name }}</span>
 
-  <span class="text-2xl font-bold p-2">{{ shared_pdf.pdf.name }}</span>
-  <span class="p-2 pb-6">with you</span>
-
-  {% if shared_pdf.password %}
-  <span class="text-lg font-bold p-2">This PDF is password protected</span>
-  {% endif %}
+    <form class="w-3/4 gap-x-1" action="{% url 'view_shared_pdf' shared_pdf.id %}" method="post">
+        {% csrf_token %}
+        {% if shared_pdf.password %}
+        {{ form.as_p }}
+        {% endif %}
+        <div class="flex justify-center">
+            <button class="flex items-center h-14" type="submit">View</button>
+        </div>
+  </form>
 </div>
-
-<div class="flex justify-center pt-4">
-<form class="w-3/4" action="{% url 'view_shared_pdf' shared_pdf.id %}" method="post">
-    {% csrf_token %}
-    {% if shared_pdf.password %}
-    {{ form.as_p }}
-    {% endif %}
-  <div class="flex justify-center">
-    <button class="flex items-center h-14" type="submit">View</button></div>
-  </form></div>
 {% endblock %}

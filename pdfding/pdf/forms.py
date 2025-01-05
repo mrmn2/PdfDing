@@ -362,6 +362,7 @@ class ViewSharedPasswordForm(forms.Form):
     password_input = forms.CharField(
         required=True,
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+        help_text='This PDF is password protected',
     )
 
     def __init__(self, *args, **kwargs):
