@@ -27,6 +27,9 @@ def consume_task():  # pragma: no cover
 def consume_function(skip_existing: bool):
     """Create pdf instances for pdf files present in the consume folder."""
 
+    if not settings.CONSUME_DIR.exists():  # pragma: no cover
+        settings.CONSUME_DIR.mkdir(exist_ok=True)
+
     user_consume_paths = [path for path in settings.CONSUME_DIR.iterdir() if path.is_dir()]
     tag_names = Tag.parse_tag_string(settings.CONSUME_TAG_STRING)
 
