@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from unittest.mock import patch
 
 import pdf.models as models
 from django.contrib.auth.models import User
@@ -24,11 +23,10 @@ class TestPdf(TestCase):
 
         self.assertEqual([], generated_tags)
 
-    @patch('pdf.models.uuid4', return_value='uuid')
-    def test_get_file_path(self, mock_uuid4):
+    def test_get_file_path(self):
         generated_filepath = models.get_file_path(self.pdf, '')
 
-        self.assertEqual(generated_filepath, '1/uuid.pdf')
+        self.assertEqual(generated_filepath, f'1/{self.pdf.id}.pdf')
 
     def test_get_qrcode_file_path(self):
         generated_filepath = models.get_qrcode_file_path(self.pdf, '')
@@ -52,6 +50,10 @@ class TestPdf(TestCase):
             self.pdf.save()
 
             self.assertEqual(self.pdf.progress, expected_progress)
+
+    def test_file_id(self):
+        self.pdf.file.name = f'{self.pdf.owner.user.id}/123456789.pdf'
+        self.assertEqual(self.pdf.file_id, '123456789')
 
     def test_current_page_for_progress(self):
         self.assertEqual(self.pdf.current_page_for_progress, 0)

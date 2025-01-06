@@ -39,12 +39,12 @@ class Tag(models.Model):
 
 def get_file_path(instance, _):
     """
-    Get the file path for a PDF by generating a UUID and using the user id. File paths are user_id/<uuid>.pdf
+    Get the file path for a PDF. File paths are user_id/file_id.pdf
 
     User uploaded files will always be placed inside MEDIA_ROOT.
     """
 
-    file_name = f'{uuid4()}.pdf'
+    file_name = f'{instance.id}.pdf'
     file_path = '/'.join([str(instance.owner.user.id), file_name])
 
     return str(file_path)
@@ -135,6 +135,20 @@ class Pdf(models.Model):
         # bandit will report a vulnerability because of the usage of mark_safe of XSS and cross-site scripting
         # vulnerabilities. since nh3 is used to clean the generated markdown we can ignore the warning
         return mark_safe(cleaned_notes_html)  # nosec
+
+    @property
+    def file_id(self) -> str:
+        """
+        Get the file id. This will be the name of the file without the user id. E.g.: 1/123456789 -> 123456789.
+
+        We cannot use the id of the pdf in order to be backwards compatible as in earlier versions a UUID was used
+        instead of the pdf id.
+        """
+
+        user_id_file_id = self.file.name.replace('.pdf', '')
+        file_id = user_id_file_id.replace(f'{str(self.owner.user.id)}/', '')
+
+        return file_id
 
 
 class SharedPdf(models.Model):
