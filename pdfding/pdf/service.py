@@ -103,7 +103,9 @@ def get_tag_info_dict_tree_mode(profile: Profile) -> dict[str, dict]:
                     'slug': current.replace('-', '_').replace('/', '___'),
                 }
 
-            show_conditions.append(f'{current.replace('-', '_').replace('/', '___')}_show_children')
+            # alpine js will not work if the tag starts with a number. therefore, we have "tag_" in front so it
+            # will still work.
+            show_conditions.append(f'tag_{current.replace('-', '_').replace('/', '___')}_show_children')
 
     return tag_info_dict
 

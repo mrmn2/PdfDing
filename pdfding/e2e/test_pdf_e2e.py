@@ -1,6 +1,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase, cancel_delete_helper
@@ -459,7 +460,8 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         profile.save()
 
         tags = []
-        tag_names = ['programming/python/django', 'other']
+        # we use 1_programming as previously tags starting with a number did not work
+        tag_names = ['1_programming/python/django', 'other']
 
         for tag_name in tag_names:
             tag = Tag.objects.create(name=tag_name, owner=self.user.profile)
@@ -471,31 +473,31 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
 
-            for tag_name in ['programming', 'other']:
+            for tag_name in ['1_programming', 'other']:
                 expect(self.page.locator(f"#tag-{tag_name}")).to_contain_text(tag_name)
                 expect(self.page.locator(f"#tag-{tag_name}")).to_be_visible()
 
             # children not open so they should not be visible
-            for tag_name in ['programming\\/python', 'programming\\/python\\/django']:
+            for tag_name in ['1_programming\\/python', '1_programming\\/python\\/django']:
                 expect(self.page.locator(f"#tag-{tag_name}")).not_to_be_visible()
 
-            # only programming should have open button
-            expect(self.page.locator("#open-children-programming")).to_be_visible()
+            # only 1_programming should have open button
+            expect(self.page.locator("#open-children-1_programming")).to_be_visible()
             expect(self.page.locator("#open-children-other")).not_to_be_visible()
 
-            # click open programming
-            self.page.locator("#open-children-programming").click()
-            expect(self.page.locator("#tag-programming\\/python")).to_be_visible()
-            expect(self.page.locator("#tag-programming\\/python\\/django")).not_to_be_visible()
+            # click open 1_programming
+            self.page.locator("#open-children-1_programming").click()
+            expect(self.page.locator("#tag-1_programming\\/python")).to_be_visible()
+            expect(self.page.locator("#tag-1_programming\\/python\\/django")).not_to_be_visible()
 
             # click open programming/python
-            self.page.locator("#open-children-programming\\/python").click()
-            expect(self.page.locator("#tag-programming\\/python\\/django")).to_be_visible()
+            self.page.locator("#open-children-1_programming\\/python").click()
+            expect(self.page.locator("#tag-1_programming\\/python\\/django")).to_be_visible()
 
             # click close programming
-            self.page.locator("#open-children-programming").click()
-            expect(self.page.locator("#tag-programming\\/python")).not_to_be_visible()
-            expect(self.page.locator("#tag-programming\\/python\\/django")).not_to_be_visible()
+            self.page.locator("#open-children-1_programming").click()
+            expect(self.page.locator("#tag-1_programming\\/python")).not_to_be_visible()
+            expect(self.page.locator("#tag-1_programming\\/python\\/django")).not_to_be_visible()
 
 
 class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
@@ -512,8 +514,10 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
 
     def test_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
+        dummy_file = SimpleUploadedFile("simple.pdf", b"these are the file contents!")
         pdf.views = 1001
         pdf.number_of_pages = 10
+        pdf.file = dummy_file
         pdf.save()
 
         # only check for date, time is not easily reproducible
