@@ -10,7 +10,7 @@ from django.forms import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
-from django_htmx.http import HttpResponseClientRedirect
+from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
 from pdf.models import Pdf, Tag
 from users.models import Profile
@@ -144,6 +144,17 @@ class OverviewMixin(BasePdfMixin):
 
         search = request.GET.get('search', '')
         tags = request.GET.get('tags', [])
+
+        # filter for starred or archived pdfs
+        pdf_selection = request.GET.get('selection', '')
+
+        if pdf_selection == 'archived':
+            pdfs = pdfs.filter(archived=True)
+        else:
+            pdfs = pdfs.filter(archived=False)
+            if pdf_selection == 'starred':
+                pdfs = pdfs.filter(starred=True)
+
         if tags:
             tags = tags.split(' ')
 
@@ -163,9 +174,15 @@ class OverviewMixin(BasePdfMixin):
         if tag_query:
             tag_query = tag_query.split(' ')
 
+        if request.GET.get('selection', '') in ['starred', 'archived']:
+            special_pdf_selection = request.GET.get('selection')
+        else:
+            special_pdf_selection = ''
+
         extra_context = {
             'search_query': request.GET.get('search', ''),
             'tag_query': tag_query,
+            'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': service.get_tag_info_dict(request.user.profile),
         }
 
@@ -521,3 +538,45 @@ class DeleteTag(TagMixin, View):
             return HttpResponseClientRedirect(redirect_url)
 
         return redirect(redirect_url)
+
+
+class Star(PdfMixin, View):
+    """View for starring and unstarring pdfs."""
+
+    def post(self, request: HttpRequest, identifier: str):
+        """Star or unstar the specified pdf."""
+
+        if request.htmx:
+            pdf = self.get_object(request, identifier)
+            pdf.starred = not pdf.starred
+
+            # starred pdfs will be unarchived
+            if pdf.archived:
+                pdf.archived = False
+
+            pdf.save()
+
+            return HttpResponseClientRefresh()
+
+        return redirect('pdf_overview')
+
+
+class Archive(PdfMixin, View):
+    """View for archiving and unarchiving pdfs."""
+
+    def post(self, request: HttpRequest, identifier: str):
+        """Archive or unarchive the specified pdf."""
+
+        if request.htmx:
+            pdf = self.get_object(request, identifier)
+            pdf.archived = not pdf.archived
+
+            # archived pdfs cannot be starred
+            if pdf.starred:
+                pdf.starred = False
+
+            pdf.save()
+
+            return HttpResponseClientRefresh()
+
+        return redirect('pdf_overview')

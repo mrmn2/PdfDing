@@ -31,4 +31,6 @@ urlpatterns = [
     path('shared/<identifier>', share_views.ViewShared.as_view(), name='view_shared_pdf'),
     path('delete_tag/', pdf_views.DeleteTag.as_view(), name='delete_tag'),
     path('edit_tag/', pdf_views.EditTag.as_view(), name='edit_tag'),
+    path('star/<identifier>', pdf_views.Star.as_view(), name='star'),
+    path('archive/<identifier>', pdf_views.Archive.as_view(), name='archive'),
 ]

@@ -312,6 +312,31 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
             expect(self.page.locator("#show-notes-1")).not_to_be_visible()
 
+    def test_star(self):
+        with sync_playwright() as p:
+            self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
+
+            expect(self.page.locator("#starred-icon-1")).not_to_be_visible()
+            expect(self.page.locator("#star-1")).to_contain_text("Star")
+            self.page.locator("#star-1").click()
+            expect(self.page.locator("#star-1")).to_contain_text("Unstar")
+            expect(self.page.locator("#starred-icon-1")).to_be_visible()
+            self.page.locator("#star-1").click()
+            expect(self.page.locator("#star-1")).to_contain_text("Star")
+            expect(self.page.locator("#starred-icon-1")).not_to_be_visible()
+
+    def test_archive(self):
+        with sync_playwright() as p:
+            self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
+
+            expect(self.page.locator("#pdf-link-1")).to_be_visible()
+            self.page.locator("#archive-1").click()
+            expect(self.page.locator("#pdf-link-1")).not_to_be_visible()
+
+            self.open(f"{reverse('pdf_overview')}?selection=archived", p)
+            expect(self.page.locator("#pdf-link-1")).to_be_visible()
+            expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_4_14")
+
     def test_progress_bar_off_number_pages(self):
         pdf = Pdf.objects.get(name='pdf_1_1')
         pdf.number_of_pages = -1
@@ -406,7 +431,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#confirm-delete-pdf-1").click()
 
             # now there should be no PDFs matching the search criteria
-            expect(self.page.locator("body")).to_contain_text("There aren't any PDFs matching the search criteria")
+            expect(self.page.locator("body")).to_contain_text("There aren't any PDFs matching the current filters")
 
     def test_cancel_delete(self):
         with sync_playwright() as p:
@@ -609,6 +634,24 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_tag_string").fill("")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#tags")).to_contain_text("no tags available")
+
+    def test_details_star_archive(self):
+        pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
+
+            expect(self.page.locator("#starred_icon")).not_to_be_visible()
+            self.page.locator("#star").click()
+            expect(self.page.locator("#starred_icon")).to_be_visible()
+            self.page.locator("#star").click()
+            expect(self.page.locator("#starred_icon")).not_to_be_visible()
+
+            expect(self.page.locator("#archived_icon")).not_to_be_visible()
+            self.page.locator("#archive").click()
+            expect(self.page.locator("#archived_icon")).to_be_visible()
+            self.page.locator("#archive").click()
+            expect(self.page.locator("#archived_icon")).not_to_be_visible()
 
     def test_cancel_change_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')

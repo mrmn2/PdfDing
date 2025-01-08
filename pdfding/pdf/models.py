@@ -5,7 +5,6 @@ import markdown
 import nh3
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
-from django.db.models import DateTimeField
 from django.utils.safestring import mark_safe
 from users.models import Profile
 
@@ -76,6 +75,8 @@ class Pdf(models.Model):
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
     )
     number_of_pages = models.IntegerField(default=-1)
+    starred = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name  # pragma: no cover
@@ -200,7 +201,7 @@ class SharedPdf(models.Model):
         return self.get_natural_time_future(self.expiration_date, 'expires', 'expired')
 
     @staticmethod
-    def get_natural_time_future(date: DateTimeField, context_present: str, context_past: str) -> str:
+    def get_natural_time_future(date: models.DateTimeField, context_present: str, context_past: str) -> str:
         """
         Get the natural time representation of a date compared to the current datetime. Will return a string of the
         format <context> in <natural time>, e.g deletes in 1 day.

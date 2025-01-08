@@ -1,8 +1,8 @@
 {% if not page_obj %}
 <div class="pt-10 [&>*]:flex [&>*]:justify-center">
-  {% if search_query or tag_query %}
-  <span class="text-2xl">There aren't any PDFs matching the search criteria</span>
-  <span class="pt-4 text-lg">Please try a different search.</span>
+  {% if search_query or tag_query or special_pdf_selection %}
+  <span class="text-2xl">There aren't any PDFs matching the current filters</span>
+  <span class="pt-4 text-lg">Please try different filters.</span>
   {% else %}
   <span class="text-2xl">You have no PDFs yet</span>
   <span class="pt-4 text-lg">Get started by <a class="text-primary hover:text-secondary hover:underline px-1" href="{% url 'add_pdf' %}"> adding</a> PDFs.</span>
@@ -14,12 +14,20 @@
 {% with loop_id=forloop.counter %}
 <div x-data="{ delete{{ loop_id }}: false, show_notes_{{ loop_id }}: false }" class="pb-1">
   <ul class="relative">
-    <div class="!-mb-1 truncate">
+    <div class="flex flex-row items-center !-mb-1 truncate gap-x-1">
       <a id="pdf-link-{{ loop_id }}"
          href="{% url 'view_pdf' pdf.id %}"
          class="text font-bold text-tertiary1 dark:text-tertiary2 hover:underline">
           {{ pdf.name }}
       </a>
+      {% if pdf.starred %}
+      <svg id="starred-icon-{{ loop_id }}" class="fill-tertiary1 dark:fill-tertiary2 text-tertiary1 dark:text-tertiary2 w-5 h-5"
+           viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!--source: https://www.svgrepo.com/svg/489797/star-->
+      <!--License: PD-->
+        <path d="M14.65 8.93274L12.4852 4.30901C12.2923 3.89699 11.7077 3.897 11.5148 4.30902L9.35002 8.93274L4.45559 9.68243C4.02435 9.74848 3.84827 10.2758 4.15292 10.5888L7.71225 14.2461L6.87774 19.3749C6.80571 19.8176 7.27445 20.1487 7.66601 19.9317L12 17.5299L16.334 19.9317C16.7256 20.1487 17.1943 19.8176 17.1223 19.3749L16.2878 14.2461L19.8471 10.5888C20.1517 10.2758 19.9756 9.74848 19.5444 9.68243L14.65 8.93274Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {% endif %}
     </div>
     {% if pdf.description or pdf.tags.all %}
     <div class="truncate [&>span]:text-gray-800 [&>span]:dark:text-slate-100 -mb-1">
@@ -52,18 +60,35 @@
     {% endif %}
     <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
     </div>
-    <div x-data="{ tooltip_date: false }" class="text-gray-500 dark:text-slate-400 space-x-1 text-sm [&>a]:dark:text-slate-400">
+    <div x-data="{ tooltip_date: false }" class="gap-x-1 text-gray-500 dark:text-slate-400  text-sm [&>a]:dark:text-slate-400">
       <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
           {{ pdf.natural_age }}
       </span>
-      <span>|</span>
+      <span>&hairsp;|&hairsp;</span>
       <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
             class="-left-1 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
         {{ pdf.creation_date }} UTC
       </span>
-      <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary"> Details</a>
-      <a href="{% url 'share_pdf' pdf.id %}" class="hover:text-primary"> Share</a>
-      <a href="{% url 'download_pdf' pdf.id %}" class="hover:text-primary hidden md:inline-block">Download</a>
+      <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary pr-1"> Details</a>
+      <a href="{% url 'share_pdf' pdf.id %}" class="hover:text-primary pr-1"> Share</a>
+      <a id="star-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
+         hx-post="{% url 'star' pdf.id %}"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        {% if pdf.starred %}
+        Unstar
+        {% else %}
+        Star
+        {% endif %}
+      </a>
+      <a id="archive-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
+         hx-post="{% url 'archive' pdf.id %}"
+         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        {% if pdf.archived %}
+        Unarchive
+        {% else %}
+        Archive
+        {% endif %}
+      </a>
       <a id="confirm-delete-pdf-{{ loop_id }}"
          x-show="delete{{ loop_id }}" x-cloak
          hx-delete="{% url 'delete_pdf' pdf.id %}"
@@ -79,7 +104,7 @@
               class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
       </button>
       {% if pdf.notes %}
-      <span>|</span>
+      <span>&hairsp;|&hairsp;</span>
       <button id="show-notes-{{ loop_id }}"
               @click="show_notes_{{ loop_id }} = !show_notes_{{ loop_id }}" type="button"
               class="button-text dark:!bg-slate-800 dark:!text-slate-400"

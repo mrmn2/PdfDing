@@ -67,15 +67,22 @@ def construct_search_and_tag_queries(
 
 
 def construct_query_overview_url(
-    referer_url: str, sort_query: str, search_query: str, remove_tag_query: str, obj_name: str
+    referer_url: str,
+    sort_query: str,
+    search_query: str,
+    special_selection_query: str,
+    remove_tag_query: str,
+    obj_name: str,
 ) -> str:
     """Constructs the overview url after performing a search or sorting in the overview pages."""
 
     parsed_referer_url = urlparse(referer_url)
     query_parameters = parse_qs(parsed_referer_url.query)
 
-    # sorting and searching are never performed at the same time, thus we can use if ... elif
-    if sort_query:
+    # special selection, sorting and searching are never performed at the same time, thus we can use if ... elif
+    if special_selection_query:
+        query_parameters['selection'] = [special_selection_query]
+    elif sort_query:
         query_parameters['sort'] = [sort_query]
     else:
         referer_tags = query_parameters.get('tags', [''])[0]

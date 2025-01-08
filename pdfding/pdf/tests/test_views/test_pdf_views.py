@@ -234,6 +234,7 @@ class TestOverviewMixin(TestCase):
         self.user = None
         set_up(self)
 
+    def test_filter_objects(self):
         # create some pdfs
         for i in range(1, 15):
             pdf = Pdf.objects.create(owner=self.user.profile, name=f'pdf_{i % 5}_{i}')
@@ -243,7 +244,6 @@ class TestOverviewMixin(TestCase):
                 tag = Tag.objects.create(name=f'tag_{i}', owner=self.user.profile)
                 pdf.tags.set([tag])
 
-    def test_filter_objects(self):
         pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1')
         pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
         pdf_3 = Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
@@ -263,6 +263,39 @@ class TestOverviewMixin(TestCase):
 
         self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
 
+    def test_filter_objects_starred(self):
+        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1', starred=True)
+        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2', starred=True)
+        Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
+
+        response = self.client.get(f'{reverse('pdf_overview')}?selection=starred')
+
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
+
+    def test_filter_objects_ignore_archived(self):
+        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1')
+        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
+        Pdf.objects.create(owner=self.user.profile, name='not_to_be_found', archived=True)
+
+        response = self.client.get(f'{reverse('pdf_overview')}')
+
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
+
+    def test_filter_objects_archived(self):
+        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1', archived=True)
+        Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
+        Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
+
+        response = self.client.get(f'{reverse('pdf_overview')}?selection=archived')
+
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(list(filtered_pdfs), [pdf_1])
+
     @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
@@ -272,6 +305,35 @@ class TestOverviewMixin(TestCase):
             'search_query': 'searching',
             'tag_query': ['tagging'],
             'tag_info_dict': 'tag_info_dict',
+            'special_pdf_selection': '',
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    def test_get_extra_context_selection(self, mock_get_tag_info_dict):
+        response = self.client.get(f'{reverse('pdf_overview')}?selection=starred')
+
+        generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        expected_extra_context = {
+            'search_query': '',
+            'tag_query': [],
+            'tag_info_dict': 'tag_info_dict',
+            'special_pdf_selection': 'starred',
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    def test_get_extra_context_selection_invalid(self, mock_get_tag_info_dict):
+        response = self.client.get(f'{reverse('pdf_overview')}?selection=invalid')
+
+        generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        expected_extra_context = {
+            'search_query': '',
+            'tag_query': [],
+            'tag_info_dict': 'tag_info_dict',
+            'special_pdf_selection': '',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -285,6 +347,7 @@ class TestOverviewMixin(TestCase):
             'search_query': '',
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
+            'special_pdf_selection': '',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -470,6 +533,72 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
+
+    def test_star(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', starred=False)
+
+        # star the pdf
+        response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertTrue(pdf.starred)
+        self.assertEqual(response.status_code, 200)
+
+        # unstar the pdf
+        response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertFalse(pdf.starred)
+        self.assertEqual(response.status_code, 200)
+
+    def test_star_unarchive(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', archived=True)
+
+        # star the pdf
+        response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertTrue(pdf.starred)
+        self.assertFalse(pdf.archived)
+        self.assertEqual(response.status_code, 200)
+
+    def test_star_no_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_archive(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', archived=False)
+
+        # archive the pdf
+        response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertTrue(pdf.archived)
+        self.assertEqual(response.status_code, 200)
+
+        # unarchive the pdf
+        response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertFalse(pdf.archived)
+        self.assertEqual(response.status_code, 200)
+
+    def test_archive_unstar(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', starred=True)
+
+        # archive the pdf
+        response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertTrue(pdf.archived)
+        self.assertFalse(pdf.starred)
+        self.assertEqual(response.status_code, 200)
+
+    def test_archive_no_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
 
 class TestTagViews(TestCase):
