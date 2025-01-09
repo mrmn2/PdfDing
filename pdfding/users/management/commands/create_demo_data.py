@@ -37,8 +37,18 @@ class Command(BaseCommand):
         tag_names_list = [['self-hosted/apps'], ['books'], ['guide'], ['self-hosted', 'k8s']]
 
         for i in suffixes:
+            # delete the old data
             email = f'user_{i}@pdfding.com'
-            user = User.objects.create_user(username=email, password='demo', email=email)  # nosec
+            try:
+                user = User.objects.get(username=email)
+                user.delete()
+            except User.DoesNotExist:
+                pass
+
+        # create new data
+        for user_id, suffix in enumerate(suffixes):
+            email = f'user_{suffix}@pdfding.com'
+            user = User.objects.create_user(username=email, password='demo', email=email, id=user_id)  # nosec
 
             # set email address to verified
             user.save()  # this will create email address object if not yet existing
