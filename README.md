@@ -6,6 +6,7 @@ PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user 
 [![Version](https://img.shields.io/github/v/release/mrmn2/PdfDing?style=flat&label=version)](https://github.com/mrmn2/PdfDing/releases)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mrmn2/PdfDing/test.yaml?style=flat&logo=github&label=ci)](https://github.com/mrmn2/PdfDing/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing/commits/master/)
+[![Demo](https://img.shields.io/website?url=https%3A%2F%2Fdemo.pdfding.com&label=demo)](https://demo.pdfding.com)
 
 ![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
 
@@ -20,25 +21,23 @@ PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user 
 
 ## Introduction
 PdfDing is a PDF manager, viewer and editor that you can host yourself. It offers a seamless user experience on multiple
-devices. It's designed be to be minimal, fast, and easy to set up using Docker. As all data stays on your server
-you have full control over your data and privacy.
-
-With its simple, intuitive and adjustable UI, PdfDing makes it easy for users to keep track of their PDFs
-and access them whenever they need to. With a dark mode and colored themes users can style the app to
-their liking. As PdfDing offers SSO support via OIDC it can be easily integrated into existing setups.
+devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
-your PDFs. The name and PdfDing's design are inspired by the excellent bookmark manager
-[linkding](https://github.com/sissbruecker/linkding).
+your PDFs. Inspired by [linkding](https://github.com/sissbruecker/linkding).
 
+### Live Demo
+Try it! Demo Server: https://demo.pdfding.com
+
+This is a temporary live demo with shared user accounts, all data will be deleted every 60 minutes.
 
 ### Feature Overview
 * Seamless browser based PDF viewing on multiple devices
+* Remembers current position - continue where you stopped reading
 * Organize PDFs with multi-level tags
 * Edit PDFs by adding annotations, highlighting and drawings
 * Dark Mode, colored themes and custom theme colors
 * Inverted color mode for reading PDFs
-* Remembers current position - continue where you stopped reading
 * SSO support via OIDC
 * Share PDFs with an external audience via a link or a QR Code
 * Shared PDFs can be password protected and access can be controlled with a maximum number of views and an expiration date
