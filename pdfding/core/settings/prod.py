@@ -30,11 +30,13 @@ STORAGES = {
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
 # web security settings
-ALLOWED_HOSTS = [os.environ.get('HOST_NAME')]
+ALLOWED_HOSTS = os.environ.get('HOST_NAME', '').split(',')
+ALLOWED_HOSTS = [allowed_host.strip() for allowed_host in ALLOWED_HOSTS if allowed_host != '']
 
-if os.environ.get('HOST_NAME'):
-    host_name = os.environ.get('HOST_NAME')
-    CSRF_TRUSTED_ORIGINS = [f'https://{host_name}', f'http://{host_name}']
+if ALLOWED_HOSTS:
+    CSRF_TRUSTED_ORIGINS = []
+    for allowed_host in ALLOWED_HOSTS:
+        CSRF_TRUSTED_ORIGINS.extend([f'https://{allowed_host}', f'http://{allowed_host}'])
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
@@ -98,7 +100,10 @@ if os.environ.get('EMAIL_BACKEND') == 'SMTP':
     if os.environ.get('SMTP_USE_SSL') == 'TRUE':
         EMAIL_USE_SSL = True
 
-DEFAULT_FROM_EMAIL = f'info@{ALLOWED_HOSTS[0]}'
+try:
+    DEFAULT_FROM_EMAIL = f'info@{ALLOWED_HOSTS[0]}'
+except IndexError:
+    DEFAULT_FROM_EMAIL = 'info@pdfding'
 
 # authentication settings
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.environ.get('ACCOUNT_DEFAULT_HTTP_PROTOCOL', 'https')
