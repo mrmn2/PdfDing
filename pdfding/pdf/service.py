@@ -14,7 +14,7 @@ from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
 from pdf.models import Pdf, Tag
-from pypdf import PdfReader
+from pypdfium2 import PdfDocument
 from users.models import Profile
 
 logger = getLogger(__file__)
@@ -217,8 +217,8 @@ def set_number_of_pages(pdf: Pdf):
     """Set the number of pages in a pdf file. If the extraction is not successful, it will leave the default value."""
 
     try:
-        reader = PdfReader(pdf.file.path)
-        pdf.number_of_pages = reader.get_num_pages()
+        pdf_document = PdfDocument(pdf.file.path)
+        pdf.number_of_pages = len(pdf_document)
         pdf.save()
     except Exception as e:  # nosec # noqa
         logger.info(f'Could not determine number of pages for "{pdf.name}" of user "{pdf.owner.user.email}"')
