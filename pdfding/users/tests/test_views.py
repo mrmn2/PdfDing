@@ -98,12 +98,13 @@ class TestProfileViews(TestCase):
             'tags_tree_mode',
         ]
         form_list = [
-            forms.PdfInvertedForm,
+            forms.GenericUserFieldForm,
             forms.CustomThemeColorForm,
-            forms.PdfsPerPageForm,
-            forms.ThemeForm,
+            forms.GenericUserFieldForm,
+            forms.GenericUserFieldForm,
             forms.EmailForm,
-            forms.ProgressBarForm,
+            forms.GenericUserFieldForm,
+            forms.GenericUserFieldForm,
         ]
         initial_dicts = [
             {'pdf_inverted_mode': 'Disabled'},

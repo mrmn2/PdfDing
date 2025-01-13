@@ -28,12 +28,12 @@ class ChangeSetting(View):
 
     form_dict = {
         'email': forms.EmailForm,
-        'pdfs_per_page': forms.PdfsPerPageForm,
-        'theme': forms.ThemeForm,
-        'pdf_inverted_mode': forms.PdfInvertedForm,
+        'pdfs_per_page': forms.create_user_field_form(['pdfs_per_page']),
+        'theme': forms.create_user_field_form(['dark_mode', 'theme_color']),
+        'pdf_inverted_mode': forms.create_user_field_form(['pdf_inverted_mode']),
         'custom_theme_color': forms.CustomThemeColorForm,
-        'show_progress_bars': forms.ProgressBarForm,
-        'tags_tree_mode': forms.TagsTreeModeForm,
+        'show_progress_bars': forms.create_user_field_form(['show_progress_bars']),
+        'tags_tree_mode': forms.create_user_field_form(['tags_tree_mode']),
     }
 
     def get(self, request: HttpRequest, field_name: str):

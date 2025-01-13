@@ -6,6 +6,25 @@ from django.forms import ModelForm
 from users.models import Profile
 
 
+class GenericUserFieldForm(ModelForm):
+    pass
+
+
+def create_user_field_form(user_fields: list[str]):
+    """
+    Creates a user form with the specified fields.
+
+    E.g. create_user_field_form('pdfs_per_page') will create the form for changing the 'pdfs_per_page' setting.
+    """
+
+    class UserFieldForm(GenericUserFieldForm):
+        class Meta:
+            model = Profile
+            fields = user_fields
+
+    return UserFieldForm
+
+
 class EmailForm(ModelForm):
     """The form for changing the email address."""
 
@@ -14,46 +33,6 @@ class EmailForm(ModelForm):
     class Meta:
         model = User
         fields = ['email']
-
-
-class PdfsPerPageForm(ModelForm):
-    """The form for setting the pdfs per page"""
-
-    class Meta:
-        model = Profile
-        fields = ['pdfs_per_page']
-
-
-class ThemeForm(ModelForm):
-    """The form for setting dark mode"""
-
-    class Meta:
-        model = Profile
-        fields = ['dark_mode', 'theme_color']
-
-
-class PdfInvertedForm(ModelForm):
-    """The form for setting the inverted PDF color mode"""
-
-    class Meta:
-        model = Profile
-        fields = ['pdf_inverted_mode']
-
-
-class ProgressBarForm(ModelForm):
-    """The form for setting progress bars"""
-
-    class Meta:
-        model = Profile
-        fields = ['show_progress_bars']
-
-
-class TagsTreeModeForm(ModelForm):
-    """The form for setting tag tree mode"""
-
-    class Meta:
-        model = Profile
-        fields = ['tags_tree_mode']
 
 
 class CustomThemeColorForm(ModelForm):
