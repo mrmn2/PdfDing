@@ -362,6 +362,18 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#progressbar-1")).not_to_be_visible()
 
+    def test_preview(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#preview_inner")).not_to_be_visible()
+            self.page.locator("#preview-1").click()
+            expect(self.page.locator("#preview_inner")).to_be_visible()
+
+            # click somewhere
+            self.page.locator("span").filter(has_text="PDFs").click()
+            expect(self.page.locator("#preview_inner")).not_to_be_visible()
+
     def test_search_tags(self):
         with sync_playwright() as p:
             # trigger search by clicking on sidebar

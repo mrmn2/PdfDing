@@ -23,11 +23,6 @@ def set_up(self):
     self.client.login(username=self.username, password=self.password)
 
 
-# def mock_set_number_of_pages(pdf):
-#     pdf.number_of_pages = 3
-#     pdf.save()
-
-
 class TestAddPDFMixin(TestCase):
     username = 'user'
     password = '12345'
@@ -460,7 +455,6 @@ class TestViews(TestCase):
 
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
-    # @patch('pdf.models.Pdf.notes_html', return_value='<p>PdfDing</p>')
     def test_get_notes_htmx(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', notes='PdfDing')
         headers = {'HTTP_HX-Request': 'true'}
@@ -469,6 +463,35 @@ class TestViews(TestCase):
 
         self.assertEqual(response.context['pdf_notes'], '<p>PdfDing</p>')
         self.assertTemplateUsed(response, 'partials/notes.html')
+
+    def test_show_preview_no_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        response = self.client.get(reverse('show_preview', kwargs={'identifier': pdf.id}))
+
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_show_preview_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', notes='PdfDing')
+        headers = {'HTTP_HX-Request': 'true'}
+
+        response = self.client.get(reverse('show_preview', kwargs={'identifier': pdf.id}), **headers)
+
+        self.assertEqual(response.context['pdf_id'], pdf.id)
+        self.assertEqual(response.context['preview_available'], False)
+        self.assertTemplateUsed(response, 'partials/preview.html')
+
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
+
+        with dummy_path.open(mode="rb") as f:
+            file = File(f, name='dummy')
+            pdf.preview = file
+            pdf.save()
+
+        response = self.client.get(reverse('show_preview', kwargs={'identifier': pdf.id}), **headers)
+
+        self.assertEqual(response.context['pdf_id'], pdf.id)
+        self.assertEqual(response.context['preview_available'], True)
+        self.assertTemplateUsed(response, 'partials/preview.html')
 
     def test_update_page_post(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')

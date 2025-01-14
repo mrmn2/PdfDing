@@ -435,21 +435,49 @@ class Download(PdfMixin, base_views.BaseDownload):
 
 
 class ServeThumbnail(PdfMixin, base_views.BaseServe):
-    """View used for serving PDF files specified by the PDF id"""
+    """View used for serving the thumbnail specified by the PDF id"""
 
     @staticmethod
     def get_file_path(pdf):  # pragma: no cover
         return pdf.thumbnail.name
 
 
-class EditTag(TagMixin, View):
+class ServePreview(PdfMixin, base_views.BaseServe):
+    """View used for serving the preview specified by the PDF id"""
+
+    @staticmethod
+    def get_file_path(pdf):  # pragma: no cover
+        return pdf.preview.name
+
+
+class ShowPreview(PdfMixin, View):
     """
-    The base view for editing fields of an object in the details page. The field, that is to be changed, is specified
+    The view for editing fields of an object in the details page. The field, that is to be changed, is specified
     by the 'field' argument.
     """
 
+    def get(self, request: HttpRequest, identifier: str):
+        """Get a pdf's preview as html"""
+
+        if request.htmx:
+            pdf = self.get_object(request, identifier)
+
+            if pdf.preview:
+                preview_available = True
+            else:
+                preview_available = False
+            return render(request, 'partials/preview.html', {'pdf_id': pdf.id, 'preview_available': preview_available})
+
+        return redirect('pdf_overview')
+
+
+class EditTag(TagMixin, View):
+    """
+    The view for editing the name of a tag in the overview.
+    """
+
     def get(self, request: HttpRequest):
-        """Triggered by htmx. Display an inline form for editing the correct field."""
+        """Triggered by htmx. Display an inline form for editing the tag name."""
 
         if request.htmx:
             tag_name = request.GET.get('tag_name', '')

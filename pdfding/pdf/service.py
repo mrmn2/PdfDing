@@ -234,34 +234,49 @@ def process_with_pypdfium(pdf: Pdf, extract_thumbnail_and_preview: bool = True):
 
 
 def set_thumbnail_and_preview(
-    pdf: Pdf, pdf_document: PdfDocument, desired_width: int = 120, desired_width_height_ratio: float = 1.9
+    pdf: Pdf,
+    pdf_document: PdfDocument,
+    desired_thumbnail_width: int = 120,
+    desired_thumbnail_width_height_ratio: float = 1.9,
+    desired_preview_width: int = 450,
 ):
     """Extract and set the thumbnail and the preview image of the pdf file."""
 
     try:
         page = pdf_document[0]
+        preview_width_height_ratio = page.get_width() / page.get_height()
 
-        # extract thumbnail with predefined width
-        scale_factor = desired_width / page.get_width()
+        image_files = dict()
+        for image_name, desired_width, desired_ratio in zip(
+            ['thumbnail', 'preview'],
+            [desired_thumbnail_width, desired_preview_width],
+            [desired_thumbnail_width_height_ratio, preview_width_height_ratio],
+        ):
+            # extract thumbnail with predefined width
+            scale_factor = desired_width / page.get_width()
 
-        bitmap = page.render(scale=scale_factor)
-        thumbnail_pil = bitmap.to_pil()
+            bitmap = page.render(scale=scale_factor)
+            pil_image = bitmap.to_pil()
 
-        desired_height = round(desired_width / desired_width_height_ratio)
-        width, height = thumbnail_pil.size
+            desired_height = round(desired_width / desired_ratio)
+            width, height = pil_image.size
 
-        # we crop the image as we want a thumbnail with a ratio of 1.9 x 1. If the image is large enough we also
-        # want the thumbnail not to start at the top but instead with a little offset
-        height_diff = height - desired_height
-        if height_diff > 0:
-            offset = floor(0.15 * height_diff)
-            thumbnail_pil = thumbnail_pil.crop((0, offset, desired_width, desired_height + offset))
+            # we crop the image as we want a thumbnail with a ratio of 1.9 x 1. If the image is large enough we also
+            # want the thumbnail not to start at the top but instead with a little offset
+            height_diff = height - desired_height
+            if image_name == 'thumbnail' and height_diff > 0:
+                offset = floor(0.15 * height_diff)
+                pil_image = pil_image.crop((0, offset, desired_width, desired_height + offset))
 
-        # convert pillow image to django file
-        thumbnail_io = BytesIO()
-        thumbnail_pil.save(thumbnail_io, format='PNG')
+            # convert pillow image to django file
+            image_io = BytesIO()
+            pil_image.save(image_io, format='PNG')
+            image_files[image_name] = image_io
 
-        pdf.thumbnail = File(file=thumbnail_io, name='thumbnail')
+        pdf.thumbnail = File(file=image_files['thumbnail'], name='thumbnail')
+        pdf.preview = File(file=image_files['preview'], name='preview')
+
+        # extract preview
     except Exception as e:  # nosec # noqa
         logger.info(f'Could not extract thumbnail for "{pdf.name}" of user "{pdf.owner.user.email}"')
         logger.info(traceback.format_exc())

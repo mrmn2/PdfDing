@@ -68,16 +68,23 @@
       <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
       </div>
       <div x-data="{ tooltip_date: false }" class="gap-x-1 text-gray-500 dark:text-slate-400  text-sm [&>a]:dark:text-slate-400">
-        <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
+        <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="hidden min-[400px]:inline">
             {{ pdf.natural_age }}
         </span>
-        <span>&hairsp;|&hairsp;</span>
+        <span class="hidden min-[400px]:inline">&hairsp;|&hairsp;</span>
         <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
               class="left-0 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
           {{ pdf.creation_date }} UTC
         </span>
         <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary pr-1"> Details</a>
         <a href="{% url 'share_pdf' pdf.id %}" class="hover:text-primary pr-1"> Share</a>
+        <a id="preview-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
+           hx-get="{% url 'show_preview' pdf.id %}"
+           hx-target="#preview"
+           hx-swap="innerHTML"
+           @click="show_preview_modal = true">
+           Preview
+        </a>
         <a id="star-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
            hx-post="{% url 'star' pdf.id %}"
            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
@@ -128,7 +135,7 @@
          class="hidden min-[900px]:block min-[900px]:w-[20%] min-[900px]:flex min-[900px]:items-center !justify-center
                 min-[900px]:!w-28 min-[900px]:!h-[3.75rem]">
       {% if pdf.thumbnail %}
-      <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-200 dark:border-slate-600"
+      <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600"
            src="{% url 'serve_thumbnail' pdf.id %}"
       />
       {% else %}

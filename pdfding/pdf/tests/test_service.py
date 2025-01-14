@@ -396,10 +396,12 @@ class TestService(TestCase):
 
         pdf_document = PdfDocument(pdf.file.path, autoclose=True)
 
-        pdf = service.set_thumbnail_and_preview(pdf, pdf_document, 120, 2)
-        pil_image = Image.open(pdf.thumbnail.file)
+        pdf = service.set_thumbnail_and_preview(pdf, pdf_document, 120, 2, 400)
+        thumbnail_pil_image = Image.open(pdf.thumbnail.file)
+        preview_pil_image = Image.open(pdf.preview.file)
 
-        self.assertEqual(pil_image.size, (120, 60))
+        self.assertEqual(thumbnail_pil_image.size, (120, 60))
+        self.assertEqual(preview_pil_image.width, 400)
 
         pdf_document.close()
 
@@ -407,7 +409,7 @@ class TestService(TestCase):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
 
         # check that exception is caught and thumbnail stays unset
-        pdf = service.set_thumbnail_and_preview(pdf, None, 120, 2)
+        pdf = service.set_thumbnail_and_preview(pdf, None, 120, 2, 150)
 
         self.assertFalse(pdf.thumbnail)
 

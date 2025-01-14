@@ -50,7 +50,18 @@ def get_file_path(instance, _):
 
 
 def get_thumbnail_path(instance, _):
+    """Get the file path for the thumbnail of a PDF."""
+
     file_name = f'thumbnails/{instance.id}.png'
+    file_path = '/'.join([str(instance.owner.user.id), file_name])
+
+    return str(file_path)
+
+
+def get_preview_path(instance, _):
+    """Get the file path for the preview of a PDF."""
+
+    file_name = f'previews/{instance.id}.png'
     file_path = '/'.join([str(instance.owner.user.id), file_name])
 
     return str(file_path)
@@ -85,6 +96,7 @@ class Pdf(models.Model):
     starred = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
     thumbnail = models.FileField(upload_to=get_thumbnail_path, null=True, blank=False)
+    preview = models.FileField(upload_to=get_preview_path, null=True, blank=False)
 
     def __str__(self):
         return self.name  # pragma: no cover

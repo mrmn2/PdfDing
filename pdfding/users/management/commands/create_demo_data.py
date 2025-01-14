@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.management.base import BaseCommand
 from pdf.models import Pdf, Tag
+from pdf.service import process_with_pypdfium
 
 logger = logging.getLogger('management')
 
@@ -76,6 +77,7 @@ class Command(BaseCommand):
                         number_of_pages=5,
                     )
                     pdf.tags.set(tags)
+                    process_with_pypdfium(pdf)
 
 
 def get_example_notes():  # pragma: no cover

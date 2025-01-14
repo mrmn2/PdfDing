@@ -10,6 +10,7 @@ from django.test import TestCase
 from pdf.models import Pdf
 
 add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0009_readd_number_of_pages_with_new_default')
+add_pdf_previews = importlib.import_module('pdf.migrations.0013_add_pdf_previews')
 
 
 class TestMigrations(TestCase):
@@ -39,3 +40,27 @@ class TestMigrations(TestCase):
     def test_fill_number_of_pages_exception_caught(self):
         self.assertEqual(self.pdf.number_of_pages, -1)
         add_number_of_pdf_pages.fill_number_of_pages(apps, connection.schema_editor())
+
+    def test_fill_thumbnails_and_previews(self):
+        # as I cannot mock the migration file since it has an illegal name and applying the migration
+        # in the test did not work either I am using a dummy pdf file -.-. The dummy file has two pages.
+
+        self.assertEqual(self.pdf.number_of_pages, -1)
+        self.assertFalse(self.pdf.thumbnail)
+        self.assertFalse(self.pdf.preview)
+
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            self.pdf.file = File(f, name=dummy_path.name)
+            self.pdf.save()
+
+        add_pdf_previews.fill_thumbnails_and_previews(apps, connection.schema_editor())
+
+        pdf = Pdf.objects.get(id=self.pdf.id)
+        self.assertEqual(pdf.number_of_pages, 2)
+        self.assertTrue(pdf.thumbnail)
+        self.assertTrue(pdf.preview)
+
+    def test_fill_thumbnails_and_previews_exception_caught(self):
+        self.assertEqual(self.pdf.number_of_pages, -1)
+        add_pdf_previews.fill_thumbnails_and_previews(apps, connection.schema_editor())
