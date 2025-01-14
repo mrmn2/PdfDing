@@ -252,7 +252,7 @@ def set_thumbnail_and_preview(
             [desired_thumbnail_width, desired_preview_width],
             [desired_thumbnail_width_height_ratio, preview_width_height_ratio],
         ):
-            # extract thumbnail with predefined width
+            # extract image with predefined width
             scale_factor = desired_width / page.get_width()
 
             bitmap = page.render(scale=scale_factor)
@@ -276,7 +276,6 @@ def set_thumbnail_and_preview(
         pdf.thumbnail = File(file=image_files['thumbnail'], name='thumbnail')
         pdf.preview = File(file=image_files['preview'], name='preview')
 
-        # extract preview
     except Exception as e:  # nosec # noqa
         logger.info(f'Could not extract thumbnail for "{pdf.name}" of user "{pdf.owner.user.email}"')
         logger.info(traceback.format_exc())

@@ -4,7 +4,7 @@ from pdf.service import process_with_pypdfium
 
 
 def fill_thumbnails_and_previews(apps, schema_editor):
-    """Fill the number of pages for all pdfs."""
+    """Fill the thumbnails and previews for all pdfs."""
 
     pdf_model = apps.get_model("pdf", "Pdf")
 

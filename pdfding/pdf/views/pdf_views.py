@@ -451,10 +451,7 @@ class ServePreview(PdfMixin, base_views.BaseServe):
 
 
 class ShowPreview(PdfMixin, View):
-    """
-    The view for editing fields of an object in the details page. The field, that is to be changed, is specified
-    by the 'field' argument.
-    """
+    """The view for showing the preview of a PDF in the overview."""
 
     def get(self, request: HttpRequest, identifier: str):
         """Get a pdf's preview as html"""
