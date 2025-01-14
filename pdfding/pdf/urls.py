@@ -13,6 +13,7 @@ urlpatterns = [
     path('download/<identifier>', pdf_views.Download.as_view(), name='download_pdf'),
     path('edit/<identifier>/<field_name>', pdf_views.Edit.as_view(), name='edit_pdf'),
     path('get/<identifier>', pdf_views.Serve.as_view(), name='serve_pdf'),
+    path('get_thumbnail/<identifier>', pdf_views.ServeThumbnail.as_view(), name='serve_thumbnail'),
     path('get_notes/<identifier>', pdf_views.GetNotes.as_view(), name='get_notes'),
     path('update_page', pdf_views.UpdatePage.as_view(), name='update_page'),
     path('update_pdf', pdf_views.UpdatePdf.as_view(), name='update_pdf'),

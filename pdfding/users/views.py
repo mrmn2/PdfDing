@@ -33,6 +33,7 @@ class ChangeSetting(View):
         'pdf_inverted_mode': forms.create_user_field_form(['pdf_inverted_mode']),
         'custom_theme_color': forms.CustomThemeColorForm,
         'show_progress_bars': forms.create_user_field_form(['show_progress_bars']),
+        'show_thumbnails': forms.create_user_field_form(['show_thumbnails']),
         'tags_tree_mode': forms.create_user_field_form(['tags_tree_mode']),
     }
 
@@ -46,6 +47,7 @@ class ChangeSetting(View):
             'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
             'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
+            'show_thumbnails': {'show_thumbnails': request.user.profile.show_thumbnails},
             'tags_tree_mode': {'tags_tree_mode': request.user.profile.tags_tree_mode},
         }
 

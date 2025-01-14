@@ -53,7 +53,7 @@ def consume_function(skip_existing: bool):
                         pdf = Pdf.objects.create(owner=user.profile, name=pdf_name, file=pdf_file)
 
                     pdf.tags.set(tags)
-                    service.set_number_of_pages(pdf)
+                    service.process_with_pypdfium(pdf)
 
             except Exception as e:  # pragma: no cover # nosec # noqa
                 logger.info(f'Could not create pdf from "{file_path.name}" of user "{user.id}"')

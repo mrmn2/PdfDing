@@ -49,6 +49,13 @@ def get_file_path(instance, _):
     return str(file_path)
 
 
+def get_thumbnail_path(instance, _):
+    file_name = f'thumbnails/{instance.id}.png'
+    file_path = '/'.join([str(instance.owner.user.id), file_name])
+
+    return str(file_path)
+
+
 def get_qrcode_file_path(instance, _):
     """Get the file path for the qr code of a shared PDF."""
 
@@ -77,6 +84,7 @@ class Pdf(models.Model):
     number_of_pages = models.IntegerField(default=-1)
     starred = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
+    thumbnail = models.FileField(upload_to=get_thumbnail_path, null=True, blank=False)
 
     def __str__(self):
         return self.name  # pragma: no cover

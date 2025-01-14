@@ -40,6 +40,7 @@ class Profile(models.Model):
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdfs_per_page = models.IntegerField(choices=PdfsPerPage.choices, default=PdfsPerPage.p_25)
     show_progress_bars = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
+    show_thumbnails = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     tags_tree_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
 
     def __str__(self):  # pragma: no cover

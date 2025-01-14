@@ -95,6 +95,7 @@ class TestProfileViews(TestCase):
             'theme',
             'email',
             'show_progress_bars',
+            'show_thumbnails',
             'tags_tree_mode',
         ]
         form_list = [
@@ -105,6 +106,7 @@ class TestProfileViews(TestCase):
             forms.EmailForm,
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
+            forms.GenericUserFieldForm,
         ]
         initial_dicts = [
             {'pdf_inverted_mode': 'Disabled'},
@@ -113,6 +115,7 @@ class TestProfileViews(TestCase):
             {'dark_mode': 'Light', 'theme_color': 'Green'},
             {'email': 'a@a.com'},
             {'show_progress_bars': 'Enabled'},
+            {'show_thumbnails': 'Disabled'},
             {'tags_tree_mode': 'Enabled'},
         ]
 
@@ -191,9 +194,10 @@ class TestProfileViews(TestCase):
                 'pdf_inverted_mode',
                 'tags_tree_mode',
                 'show_progress_bars',
+                'show_thumbnails',
             ],
-            [25, 'Disabled', 'Enabled', 'Enabled'],
-            [10, 'Enabled', 'Disabled', 'Disabled'],
+            [25, 'Disabled', 'Enabled', 'Enabled', 'Disabled'],
+            [10, 'Enabled', 'Disabled', 'Disabled', 'Enabled'],
         ):
             self.assertEqual(getattr(self.user.profile, field_name), val_before)
             self.client.post(

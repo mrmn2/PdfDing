@@ -1,7 +1,9 @@
 import traceback
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
+from io import BytesIO
 from logging import getLogger
+from math import floor
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
@@ -213,16 +215,58 @@ def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: st
     return overview_url
 
 
-def set_number_of_pages(pdf: Pdf):
-    """Set the number of pages in a pdf file. If the extraction is not successful, it will leave the default value."""
+def process_with_pypdfium(pdf: Pdf, extract_thumbnail_and_preview: bool = True):
+    """
+    Process the pdf with pypdfium. This will extract the number of pages and optionally the thumbnail + preview of the
+    Pdf.
+    """
 
     try:
-        pdf_document = PdfDocument(pdf.file.path)
+        pdf_document = PdfDocument(pdf.file.path, autoclose=True)
         pdf.number_of_pages = len(pdf_document)
+        if extract_thumbnail_and_preview:
+            pdf = set_thumbnail_and_preview(pdf, pdf_document)
+        pdf_document.close()
         pdf.save()
     except Exception as e:  # nosec # noqa
-        logger.info(f'Could not determine number of pages for "{pdf.name}" of user "{pdf.owner.user.email}"')
+        logger.info(f'Could not process "{pdf.name}" of user "{pdf.owner.user.email}" with Pypdfium')
         logger.info(traceback.format_exc())
+
+
+def set_thumbnail_and_preview(
+    pdf: Pdf, pdf_document: PdfDocument, desired_width: int = 120, desired_width_height_ratio: float = 1.9
+):
+    """Extract and set the thumbnail and the preview image of the pdf file."""
+
+    try:
+        page = pdf_document[0]
+
+        # extract thumbnail with predefined width
+        scale_factor = desired_width / page.get_width()
+
+        bitmap = page.render(scale=scale_factor)
+        thumbnail_pil = bitmap.to_pil()
+
+        desired_height = round(desired_width / desired_width_height_ratio)
+        width, height = thumbnail_pil.size
+
+        # we crop the image as we want a thumbnail with a ratio of 1.9 x 1. If the image is large enough we also
+        # want the thumbnail not to start at the top but instead with a little offset
+        height_diff = height - desired_height
+        if height_diff > 0:
+            offset = floor(0.15 * height_diff)
+            thumbnail_pil = thumbnail_pil.crop((0, offset, desired_width, desired_height + offset))
+
+        # convert pillow image to django file
+        thumbnail_io = BytesIO()
+        thumbnail_pil.save(thumbnail_io, format='PNG')
+
+        pdf.thumbnail = File(file=thumbnail_io, name='thumbnail')
+    except Exception as e:  # nosec # noqa
+        logger.info(f'Could not extract thumbnail for "{pdf.name}" of user "{pdf.owner.user.email}"')
+        logger.info(traceback.format_exc())
+
+    return pdf
 
 
 def get_pdf_info_list(profile: Profile) -> list[tuple]:

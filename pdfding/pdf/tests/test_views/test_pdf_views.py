@@ -23,9 +23,9 @@ def set_up(self):
     self.client.login(username=self.username, password=self.password)
 
 
-def mock_set_number_of_pages(pdf):
-    pdf.number_of_pages = 3
-    pdf.save()
+# def mock_set_number_of_pages(pdf):
+#     pdf.number_of_pages = 3
+#     pdf.save()
 
 
 class TestAddPDFMixin(TestCase):
@@ -42,9 +42,9 @@ class TestAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.AddForm}, generated_context)
 
-    @mock.patch('pdf.views.pdf_views.service.set_number_of_pages', mock_set_number_of_pages)
+    @mock.patch('pdf.views.pdf_views.service.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save(self, mock_from_buffer):
+    def test_obj_save(self, mock_from_buffer, mock_process_with_pypdfium):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -68,8 +68,8 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(pdf.notes, 'some_notes')
         self.assertEqual(pdf.description, 'some_description')
         self.assertEqual(pdf.owner, self.user.profile)
-        self.assertEqual(pdf.number_of_pages, 3)
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
+        mock_process_with_pypdfium.assert_called_once_with(pdf)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_use_file_name(self, mock_from_buffer):
@@ -119,9 +119,9 @@ class TestBulkAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.BulkAddForm}, generated_context)
 
-    @mock.patch('pdf.views.pdf_views.service.set_number_of_pages', mock_set_number_of_pages)
+    @mock.patch('pdf.views.pdf_views.service.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_single_file_no_skipping(self, mock_from_buffer):
+    def test_obj_save_single_file_no_skipping(self, mock_from_buffer, mock_process_with_pypdfium):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -138,8 +138,8 @@ class TestBulkAddPDFMixin(TestCase):
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
-        self.assertEqual(pdf.number_of_pages, 3)
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
+        mock_process_with_pypdfium.assert_called_once_with(pdf)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_multiple_files_no_skipping(self, mock_from_buffer):

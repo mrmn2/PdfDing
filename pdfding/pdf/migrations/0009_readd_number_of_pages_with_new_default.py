@@ -3,7 +3,7 @@
 # Therefore, we delete the migration, so these users get the same behaviour.
 
 from django.db import migrations, models
-from pdf.service import set_number_of_pages
+from pdf.service import process_with_pypdfium
 
 
 def fill_number_of_pages(apps, schema_editor):
@@ -12,7 +12,7 @@ def fill_number_of_pages(apps, schema_editor):
     pdf_model = apps.get_model("pdf", "Pdf")
 
     for pdf in pdf_model.objects.all():
-        set_number_of_pages(pdf)
+        process_with_pypdfium(pdf, extract_thumbnail_and_preview=False)
 
 
 def reverse_func(apps, schema_editor):  # pragma: no cover

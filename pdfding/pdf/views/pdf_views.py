@@ -54,7 +54,7 @@ class AddPdfMixin(BasePdfMixin):
         pdf.owner = request.user.profile
         pdf.save()  # we need to save otherwise the file will not be found in the next step
 
-        service.set_number_of_pages(pdf)
+        service.process_with_pypdfium(pdf)
 
         tag_string = form.data.get('tag_string')
         # get unique tag names
@@ -115,7 +115,7 @@ class BulkAddPdfMixin(BasePdfMixin):
                 )
                 pdf.tags.set(tags)
 
-                service.set_number_of_pages(pdf)
+                service.process_with_pypdfium(pdf)
 
 
 class OverviewMixin(BasePdfMixin):
@@ -432,6 +432,14 @@ class Delete(PdfMixin, base_views.BaseDelete):
 
 class Download(PdfMixin, base_views.BaseDownload):
     """View for downloading the PDF specified by the ID."""
+
+
+class ServeThumbnail(PdfMixin, base_views.BaseServe):
+    """View used for serving PDF files specified by the PDF id"""
+
+    @staticmethod
+    def get_file_path(pdf):  # pragma: no cover
+        return pdf.thumbnail.name
 
 
 class EditTag(TagMixin, View):

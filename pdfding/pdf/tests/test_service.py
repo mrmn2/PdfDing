@@ -11,6 +11,8 @@ from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
 from pdf.models import Pdf, Tag
+from PIL import Image
+from pypdfium2 import PdfDocument
 
 
 class TestService(TestCase):
@@ -339,7 +341,8 @@ class TestService(TestCase):
 
         self.assertEqual(expected_url, adjusted_url)
 
-    def test_set_number_of_pages(self):
+    @mock.patch('pdf.service.set_thumbnail_and_preview')
+    def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
         self.assertEqual(pdf.number_of_pages, -1)
 
@@ -348,12 +351,31 @@ class TestService(TestCase):
             pdf.file = File(f, name=dummy_path.name)
             pdf.save()
 
-        service.set_number_of_pages(pdf)
+        service.process_with_pypdfium(pdf, False)
 
         pdf = self.user.profile.pdf_set.get(name=pdf.name)
         self.assertEqual(pdf.number_of_pages, 2)
+        mock_set_thumbnail_and_preview.assert_not_called()
 
-    def test_set_number_of_pages_exception(self):
+    @mock.patch('pdf.service.set_thumbnail_and_preview')
+    def test_set_process_with_pypdfium_with_images(self, mock_set_thumbnail_and_preview):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        self.assertEqual(pdf.number_of_pages, -1)
+
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            pdf.file = File(f, name=dummy_path.name)
+            pdf.save()
+
+        mock_set_thumbnail_and_preview.return_value = pdf
+
+        service.process_with_pypdfium(pdf)
+
+        pdf = self.user.profile.pdf_set.get(name=pdf.name)
+        self.assertEqual(pdf.number_of_pages, 2)
+        mock_set_thumbnail_and_preview.assert_called_once()
+
+    def test_set_process_with_pypdfium_exception(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
 
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -361,9 +383,33 @@ class TestService(TestCase):
         pdf.file = file_mock
         pdf.save()
 
-        service.set_number_of_pages(pdf)
+        service.process_with_pypdfium(pdf, False)
         pdf = self.user.profile.pdf_set.get(name=pdf.name)
         self.assertEqual(pdf.number_of_pages, -1)
+
+    def test_set_thumbnail_and_preview(self):
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        with dummy_path.open(mode="rb") as f:
+            pdf.file = File(f, name=dummy_path.name)
+            pdf.save()
+
+        pdf_document = PdfDocument(pdf.file.path, autoclose=True)
+
+        pdf = service.set_thumbnail_and_preview(pdf, pdf_document, 120, 2)
+        pil_image = Image.open(pdf.thumbnail.file)
+
+        self.assertEqual(pil_image.size, (120, 60))
+
+        pdf_document.close()
+
+    def test_set_thumbnail_and_preview_exception(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        # check that exception is caught and thumbnail stays unset
+        pdf = service.set_thumbnail_and_preview(pdf, None, 120, 2)
+
+        self.assertFalse(pdf.thumbnail)
 
     def test_get_pdf_info_list(self):
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'

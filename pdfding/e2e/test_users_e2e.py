@@ -108,6 +108,21 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             # check inverted color mode after changing
             expect(self.page.locator("#show_progress_bars")).to_contain_text("Read progress bars are disabled")
 
+    def test_settings_change_show_thumbnails(self):
+        with sync_playwright() as p:
+            self.open(reverse('profile-settings'), p)
+
+            # check inverted color mode before changing
+            expect(self.page.locator("#show_thumbnails")).to_contain_text("PDF thumbnails are disabled")
+
+            # change inverted color mode
+            self.page.locator("#show_thumbnails_edit").click()
+            self.page.locator("#id_show_thumbnails").select_option("Enabled")
+            self.page.get_by_role("button", name="Submit").click()
+
+            # check inverted color mode after changing
+            expect(self.page.locator("#show_thumbnails")).to_contain_text("PDF thumbnails are enabled")
+
     def test_settings_change_tags_tree_mode(self):
         with sync_playwright() as p:
             self.open(reverse('profile-settings'), p)
@@ -157,6 +172,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
                 '#pdf_inverted_mode_edit',
                 '#pdfs_per_page_edit',
                 '#show_progress_bars_edit',
+                '#show_thumbnails_edit',
                 '#tags_tree_mode_edit',
             ]:
                 self.page.locator(name).click()

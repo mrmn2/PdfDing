@@ -288,6 +288,22 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#progressbar-1")).not_to_be_visible()
 
+    def test_thumbnails_on(self):
+        self.user.profile.show_thumbnails = 'Enabled'
+        self.user.profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#thumbnail-1")).to_be_visible()
+
+    def test_thumbnails_off(self):
+        self.user.profile.show_thumbnails = 'Disabled'
+        self.user.profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#thumbnail-1")).not_to_be_visible()
+
     def test_notes(self):
         pdf = Pdf.objects.get(name='pdf_4_14')
         pdf.notes = 'some markdown notes'

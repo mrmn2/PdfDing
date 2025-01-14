@@ -68,6 +68,10 @@ class TestTasks(TestCase):
         dummy_3 = Pdf.objects.get(name='dummy_3')
         self.assertEqual(sorted(['consumed', 'file']), sorted([tag.name for tag in dummy_3.tags.all()]))
 
+        # test number_of_pages and thumbnail were created
+        self.assertEqual(dummy_3.number_of_pages, 2)
+        self.assertTrue(dummy_3.thumbnail)
+
         # clean up
         wrong_pdf_path.unlink()
         user_consume_path.rmdir()

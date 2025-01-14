@@ -1,5 +1,6 @@
 import importlib
 from pathlib import Path
+from unittest.mock import patch
 
 from django.apps import apps
 from django.contrib.auth.models import User
@@ -16,7 +17,8 @@ class TestMigrations(TestCase):
         self.user = User.objects.create_user(username='test_user', password='12345')
         self.pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
 
-    def test_fill_number_of_pages(self):
+    @patch('pdf.service.set_thumbnail_and_preview')
+    def test_fill_number_of_pages(self, mock_set_thumbnail_and_preview):
         # as I cannot mock the migration file since it has an illegal name and applying the migration
         # in the test did not work either I am using a dummy pdf file -.-. The dummy file has two pages.
 
@@ -31,6 +33,8 @@ class TestMigrations(TestCase):
 
         pdf = Pdf.objects.get(id=self.pdf.id)
         self.assertEqual(pdf.number_of_pages, 2)
+        # thumbnail cannot be called, otherwise the migration will fail
+        mock_set_thumbnail_and_preview.assert_not_called()
 
     def test_fill_number_of_pages_exception_caught(self):
         self.assertEqual(self.pdf.number_of_pages, -1)

@@ -88,7 +88,11 @@ class BaseServe(View):
 
         serve_object = self.get_object(request, identifier)
 
-        return serve(request, document_root=MEDIA_ROOT, path=serve_object.file.name)
+        return serve(request, document_root=MEDIA_ROOT, path=self.get_file_path(serve_object))
+
+    @staticmethod
+    def get_file_path(serve_object):
+        return serve_object.file.name
 
 
 class BaseDownload(View):

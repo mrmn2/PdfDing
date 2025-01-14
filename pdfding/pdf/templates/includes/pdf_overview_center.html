@@ -13,108 +13,138 @@
 {% for pdf in page_obj %}
 {% with loop_id=forloop.counter %}
 <div x-data="{ delete{{ loop_id }}: false, show_notes_{{ loop_id }}: false }" class="pb-1">
-  <ul class="relative">
-    <div class="flex flex-row items-center !-mb-1 truncate gap-x-1">
-      <a id="pdf-link-{{ loop_id }}"
-         href="{% url 'view_pdf' pdf.id %}"
-         class="text font-bold text-tertiary1 dark:text-tertiary2 hover:underline">
-          {{ pdf.name }}
-      </a>
-      {% if pdf.starred %}
-      <svg id="starred-icon-{{ loop_id }}" class="fill-tertiary1 dark:fill-tertiary2 text-tertiary1 dark:text-tertiary2 w-5 h-5"
-           viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!--source: https://www.svgrepo.com/svg/489797/star-->
-      <!--License: PD-->
-        <path d="M14.65 8.93274L12.4852 4.30901C12.2923 3.89699 11.7077 3.897 11.5148 4.30902L9.35002 8.93274L4.45559 9.68243C4.02435 9.74848 3.84827 10.2758 4.15292 10.5888L7.71225 14.2461L6.87774 19.3749C6.80571 19.8176 7.27445 20.1487 7.66601 19.9317L12 17.5299L16.334 19.9317C16.7256 20.1487 17.1943 19.8176 17.1223 19.3749L16.2878 14.2461L19.8471 10.5888C20.1517 10.2758 19.9756 9.74848 19.5444 9.68243L14.65 8.93274Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+  <ul class="md:flex md:flex-row md:justify-between md:items-center">
+    <div
+      {% if request.user.profile.show_thumbnails == 'Enabled' %}
+      class="relative w-full min-[900px]:w-[75%]"
+      {% else %}
+      class="relative w-full"
       {% endif %}
-    </div>
-    {% if pdf.description or pdf.tags.all %}
-    <div class="truncate [&>span]:text-gray-800 [&>span]:dark:text-slate-100 -mb-1">
-      {% for tag in pdf.tags.all|dictsort:"name" %}
-      <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
-         class="text-primary hover:text-secondary text-sm">#{{ tag.name }}
-      </a>
-      {% endfor %}
-      {% if pdf.description %}
-      {% if pdf.tags.all %}
-      <span class="text-sm">|</span>
-      {% endif %}
-      <span class="text-sm">{{ pdf.description }}</span>
-      {% endif %}
-    </div>
-    {% endif %}
-    {% if pdf.owner.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 %}
-    <div x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
-        <div class="pt-1">
-            <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
-                 class="w-3/4 md:w-1/2 h-2 bg-slate-200 dark:bg-slate-600 rounded">
-                <div style="width: {{ pdf.progress }}%;" class="h-2 !bg-primary rounded"></div>
-            </div>
-            <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
-                class="z-50 absolute bg-primary text-gray-100 text-sm rounded-sm p-2 mt-1">
-             {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}
-          </span>
-        </div>
-    </div>
-    {% endif %}
-    <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
-    </div>
-    <div x-data="{ tooltip_date: false }" class="gap-x-1 text-gray-500 dark:text-slate-400  text-sm [&>a]:dark:text-slate-400">
-      <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
-          {{ pdf.natural_age }}
-      </span>
-      <span>&hairsp;|&hairsp;</span>
-      <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
-            class="-left-1 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
-        {{ pdf.creation_date }} UTC
-      </span>
-      <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary pr-1"> Details</a>
-      <a href="{% url 'share_pdf' pdf.id %}" class="hover:text-primary pr-1"> Share</a>
-      <a id="star-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
-         hx-post="{% url 'star' pdf.id %}"
-         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    >
+      <div class="flex flex-row items-center !-mb-1 truncate gap-x-1">
+        <a id="pdf-link-{{ loop_id }}"
+           href="{% url 'view_pdf' pdf.id %}"
+           class="text font-bold text-tertiary1 dark:text-tertiary2 hover:underline">
+            {{ pdf.name }}
+        </a>
         {% if pdf.starred %}
-        Unstar
-        {% else %}
-        Star
+        <svg id="starred-icon-{{ loop_id }}" class="fill-tertiary1 dark:fill-tertiary2 text-tertiary1 dark:text-tertiary2 w-5 h-5"
+             viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!--source: https://www.svgrepo.com/svg/489797/star-->
+        <!--License: PD-->
+          <path d="M14.65 8.93274L12.4852 4.30901C12.2923 3.89699 11.7077 3.897 11.5148 4.30902L9.35002 8.93274L4.45559 9.68243C4.02435 9.74848 3.84827 10.2758 4.15292 10.5888L7.71225 14.2461L6.87774 19.3749C6.80571 19.8176 7.27445 20.1487 7.66601 19.9317L12 17.5299L16.334 19.9317C16.7256 20.1487 17.1943 19.8176 17.1223 19.3749L16.2878 14.2461L19.8471 10.5888C20.1517 10.2758 19.9756 9.74848 19.5444 9.68243L14.65 8.93274Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         {% endif %}
-      </a>
-      <a id="archive-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
-         hx-post="{% url 'archive' pdf.id %}"
-         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-        {% if pdf.archived %}
-        Unarchive
-        {% else %}
-        Archive
+      </div>
+      {% if pdf.description or pdf.tags.all %}
+      <div class="truncate [&>span]:text-gray-800 [&>span]:dark:text-slate-100 -mb-1">
+        {% for tag in pdf.tags.all|dictsort:"name" %}
+        <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
+           class="text-primary hover:text-secondary text-sm">#{{ tag.name }}
+        </a>
+        {% endfor %}
+        {% if pdf.description %}
+        {% if pdf.tags.all %}
+        <span class="text-sm">|</span>
         {% endif %}
-      </a>
-      <a id="confirm-delete-pdf-{{ loop_id }}"
-         x-show="delete{{ loop_id }}" x-cloak
-         hx-delete="{% url 'delete_pdf' pdf.id %}"
-         hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-         class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
-      </a>
-      <button id="cancel-delete-pdf-{{ loop_id }}"
-              x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
-              class="button-text-delete dark:!bg-slate-800">Cancel
-      </button>
-      <button id="delete-pdf-{{ loop_id }}"
-              x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
-              class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
-      </button>
-      {% if pdf.notes %}
-      <span>&hairsp;|&hairsp;</span>
-      <button id="show-notes-{{ loop_id }}"
-              @click="show_notes_{{ loop_id }} = !show_notes_{{ loop_id }}" type="button"
-              class="button-text dark:!bg-slate-800 dark:!text-slate-400"
-              hx-get="{% url 'get_notes' identifier=pdf.id %}"
-              hx-target="#notes-{{ loop_id }}"
-              hx-swap="innerHTML" >
-      Notes
-      </button>
+        <span class="text-sm">{{ pdf.description }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+      {% if pdf.owner.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 %}
+      <div x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
+          <div class="pt-1">
+              <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
+                   class="w-80 md:w-[23rem] h-2 bg-slate-200 dark:bg-slate-600 rounded">
+                  <div style="width: {{ pdf.progress }}%;" class="h-2 !bg-primary rounded"></div>
+              </div>
+              <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
+                  class="z-50 absolute bg-primary text-gray-100 text-sm rounded-sm p-2 mt-1">
+               {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}
+            </span>
+          </div>
+      </div>
+      {% endif %}
+      <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
+      </div>
+      <div x-data="{ tooltip_date: false }" class="gap-x-1 text-gray-500 dark:text-slate-400  text-sm [&>a]:dark:text-slate-400">
+        <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="">
+            {{ pdf.natural_age }}
+        </span>
+        <span>&hairsp;|&hairsp;</span>
+        <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
+              class="left-0 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
+          {{ pdf.creation_date }} UTC
+        </span>
+        <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary pr-1"> Details</a>
+        <a href="{% url 'share_pdf' pdf.id %}" class="hover:text-primary pr-1"> Share</a>
+        <a id="star-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
+           hx-post="{% url 'star' pdf.id %}"
+           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+          {% if pdf.starred %}
+          Unstar
+          {% else %}
+          Star
+          {% endif %}
+        </a>
+        <a id="archive-{{ loop_id }}" class="hover:text-primary pr-1 cursor-pointer"
+           hx-post="{% url 'archive' pdf.id %}"
+           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+          {% if pdf.archived %}
+          Unarchive
+          {% else %}
+          Archive
+          {% endif %}
+        </a>
+        <a id="confirm-delete-pdf-{{ loop_id }}"
+           x-show="delete{{ loop_id }}" x-cloak
+           hx-delete="{% url 'delete_pdf' pdf.id %}"
+           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+           class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
+        </a>
+        <button id="cancel-delete-pdf-{{ loop_id }}"
+                x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
+                class="button-text-delete dark:!bg-slate-800">Cancel
+        </button>
+        <button id="delete-pdf-{{ loop_id }}"
+                x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
+                class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
+        </button>
+        {% if pdf.notes %}
+        <span>&hairsp;|&hairsp;</span>
+        <button id="show-notes-{{ loop_id }}"
+                @click="show_notes_{{ loop_id }} = !show_notes_{{ loop_id }}" type="button"
+                class="button-text dark:!bg-slate-800 dark:!text-slate-400"
+                hx-get="{% url 'get_notes' identifier=pdf.id %}"
+                hx-target="#notes-{{ loop_id }}"
+                hx-swap="innerHTML" >
+        Notes
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    {% if request.user.profile.show_thumbnails == 'Enabled' %}
+    <div id="thumbnail-{{ loop_id }}"
+         class="hidden min-[900px]:block min-[900px]:w-[20%] min-[900px]:flex min-[900px]:items-center !justify-center
+                min-[900px]:!w-28 min-[900px]:!h-[3.75rem]">
+      {% if pdf.thumbnail %}
+      <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-200 dark:border-slate-600"
+           src="{% url 'serve_thumbnail' pdf.id %}"
+      />
+      {% else %}
+      <div class="flex items-center justify-center w-full h-full !rounded-md border-[1px]
+                  border-slate-200 !bg-slate-100 text-slate-700
+                  dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200">
+        <svg class="!w-10 !h-10 py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+          <!-- source: https://www.svgrepo.com/svg/489003/image -->
+          <!-- license: PD License -->
+        <path d="M4 17L7.58959 13.7694C8.38025 13.0578 9.58958 13.0896 10.3417 13.8417L11.5 15L15.0858 11.4142C15.8668 10.6332 17.1332 10.6332 17.9142 11.4142L20 13.5M11 9C11 9.55228 10.5523 10 10 10C9.44772 10 9 9.55228 9 9C9 8.44772 9.44772 8 10 8C10.5523 8 11 8.44772 11 9ZM6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       {% endif %}
     </div>
+    {% endif %}
   </ul>
 </div>
 {% endwith %}
