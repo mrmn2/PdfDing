@@ -18,7 +18,8 @@ By using the following environment variables the admin can control general setti
 ### `HOST_NAME`
 Values: `string` | Default: `None`
 
-The host/domain name where PdfDing will be reachable. Example: `pdfding.com`
+The host/domain names where PdfDing will be reachable. It is possible to provide multiple hosts by separating
+them with commas. Example: `pdfding.com,127.0.0.1`
 
 ### `HOST_PORT`
 Values: `integer` | Default: `8000`

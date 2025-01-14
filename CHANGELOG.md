@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.11.0 - Starring, Archiving, Thumbnails, Previews  (Jan 14, 2025)
+* PDFs can be starred and archived. Starred and archived PDFs can be quickly accessed
+  in the overview. Archived PDFs are hidden from the default overview.
+* Add PDF previews. The first page of each PDF can be shown in the overview without
+  entering the viewer.
+* Support thumbnails in the overview. The first page of each PDF will be shown as a
+  thumbnail in the overview. Thumbnails are disabled by default and can be activated
+  in the user settings.
+* Specify multiple host names via the `HOST_NAME` env variable.
+
 ## 0.10.0 - Markdown Notes  (Jan 5, 2025)
 * Add markdown notes to PDFs. The notes can be shown in the PDF overview.
 * Add healthz endpoint. This endpoint is primarily used for restarting the demo instance
