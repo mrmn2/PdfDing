@@ -128,18 +128,21 @@
       :root{
         {% if request.user.profile.pdf_inverted_mode == 'Enabled' %}
         --body-bg-color:rgb(71 71 71); /* background around pdf, sets also sidebar color!*/
+        --sidebar-narrow-bg-color:rgb(71 71 71); /* sidebar background around pdf mobile*/
         --scrollbar-bg-color:rgb(71 71 71);  /* scrollbar background color */
         --treeitem-color:rgb(243,244,246);  /* table of contents text color */
         --treeitem-bg-color:rgb(71 71 71);   ;  /* table of contents bg color */
         --treeitem-selected-bg-color:rgb(71 71 71);  /* table of contents selected bg color */
         {% elif request.user.profile.dark_mode == 'Dark' %}
         --body-bg-color:rgb(30 41 59); /* background around pdf, sets also sidebar color!*/
+        --sidebar-narrow-bg-color:rgb(30 41 59); /* sidebar background around pdf mobile*/
         --scrollbar-bg-color:rgb(30 41 59);  /* scrollbar background color */
         --treeitem-color:rgb(243,244,246);  /* table of contents text color */
         --treeitem-bg-color:rgb(30 41 59);   ;  /* table of contents bg color */
         --treeitem-selected-bg-color:rgb(30 41 59);  /* table of contents selected bg color */
         {% else %}
         --body-bg-color:rgb(255 255 255); /* background around pdf, sets also sidebar color!*/
+        --sidebar-narrow-bg-color:rgb(255 255 255); /* sidebar background around pdf mobile*/
         --scrollbar-bg-color:rgb(255 255 255);  /* scrollbar background color */
         --treeitem-color:rgb(54 52 64);  /* table of contents text color */
         --treeitem-bg-color:rgb(255 255 255);   ;  /* table of contents bg color */
@@ -189,6 +192,13 @@
       .splitToolbarButtonSeparator{
         border-left:1px solid rgb(243,244,246);
         opacity: 0.6
+      }
+      .treeItemToggler::before {
+      {% if request.user.profile.pdf_inverted_mode == 'Enabled' or request.user.profile.dark_mode == 'Dark' %}
+        background-color:rgb(243,244,246);
+      {% else %}
+        background-color:rgb(54 52 64);
+      {% endif %}
       }
       {% if request.user.profile.pdf_inverted_mode == 'Enabled' %}
       #viewerContainer > #viewer .page {
