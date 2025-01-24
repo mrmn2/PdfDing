@@ -11,15 +11,15 @@ services:
       # - sqlite_data:/home/nonroot/pdfding/db:Z
       # - media:/home/nonroot/pdfding/media:Z
     environment:
-      DEFAULT_THEME: dark
-      DEFAULT_THEME_COLOR: blue
+      - DEFAULT_THEME=${DEFAULT_THEME:-dark}
+      - DEFAULT_THEME_COLOR=${DEFAULT_THEME_COLOR:-blue}
       # use a long random secret
-      SECRET_KEY: some_secret
+      - SECRET_KEY=${SECRET_KEY:-some_secret}
       # the domain where you want to access PdfDing, e.g. pdfding.com
-      HOST_NAME: 127.0.0.1
+      - HOST_NAME=${HOST_NAME:-127.0.0.1}
       # In production set the following values to True
-      CSRF_COOKIE_SECURE: 'FALSE'
-      SESSION_COOKIE_SECURE: 'FALSE'
+      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE:-'FALSE'}
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-'FALSE'}
     ports:
       - "8000:8000"
 
