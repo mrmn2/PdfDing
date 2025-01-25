@@ -15,12 +15,22 @@
         </div>
         <div class="md:hidden">
             <a @click="mobilenavOpen = !mobilenavOpen" class="h-12 w-12 flex items-center justify-center cursor-pointer hover:bg-primary rounded-lg">
-                <img x-show="!mobilenavOpen" class="w-6 h-6" src="{% static "images/menu.svg" %}"/>
-                <img x-show="mobilenavOpen" x-cloak class="w-6 h-6" src="{% static "images/close_white.svg" %}"/>
+                <svg x-show="!mobilenavOpen" class="w-6 h-6 fill-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- source: https://www.svgrepo.com/svg/499620/menu-burger -->
+                    <!-- license: PD -->
+                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 6C3 5.44772 3.44772 5 4 5H20C20.5523 5 21 5.44772 21 6C21 6.55228 20.5523 7 20 7H4C3.44772 7 3 6.55228 3 6ZM3 12C3 11.4477 3.44772 11 4 11H20C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13H4C3.44772 13 3 12.5523 3 12ZM3 18C3 17.4477 3.44772 17 4 17H20C20.5523 17 21 17.4477 21 18C21 18.5523 20.5523 19 20 19H4C3.44772 19 3 18.5523 3 18Z"/>
+                </svg>
+                <!-- source: https://www.svgrepo.com/svg/499592/close-x -->
+                <!-- license: PD -->
+                <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                <svg x-show="mobilenavOpen" x-cloak class="w-6 h-6 fill-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z"/>
+                </svg>
             </a>
         </div>
     </div>
-    <div x-show="mobilenavOpen" x-cloak class="md:hidden bg-primary h-screen w-screen"
+    <div x-show="mobilenavOpen" x-cloak class="md:hidden bg-white dark:bg-slate-800 h-screen w-screen"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0 translate-y-0"
         x-transition:enter-end="opacity-100 translate-y-0"
