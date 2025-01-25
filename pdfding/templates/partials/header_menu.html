@@ -1,7 +1,7 @@
 {% load static %}
-<ul class="navitems md:flex flex-col md:flex-row">
+<ul class="navitems md:flex flex-col md:flex-row md:space-x-8">
     {% if request.user.is_authenticated %}
-    <li ><a href="{% url 'add_pdf' %}">Add PDF</a></li>
+    <li><a href="{% url 'add_pdf' %}">Add PDF</a></li>
     <li><a href="{% url 'pdf_overview' %}">PDFs</a></li>
     <li><a href="{% url 'shared_pdf_overview' %}">Shared</a></li>
     {% if request.user.is_superuser and request.user.is_staff %}
@@ -9,7 +9,7 @@
     {% endif %}
     <li x-data="{ dropdownOpen: false }" class="relative">
         <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false"
-           class="cursor-pointer !gap-x-1 fill-primary hover:fill-slate-200">
+           class="cursor-pointer !gap-x-1 fill-primary">
             <svg class="h-5 w-5"  version="1.1" xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 612 612" xml:space="preserve">
                 <!-- source: https://www.svgrepo.com/svg/148046/forum-user-->

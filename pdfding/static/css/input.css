@@ -99,7 +99,7 @@ hr {
     @apply !bg-gray-300 hover:!bg-[#c3c9d0]
 }
 .navitems>li>a {
-    @apply flex items-center gap-2 h-10 px-4 hover:bg-secondary hover:text-slate-200 font-semibold rounded-lg;
+    @apply flex items-center h-10 hover:text-tertiary1 dark:hover:text-tertiary2 font-semibold rounded-lg;
 }
 .hoverlist>* {
     @apply dark:text-slate-50 dark:bg-slate-700 hover:text-slate-50 hover:bg-primary rounded-md transition duration-150;
