@@ -8,10 +8,29 @@
     <li><a href="{% url 'admin_overview' %}">Admin</a></li>
     {% endif %}
     <li x-data="{ dropdownOpen: false }" class="relative">
-        <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">
-            <!-- bg-primary needed as profile image will flicker otherwise -->
-            <img class="h-8 w-8 bg-primary rounded-full object-cover" src="{% static "images/profile.svg" %}"/>
-            <img class="rotate-90 w-5" x-bind:class="dropdownOpen && '-rotate-90 duration-300'" src="{% static "images/arrow_right.svg" %}"/>
+        <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false"
+           class="cursor-pointer !gap-x-1 fill-primary hover:fill-slate-200">
+            <svg class="h-5 w-5"  version="1.1" xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 612 612" xml:space="preserve">
+                <!-- source: https://www.svgrepo.com/svg/148046/forum-user-->
+                <!-- license: CC0 License-->
+                <g>
+                    <path d="M306.001,325.988c90.563-0.005,123.147-90.682,131.679-165.167C448.188,69.06,404.799,0,306.001,0
+                        c-98.782,0-142.195,69.055-131.679,160.82C182.862,235.304,215.436,325.995,306.001,325.988z"/>
+                    <path d="M550.981,541.908c-0.99-28.904-4.377-57.939-9.421-86.393c-6.111-34.469-13.889-85.002-43.983-107.465
+                        c-17.404-12.988-39.941-17.249-59.865-25.081c-9.697-3.81-18.384-7.594-26.537-11.901c-27.518,30.176-63.4,45.962-105.186,45.964
+                        c-41.774,0-77.652-15.786-105.167-45.964c-8.153,4.308-16.84,8.093-26.537,11.901c-19.924,7.832-42.461,12.092-59.863,25.081
+                        c-30.096,22.463-37.873,72.996-43.983,107.465c-5.045,28.454-8.433,57.489-9.422,86.393
+                        c-0.766,22.387,10.288,25.525,29.017,32.284c23.453,8.458,47.666,14.737,72.041,19.884c47.077,9.941,95.603,17.582,143.921,17.924
+                        c48.318-0.343,96.844-7.983,143.921-17.924c24.375-5.145,48.59-11.424,72.041-19.884
+                        C540.694,567.435,551.747,564.297,550.981,541.908z"/>
+                </g>
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="rotate-90 w-5 h-5">
+                 <path d="m9 18 6-6-6-6"></path>
+            </svg>
         </a>
         <div x-show="dropdownOpen" x-cloak
              class="absolute md:right-0 bg-white dark:bg-slate-700 text-black dark:text-slate-50 shadow rounded-lg w-52 p-2 z-20"

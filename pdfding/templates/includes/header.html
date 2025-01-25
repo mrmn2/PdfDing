@@ -1,10 +1,13 @@
 {% load static %}
-<header x-data="{ mobilenavOpen: false }" class="bg-primary h-12 [&>*]:px-8 text-white sticky top-0 z-40 ">
+<header x-data="{ mobilenavOpen: false }" class="h-12 [&>*]:px-8 !text-primary sticky top-0 z-40 ">
     <div class="flex items-center justify-between h-12">
         <div>
             <a class="flex items-center gap-2" href="/">
-                <img class="h-6" src="{% static "images/logo.svg" %}" alt="Logo"/>
-                <span class="text-lg font-bold">PdfDing </span>
+                <div class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
+                    <!-- bg-primary needed as profile image will flicker otherwise -->
+                    <img class="bg-primary rounded-full h-6" src="{% static 'images/logo.svg' %}" alt="Logo"/>
+                </div>
+                <span class="text-xl font-bold">PdfDing </span>
             </a>
         </div>
         <div class="hidden md:flex">
