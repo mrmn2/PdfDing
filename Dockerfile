@@ -4,11 +4,11 @@ FROM python:3.12.7-alpine AS python-base
 FROM node:22.11.0-bookworm-slim AS npm-build
 
 # do not add the 'v' of the version, only use x.y.z instead of vx.y.z
-ARG PDFJS_VERSION=4.9.155
+ARG PDFJS_VERSION=4.10.38
 
 WORKDIR /build
 
-COPY package.json package-lock.json tailwind.config.js ./
+COPY package.json package-lock.json ./
 # pdfding is needed as tailwind creates the css files based on pdfding's html files
 COPY pdfding ./pdfding
 
@@ -24,7 +24,7 @@ RUN rm -rf pdfding/static/pdfjs/web/locale \
     pdfding/static/pdfjs/web/compressed.tracemonkey-pldi-09.pdf
 # get other dependecies
 RUN npm ci && npm run build
-RUN npx tailwindcss -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css -c tailwind.config.js --minify
+RUN npx @tailwindcss/cli -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css --minify
 # minify pdfjs js files
 RUN for i in build/pdf.mjs build/pdf.sandbox.mjs build/pdf.worker.mjs web/viewer.mjs; \
     do npx terser pdfding/static/pdfjs/$i --compress -o pdfding/static/pdfjs/$i; done

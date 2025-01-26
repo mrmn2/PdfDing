@@ -29,7 +29,7 @@
     <div x-data="{ tag_delete: false }"
          @keyup.escape.window="tag_options = false; tag_delete = false"
          @click.away="tag_options = false; tag_delete = false" tag_delete = false" x-show="tag_options" x-cloak
-         class="relative top-12 bg-white dark:bg-slate-700 text-black dark:text-slate-50 shadow rounded-lg w-32 pl-4 py-3 z-20"
+         class="relative top-12 bg-white dark:bg-slate-700 text-black dark:text-slate-50 shadow-sm rounded-lg w-32 pl-4 py-3 z-20"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0 scale-90"
         x-transition:enter-end="opacity-100 scale-100"
@@ -37,7 +37,7 @@
         <div>
             <div x-show="!tag_delete" @click="tag_options = false; tag_delete = false"
                  class="flex flex-row gap-x-1
-                 hover:cursor-pointer [&>svg]:hover:stroke-primary [&>a]:hover:!text-primary">
+                 hover:cursor-pointer hover:[&>svg]:stroke-primary hover:[&>a]:text-primary!">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
                      class="stroke-gray-500 dark:stroke-slate-400 w-5">
                     <!--source: https://www.svgrepo.com/svg/488918/edit-03, license: PD License-->
@@ -48,7 +48,7 @@
                    hx-target="#edit_tag"
                    hx-swap="innerHTML"
                    @click="show_tag_name_modal = true"
-                   type="button"    class="button-text dark:!text-slate-400">Rename</a>
+                   type="button"    class="button-text dark:text-slate-400!">Rename</a>
             </div>
             <form x-show="tag_delete" >
                 <a id="confirm-delete-tag-{{ tag_name }}"
@@ -63,13 +63,13 @@
         <div class="pt-2">
             <div id="delete-tag-{{ tag_name }}"
                  x-show="!tag_delete" @click="tag_delete = true"
-                 class="flex flex-row gap-x-1 hover:cursor-pointer [&>a]:hover:!text-primary">
+                 class="flex flex-row gap-x-1 hover:cursor-pointer hover:[&>a]:text-primary!">
                 <img src="{% static 'images/trash.svg' %}" width="19">
-                <a type="button" class="button-text dark:!text-slate-400">Delete</a>
+                <a type="button" class="button-text dark:text-slate-400!">Delete</a>
             </div>
             <a id="cancel-delete-tag-{{ tag_name }}"
                   x-show="tag_delete" x-cloak @click="tag_delete = false" type="button"
-                  class="button-text dark:!text-slate-400 hover:dark:!text-slate-300">Cancel
+                  class="button-text dark:text-slate-400! dark:hover:text-slate-300!">Cancel
             </a>
         </div>
     </div>

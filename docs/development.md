@@ -66,7 +66,7 @@ Start the development server with:
 # in one shell run
 python pdfding/manage.py runserver
 # in another run
-npx tailwindcss -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css -c tailwind.config.js --watch
+npx @tailwindcss/cli -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css --watch
 ```
 The frontend is now available under http://127.0.0.1:8000. Any changes in regard to Tailwind CSS will be automatically
 reflected.

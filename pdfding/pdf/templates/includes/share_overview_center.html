@@ -1,5 +1,5 @@
 {% if not page_obj %}
-<div class="pt-10 [&>*]:flex [&>*]:justify-center">
+<div class="pt-10 *:flex *:justify-center">
   <span class="text-2xl">You have not shared any PDFs yet</span>
 </div>
 {% endif %}
@@ -8,7 +8,7 @@
 {% with loop_id=forloop.counter %}
   <div x-data="{ delete{{ loop_id }}: false }" class="pb-1">
     <ul class="relative">
-      <div class="!-mb-1 truncate">
+      <div class="-mb-1! truncate">
         <a id="shared-pdf-link-{{ loop_id }}"
            href="{% url 'shared_pdf_details' shared_pdf.id %}"
            {% if shared_pdf.inactive %}
@@ -20,19 +20,19 @@
            {% endif %}
         </a>
       </div>
-      <div class="truncate [&>span]:text-sm [&>span]:text-gray-500 [&>span]:dark:text-slate-100">
+      <div class="truncate [&>span]:text-sm [&>span]:text-gray-500 dark:[&>span]:text-slate-100">
         <span>{{ shared_pdf.pdf.name }}</span>
         {% if shared_pdf.description %}
         <span>| {{ shared_pdf.description }}</span>
         {% endif %}
       </div>
-      <div x-data="{ tooltip_del: false, tooltip_exp: false }" class="text-gray-500 text-sm [&>span]:dark:text-slate-400">
+      <div x-data="{ tooltip_del: false, tooltip_exp: false }" class="text-gray-500 text-sm dark:[&>span]:text-slate-400">
         {% if shared_pdf.deletion_date %}
         <span x-on:mouseenter="tooltip_del = true" x-on:mouseleave="tooltip_del = false">
           {{ shared_pdf.deletes_in_string }} |
         </span>
         <span x-show="tooltip_del" x-transition:enter.duration.500ms x-cloak
-              class="-left-0 -bottom-5 z-50 absolute bg-primary !text-gray-100 rounded-sm p-2 mt-1">
+              class="-left-0 -bottom-5 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
           {{ shared_pdf.deletion_date }} UTC
         </span>
         {% else %}
@@ -43,7 +43,7 @@
           {{ shared_pdf.expires_in_string }} |
         </span>
         <span x-show="tooltip_exp" x-cloak x-transition:enter.duration.500ms
-              class="left-20 -bottom-5 z-50 absolute bg-primary !text-gray-100 rounded-sm p-2 mt-1">
+              class="left-20 -bottom-5 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
           {{ shared_pdf.expiration_date }} UTC
         </span>
         {% else %}
@@ -51,9 +51,9 @@
         {% endif %}
         <span>{{ shared_pdf.views_string }}</span>
       </div>
-      <div class="text-gray-500 space-x-1 text-sm [&>a]:dark:text-slate-400">
+      <div class="text-gray-500 space-x-1 text-sm dark:[&>a]:text-slate-400">
         <button type="button"
-                class="button-text dark:!bg-slate-800 dark:!text-slate-400 "
+                class="button-text dark:bg-slate-800! dark:text-slate-400! "
                 @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
                 Copy
         </button>
@@ -61,13 +61,13 @@
         <a x-show="delete{{ loop_id }}" x-cloak
            hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-           class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
+           class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
         </a>
         <button x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
-                class="button-text-delete dark:!bg-slate-800">Cancel
+                class="button-text-delete dark:bg-slate-800!">Cancel
         </button>
         <button x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
-                class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
+                class="button-text dark:bg-slate-800! dark:text-slate-400!">Delete
         </button>
       </div>
     </ul>
@@ -75,7 +75,7 @@
 {% endwith %}
 {% endfor %}
 {% if page_obj %}
-<div class="flex-grow border-t border-gray-400 mt-2 mb-4"></div>
+<div class="grow border-t border-gray-400 mt-2 mb-4"></div>
 <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
   {% if page_obj.has_previous %}
     <a class="hover:text-secondary"
@@ -90,7 +90,7 @@
   {% else %}
   <span>Prev</span>
   {% endif %}
-  <span class="bg-primary !text-gray-100 px-2 rounded-sm">{{ page_obj.number }}</span>
+  <span class="bg-primary text-gray-100! px-2 rounded-xs">{{ page_obj.number }}</span>
   {% if page_obj.has_next %}
     <a class="hover:text-secondary"
             {% if request.META.QUERY_STRING %}

@@ -2,11 +2,11 @@
 {% load static %}
 {% block content %}
 <div class="[&>div]:flex [&>div]:justify-between [&>div]:py-4
-            [&>div]:border-b [&>div]:border-slate-200 [&>div]:dark:border-slate-600
+            [&>div]:border-b [&>div]:border-slate-200 dark:[&>div]:border-slate-600
             [&>div>div>span]:font-bold [&>div>div>span]:text-gray-900 dark:[&>div>div>span]:text-slate-200
             [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-gray-500 dark:[&>div>div>div>span]:text-slate-300
             [&>div>div>div>a]:text-sm [&>div>div>div>a]:cursor-pointer [&>div>div>div>a]:text-primary">
-    <div class="!pb-0 !border-none">
+    <div class="pb-0! border-none!">
         <span href="{% url 'view_pdf' shared_pdf.pdf.id %}" class="text-3xl font-bold truncate">
             {% if shared_pdf.inactive %}
             {{ shared_pdf.name }} | inactive
@@ -15,24 +15,24 @@
             {% endif %}
         </span>
     </div>
-    <div class="!justify-center !items-center !border-none !pb-0">
+    <div class="justify-center! items-center! border-none! pb-0!">
         <img class="h-48 w-48 bg-white" src={% url 'serve_qrcode' shared_pdf.id %}>
     </div>
-    <div class="!justify-center !pb-0 !border-none">
+    <div class="justify-center! pb-0! border-none!">
         <a href="{% url 'view_shared_pdf' shared_pdf.id %}"
-             class="!text-sm text-primary hover:text-secondary hover:underline">
+             class="text-sm! text-primary hover:text-secondary hover:underline">
              {{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}
           </a>
     </div>
-    <div x-data="{ }" class="!justify-center !pb-6 !pt-1 !border-none gap-x-2">
+    <div x-data="{ }" class="justify-center! pb-6! pt-1! border-none! gap-x-2">
         <button type="button"
-              class="button-text-theme !font-bold"
+              class="button-text-theme font-bold!"
               @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
               Copy Link
         </button>
         <span>|</span>
         <button type="button"
-              class="button-text-theme !font-bold"
+              class="button-text-theme font-bold!"
               onclick="location.href='{% url 'download_qrcode' shared_pdf.id %}'">
               Download QR Code
         </button>
@@ -196,18 +196,18 @@
 
 <div class="flex justify-between pt-10 pb-2">
     {% if "/?" in request.META.HTTP_REFERER %}
-    <a href="{{ request.META.HTTP_REFERER }}" class="text-md !font-bold text-primary hover:text-secondary">Back</a>
+    <a href="{{ request.META.HTTP_REFERER }}" class="text-md font-bold! text-primary hover:text-secondary">Back</a>
     {% else %}
-    <a href="{% url 'shared_pdf_overview' %}" class="text-md !font-bold text-primary hover:text-secondary">Back</a>
+    <a href="{% url 'shared_pdf_overview' %}" class="text-md font-bold! text-primary hover:text-secondary">Back</a>
     {% endif %}
     <div x-data="{ delete_shared_pdf: false }" class="pr-4">
         <a x-show="delete_shared_pdf" x-cloak
           hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-          class="button-text-delete cursor-pointer !font-bold">Confirm
+          class="button-text-delete cursor-pointer font-bold!">Confirm
         </a>
-        <button x-show="delete_shared_pdf" x-cloak @click="delete_shared_pdf = false" type="button" class="button-text-delete !font-bold">Cancel</button>
-        <button x-show="!delete_shared_pdf" @click="delete_shared_pdf = true" type="button" class="button-text-delete !font-bold">Delete</button>
+        <button x-show="delete_shared_pdf" x-cloak @click="delete_shared_pdf = false" type="button" class="button-text-delete font-bold!">Cancel</button>
+        <button x-show="!delete_shared_pdf" @click="delete_shared_pdf = true" type="button" class="button-text-delete font-bold!">Delete</button>
     </div>
 </div>
 

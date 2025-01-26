@@ -1,5 +1,5 @@
 {% if not page_obj %}
-<div class="pt-10 [&>*]:flex [&>*]:justify-center">
+<div class="pt-10 *:flex *:justify-center">
   <span class="text-2xl">There aren't any users matching the search criteria</span>
   <span class="pt-4 text-lg">Please try a different search.</span>
 </div>
@@ -24,24 +24,24 @@
           | PDFs: {{ user.profile.pdf_set.all.count }}
       </span>
       <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
-            class="left-0 bottom-0 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
+            class="left-0 bottom-0 z-50 absolute bg-primary text-gray-100 rounded-xs p-2 mt-1">
           {{ user.date_joined }} UTC
       </span>
     </div>
-    <div class="text-gray-500 text-sm [&>a]:dark:text-slate-400">
+    <div class="text-gray-500 text-sm dark:[&>a]:text-slate-400">
       <a id="admin-confirm-{{ loop_id }}"
          x-show="admin{{ loop_id }}" x-cloak
          hx-post="{% url 'admin_adjust_rights' user.id %}"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-         class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
+         class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
       </a>
       <button id="admin-cancel-{{ loop_id }}" x-show="admin{{ loop_id }}"
               x-cloak @click="admin{{ loop_id }} = false" type="button"
-              class="button-text-delete dark:!bg-slate-800">Cancel
+              class="button-text-delete dark:bg-slate-800!">Cancel
       </button>
       <button id="admin-action-{{ loop_id }}"
               x-show="!admin{{ loop_id }}" @click="admin{{ loop_id }} = true" type="button"
-              class="button-text dark:!bg-slate-800 dark:!text-slate-400">
+              class="button-text dark:bg-slate-800! dark:text-slate-400!">
               {% if user.is_superuser and request.user.is_staff %}
               Remove Admin Rights
               {% else %}
@@ -49,20 +49,20 @@
               {% endif %}
       </button>
     </div>
-    <div class="text-gray-500 text-sm [&>a]:dark:text-slate-400">
+    <div class="text-gray-500 text-sm dark:[&>a]:text-slate-400">
       <a id="delete-confirm-{{ loop_id }}"
          x-show="delete{{ loop_id }}" x-cloak
          hx-delete="{% url 'admin_delete_profile' user.id %}"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-         class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
+         class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
       </a>
       <button id="delete-cancel-{{ loop_id }}"
               x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
-              class="button-text-delete dark:!bg-slate-800">Cancel
+              class="button-text-delete dark:bg-slate-800!">Cancel
       </button>
       <button id="delete-action-{{ loop_id }}"
               x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
-              class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
+              class="button-text dark:bg-slate-800! dark:text-slate-400!">Delete
       </button>
     </div>
   </ul>
@@ -70,7 +70,7 @@
 {% endwith %}
 {% endfor %}
 {% if page_obj %}
-<div class="flex-grow border-t border-gray-400 mt-2 mb-4"></div>
+<div class="grow border-t border-gray-400 mt-2 mb-4"></div>
 <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
   {% if page_obj.has_previous %}
     <a class="hover:text-secondary"
@@ -85,7 +85,7 @@
   {% else %}
   <span>Prev</span>
   {% endif %}
-  <span class="bg-primary !text-gray-100 px-2 rounded-sm">{{ page_obj.number }}</span>
+  <span class="bg-primary text-gray-100! px-2 rounded-xs">{{ page_obj.number }}</span>
   {% if page_obj.has_next %}
     <a class="hover:text-secondary"
             {% if request.META.QUERY_STRING %}

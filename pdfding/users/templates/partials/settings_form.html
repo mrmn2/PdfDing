@@ -5,7 +5,7 @@
     {% csrf_token %}
 
     {% for field in form %}{{ field }}{% endfor %}
-    <button class="!flex items-center justify-center w-16" type="submit">Submit</button>
+    <button class="flex! items-center justify-center w-16" type="submit">Submit</button>
 </form>
 
 <a hx-swap-oob="true" id="{{ edit_id }}" href="{% url 'profile-settings' %}" class="font-medium hover:underline">

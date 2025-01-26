@@ -7,14 +7,14 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
-django = "==5.1.4"
-django-allauth = {extras = ["socialaccount"], version = "==65.3.0"}
+django = "==5.1.5"
+django-allauth = {extras = ["socialaccount"], version = "==65.3.1"}
 django-cleanup = "==9.0.0"
 django-htmx = "==1.21.0"
 gunicorn = "==23.0.0"
 huey = "==2.5.2"
 Markdown = "==3.7"
-minio = "==7.2.13"
+minio = "==7.2.15"
 nh3 = "==0.2.20"
 psycopg2-binary = "==2.9.10"
 python-magic = "==0.4.27"
@@ -24,15 +24,15 @@ whitenoise = {extras = ["brotli"], version = "==6.8.2 "}
 pypdfium2 = "==4.30.1"
 
 [tool.poetry.group.dev.dependencies]
-bandit = "==1.7.10"
-black = "==24.8.0"
+bandit = "==1.8.2"
+black = "==24.10.0 "
 flake8 = "==7.1.1"
-pytest = "==8.3.3"
-pytest-cov = "==5.0.0"
+pytest = "==8.3.4"
+pytest-cov = "==6.0.0"
 pytest-django = "==4.9.0"
 
 [tool.poetry.group.e2e.dependencies]
-pytest-playwright = "==0.5.2"
+pytest-playwright = "==0.6.2"
 
 [tool.black]
 line-length = 120

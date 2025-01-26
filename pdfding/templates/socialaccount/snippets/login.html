@@ -6,9 +6,9 @@
     {% if socialaccount_providers %}
         {% if not SOCIALACCOUNT_ONLY %}
             <div class="relative flex py-5 items-center">
-            <div class="flex-grow border-t border-gray-400"></div>
-            <span class="flex-shrink mx-4 text-gray-400">or</span>
-            <div class="flex-grow border-t border-gray-400"></div>
+            <div class="grow border-t border-gray-400"></div>
+            <span class="shrink mx-4 text-gray-400">or</span>
+            <div class="grow border-t border-gray-400"></div>
         </div>
         {% endif %}
 
@@ -26,7 +26,7 @@
 <div id="demo_mode" class="pt-12 pb-6">
     <h2>Demo Mode</h2>
     <div>
-        <span class="text-sm [&>span]:bg-slate-300 [&>span]:dark:bg-slate-500 [&>span]:rounded [&>span]:px-1">
+        <span class="text-sm [&>span]:bg-slate-300 dark:[&>span]:bg-slate-500 [&>span]:rounded-sm [&>span]:px-1">
             You can log into a shared account with:
             <span>user_{{ int_list|random }}@pdfding.com</span> / <span>demo</span>
         </span>

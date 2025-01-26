@@ -1,6 +1,31 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-tertiary1: var(--color-tertiary1);
+  --color-tertiary2: var(--color-tertiary2);
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 @layer base {
     html[data-theme="Green"] {
@@ -75,28 +100,28 @@ hr {
     @apply bg-red-600
 }
 .button-text {
-    @apply !bg-white dark:!bg-slate-700 !px-0 !py-0 font-normal !text-gray-500 !shadow-none
+    @apply bg-white! dark:bg-slate-700! px-0! py-0! font-normal text-gray-500! shadow-none!
 }
 .button-text:hover {
-    @apply !text-primary
+    @apply text-primary!
 }
 .button-text-theme {
-    @apply !bg-white dark:!bg-slate-700 !px-0 !py-0 font-normal !text-primary !shadow-none
+    @apply bg-white! dark:bg-slate-700! px-0! py-0! font-normal text-primary! shadow-none!
 }
 .button-text-theme:hover {
-    @apply !text-secondary
+    @apply text-secondary!
 }
 .button-text-delete {
-    @apply !bg-white dark:!bg-slate-700 !px-0 !py-0 font-medium !text-red-400 !shadow-none
+    @apply bg-white! dark:bg-slate-700! px-0! py-0! font-medium text-red-400! shadow-none!
 }
 .button-text-delete:hover {
-    @apply !text-red-500
+    @apply text-red-500!
 }
 .button-red {
-    @apply !bg-red-500 hover:!bg-red-600
+    @apply bg-red-500! hover:bg-red-600!
 }
 .button-gray {
-    @apply !bg-gray-300 hover:!bg-[#c3c9d0]
+    @apply bg-gray-300! hover:bg-[#c3c9d0]!
 }
 .navitems>li>a {
     @apply flex items-center h-10 hover:text-tertiary1 dark:hover:text-tertiary2 font-semibold rounded-lg;
@@ -111,10 +136,10 @@ hr {
     @apply flex items-center p-2 cursor-pointer;
 }
 .highlight {
-    @apply !bg-indigo-100;
+    @apply bg-indigo-100!;
 }
 .helptext {
-    @apply !text-gray-500 !text-sm;
+    @apply text-gray-500! text-sm!;
 }
 label {
     @apply hidden
@@ -189,7 +214,7 @@ form[action="/accountpassword/change/"] ul.errorlist {
     }
 
     & p {
-        @apply !mb-3
+        @apply mb-3!
     }
 
     & h1, h2 {

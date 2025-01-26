@@ -1,5 +1,5 @@
 {% if not page_obj %}
-<div class="pt-10 [&>*]:flex [&>*]:justify-center">
+<div class="pt-10 *:flex *:justify-center">
   {% if search_query or tag_query or special_pdf_selection %}
   <span class="text-2xl">There aren't any PDFs matching the current filters</span>
   <span class="pt-4 text-lg">Please try different filters.</span>
@@ -21,7 +21,7 @@
       class="relative w-full"
       {% endif %}
     >
-      <div class="flex flex-row items-center !-mb-1 truncate gap-x-1">
+      <div class="flex flex-row items-center -mb-1! truncate gap-x-1">
         <a id="pdf-link-{{ loop_id }}"
            href="{% url 'view_pdf' pdf.id %}"
            class="text font-bold text-tertiary1 dark:text-tertiary2 hover:underline">
@@ -37,7 +37,7 @@
         {% endif %}
       </div>
       {% if pdf.description or pdf.tags.all %}
-      <div class="truncate [&>span]:text-gray-800 [&>span]:dark:text-slate-100 -mb-1">
+      <div class="truncate [&>span]:text-gray-800 dark:[&>span]:text-slate-100 -mb-1">
         {% for tag in pdf.tags.all|dictsort:"name" %}
         <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
            class="text-primary hover:text-secondary text-sm">#{{ tag.name }}
@@ -55,11 +55,11 @@
       <div x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
           <div class="pt-1">
               <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
-                   class="w-80 md:w-[23rem] h-2 bg-slate-200 dark:bg-slate-600 rounded">
-                  <div style="width: {{ pdf.progress }}%;" class="h-2 !bg-primary rounded"></div>
+                   class="w-80 md:w-[23rem] h-2 bg-slate-200 dark:bg-slate-600 rounded-sm">
+                  <div style="width: {{ pdf.progress }}%;" class="h-2 bg-primary! rounded-sm"></div>
               </div>
               <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
-                  class="z-50 absolute bg-primary text-gray-100 text-sm rounded-sm p-2 mt-1">
+                  class="z-50 absolute bg-primary text-gray-100 text-sm rounded-xs p-2 mt-1">
                {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}
             </span>
           </div>
@@ -67,13 +67,13 @@
       {% endif %}
       <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
       </div>
-      <div x-data="{ tooltip_date: false }" class="gap-x-1 text-gray-500 dark:text-slate-400  text-sm [&>a]:dark:text-slate-400">
+      <div x-data="{ tooltip_date: false }" class="gap-x-1 text-gray-500 dark:text-slate-400  text-sm dark:[&>a]:text-slate-400">
         <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false" class="hidden min-[400px]:inline">
             {{ pdf.natural_age }}
         </span>
         <span class="hidden min-[400px]:inline">&hairsp;|&hairsp;</span>
         <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
-              class="left-0 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-sm p-2 mt-1">
+              class="left-0 -bottom-10 z-50 absolute bg-primary text-gray-100 rounded-xs p-2 mt-1">
           {{ pdf.creation_date }} UTC
         </span>
         <a href="{% url 'pdf_details' pdf.id %}" class="hover:text-primary pr-1"> Details</a>
@@ -107,21 +107,21 @@
            x-show="delete{{ loop_id }}" x-cloak
            hx-delete="{% url 'delete_pdf' pdf.id %}"
            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-           class="button-text-delete dark:!bg-slate-800 cursor-pointer">Confirm
+           class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
         </a>
         <button id="cancel-delete-pdf-{{ loop_id }}"
                 x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
-                class="button-text-delete dark:!bg-slate-800">Cancel
+                class="button-text-delete dark:bg-slate-800!">Cancel
         </button>
         <button id="delete-pdf-{{ loop_id }}"
                 x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
-                class="button-text dark:!bg-slate-800 dark:!text-slate-400">Delete
+                class="button-text dark:bg-slate-800! dark:text-slate-400!">Delete
         </button>
         {% if pdf.notes %}
         <span>&hairsp;|&hairsp;</span>
         <button id="show-notes-{{ loop_id }}"
                 @click="show_notes_{{ loop_id }} = !show_notes_{{ loop_id }}" type="button"
-                class="button-text dark:!bg-slate-800 dark:!text-slate-400"
+                class="button-text dark:bg-slate-800! dark:text-slate-400!"
                 hx-get="{% url 'get_notes' identifier=pdf.id %}"
                 hx-target="#notes-{{ loop_id }}"
                 hx-swap="innerHTML" >
@@ -142,7 +142,7 @@
       <div class="flex items-center justify-center w-full h-full !rounded-md border-[1px]
                   border-slate-200 !bg-slate-100 text-slate-700
                   dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200">
-        <svg class="!w-10 !h-10 py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-10! h-10! py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
           <!-- source: https://www.svgrepo.com/svg/489003/image -->
           <!-- license: PD License -->
@@ -157,7 +157,7 @@
 {% endwith %}
 {% endfor %}
 {% if page_obj %}
-<div class="flex-grow border-t border-gray-400 mt-4 mb-4"></div>
+<div class="grow border-t border-gray-400 mt-4 mb-4"></div>
 <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
   {% if page_obj.has_previous %}
     <a class="hover:text-secondary"
@@ -172,7 +172,7 @@
   {% else %}
   <span>Prev</span>
   {% endif %}
-  <span class="bg-primary !text-gray-100 px-2 rounded-sm">{{ page_obj.number }}</span>
+  <span class="bg-primary text-gray-100! px-2 rounded-xs">{{ page_obj.number }}</span>
   {% if page_obj.has_next %}
     <a class="hover:text-secondary"
         {% if request.META.QUERY_STRING %}

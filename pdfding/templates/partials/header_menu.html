@@ -9,7 +9,7 @@
     {% endif %}
     <li x-data="{ dropdownOpen: false }" class="relative">
         <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false"
-           class="cursor-pointer !gap-x-1 fill-primary">
+           class="cursor-pointer gap-x-1! fill-primary">
             <svg class="h-5 w-5"  version="1.1" xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 612 612" xml:space="preserve">
                 <!-- source: https://www.svgrepo.com/svg/148046/forum-user-->
@@ -33,7 +33,7 @@
             </svg>
         </a>
         <div x-show="dropdownOpen" x-cloak
-             class="absolute md:right-0 bg-white dark:bg-slate-700 text-black dark:text-slate-50 shadow rounded-lg w-52 p-2 z-20"
+             class="absolute md:right-0 bg-white dark:bg-slate-700 text-black dark:text-slate-50 shadow-sm rounded-lg w-52 p-2 z-20"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0 scale-90"
         x-transition:enter-end="opacity-100 scale-100"
@@ -42,7 +42,7 @@
                 <span class="flex text-xs pb-1 text-left  justify-start">Logged in as</span>
                 <span class="flex text-xs pb-1 text-left  justify-start  truncate">{{ user.email}}</span>
                 <span class="flex text-xs pb-1 text-left  justify-start">User ID: {{ user.id }}</span>
-                <div class="flex-grow border-b border-gray-400"></div>
+                <div class="grow border-b border-gray-400"></div>
             </div>
             <ul class="hoverlist  [&>li>*]:justify-left">
                 <li><a href="{% url 'profile-settings' %}">Settings</a></li>

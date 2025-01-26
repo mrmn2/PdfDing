@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="w-full [&>div]:flex [&>div]:justify-between [&>div]:py-4
-            [&>div]:border-b [&>div]:border-slate-200 [&>div]:dark:border-slate-600
+            [&>div]:border-b [&>div]:border-slate-200 dark:[&>div]:border-slate-600
             [&>div>div>span]:font-bold [&>div>div>span]:text-gray-900 dark:[&>div>div>span]:text-slate-200
             [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-gray-500 dark:[&>div>div>div>span]:text-slate-400
             [&>div>div>div>a]:text-sm [&>div>div>div>a]:cursor-pointer [&>div>div>div>a]:text-primary">
@@ -173,7 +173,7 @@
             </div>
         </div>
     </div>
-    <div class="!border-0">
+    <div class="border-0!">
         <div class="w-1/4">
             <span>Pdfs per Page </span>
         </div>
@@ -192,7 +192,7 @@
         </div>
     </div>
     <h2 class="pt-10">Danger Zone</h2>
-    <div class="!border-[1px] !border-red-600 rounded-md">
+    <div class="border-[1px]! border-red-600! rounded-md">
         <div class="w-1/4 px-2">
             <span>Delete Account</span>
         </div>
@@ -201,7 +201,7 @@
                 <span>Delete your account and data</span>
             </div>
             <div class="w-1/6 pl-0 md:pl-6">
-                <a href="{% url 'profile-delete' %}" class="!text-red-600 hover:underline">
+                <a href="{% url 'profile-delete' %}" class="text-red-600! hover:underline">
                     Delete
                 </a>
             </div>

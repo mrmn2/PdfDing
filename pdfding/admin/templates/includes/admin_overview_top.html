@@ -3,7 +3,7 @@
     <span class="text-2xl font-bold pr-4">Users</span>
     <div class="flex justify-end h-10 mr-2">
         <form class="flex" action="{% url 'admin_overview_query' %}" method="GET" id="search_form">
-            <input class="border border-primary h-10 !rounded-r-none align-text-center"
+            <input class="border border-primary h-10 rounded-r-none! align-text-center"
                     type="text" placeholder="Search for email or #admin"
                     value="{{ raw_search_query }}"
                     id="search_input"
@@ -11,7 +11,7 @@
                     @keyup.enter="document.getElementById('search_form').submit()"/>
 
             <button type="submit"
-                    class="button h-10 !rounded-l-none !rounded-md !item-center !py-2 !px-2"
+                    class="button h-10 rounded-l-none! rounded-md! !item-center py-2! px-2!"
                     style="display:inline-block">
                 <img src="{% static 'images/search.svg' %}" width="35">
             </button>
@@ -22,7 +22,7 @@
                     x-bind:class="sortdropdownOpen && 'duration-300'"
                     src="{% static 'images/sort.svg' %}"/>
             </a>
-            <div x-show="sortdropdownOpen" x-cloak class="absolute right-0 origin-top-right bg-white dark:bg-slate-700 text-black shadow rounded-lg w-40 p-2 mt-1 z-20"
+            <div x-show="sortdropdownOpen" x-cloak class="absolute right-0 origin-top-right bg-white dark:bg-slate-700 text-black shadow-sm rounded-lg w-40 p-2 mt-1 z-20"
                 x-transition:enter="duration-300 ease-out"
                 x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
@@ -47,7 +47,7 @@
     <div id="search_filter" x-data="{}"
          class="flex items-center bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-600 px-2 py-1 text-sm rounded-md gap-x-1">
         <span>{{ search_query|truncatechars:40 }}</span>
-        <div class="hover:dark:text-white hover:text-black hover:cursor-pointer"
+        <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"
              @click="window.open('{% url 'admin_overview_query' %}?search=', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">
@@ -61,7 +61,7 @@
     <div id="tag_{{ tag }}_filter" x-data="{}"
          class="flex items-center bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-600 px-2 py-1 text-sm rounded-md gap-x-1">
         <span>#{{ tag|truncatechars:40 }}</span>
-        <div class="hover:dark:text-white hover:text-black hover:cursor-pointer"
+        <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"
              @click="window.open('{% url 'admin_overview_query' %}?remove={{ tag }}', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">
@@ -73,4 +73,4 @@
     {% endfor %}
 </div>
 {% endif %}
-<div class="flex-grow border-t border-gray-400 mt-2 mb-4"></div>
+<div class="grow border-t border-gray-400 mt-2 mb-4"></div>

@@ -34,7 +34,7 @@ repos:
     args: [--markdown-linebreak-ext=md]
 
 - repo: https://github.com/psf/black
-  rev: 24.4.2
+  rev: 24.10.0
   hooks:
   - id: black
     language_version: python3.12
@@ -45,7 +45,7 @@ repos:
   - id: flake8
 
 - repo: https://github.com/pycqa/bandit
-  rev: 1.7.9
+  rev: 1.8.2
   hooks:
   - id: bandit
     args: [-x, "**/tests/*,**/e2e/*", -r]

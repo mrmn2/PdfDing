@@ -4,17 +4,17 @@
         <h2 class="pb-2">Rename Tag</h2>
         <form action="{% url 'edit_tag' %}"
               method="post"
-              class="text-black dark:text-slate-200 [&>input]:h-4 w-11/12 [&>input]:bg-slate-100 [&>input]:dark:bg-slate-600"
+              class="text-black dark:text-slate-200 [&>input]:h-4 w-11/12 [&>input]:bg-slate-100 dark:[&>input]:bg-slate-600"
               autocomplete="off">
             {% csrf_token %}
 
             {% for field in form %}{{ field }}{% endfor %}
-            <span class="text-sm !text-gray-500 !text-slate-400">New Tag Name</span>
+            <span class="text-sm text-gray-500! text-slate-400!">New Tag Name</span>
             <div class="pt-4 flex gap-x-1">
-                <button class="!flex items-center justify-center h-10 w-20" type="submit" >Submit</button>
+                <button class="flex! items-center justify-center h-10 w-20" type="submit" >Submit</button>
                 <a @click="show_tag_name_modal = false"
                    class="button !flex items-center justify-center h-10 w-20
-                   !bg-slate-300 hover:!bg-slate-400 dark:!bg-slate-400 hover:dark:!bg-slate-500">Cancel</a>
+                   !bg-slate-300 hover:!bg-slate-400 dark:!bg-slate-400 dark:hover:bg-slate-500!">Cancel</a>
             </div>
             <input type="hidden" name="current_name" value="{{ tag_name }}"/>
         </form>

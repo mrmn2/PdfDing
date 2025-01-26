@@ -35,7 +35,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator('html')).to_have_attribute('class', 'dark')
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Custom')
             expect(self.page.locator("#theme")).to_contain_text("Dark + Custom")
-            expect(self.page.locator('body')).to_have_css('background-color', 'rgb(30, 41, 59)')
+            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.279 0.041 260.031)')
             expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(255, 163, 133)')
 
             # trigger dropdown again
@@ -269,7 +269,7 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             # test that light theme is used
             expect(self.page.locator('html')).to_have_attribute('class', 'dark')
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Blue')
-            expect(self.page.locator('body')).to_have_css('background-color', 'rgb(30, 41, 59)')
+            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.279 0.041 260.031)')
             expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(71, 147, 204)')
 
     @override_settings(DEMO_MODE=True)

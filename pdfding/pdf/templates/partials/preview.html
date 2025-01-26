@@ -1,13 +1,13 @@
 <div x-ref="preview_inner" id="preview_inner">
     {% if preview_available %}
-    <img class="!w-full rounded-md border-[1px] border-slate-600"
+    <img class="w-full! rounded-md border-[1px] border-slate-600"
            src="{% url 'serve_preview' pdf_id %}"
     />
     {% else %}
     <div class="flex items-center justify-center w-full !h-96 lg:!h-[36rem] !rounded-md border-[1px]
                   border-slate-200 !bg-slate-100 text-slate-700
                   dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200">
-        <svg class="!w-24 !h-24 py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-24! h-24! py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
           <!-- source: https://www.svgrepo.com/svg/489003/image -->
           <!-- license: PD License -->
