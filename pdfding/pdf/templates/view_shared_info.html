@@ -3,10 +3,11 @@
 {% block content %}
 
 <div class="[&>*]:flex [&>*]:justify-left">
-    <div>
-        <img class="w-28 h-28 pb-10 -ml-7" src="{% static 'images/logo.svg' %}"/>
+    <div class="flex items-center justify-center bg-primary w-24 h-24 rounded-full">
+        <!-- bg-primary needed as profile image will flicker otherwise -->
+        <img class="bg-primary w-16 h-16" src="{% static 'images/logo.svg' %}" alt="Logo"/>
     </div>
-    <h1>View Shared PDF</h1>
+    <h1 class="pt-8">View Shared PDF</h1>
     <span class="pb-2">{{ host }} member <span class="font-bold px-1">{{ shared_pdf.owner.user.email }}</span> shared the following PDF with you</span>
     <span class="text-2xl font-bold pt-4 pb-8">{{ shared_pdf.pdf.name }}</span>
 
