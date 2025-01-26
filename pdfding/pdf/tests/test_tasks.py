@@ -50,7 +50,7 @@ class TestTasks(TestCase):
 
         pdfs = Pdf.objects.filter(owner=self.user.profile).all()
         self.assertEqual(pdfs.count(), 3)
-        self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2'], [pdf.name for pdf in pdfs])
+        self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2'], sorted(pdf.name for pdf in pdfs))
         self.assertEqual(len(list(user_consume_path.iterdir())), 0)
 
         # test with skip existing set to true
@@ -61,7 +61,7 @@ class TestTasks(TestCase):
         tasks.consume_function(True)
         pdfs = Pdf.objects.filter(owner=self.user.profile).all()
         self.assertEqual(pdfs.count(), 4)
-        self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2', 'dummy_3'], [pdf.name for pdf in pdfs])
+        self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2', 'dummy_3'], sorted(pdf.name for pdf in pdfs))
         self.assertEqual(len(list(user_consume_path.iterdir())), 0)
 
         # check tags are generated and added

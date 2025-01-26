@@ -20,7 +20,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Green')
             expect(self.page.locator("#theme")).to_contain_text("Light + Green")
             expect(self.page.locator('body')).to_have_css('background-color', 'rgba(0, 0, 0, 0)')
-            expect(self.page.locator('header')).to_have_css('background-color', 'rgb(74, 222, 128)')
+            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(74, 222, 128)')
 
             # change to dark mode
             self.page.locator("#theme_edit").click()
@@ -36,7 +36,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Custom')
             expect(self.page.locator("#theme")).to_contain_text("Dark + Custom")
             expect(self.page.locator('body')).to_have_css('background-color', 'rgb(30, 41, 59)')
-            expect(self.page.locator('header')).to_have_css('background-color', 'rgb(255, 163, 133)')
+            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(255, 163, 133)')
 
             # trigger dropdown again
             self.page.locator("#theme_edit").click()
@@ -270,7 +270,7 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             expect(self.page.locator('html')).to_have_attribute('class', 'dark')
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Blue')
             expect(self.page.locator('body')).to_have_css('background-color', 'rgb(30, 41, 59)')
-            expect(self.page.locator('header')).to_have_css('background-color', 'rgb(71, 147, 204)')
+            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(71, 147, 204)')
 
     @override_settings(DEMO_MODE=True)
     def test_login_demo_mode(self):
