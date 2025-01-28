@@ -43,9 +43,10 @@ Great experience on mobile devices thanks to a responsive UI.
 ![mobile_overview](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/mobile_pdf_overview.png)  |  ![mobile_viewer](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/mobile_pdf_viewer.png)
 
 ## Themes
-The looks of PdfDing can be customized to a great degree with light and dark mode as well as custom colors.
+The looks of PdfDing can be customized to a great degree with beautiful themes and custom colors.
 
 ![overview_light](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_light_red.png)
+![overview_light](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_creme_brown.png)
 
 ## Filtering
 Your PDF collection can easily be filtered with searches and tags.
@@ -55,4 +56,4 @@ Your PDF collection can easily be filtered with searches and tags.
 ## Optional Progressbars
 Displaying the reading progress in the PDF overview can be disabled if it makes your overview to cluttered.
 
-![disable_progress](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_light_gray_no_progress.png)
+![disable_progress](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_creme_brown_no_progress.png)

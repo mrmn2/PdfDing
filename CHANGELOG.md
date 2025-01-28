@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.12.0 - Creme theme + design improvements  (Jan 28, 2025)
+* add creme theme
+* improved navigation bar design
+* update PdfDing logo
+* fix: adjusted background colors for the sidebar on mobile devices
+       as the table of contents was not readable.
+* fix: adjust dropdown open button color in the viewer
+
 ## v0.11.0 - Starring, Archiving, Thumbnails, Previews  (Jan 14, 2025)
 * PDFs can be starred and archived. Starred and archived PDFs can be quickly accessed
   in the overview. Archived PDFs are hidden from the default overview.
