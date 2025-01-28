@@ -13,15 +13,6 @@ PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user 
 
 ![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
 
-## Overview
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Guides](#guides)
-- [Configuration](#configuration)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledements)
-- [Comparison with Stirling PDF](#comparison-with-stirling-pdf)
-
 ## Introduction
 PdfDing is a PDF manager, viewer and editor that you can host yourself. It offers a seamless user experience on multiple
 devices. It's designed be to be minimal, fast, and easy to set up using Docker.
@@ -29,51 +20,23 @@ devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
 your PDFs. Inspired by [linkding](https://github.com/sissbruecker/linkding).
 
-### Live Demo
-Try it! Demo Server: https://demo.pdfding.com
+## Live Demo
+Try PdfDing on the demo instance: https://demo.pdfding.com
 
 This is a temporary live demo with shared user accounts, all data will be deleted every 60 minutes.
 
-### Feature Overview
-* Seamless browser based PDF viewing on multiple devices
-* Remembers current position - continue where you stopped reading
-* Organize PDFs with multi-level tags
+## Features
+* Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
+* Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
 * Edit PDFs by adding annotations, highlighting and drawings
-* Dark Mode, colored themes and custom theme colors
-* Inverted color mode for reading PDFs
+* Clean, intuitive UI with dark mode, inverted color mode and custom theme colors
 * SSO support via OIDC
-* Share PDFs with an external audience via a link or a QR Code
-* Shared PDFs can be password protected and access can be controlled with a maximum number of views and an expiration date
+* Share PDFs with an external audience via a link or a QR Code with optional access control
 * Markdown Notes
 * Progress bars show the reading progress of each PDF at a quick glance
-* Every user can upload its own PDFs. There is no admin curating the content.
-* Automated and encrypted backups to S3 compatible storage
-* Consumption directory as an alternative way to add PDFs
 
-### Screenshots
+## Screenshots
 Screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
-
-### Why PdfDing?
-I started developing PdfDing as I was searching for a solution for viewing and managing PDF files.
-I had a few simple requirements:
-
-* view PDFs seamlessly in the browser of my desktop and mobile devices
-* every user can upload files
-* can be self-hosted via Docker
-* minimal and resource-friendly
-* SSO support
-
-I was quite surprised to find out that there was no app matching my simple requirements. While there
-were some existing solutions they still had some problems:
-
-* They are using the inbuilt PDF viewer of the browser. This works fine on desktops and laptops but on smartphones
-  it will simply download the PDF file and not display it in the browser.
-* They are really feature rich and therefore resource-hungry. I do not need fancy AI or OCR. I just want
-  to view and organize my PDFs.
-* The content needs to be curated by an admin user. Normal users are not allowed to add PDFs.
-* PDFs can not be uploaded via the UI.
-
-Thus, I am developing PDfDing as a simple webapp with a clear focus on a single thing: viewing and managing PDFs.
 
 ## Installation
 PdfDing is designed to be run with container solutions like Docker. The Docker image is compatible with ARM64 platforms,
