@@ -1,3 +1,7 @@
+<div align="center" width="100%">
+    <img src="./pdfding/static/images/logo_with_circle.svg" width="100" alt="" />
+</div>
+
 # PdfDing
 PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices.
 
@@ -6,7 +10,6 @@ PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user 
 [![Version](https://img.shields.io/github/v/release/mrmn2/PdfDing?style=flat&label=version)](https://github.com/mrmn2/PdfDing/releases)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mrmn2/PdfDing/test.yaml?style=flat&logo=github&label=ci)](https://github.com/mrmn2/PdfDing/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing/commits/master/)
-[![Demo](https://img.shields.io/website?url=https%3A%2F%2Fdemo.pdfding.com&label=demo)](https://demo.pdfding.com)
 
 ![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
 
