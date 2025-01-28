@@ -149,8 +149,8 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
     }
 
 # themes
-theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange']
-themes = ['light', 'dark']
+theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
+themes = ['light', 'dark', 'creme']
 
 if not os.environ.get('DEFAULT_THEME'):
     DEFAULT_THEME = 'light'
