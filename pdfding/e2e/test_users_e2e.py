@@ -44,6 +44,15 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#id_dark_mode")).to_have_value("Dark")
             expect(self.page.locator("#id_theme_color")).to_have_value("Custom")
 
+            # change to creme mode
+            self.page.locator("#id_dark_mode").select_option("Creme")
+            self.page.get_by_role("button", name="Submit").click()
+
+            # check that theme was changed to dark
+            expect(self.page.locator('html')).to_have_attribute('class', 'creme')
+            expect(self.page.locator("#theme")).to_contain_text("Creme + Custom")
+            expect(self.page.locator('body')).to_have_css('background-color', 'rgb(226, 220, 208)')
+
     def test_settings_email_change(self):
         with sync_playwright() as p:
             self.open(reverse('profile-settings'), p)

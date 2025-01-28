@@ -224,8 +224,8 @@ def process_with_pypdfium(pdf: Pdf, extract_thumbnail_and_preview: bool = True):
     try:
         pdf_document = PdfDocument(pdf.file.path, autoclose=True)
         pdf.number_of_pages = len(pdf_document)
-        # if extract_thumbnail_and_preview:
-        #     pdf = set_thumbnail_and_preview(pdf, pdf_document)
+        if extract_thumbnail_and_preview:
+            pdf = set_thumbnail_and_preview(pdf, pdf_document)
         pdf_document.close()
         pdf.save()
     except Exception as e:  # nosec # noqa
