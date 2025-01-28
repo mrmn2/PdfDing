@@ -12,7 +12,7 @@
         <a id="shared-pdf-link-{{ loop_id }}"
            href="{% url 'shared_pdf_details' shared_pdf.id %}"
            {% if shared_pdf.inactive %}
-           class="text font-bold text-gray-500 dark:text-slate-400 hover:underline">
+           class="text font-bold text-gray-500 dark:text-slate-400 creme:text-stone-400 hover:underline">
            {{ shared_pdf.name }} | inactive
            {% else %}
            class="text font-bold text-tertiary1 dark:text-tertiary2 hover:underline">
@@ -20,13 +20,14 @@
            {% endif %}
         </a>
       </div>
-      <div class="truncate [&>span]:text-sm [&>span]:text-gray-500 dark:[&>span]:text-slate-100">
+      <div class="truncate [&>span]:text-sm [&>span]:text-gray-500 dark:[&>span]:text-slate-100 creme:[&>span]:text-stone-700">
         <span>{{ shared_pdf.pdf.name }}</span>
         {% if shared_pdf.description %}
         <span>| {{ shared_pdf.description }}</span>
         {% endif %}
       </div>
-      <div x-data="{ tooltip_del: false, tooltip_exp: false }" class="text-gray-500 text-sm dark:[&>span]:text-slate-400">
+      <div x-data="{ tooltip_del: false, tooltip_exp: false }"
+           class="text-gray-500 text-sm dark:[&>span]:text-slate-400 creme:[&>span]:text-stone-600">
         {% if shared_pdf.deletion_date %}
         <span x-on:mouseenter="tooltip_del = true" x-on:mouseleave="tooltip_del = false">
           {{ shared_pdf.deletes_in_string }} |
@@ -51,9 +52,9 @@
         {% endif %}
         <span>{{ shared_pdf.views_string }}</span>
       </div>
-      <div class="text-gray-500 space-x-1 text-sm dark:[&>a]:text-slate-400">
+      <div class="text-gray-500 space-x-1 text-sm dark:[&>a]:text-slate-400 creme:[&>a]:text-stone-500">
         <button type="button"
-                class="button-text dark:bg-slate-800! dark:text-slate-400! "
+                class="button-text dark:bg-slate-800! dark:text-slate-400! creme:bg-creme!"
                 @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
                 Copy
         </button>
@@ -61,13 +62,13 @@
         <a x-show="delete{{ loop_id }}" x-cloak
            hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-           class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
+           class="button-text-delete dark:bg-slate-800! creme:bg-creme! cursor-pointer">Confirm
         </a>
         <button x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
-                class="button-text-delete dark:bg-slate-800!">Cancel
+                class="button-text-delete dark:bg-slate-800! creme:bg-creme!">Cancel
         </button>
         <button x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
-                class="button-text dark:bg-slate-800! dark:text-slate-400!">Delete
+                class="button-text dark:bg-slate-800! dark:text-slate-400! creme:bg-creme!">Delete
         </button>
       </div>
     </ul>
@@ -75,7 +76,7 @@
 {% endwith %}
 {% endfor %}
 {% if page_obj %}
-<div class="grow border-t border-gray-400 mt-2 mb-4"></div>
+<div class="grow border-t border-gray-400 creme:border-stone-400 mt-2 mb-4"></div>
 <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
   {% if page_obj.has_previous %}
     <a class="hover:text-secondary"

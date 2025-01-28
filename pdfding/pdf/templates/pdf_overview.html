@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 <div x-data="{ show_tag_name_modal: false, show_preview_modal: false }">
-  <div class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 pt-4! dark:text-slate-200"
+  <div class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 pt-4! dark:text-slate-200 creme:text-stone-700"
        :class="{ 'opacity-15': show_tag_name_modal, 'opacity-15': show_preview_modal }">
     <div class="w-full md:w-[70%] md:p-8 p-3">
       {% include 'includes/pdf_overview_top.html' %}

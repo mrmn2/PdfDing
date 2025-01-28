@@ -2,9 +2,9 @@
 {% load static %}
 {% block content %}
 <div class="[&>div]:flex [&>div]:justify-between [&>div]:py-4
-            [&>div]:border-b [&>div]:border-slate-200 dark:[&>div]:border-slate-600
-            [&>div>div>span]:font-bold [&>div>div>span]:text-gray-900 dark:[&>div>div>span]:text-slate-200
-            [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-gray-500 dark:[&>div>div>div>span]:text-slate-300
+            [&>div]:border-b [&>div]:border-slate-200 dark:[&>div]:border-slate-600 creme:[&>div]:border-stone-400
+            [&>div>div>span]:font-bold [&>div>div>span]:text-gray-900 dark:[&>div>div>span]:text-slate-200 creme:[&>div>div>span]:text-stone-700
+            [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-gray-500 dark:[&>div>div>div>span]:text-slate-300 creme:[&>div>div>div>span]:text-stone-600
             [&>div>div>div>a]:text-sm [&>div>div>div>a]:cursor-pointer [&>div>div>div>a]:text-primary">
     <div class="pb-0! border-none!">
         <span href="{% url 'view_pdf' shared_pdf.pdf.id %}" class="text-3xl font-bold truncate">
@@ -16,7 +16,7 @@
         </span>
     </div>
     <div class="justify-center! items-center! border-none! pb-0!">
-        <img class="h-48 w-48 bg-white" src={% url 'serve_qrcode' shared_pdf.id %}>
+        <img class="h-48 w-48 bg-white creme:border-[1px] creme:border-stone-500" src={% url 'serve_qrcode' shared_pdf.id %}>
     </div>
     <div class="justify-center! pb-0! border-none!">
         <a href="{% url 'view_shared_pdf' shared_pdf.id %}"

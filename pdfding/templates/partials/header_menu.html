@@ -33,7 +33,8 @@
             </svg>
         </a>
         <div x-show="dropdownOpen" x-cloak
-             class="absolute md:right-0 bg-white dark:bg-slate-700 text-black dark:text-slate-50 shadow-sm rounded-lg w-52 p-2 z-20"
+             class="absolute md:right-0 shadow-sm rounded-lg w-52 p-2 z-20
+                    bg-white dark:bg-slate-700 creme:bg-creme-light text-black dark:text-slate-50 creme:text-stone-700"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0 scale-90"
         x-transition:enter-end="opacity-100 scale-100"
@@ -44,7 +45,7 @@
                 <span class="flex text-xs pb-1 text-left  justify-start">User ID: {{ user.id }}</span>
                 <div class="grow border-b border-gray-400"></div>
             </div>
-            <ul class="hoverlist  [&>li>*]:justify-left">
+            <ul class="hoverlist [&>li>*]:justify-left creme:[&>li>*]:font-semibold">
                 <li><a href="{% url 'profile-settings' %}">Settings</a></li>
                 <li><a href="{% url 'account_logout' %}">Log Out</a></li>
             </ul>

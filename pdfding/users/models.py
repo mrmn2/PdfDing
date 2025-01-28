@@ -8,6 +8,7 @@ class Profile(models.Model):
     class DarkMode(models.TextChoices):
         LIGHT = 'Light'
         DARK = 'Dark'
+        CREME = 'Creme'
 
     class PdfsPerPage(models.IntegerChoices):
         p_5 = 5, '5'
@@ -23,6 +24,7 @@ class Profile(models.Model):
         RED = 'Red'
         PINK = 'Pink'
         ORANGE = 'Orange'
+        BROWN = 'Brown'
         CUSTOM = 'Custom'
 
     class EnabledChoice(models.TextChoices):

@@ -4,6 +4,7 @@
 <html class="{{ DEFAULT_THEME }}" data-theme="{{ DEFAULT_THEME_COLOR }}" lang="en">
 {% else %}
 <html class="{{ request.user.profile.dark_mode_str }}" data-theme="{{ request.user.profile.theme_color }}" lang="en">
+<!--<html class="creme" data-theme="{{ request.user.profile.theme_color }}" lang="en">-->
 {% endif %}
 <head>
     <meta charset="UTF-8">
@@ -32,7 +33,7 @@
 </head>
 <content class="flex flex-col min-h-screen">
     {% include 'includes/header.html' %}
-    <body class="dark:bg-slate-800">
+    <body class="dark:bg-slate-800 creme:bg-creme">
 
         {% include 'includes/messages.html' %}
 

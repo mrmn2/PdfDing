@@ -1,20 +1,21 @@
-<div x-ref="edit_tag_inner" id="tag_rename_form" class="bg-white dark:bg-slate-700 rounded-2xl drop-shadow-2xl
-            shadow-black dark:shadow-white dark:text-slate-200 w-full !h-52">
+<div x-ref="edit_tag_inner" id="tag_rename_form" class="rounded-2xl drop-shadow-2xl shadow-black w-full !h-52
+            bg-white dark:bg-slate-700 dark:shadow-white dark:text-slate-200 creme:bg-creme-light creme:text-stone-700">
     <div class="p-6">
         <h2 class="pb-2">Rename Tag</h2>
         <form action="{% url 'edit_tag' %}"
               method="post"
-              class="text-black dark:text-slate-200 [&>input]:h-4 w-11/12 [&>input]:bg-slate-100 dark:[&>input]:bg-slate-600"
+              class="[&>input]:h-4 w-11/12 text-black dark:text-slate-200 creme:text-stone-700
+                     [&>input]:bg-slate-100 dark:[&>input]:bg-slate-600 creme:[&>input]:bg-creme-dark-light!"
               autocomplete="off">
             {% csrf_token %}
 
             {% for field in form %}{{ field }}{% endfor %}
-            <span class="text-sm text-gray-500! text-slate-400!">New Tag Name</span>
+            <span class="text-sm text-gray-500! text-slate-400! creme:text-stone-600!">New Tag Name</span>
             <div class="pt-4 flex gap-x-1">
                 <button class="flex! items-center justify-center h-10 w-20" type="submit" >Submit</button>
                 <a @click="show_tag_name_modal = false"
-                   class="button !flex items-center justify-center h-10 w-20
-                   !bg-slate-300 hover:!bg-slate-400 dark:!bg-slate-400 dark:hover:bg-slate-500!">Cancel</a>
+                   class="button !flex items-center justify-center h-10 w-20 !bg-slate-300 hover:!bg-slate-400
+                   dark:!bg-slate-400 dark:hover:bg-slate-500! creme:bg-stone-400! creme:hover:bg-stone-500!">Cancel</a>
             </div>
             <input type="hidden" name="current_name" value="{{ tag_name }}"/>
         </form>

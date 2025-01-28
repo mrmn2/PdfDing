@@ -323,6 +323,7 @@ class ViewShared(BaseSharedPdfPublicView):
             'Red': '248 113 113',
             'Pink': '218 123 147',
             'Orange': '255 203 133',
+            'Brown': '158 154 145',
         }
 
         return render(

@@ -1,6 +1,7 @@
 <form action="{{ action_url }}"
       method="post"
-      class="flex gap-2 text-black dark:text-slate-200 h-8 w-11/12 [&>select]:bg-white dark:[&>select]:bg-slate-700"
+      class="flex gap-2 text-black dark:text-slate-200 h-8 w-11/12
+             [&>select]:bg-white dark:[&>select]:bg-slate-700 creme:[&>select]:bg-creme-light"
       autocomplete="off">
     {% csrf_token %}
 

@@ -16,7 +16,7 @@
         <span id="user-{{ loop_id }}">{{ user.email }}</span>
         {% endif %}
     </div>
-    <div x-data="{ tooltip_date: false }" class="text-gray-500  text-sm">
+    <div x-data="{ tooltip_date: false }" class="text-gray-500 creme:text-stone-700 text-sm">
       <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
           Registered: {{ user.date_joined.date }}
       </span>
@@ -33,15 +33,15 @@
          x-show="admin{{ loop_id }}" x-cloak
          hx-post="{% url 'admin_adjust_rights' user.id %}"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-         class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
+         class="button-text-delete dark:bg-slate-800! creme:bg-creme! cursor-pointer">Confirm
       </a>
       <button id="admin-cancel-{{ loop_id }}" x-show="admin{{ loop_id }}"
               x-cloak @click="admin{{ loop_id }} = false" type="button"
-              class="button-text-delete dark:bg-slate-800!">Cancel
+              class="button-text-delete dark:bg-slate-800! creme:bg-creme!">Cancel
       </button>
       <button id="admin-action-{{ loop_id }}"
               x-show="!admin{{ loop_id }}" @click="admin{{ loop_id }} = true" type="button"
-              class="button-text dark:bg-slate-800! dark:text-slate-400!">
+              class="button-text dark:bg-slate-800! creme:bg-creme! dark:text-slate-400!">
               {% if user.is_superuser and request.user.is_staff %}
               Remove Admin Rights
               {% else %}
@@ -54,15 +54,15 @@
          x-show="delete{{ loop_id }}" x-cloak
          hx-delete="{% url 'admin_delete_profile' user.id %}"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-         class="button-text-delete dark:bg-slate-800! cursor-pointer">Confirm
+         class="button-text-delete dark:bg-slate-800! creme:bg-creme! cursor-pointer">Confirm
       </a>
       <button id="delete-cancel-{{ loop_id }}"
               x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false" type="button"
-              class="button-text-delete dark:bg-slate-800!">Cancel
+              class="button-text-delete dark:bg-slate-800! creme:bg-creme!">Cancel
       </button>
       <button id="delete-action-{{ loop_id }}"
               x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true" type="button"
-              class="button-text dark:bg-slate-800! dark:text-slate-400!">Delete
+              class="button-text dark:bg-slate-800! dark:text-slate-400! creme:bg-creme!">Delete
       </button>
     </div>
   </ul>
@@ -70,7 +70,7 @@
 {% endwith %}
 {% endfor %}
 {% if page_obj %}
-<div class="grow border-t border-gray-400 mt-2 mb-4"></div>
+<div class="grow border-t border-gray-400 creme:border-stone-400 mt-2 mb-4"></div>
 <div x-data="{}" class="flex [&>a]:text-primary [&>span]:text-primary [&>span]:cursor-default gap-x-3 pt-5">
   {% if page_obj.has_previous %}
     <a class="hover:text-secondary"

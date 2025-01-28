@@ -8,23 +8,25 @@
                     x-bind:class="sortdropdownOpen && 'duration-300'"
                     src="{% static 'images/sort.svg' %}"/>
             </a>
-            <div x-show="sortdropdownOpen" x-cloak class="absolute right-0 origin-top-right bg-white dark:bg-slate-700 text-black shadow-sm rounded-lg w-40 p-2 mt-1 z-20"
+            <div x-show="sortdropdownOpen" x-cloak
+                 class="absolute right-0 origin-top-right shadow-sm rounded-lg w-40 p-2 mt-1 z-20
+                        bg-white dark:bg-slate-700 text-black creme:bg-creme-light creme:text-stone-700"
                 x-transition:enter="duration-300 ease-out"
                 x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                 >
                 <ul class="hoverlist [&>li>*]:justify-left [&>li>*]:rounded-md">
                 <li><a href="{% url 'shared_pdf_overview_query' %}?sort=newest"
-                       x-bind:class="('{{ sorting_query }}' === 'newest' || '{{ sorting_query }}' === '') ? 'bg-primary' : 'dummy'">Newest</a></li>
+                       x-bind:class="('{{ sorting_query }}' === 'newest' || '{{ sorting_query }}' === '') ? 'bg-primary text-slate-50' : 'dummy'">Newest</a></li>
                 <li><a href="{% url 'shared_pdf_overview_query' %}?sort=oldest"
-                       x-bind:class="'{{ sorting_query }}'  === 'oldest' ? 'bg-primary' : 'dummy'">Oldest</a></li>
+                       x-bind:class="'{{ sorting_query }}'  === 'oldest' ? 'bg-primary text-slate-50' : 'dummy'">Oldest</a></li>
                 <li><a href="{% url 'shared_pdf_overview_query' %}?sort=title_asc"
-                       x-bind:class="'{{ sorting_query }}'  === 'title_asc' ? 'bg-primary' : 'dummy'">A --- Z</a></li>
+                       x-bind:class="'{{ sorting_query }}'  === 'title_asc' ? 'bg-primary text-slate-50' : 'dummy'">A --- Z</a></li>
                 <li><a href="{% url 'shared_pdf_overview_query' %}?sort=title_desc"
-                       x-bind:class="'{{ sorting_query }}'  === 'title_desc' ? 'bg-primary' : 'dummy'">Z --- A</a></li>
+                       x-bind:class="'{{ sorting_query }}'  === 'title_desc' ? 'bg-primary text-slate-50' : 'dummy'">Z --- A</a></li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
-<div class="grow border-t border-gray-400 mt-2 mb-4"></div>
+<div class="grow border-t border-gray-400 creme:border-stone-400 mt-2 mb-4"></div>

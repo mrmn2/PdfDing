@@ -1,12 +1,16 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant creme (&:where(.creme, .creme *));
 
 @theme {
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
   --color-tertiary1: var(--color-tertiary1);
   --color-tertiary2: var(--color-tertiary2);
+  --color-creme: #e2dcd0;
+  --color-creme-dark-light: #d9d2c9;
+  --color-creme-light: #f2eae0;
 }
 
 /*
@@ -69,6 +73,13 @@
       --color-tertiary1: #99794f;
       --color-tertiary2: #ffdfb5;
     }
+
+    html[data-theme="Brown"] {
+      --color-primary: #4c2518;
+      --color-secondary: #3c1d13;
+      --color-tertiary1: #2d160e;
+      --color-tertiary2: #937c74;
+    }
 }
 
 h1 {
@@ -100,19 +111,19 @@ hr {
     @apply bg-red-600
 }
 .button-text {
-    @apply bg-white! dark:bg-slate-700! px-0! py-0! font-normal text-gray-500! shadow-none!
+    @apply bg-white! dark:bg-slate-700! creme:bg-creme-light! px-0! py-0! font-normal text-gray-500! dark:text-slate-400! creme:text-stone-500! shadow-none!
 }
 .button-text:hover {
     @apply text-primary!
 }
 .button-text-theme {
-    @apply bg-white! dark:bg-slate-700! px-0! py-0! font-normal text-primary! shadow-none!
+    @apply bg-white! dark:bg-slate-700! creme:bg-creme-light! px-0! py-0! font-normal text-primary! shadow-none!
 }
 .button-text-theme:hover {
     @apply text-secondary!
 }
 .button-text-delete {
-    @apply bg-white! dark:bg-slate-700! px-0! py-0! font-medium text-red-400! shadow-none!
+    @apply bg-white! dark:bg-slate-700! creme:bg-creme-light! px-0! py-0! font-medium text-red-400! shadow-none!
 }
 .button-text-delete:hover {
     @apply text-red-500!
@@ -121,7 +132,7 @@ hr {
     @apply bg-red-500! hover:bg-red-600!
 }
 .button-gray {
-    @apply bg-gray-300! hover:bg-[#c3c9d0]!
+    @apply bg-gray-300! hover:bg-[#c3c9d0]! dark:!bg-slate-400 dark:hover:bg-slate-500! creme:bg-stone-400! creme:hover:bg-stone-500!
 }
 .navitems>li>a {
     @apply flex items-center h-10 hover:text-tertiary1 dark:hover:text-tertiary2 font-semibold rounded-lg;
@@ -145,13 +156,15 @@ label {
     @apply hidden
 }
 input[type=file] {
-    @apply  w-full text-gray-400 dark:text-slate-200 bg-gray-100 dark:bg-slate-600 file:cursor-pointer cursor-pointer file:border-0 file:py-4 file:px-4 file:-my-7 file:-ml-5 file:mr-4 file:bg-primary file:hover:bg-secondary file:text-white file:font-bold file:rounded-lg
+    @apply  w-full text-gray-400 dark:text-slate-200 bg-gray-100 dark:bg-slate-600 creme:text-stone-700 creme:bg-creme-light file:cursor-pointer
+    cursor-pointer file:border-0 file:py-4 file:px-4 file:-my-7 file:-ml-5 file:mr-4 file:bg-primary
+    file:hover:bg-secondary file:text-white file:font-bold file:rounded-lg
 }
 input[type=checkbox] {
     @apply  accent-primary
 }
 .textarea, textarea, input {
-    @apply w-full rounded-lg py-4 px-5 bg-gray-100 dark:bg-slate-600
+    @apply w-full rounded-lg py-4 px-5 bg-gray-100 dark:bg-slate-600 creme:bg-creme-dark-light creme:text-stone-700
 }
 .textarea:focus, textarea:focus, input:focus {
     @apply outline outline-1 outline-primary
@@ -190,7 +203,7 @@ form[action="/accountpassword/change/"] ul.errorlist {
 }
 
 .markdown {
-    @apply text-slate-800 dark:text-slate-300;
+    @apply text-slate-800 dark:text-slate-300 creme:text-stone-700;
     & p,
     & ol,
     & ul,
@@ -234,11 +247,11 @@ form[action="/accountpassword/change/"] ul.errorlist {
     }
 
     & pre {
-        @apply pl-3 my-3 py-2 mt-1 mb-2 bg-slate-200 dark:bg-slate-600
+        @apply pl-3 my-3 py-2 mt-1 mb-2 bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
     }
 
     & pre code {
-        @apply bg-slate-200 dark:bg-slate-600
+        @apply bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
     }
 
     & code {
@@ -246,6 +259,6 @@ form[action="/accountpassword/change/"] ul.errorlist {
     }
 
     & blockquote {
-        @apply border-l-2 border-primary pl-4 pt-3 pb-1 mb-2 rounded-r bg-slate-200 dark:bg-slate-600
+        @apply border-l-2 border-primary pl-4 pt-3 pb-1 mb-2 rounded-r bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
     }
 }

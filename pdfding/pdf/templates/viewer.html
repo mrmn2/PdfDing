@@ -140,6 +140,13 @@
         --treeitem-color:rgb(243,244,246);  /* table of contents text color */
         --treeitem-bg-color:rgb(30 41 59);   ;  /* table of contents bg color */
         --treeitem-selected-bg-color:rgb(30 41 59);  /* table of contents selected bg color */
+        {% elif request.user.profile.dark_mode == 'Creme' %}
+        --body-bg-color:rgb(226 220 208); /* background around pdf, sets also sidebar color!*/
+        --sidebar-narrow-bg-color:rgb(226 220 208); /* sidebar background around pdf mobile*/
+        --scrollbar-bg-color:rgb(226 220 208);  /* scrollbar background color */
+        --treeitem-color:rgb(64 64 64);  /* table of contents text color */
+        --treeitem-bg-color:rgb(226 220 208);   ;  /* table of contents bg color */
+        --treeitem-selected-bg-color:rgb(226 220 208);  /* table of contents selected bg color */
         {% else %}
         --body-bg-color:rgb(255 255 255); /* background around pdf, sets also sidebar color!*/
         --sidebar-narrow-bg-color:rgb(255 255 255); /* sidebar background around pdf mobile*/
