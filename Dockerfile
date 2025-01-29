@@ -87,8 +87,7 @@ ARG USERNAME=nonroot
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-RUN apk update \
-    && apk add --no-cache libmagic netcat-openbsd \
+RUN apk add --no-cache libmagic netcat-openbsd \
     && addgroup -g $USER_GID  $USERNAME \
     && adduser -G $USERNAME -u $USER_UID  $USERNAME -D
 
