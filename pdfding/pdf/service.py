@@ -301,7 +301,7 @@ def get_pdf_info_list(profile: Profile) -> list[tuple]:
 def get_demo_pdf():
     """Get the pdf file used in the demo mode."""
 
-    file_path = settings.MEDIA_ROOT / 'demo' / 'demo.pdf'
+    file_path = settings.BASE_DIR / 'users' / 'management' / 'commands' / 'demo_data' / 'demo.pdf'
     demo_pdf = File(file=open(file_path, 'rb'), name=file_path.name)
 
     return demo_pdf

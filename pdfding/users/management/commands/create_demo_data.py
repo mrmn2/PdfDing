@@ -1,7 +1,7 @@
 import logging
+from pathlib import Path
 
 from allauth.account.models import EmailAddress
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.management.base import BaseCommand
@@ -22,7 +22,7 @@ class Command(BaseCommand):
         # resulting in "user_@pdfding.com". Therefore, we'll also create that user.
         suffixes.append('')
 
-        demo_file_path = settings.MEDIA_ROOT / 'demo' / 'demo.pdf'
+        demo_file_path = Path(__file__).parent / 'demo_data' / 'demo.pdf'
         pdf_names = [
             'The best self-hosted applications',
             'My favorite book',

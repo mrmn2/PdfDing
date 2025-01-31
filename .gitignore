@@ -10,7 +10,7 @@ pdfding/consume/
 pdfding/db/*
 !pdfding/db/.gitkeep
 pdfding/media/*
-!pdfding/media/demo/
+!pdfding/media/.gitkeep
 pdfding/static/css/*
 !pdfding/static/css/input.css
 pdfding/static/js
