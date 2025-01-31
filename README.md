@@ -64,10 +64,10 @@ If you use selinux it might be necessary to add the `:Z` after the volumes, e.g.
 
 ### Using Docker Compose
 To install PdfDing using Docker Compose, you can use one of the files in the
-[deploy](https://github.com/mrmn2/PdfDing/tree/master/deploy) directory and run e.g.:
+[compose](https://github.com/mrmn2/PdfDing/tree/master/compose) directory and run e.g.:
 
 ```
-docker-compose -d -f sqlite.docker-compose.yaml
+docker-compose -d -f compose/sqlite.docker-compose.yaml
 ```
 
 ## Guides
