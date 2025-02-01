@@ -83,7 +83,7 @@ The default protocol for account related URLs, e.g. for the password forgotten p
 Specifies the used database type and related settings.
 
 ### `DATABASE_TYPE`
-Values: `SQLITE`, `POSTGRES` | Default: `POSTGRES`
+Values: `SQLITE`, `POSTGRES` | Default: `SQLITE`
 
 Specify which database type should be used.
 
@@ -173,7 +173,7 @@ Values: `FALSE`, `TRUE` | Default: `FALSE`
 Secure the connection to the SMTP server with TLS. Some SMTP servers support only one kind and
 some support both. Note that `SMTP_USE_TLS`/`SMTP_USE_SSL` are mutually exclusive.
 
-### `EMAIL_USE_SSL`
+### `SMTP_USE_SSL`
 Values: `FALSE`, `TRUE` | Default: `FALSE`
 
 Secure the connection to the SMTP server with SSL. Some SMTP servers support only one kind and
@@ -184,12 +184,12 @@ By using these options the admin can control the looks of PdfDing for not logged
 instance (login page, signup page, etc ...). This will also set the theme of newly signed-up users.
 
 ### `DEFAULT_THEME`
-Values: `light`, `dark` | Default: `light`
+Values: `light`, `dark`, `creme` | Default: `light`
 
 Specify the default theme.
 
 ### `DEFAULT_THEME_COLOR`
-Values: `green`, `blue`, `gray`, `red`, `pink`, `orange` | Default: `green`
+Values: `green`, `blue`, `gray`, `red`, `pink`, `orange`, `brown` | Default: `green`
 
 Specify the default theme color.
 
@@ -206,7 +206,7 @@ Flag for enabling the consumption folder as an alternative way for adding PDFs.
 ### `CONSUME_SKIP_EXISTING`
 Values: `TRUE`, `FALSE` | Default: `TRUE`
 
-Flag for skipping the addition PDF files if the user already has PDF with the same name and file size.
+Flag for skipping the addition of PDF files if the user already has PDF with the same name and file size.
 
 ### `CONSUME_TAGS`
 Values: `string` | Default: `None`
