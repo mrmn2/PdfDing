@@ -19,7 +19,7 @@ To install Helm, see [Helm Installation guide](https://helm.sh/docs/intro/instal
 To add the PdfDing helm repository, run command:
 
 ```bash
-helm repo add pdfding https://mrmn2.github.io/PdfDing/
+helm repo add pdfding https://charts.pdfding.com
 ```
 
 To install the PdfDing helm chart with a release name `my-release` in `ns` namespace, run command:
