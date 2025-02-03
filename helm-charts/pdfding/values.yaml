@@ -194,7 +194,10 @@ replicas: 1
 persistence:
   enabled: false
   storageClassName: ""
-  size: 10Gi
+  # -- size of the sqlite pv
+  dbSize: 500Mi
+  # -- size of the media pv
+  mediaSize: 10Gi
 
 ## Secrets with credentials to pull images from a private registry
 imagePullSecrets: []

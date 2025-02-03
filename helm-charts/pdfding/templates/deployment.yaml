@@ -74,8 +74,10 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if or .Values.persistence.enabled .Values.containerSecurityContext.readOnlyRootFilesystem }}
           volumeMounts:
+            {{- if not ( eq .Values.pdfding.config.database.type "POSTGRES" ) }}
             - name: db
               mountPath: /home/nonroot/pdfding/db
+            {{- end }}
             - name: media
               mountPath: /home/nonroot/pdfding/media
             {{- if .Values.containerSecurityContext.readOnlyRootFilesystem }}
@@ -86,15 +88,19 @@ spec:
       {{- if or .Values.persistence.enabled .Values.containerSecurityContext.readOnlyRootFilesystem }}
       volumes:
       {{- if .Values.persistence.enabled }}
+        {{- if not ( eq .Values.pdfding.config.database.type "POSTGRES" ) }}
         - name: db
           persistentVolumeClaim:
             claimName: {{ include "pdfding.fullname" . }}-db
+        {{- end }}
         - name: media
           persistentVolumeClaim:
             claimName: {{ include "pdfding.fullname" . }}-media
       {{- else if .Values.containerSecurityContext.readOnlyRootFilesystem }}
+        {{- if not ( eq .Values.pdfding.config.database.type "POSTGRES" ) }}
         - name: db
           emptyDir: {}
+        {{- end }}
         - name: media
           emptyDir: {}
       {{- end }}
