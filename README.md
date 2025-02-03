@@ -38,12 +38,7 @@ This is a temporary live demo with shared user accounts, all data will be delete
 ## Screenshots
 Screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
 
-## Installation
-PdfDing is designed to be run with container solutions like Docker. The Docker image is compatible with ARM64 platforms,
-so it can be run on a Raspberry Pi 4.
-
-PdfDing uses an SQLite database by default. Alternatively PdfDing supports PostgreSQL.
-
+## Getting started
 ### Using Docker
 To install PdfDing using Docker you can just run the image from [Docker Hub](https://hub.docker.com/r/mrmn/pdfding):
 
@@ -68,6 +63,17 @@ To install PdfDing using Docker Compose, you can use one of the files in the
 
 ```
 docker-compose -d -f compose/sqlite.docker-compose.yaml
+```
+
+### Using Helm
+PdfDing can be deployed on Kubernetes using the provided [helm chart](https://github.com/mrmn2/PdfDing/tree/master/helm-charts/pdfding).
+To add the PdfDing helm repository, run:
+```bash
+helm repo add pdfding https://charts.pdfding.com
+```
+To install the PdfDing helm chart with a release name `my-release` in `ns` namespace, run:
+```bash
+helm install -n ns --create-namespace my-release pdfding/pdfding
 ```
 
 ## Guides
