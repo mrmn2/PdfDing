@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.12.1 - Minor changes for demo mode  (Feb 3, 2025)
+* adjust location of demo pdf file, so k8s empty dir can be used more easily in demo mode
+
 ## v0.12.0 - Creme theme + design improvements  (Jan 28, 2025)
 * add creme theme
 * improved navigation bar design
