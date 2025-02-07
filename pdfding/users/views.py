@@ -1,17 +1,22 @@
+from random import randint
+from uuid import uuid4
+
 from allauth.account.utils import send_email_confirmation
 from allauth.account.views import LoginView, PasswordResetDoneView, PasswordResetView, SignupView
 from allauth.socialaccount.providers.openid_connect.views import callback, login
+from django.conf import settings as django_settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from users import forms
-from users.service import get_color_shades
+from users.service import create_demo_user, get_color_shades
 
 
 def settings(request):
@@ -124,6 +129,34 @@ class Delete(View):
         messages.success(request, 'Your Account was successfully deleted.')
 
         return redirect('home')
+
+
+@method_decorator(login_not_required, name="dispatch")
+class CreateDemoUser(View):
+    """View for creating demo users"""
+
+    def post(self, request: HttpRequest):
+        """Create a demo user."""
+
+        if request.htmx and django_settings.DEMO_MODE:
+            password = 'demo'  # nosec
+            max_user_number = django_settings.DEMO_MAX_USERS
+
+            if User.objects.all().count() < max_user_number:
+                email = f'{str(uuid4())[:8]}@pdfding.com'
+
+                try:
+                    user = create_demo_user(email, password)
+                # if for some reason the email is already used, return the user instead of creating it.
+                except IntegrityError:
+                    user = User.objects.get(email=email)
+            # don't create new users if there are too many already
+            else:
+                user = User.objects.get(id=randint(1, max_user_number))  # nosec
+
+            return render(request, 'partials/demo_user.html', {'email': user.email, 'password': password})
+
+        return redirect('pdf_overview')
 
 
 @method_decorator(login_not_required, name="dispatch")

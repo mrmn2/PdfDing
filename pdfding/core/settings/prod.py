@@ -177,5 +177,6 @@ else:
 if os.environ.get('DEMO_MODE', 'FALSE') == 'TRUE':
     DEMO_MODE = True
     DEMO_MODE_RESTART_INTERVAL = os.environ.get('DEMO_MODE_RESTART_INTERVAL', 60)  # in minutes
+    DEMO_MAX_USERS = int(os.environ.get('DEMO_MAX_USERS', 500))
 else:
     DEMO_MODE = False

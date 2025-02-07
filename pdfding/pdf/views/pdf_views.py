@@ -14,7 +14,7 @@ from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefre
 from pdf import forms, service
 from pdf.models import Pdf, Tag
 from users.models import Profile
-from users.service import convert_hex_to_rgb
+from users.service import convert_hex_to_rgb, get_demo_pdf
 
 
 class BasePdfMixin:
@@ -43,7 +43,7 @@ class AddPdfMixin(BasePdfMixin):
         pdf = form.save(commit=False)
 
         if settings.DEMO_MODE:
-            pdf_file = service.get_demo_pdf()
+            pdf_file = get_demo_pdf()
             pdf.file = pdf_file
         else:
             pdf_file = form.files['file']
@@ -95,7 +95,7 @@ class BulkAddPdfMixin(BasePdfMixin):
             pdf_info_list = []
 
         if settings.DEMO_MODE:
-            files = [service.get_demo_pdf()]
+            files = [get_demo_pdf()]
         else:
             files = form.files.getlist('file')
 
@@ -379,7 +379,7 @@ class UpdatePdf(PdfMixin, View):
         pdf = self.get_object(request, pdf_id)
 
         if settings.DEMO_MODE:
-            updated_pdf = service.get_demo_pdf()
+            updated_pdf = get_demo_pdf()
         else:
             updated_pdf = request.FILES.get('updated_pdf')
 

@@ -426,8 +426,3 @@ class TestService(TestCase):
         expected_info_list = [(f'pdf_{i}', 8885) for i in range(3)]
 
         self.assertEqual(generated_info_list, expected_info_list)
-
-    def test_get_demo_pdf(self):
-        demo_pdf = service.get_demo_pdf()
-
-        self.assertEqual(demo_pdf.size, 26140)

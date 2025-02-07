@@ -1,3 +1,5 @@
+from unittest.mock import Mock, patch
+
 from allauth.socialaccount.models import SocialAccount
 from django.test import override_settings
 from django.urls import reverse
@@ -281,8 +283,21 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.279 0.041 260.031)')
             expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(71, 147, 204)')
 
+    @patch('users.views.create_demo_user')
+    @patch('users.views.uuid4', return_value='123456789')
     @override_settings(DEMO_MODE=True)
-    def test_login_demo_mode(self):
+    def test_login_demo_mode(self, mock_uuid4, mock_create_demo_user):
+        email = '12345678@pdfding.com'
+        mock_user = Mock()
+        mock_user.email = email
+        mock_create_demo_user.return_value = mock_user
+
         with sync_playwright() as p:
             self.open(reverse('home'), p)
             expect(self.page.locator("#demo_mode")).to_be_visible()
+
+            self.page.get_by_role("button", name="Create User").click()
+            expect(self.page.locator("#demo_user")).to_contain_text("Demo user successfully created")
+            expect(self.page.locator("#demo_user")).to_contain_text(
+                f"You can log into your temporary account with: {email} / demo"
+            )

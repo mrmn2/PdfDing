@@ -23,22 +23,36 @@
 
 {% if DEMO_MODE %}
 {% with '12345'|make_list as int_list %}
-<div id="demo_mode" class="pt-12 pb-6">
+<div id="demo_mode" class="mt-6 pt-4 pb-6 border-t border-gray-400">
     <h2>Demo Mode</h2>
     <div>
-        <span class="text-sm [&>span]:bg-slate-300 dark:[&>span]:bg-slate-500 [&>span]:rounded-sm [&>span]:px-1">
-            You can log into a shared account with:
-            <span>user_{{ int_list|random }}@pdfding.com</span> / <span>demo</span>
-        </span>
-    </div>
-    <div class="pt-4">
         <span class="text-sm">The demo mode has a couple of <span class="font-bold">restrictions</span>:</span>
     </div>
     <ul class="list-disc pl-5 pt-1 text-sm">
-      <li>The demo instance is reset every hour, so any changes you make will be lost. </li>
+      <li>The demo instance is reset every hour, so any changes you make will be lost.</li>
       <li>File uploads are not allowed when adding a new PDF. Instead, a dummy PDF will be used.</li>
       <li>PDFs are read-only. So any changes in the viewer's editor won't be saved.</li>
+      <li>Don't enter private information. Assume all data can be read by other users.</li>
     </ul>
+</div>
+<div id="demo_user" class="pt-2" x-data="{ in_progress: false }">
+    <button x-show="!in_progress"
+            @click="in_progress = true"
+            hx-post="{% url 'create_demo_user' %}"
+            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+            hx-target="#demo_user"
+            hx-swap="innerHTML">
+        Create User
+    </button>
+    <button class="-pt-4" x-show="in_progress" x-cloak type="button" disabled>
+      <div class="flex justify-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Processing</span>
+      </div
+    </button>
 </div>
 {% endwith %}
 {% endif %}

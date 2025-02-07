@@ -1,7 +1,8 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from allauth.socialaccount.models import SocialAccount
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from pdf.models import Pdf, Tag
@@ -228,3 +229,87 @@ class TestProfileViews(TestCase):
         for model_class in [Profile, Pdf, Tag]:
             # assert there is no profile, pdf and tag
             self.assertEqual(model_class.objects.all().count(), 0)
+
+
+class TestDemoViews(TestCase):
+    def test_create_demo_user_post_no_htmx(self):
+        response = self.client.post(reverse('create_demo_user'))
+
+        # target_status_code=302 because the '/' will redirect to the pdf overview
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302, target_status_code=302)
+
+    @override_settings(DEMO_MODE=False)
+    def test_create_demo_user_post_normal_mode(self):
+        # in normal mode user creation is not allowed.
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.post(reverse('create_demo_user'), **headers)
+
+        # target_status_code=302 because the '/' will redirect to the pdf overview
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302, target_status_code=302)
+
+    @patch('users.views.create_demo_user')
+    @patch('users.views.uuid4', return_value='123456789')
+    @override_settings(DEMO_MODE=True)
+    def test_create_demo_user_post_demo_mode(self, mock_uuid4, mock_create_demo_user):
+        email = '12345678@pdfding.com'
+        mock_user = Mock()
+        mock_user.email = email
+        mock_create_demo_user.return_value = mock_user
+
+        self.assertEqual(User.objects.all().count(), 0)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.post(reverse('create_demo_user'), **headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/demo_user.html')
+        mock_create_demo_user.assert_called_once_with(email, 'demo')
+        self.assertEqual(response.context['email'], email)
+        self.assertEqual(response.context['password'], 'demo')
+
+    @patch('users.views.User.objects.get')
+    @patch('users.views.create_demo_user', side_effect=IntegrityError)
+    @patch('users.views.uuid4', return_value='123456789')
+    @override_settings(DEMO_MODE=True)
+    def test_create_demo_user_post_demo_mode_exception(self, mock_uuid4, mock_create_demo_user, mock_get):
+        email = '12345678@pdfding.com'
+        mock_user = Mock()
+        mock_user.email = email
+        mock_get.return_value = mock_user
+
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.post(reverse('create_demo_user'), **headers)
+        mock_create_demo_user.assert_called_once_with(email, 'demo')
+        mock_get.assert_called_once_with(email=email)
+        self.assertTemplateUsed(response, 'partials/demo_user.html')
+        self.assertEqual(response.context['email'], email)
+        self.assertEqual(response.context['password'], 'demo')
+
+    @patch('users.views.randint')
+    @patch('users.views.User.objects.get')
+    @patch('users.views.create_demo_user')
+    @patch('users.views.uuid4', return_value='123456789')
+    @override_settings(DEMO_MAX_USERS=5)
+    @override_settings(DEMO_MODE=True)
+    def test_create_demo_user_post_demo_mode_too_many_users(
+        self, mock_uuid4, mock_create_demo_user, mock_get, mock_randint
+    ):
+        for i in range(5):
+            User.objects.create_user(username=f'user_{i}', password='password')
+
+        email = '12345678@pdfding.com'
+        mock_user = Mock()
+        mock_user.email = email
+        mock_get.return_value = mock_user
+        mock_randint.return_value = 3
+
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.post(reverse('create_demo_user'), **headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'partials/demo_user.html')
+        mock_randint.assert_called_once_with(1, 5)
+        mock_get.assert_called_once_with(id=3)
+
+        self.assertEqual(response.context['email'], email)
+        self.assertEqual(response.context['password'], 'demo')

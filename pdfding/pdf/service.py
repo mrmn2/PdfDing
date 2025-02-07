@@ -8,7 +8,6 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.db.models.functions import Lower
@@ -296,12 +295,3 @@ def get_pdf_info_list(profile: Profile) -> list[tuple]:
         pdf_info_list.append((pdf.name, pdf_size))
 
     return pdf_info_list
-
-
-def get_demo_pdf():
-    """Get the pdf file used in the demo mode."""
-
-    file_path = settings.BASE_DIR / 'users' / 'management' / 'commands' / 'demo_data' / 'demo.pdf'
-    demo_pdf = File(file=open(file_path, 'rb'), name=file_path.name)
-
-    return demo_pdf
