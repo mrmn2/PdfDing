@@ -415,10 +415,10 @@
                 {% endif %}
                 <div class="toolbarHorizontalGroup hiddenSmallView">
                   <img src="{% static 'images/line.svg' %}" width="22" style="opacity: 0.6">
-                  {% if 'pdf/view' in request.META.HTTP_REFERER %}
+                  {% if not request.META.HTTP_REFERER or 'pdf/view' in request.META.HTTP_REFERER or 'accountlogin' in request.META.HTTP_REFERER %}
                   <button onclick="location.href='{% url 'pdf_overview' %}'" class="button1" title="Close">
                   {% else %}
-                  <button onclick="history.back()" class="button1" title="Close">
+                  <button onclick="location.href='{{ request.META.HTTP_REFERER }}'" class="button1" title="Close">
                   {% endif %}
                     <img src="{% static 'images/close_white.svg' %}" width="22" style="opacity: 0.6">
                   </button>
