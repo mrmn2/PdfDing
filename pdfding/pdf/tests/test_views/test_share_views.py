@@ -253,11 +253,14 @@ class TestLoginNotRequiredViews(TestCase):
 
     @override_settings(DEFAULT_THEME_COLOR='Orange')
     def test_view_post_active_no_password(self):
+        self.shared_pdf.pdf.revision = 2
+        self.shared_pdf.pdf.save()
         self.assertEqual(self.shared_pdf.views, 0)
 
         response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': self.shared_pdf.id}))
         self.assertEqual(response.context['shared_pdf_id'], self.shared_pdf.id)
         self.assertEqual(response.context['current_page'], 1)
+        self.assertEqual(response.context['revision'], 2)
         # assert orange colored theme is used
         self.assertEqual(response.context['theme_color_rgb'], '255 203 133')
         self.assertEqual(response.context['tab_title'], 'PdfDing')
@@ -269,6 +272,9 @@ class TestLoginNotRequiredViews(TestCase):
 
     @override_settings(DEFAULT_THEME_COLOR='Green')
     def test_view_post_active_correct_password(self):
+        self.shared_pdf.pdf.revision = 2
+        self.shared_pdf.pdf.save()
+
         protected_shared_pdf = SharedPdf.objects.create(
             owner=self.user.profile, pdf=self.pdf, name='protected_shared_pdf', password=make_password('some_pw')
         )
@@ -281,6 +287,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['shared_pdf_id'], protected_shared_pdf.id)
         # assert green colored theme is used
         self.assertEqual(response.context['theme_color_rgb'], '74 222 128')
+        self.assertEqual(response.context['revision'], 2)
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')
 

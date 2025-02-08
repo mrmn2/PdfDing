@@ -81,10 +81,17 @@ class BaseOverviewQuery(View):
 
 
 class BaseServe(View):
-    """Base view used for serving PDF files specified by the PDF id"""
+    """Base view used for serving PDF files specified by the PDF id."""
 
-    def get(self, request: HttpRequest, identifier: str):
-        """Returns the specified file as a FileResponse"""
+    def get(self, request: HttpRequest, identifier: str, revision=None):
+        """
+        Returns the specified file as a FileResponse
+
+        There is a revision parameter, because of occasional problems related to viewing edited pdfs. When editing pdfs
+        in the viewer and saving them, sometimes the old version is still shown in the viewer even though the backend
+        has the correct version. This is probably caused by the browser's caching. This commit fixes the problem by
+        adding a revision to the serve views so that the browser is forced to refresh the pdf.
+        """
 
         serve_object = self.get_object(request, identifier)
 

@@ -79,24 +79,25 @@ def get_qrcode_file_path(instance, _):
 class Pdf(models.Model):
     """Model for the pdf files."""
 
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
-    name = models.CharField(max_length=150, null=True, blank=False)
-    file = models.FileField(upload_to=get_file_path, blank=False)
-    description = models.TextField(null=True, blank=True, help_text='Optional')
-    notes = models.TextField(null=True, blank=True, help_text='Optional, supports Markdown')
+    archived = models.BooleanField(default=False)
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
-    tags = models.ManyToManyField(Tag, blank=True)
     current_page = models.IntegerField(default=1)
-    views = models.IntegerField(default=0)
+    description = models.TextField(null=True, blank=True, help_text='Optional')
+    file = models.FileField(upload_to=get_file_path, blank=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     last_viewed_date = models.DateTimeField(
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
     )
+    name = models.CharField(max_length=150, null=True, blank=False)
+    notes = models.TextField(null=True, blank=True, help_text='Optional, supports Markdown')
     number_of_pages = models.IntegerField(default=-1)
-    starred = models.BooleanField(default=False)
-    archived = models.BooleanField(default=False)
-    thumbnail = models.FileField(upload_to=get_thumbnail_path, null=True, blank=False)
+    owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
     preview = models.FileField(upload_to=get_preview_path, null=True, blank=False)
+    revision = models.IntegerField(default=0)
+    starred = models.BooleanField(default=False)
+    tags = models.ManyToManyField(Tag, blank=True)
+    thumbnail = models.FileField(upload_to=get_thumbnail_path, null=True, blank=False)
+    views = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name  # pragma: no cover

@@ -430,7 +430,8 @@ class TestViews(TestCase):
         profile.save()
 
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-        pdf.current_page = '4'
+        pdf.current_page = 4
+        pdf.revision = 3
         pdf.save()
         self.assertEqual(pdf.views, 0)
         self.assertEqual(pdf.last_viewed_date, datetime(2000, 1, 1, tzinfo=timezone.utc))
@@ -446,6 +447,7 @@ class TestViews(TestCase):
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
         self.assertEqual(response.context['tab_title'], str(pdf.name))
         self.assertEqual(response.context['current_page'], 4)
+        self.assertEqual(response.context['revision'], 3)
         self.assertEqual(response.context['theme_color_rgb'], '255 179 165')
         self.assertEqual(response.context['user_view_bool'], True)
 
@@ -525,6 +527,7 @@ class TestViews(TestCase):
             pdf.save()
 
         self.assertEqual(pdf.file.size, 0)
+        self.assertEqual(pdf.revision, 0)
 
         # change the file and check size
         dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
@@ -536,6 +539,7 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pdf.file.size, 8885)
+        self.assertEqual(pdf.revision, 1)
 
     @override_settings(DEMO_MODE=True)
     def test_update_pdf_post_demo_mode(self):

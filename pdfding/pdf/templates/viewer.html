@@ -17,9 +17,9 @@
       window.addEventListener('load', function() {
           PDFViewerApplication.initialBookmark = "page="+page_number;
           {% if user_view_bool %}
-          PDFViewerApplication.open({ url: "{% url 'serve_pdf' pdf_id %}" });
+          PDFViewerApplication.open({ url: "{% url 'serve_pdf' pdf_id revision %}" });
           {% else %}
-          PDFViewerApplication.open({ url: "{% url 'serve_shared_pdf' shared_pdf_id %}" });
+          PDFViewerApplication.open({ url: "{% url 'serve_shared_pdf' shared_pdf_id revision %}" });
           {% endif %}
           // overwrite setTitle so that PdfDing controls the tab's title
           PDFViewerApplication.setTitle = function set_new_title(new_title) {

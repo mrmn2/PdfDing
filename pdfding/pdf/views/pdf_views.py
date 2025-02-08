@@ -326,6 +326,7 @@ class ViewerView(PdfMixin, View):
             {
                 'current_page': pdf.current_page,
                 'pdf_id': identifier,
+                'revision': pdf.revision,
                 'tab_title': pdf.name,
                 'theme_color_rgb': theme_color_rgb_dict[request.user.profile.theme_color],
                 'user_view_bool': True,
@@ -386,6 +387,7 @@ class UpdatePdf(PdfMixin, View):
         try:
             updated_pdf = forms.CleanHelpers.clean_file(updated_pdf)
             pdf.file = updated_pdf
+            pdf.revision += 1
             pdf.save()
 
             return HttpResponse(status=200)
