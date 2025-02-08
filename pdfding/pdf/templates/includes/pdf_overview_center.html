@@ -133,8 +133,12 @@
     </div>
     {% if request.user.profile.show_thumbnails == 'Enabled' %}
     <div id="thumbnail-{{ loop_id }}"
+         hx-get="{% url 'show_preview' pdf.id %}"
+         hx-target="#preview"
+         hx-swap="innerHTML"
+         @click="show_preview_modal = true"
          class="hidden min-[900px]:block min-[900px]:w-[20%] min-[900px]:flex min-[900px]:items-center !justify-center
-                min-[900px]:!w-28 min-[900px]:!h-[3.75rem]">
+                min-[900px]:!w-28 min-[900px]:!h-[3.75rem] cursor-pointer">
       {% if pdf.thumbnail %}
       <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600 creme:border-stone-400"
            src="{% url 'serve_thumbnail' pdf.id %}"
