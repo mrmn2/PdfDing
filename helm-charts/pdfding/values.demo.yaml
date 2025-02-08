@@ -9,6 +9,7 @@ pdfding:
     secureHstsSeconds: "31536000"
 
   extraConfig:
+    # Do not use this setting in your installation! This will delete the sqlite database when the container starts!
     DEMO_MODE: "TRUE"
 
   existingSecret: "pdfding"
