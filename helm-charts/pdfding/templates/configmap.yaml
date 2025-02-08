@@ -39,6 +39,8 @@ data:
   {{- if eq .Values.pdfding.config.database.type "POSTGRES" }}
   DATABASE_TYPE: {{ .Values.pdfding.config.database.type | quote }}
   POSTGRES_HOST: {{ .Values.pdfding.config.database.postgresHost | quote }}
+  POSTGRES_NAME: {{ .Values.pdfding.config.database.postgresName | quote }}
+  POSTGRES_USER: {{ .Values.pdfding.config.database.postgresUser | quote }}
   {{- if not .Values.pdfding.existingSecret }}
   POSTGRES_PASSWORD: {{ .Values.pdfding.config.database.postgresPassword | quote }}
   {{- end }}

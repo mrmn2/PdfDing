@@ -92,6 +92,16 @@ Values: `string` | Default: `postgres`
 
 The host of the postgres DB: Example: `postgres.pdfding.com`
 
+### `POSTGRES_NAME`
+Values: `string` | Default: `pdfding`
+
+The name of the postgres DB: Example: `pdfding`
+
+### `POSTGRES_USER`
+Values: `string` | Default: `pdfding`
+
+The name of the postgres user: Example: `user`
+
 ### `POSTGRES_PASSWORD`
 Values: `string` | Default: `None`
 

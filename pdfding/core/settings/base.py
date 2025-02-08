@@ -100,8 +100,8 @@ if os.environ.get('DATABASE_TYPE') == 'POSTGRES':  # pragma: no cover
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'pdfding',
-            'USER': 'pdfding',
+            'NAME': os.environ.get('POSTGRES_NAME', 'pdfding'),
+            'USER': os.environ.get('POSTGRES_USER', 'pdfding'),
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
             'HOST': os.environ.get('POSTGRES_HOST', 'postgres'),
             'PORT': os.environ.get('POSTGRES_PORT', '5432'),

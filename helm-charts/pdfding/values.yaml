@@ -65,6 +65,10 @@ pdfding:
       # type: "POSTGRES"
       ## -- The host of the postgres DB
       # postgresHost: "postgres.pdfding.com"
+      ## -- The name of the postgres DB
+      # postgresName: "pdfding"
+      ## -- The name of the postgres user
+      # postgresUser: "pdfding"
       ## -- The password for the postgres DB
       ## -- Note: postgresPassword will be overridden if existingSecret is set!
       # postgresPassword: "some_password"
