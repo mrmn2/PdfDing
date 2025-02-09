@@ -23,7 +23,7 @@ class TestLoginRequired(TestCase):
     def test_demo_mode_400_no_user(self):
         response = self.client.get(reverse('healthz'))
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
 
     @override_settings(DEMO_MODE=True)
     def test_demo_mode_400_needs_restart(self):

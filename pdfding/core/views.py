@@ -35,8 +35,8 @@ class HealthView(View):
             # if user was created more than DEMO_MODE_RESTART_INTERVAL minutes ago, return 400, so that PdfDing demo
             # will be restarted.
             if (
-                not user
-                or (datetime.now(timezone.utc) - user.date_joined).total_seconds()
+                user
+                and (datetime.now(timezone.utc) - user.date_joined).total_seconds()
                 > settings.DEMO_MODE_RESTART_INTERVAL * 60
             ):
                 return HttpResponse(status=400)
