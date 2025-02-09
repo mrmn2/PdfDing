@@ -1,5 +1,14 @@
 # Changelog
 
+##  v0.12.2 (Feb 09, 2025)
+## What's Changed
+* Improve demo startup time by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/80
+* Set postgres user and db name via env variables by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
+* Make sure the pdf overview gets reloaded when closing the viewer. This why the progress bars get automatically refreshed by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
+* Fix: Always show the latest edits in the pdf viewer. Previously, because of browser caching occasionally a non up to date version was shown by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
+* Open preview when clicking on thumbnail by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
+* Minor adjustments to helm chart by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
+
 ## v0.12.1 - Minor changes for demo mode  (Feb 3, 2025)
 * adjust location of demo pdf file, so k8s empty dir can be used more easily in demo mode
 
