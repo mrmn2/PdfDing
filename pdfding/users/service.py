@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from pdf.models import Pdf, Tag
 from pdf.service import process_with_pypdfium
+from users.models import Profile
 
 
 def convert_hex_to_rgb(hex_color: str) -> tuple[int, ...]:
@@ -48,6 +49,45 @@ def get_color_shades(custom_color: str) -> tuple[str, ...]:
     tertiary_color_2 = lighten_color(*rgb_color, percentage=0.4)
 
     return tuple(convert_rgb_to_hex(*color) for color in (secondary_color, tertiary_color_1, tertiary_color_2))
+
+
+def get_viewer_colors(user_profile: Profile = None) -> dict[str, str]:
+    primary_color_dict = {'light': '255 255 255', 'dark': '30 41 59', 'inverted': '71 71 71', 'creme': '226 220 208'}
+    secondary_color_dict = {'light': '242 242 242', 'dark': '25 34 50', 'inverted': '61 61 61', 'creme': '196 191 181'}
+    text_color_dict = {'light': '15 23 42', 'dark': '226 232 240', 'inverted': '226 232 240', 'creme': '68 64 60'}
+    theme_color_dict = {
+        'Green': '74 222 128',
+        'Blue': '71 147 204',
+        'Gray': '151 170 189',
+        'Red': '248 113 113',
+        'Pink': '218 123 147',
+        'Orange': '255 203 133',
+        'Brown': '76 37 24',
+    }
+
+    if user_profile:
+        rgb_as_str = [str(val) for val in convert_hex_to_rgb(user_profile.custom_theme_color)]
+        custom_color_rgb_str = ' '.join(rgb_as_str)
+        theme_color_dict['Custom'] = custom_color_rgb_str
+
+        theme_color = user_profile.theme_color
+
+        if user_profile.pdf_inverted_mode == 'Enabled':
+            theme = 'inverted'
+        else:
+            theme = user_profile.dark_mode_str
+    else:
+        theme_color = settings.DEFAULT_THEME_COLOR
+        theme = settings.DEFAULT_THEME
+
+    color_dict = {
+        'primary_color': primary_color_dict[theme],
+        'secondary_color': secondary_color_dict[theme],
+        'text_color': text_color_dict[theme],
+        'theme_color': theme_color_dict[theme_color],
+    }
+
+    return color_dict
 
 
 def get_demo_pdf():

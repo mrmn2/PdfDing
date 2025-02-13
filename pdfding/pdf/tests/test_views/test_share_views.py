@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.test import Client, TestCase, override_settings
+from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import (
     SharedDeletionDateForm,
@@ -251,8 +251,16 @@ class TestLoginNotRequiredViews(TestCase):
 
         self.assertTemplateUsed(response, 'view_shared_inactive.html')
 
-    @override_settings(DEFAULT_THEME_COLOR='Orange')
-    def test_view_post_active_no_password(self):
+    @patch('pdf.views.share_views.get_viewer_colors')
+    def test_view_post_active_no_password(self, mock_get_viewer_colors):
+        mock_colors_dict = {
+            'primary_color': '1 1 1',
+            'secondary_color': '2 2 2',
+            'text_color': '3 3 3',
+            'theme_color': '4 4 4',
+        }
+        mock_get_viewer_colors.return_value = mock_colors_dict
+
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
         self.assertEqual(self.shared_pdf.views, 0)
@@ -261,8 +269,10 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['shared_pdf_id'], self.shared_pdf.id)
         self.assertEqual(response.context['current_page'], 1)
         self.assertEqual(response.context['revision'], 2)
-        # assert orange colored theme is used
-        self.assertEqual(response.context['theme_color_rgb'], '255 203 133')
+        self.assertEqual(response.context['primary_color'], mock_colors_dict['primary_color'])
+        self.assertEqual(response.context['secondary_color'], mock_colors_dict['secondary_color'])
+        self.assertEqual(response.context['text_color'], mock_colors_dict['text_color'])
+        self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
         self.assertEqual(response.context['tab_title'], 'PdfDing')
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')
@@ -270,8 +280,16 @@ class TestLoginNotRequiredViews(TestCase):
         shared_pdf = SharedPdf.objects.get(pk=self.shared_pdf.id)
         self.assertEqual(shared_pdf.views, 1)
 
-    @override_settings(DEFAULT_THEME_COLOR='Green')
-    def test_view_post_active_correct_password(self):
+    @patch('pdf.views.share_views.get_viewer_colors')
+    def test_view_post_active_correct_password(self, mock_get_viewer_colors):
+        mock_colors_dict = {
+            'primary_color': '1 1 1',
+            'secondary_color': '2 2 2',
+            'text_color': '3 3 3',
+            'theme_color': '4 4 4',
+        }
+        mock_get_viewer_colors.return_value = mock_colors_dict
+
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
 
@@ -285,8 +303,10 @@ class TestLoginNotRequiredViews(TestCase):
         )
 
         self.assertEqual(response.context['shared_pdf_id'], protected_shared_pdf.id)
-        # assert green colored theme is used
-        self.assertEqual(response.context['theme_color_rgb'], '74 222 128')
+        self.assertEqual(response.context['primary_color'], mock_colors_dict['primary_color'])
+        self.assertEqual(response.context['secondary_color'], mock_colors_dict['secondary_color'])
+        self.assertEqual(response.context['text_color'], mock_colors_dict['text_color'])
+        self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
         self.assertEqual(response.context['revision'], 2)
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')

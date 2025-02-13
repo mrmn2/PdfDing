@@ -14,7 +14,7 @@ from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefre
 from pdf import forms, service
 from pdf.models import Pdf, Tag
 from users.models import Profile
-from users.service import convert_hex_to_rgb, get_demo_pdf
+from users.service import get_demo_pdf, get_viewer_colors
 
 
 class BasePdfMixin:
@@ -305,20 +305,7 @@ class ViewerView(PdfMixin, View):
         pdf.last_viewed_date = datetime.now(timezone.utc)
         pdf.save()
 
-        rgb_as_str = [str(val) for val in convert_hex_to_rgb(request.user.profile.custom_theme_color)]
-        custom_color_rgb_str = ' '.join(rgb_as_str)
-
-        # set theme color rgb value
-        theme_color_rgb_dict = {
-            'Green': '74 222 128',
-            'Blue': '71 147 204',
-            'Gray': '151 170 189',
-            'Red': '248 113 113',
-            'Pink': '218 123 147',
-            'Orange': '255 203 133',
-            'Brown': '158 154 145',
-            'Custom': custom_color_rgb_str,
-        }
+        color_dict = get_viewer_colors(request.user.profile)
 
         return render(
             request,
@@ -328,7 +315,10 @@ class ViewerView(PdfMixin, View):
                 'pdf_id': identifier,
                 'revision': pdf.revision,
                 'tab_title': pdf.name,
-                'theme_color_rgb': theme_color_rgb_dict[request.user.profile.theme_color],
+                'theme_color': color_dict['theme_color'],
+                'primary_color': color_dict['primary_color'],
+                'secondary_color': color_dict['secondary_color'],
+                'text_color': color_dict['text_color'],
                 'user_view_bool': True,
             },
         )

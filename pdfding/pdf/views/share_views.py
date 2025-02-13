@@ -3,7 +3,6 @@ from io import BytesIO
 
 import qrcode
 from base import base_views
-from django.conf import settings
 from django.contrib.auth.decorators import login_not_required
 from django.core.files import File
 from django.db.models import Q, QuerySet
@@ -27,6 +26,7 @@ from pdf.models import SharedPdf
 from pdf.service import check_object_access_allowed, get_future_datetime
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg
+from users.service import get_viewer_colors
 
 
 class BaseShareMixin:
@@ -316,15 +316,7 @@ class ViewShared(BaseSharedPdfPublicView):
         shared_pdf.views += 1
         shared_pdf.save()
 
-        theme_color_rgb_dict = {
-            'Green': '74 222 128',
-            'Blue': '71 147 204',
-            'Gray': '151 170 189',
-            'Red': '248 113 113',
-            'Pink': '218 123 147',
-            'Orange': '255 203 133',
-            'Brown': '158 154 145',
-        }
+        color_dict = get_viewer_colors()
 
         return render(
             request,
@@ -334,7 +326,10 @@ class ViewShared(BaseSharedPdfPublicView):
                 'current_page': 1,
                 'shared_pdf_id': shared_pdf.id,
                 'revision': shared_pdf.pdf.revision,
-                'theme_color_rgb': theme_color_rgb_dict[settings.DEFAULT_THEME_COLOR],
+                'theme_color': color_dict['theme_color'],
+                'primary_color': color_dict['primary_color'],
+                'secondary_color': color_dict['secondary_color'],
+                'text_color': color_dict['text_color'],
                 'user_view_bool': False,
             },
         )

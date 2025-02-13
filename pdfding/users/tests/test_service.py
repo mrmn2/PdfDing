@@ -1,7 +1,8 @@
 from unittest.mock import patch
 
 import users.service as service
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.test import TestCase, override_settings
 
 
 class TestUserServices(TestCase):
@@ -14,6 +15,50 @@ class TestUserServices(TestCase):
 
     def test_get_color_shades(self):
         self.assertEqual(service.get_color_shades('#b5edff'), ('#91becc', '#6d8e99', '#d3f4ff'))
+
+    def test_get_viewer_colors_profile(self):
+        user = User.objects.create_user(username='user', password="password")
+
+        profile = user.profile
+        profile.theme_color = 'Green'
+        profile.dark_mode = 'light'
+
+        generated_color_dict = service.get_viewer_colors(profile)
+        expected_color_dict = {
+            'primary_color': '255 255 255',
+            'secondary_color': '242 242 242',
+            'text_color': '15 23 42',
+            'theme_color': '74 222 128',
+        }
+
+        self.assertEqual(generated_color_dict, expected_color_dict)
+
+        # also test custom color and inverted mode
+        profile.theme_color = 'Custom'
+        profile.pdf_inverted_mode = 'Enabled'
+        profile.custom_theme_color = '#000000'
+
+        generated_color_dict = service.get_viewer_colors(profile)
+        expected_color_dict = {
+            'primary_color': '71 71 71',
+            'secondary_color': '61 61 61',
+            'text_color': '226 232 240',
+            'theme_color': '0 0 0',
+        }
+
+        self.assertEqual(generated_color_dict, expected_color_dict)
+
+    @override_settings(DEFAULT_THEME='creme', DEFAULT_THEME_COLOR='Brown')
+    def test_get_viewer_colors_no_profile(self):
+        generated_color_dict = service.get_viewer_colors()
+        expected_color_dict = {
+            'primary_color': '226 220 208',
+            'secondary_color': '196 191 181',
+            'text_color': '68 64 60',
+            'theme_color': '76 37 24',
+        }
+
+        self.assertEqual(generated_color_dict, expected_color_dict)
 
     def test_get_demo_pdf(self):
         demo_pdf = service.get_demo_pdf()
