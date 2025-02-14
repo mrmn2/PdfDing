@@ -256,7 +256,7 @@ class TestOverviewMixin(TestCase):
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
-        self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
+        self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_starred(self):
         pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1', starred=True)
@@ -267,7 +267,7 @@ class TestOverviewMixin(TestCase):
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
-        self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
+        self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_ignore_archived(self):
         pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1')
@@ -278,7 +278,7 @@ class TestOverviewMixin(TestCase):
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
-        self.assertEqual(list(filtered_pdfs), [pdf_1, pdf_2])
+        self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_archived(self):
         pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1', archived=True)
@@ -290,6 +290,15 @@ class TestOverviewMixin(TestCase):
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
         self.assertEqual(list(filtered_pdfs), [pdf_1])
+
+    def test_fuzzy_filter_pdfs(self):
+        Pdf.objects.create(owner=self.user.profile, name='pdf_not_to_be_found')
+        pdf_self_hosted = Pdf.objects.create(owner=self.user.profile, name='The best self-hosted applications ')
+        pdf_self_hosting = Pdf.objects.create(owner=self.user.profile, name='Self-hosting Guide')
+        Pdf.objects.create(owner=self.user.profile, name='self sufficiency')
+
+        filtered_pdfs = pdf_views.OverviewMixin.fuzzy_filter_pdfs(Pdf.objects.all(), 'self hosted')
+        self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_self_hosting, pdf_self_hosted])
 
     @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):

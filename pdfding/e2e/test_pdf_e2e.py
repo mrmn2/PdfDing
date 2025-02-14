@@ -356,6 +356,13 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#star-1")).to_contain_text("Star")
             expect(self.page.locator("#starred-icon-1")).not_to_be_visible()
 
+    @staticmethod
+    def new_fuzzy_filter_pdfs(pdfs, search):
+        filtered_pdfs = pdfs.filter(name__icontains=search)
+
+        return filtered_pdfs
+
+    @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_archive(self):
         with sync_playwright() as p:
             self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
@@ -405,6 +412,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_1_6")
             expect(self.page.locator("#pdf-link-3")).to_contain_text("pdf_1_1")
 
+    @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_search_names(self):
         with sync_playwright() as p:
             # display the three pdfs with the tag 'tag'
@@ -419,6 +427,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_2_7")
             expect(self.page.locator("#pdf-link-3")).to_contain_text("pdf_2_2")
 
+    @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_search_names_and_tags(self):
         with sync_playwright() as p:
             # display the three pdfs with the tag 'tag'
@@ -464,6 +473,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#pdf-link-1")).to_have_text("pdf_2_12")
             expect(self.page.locator("#pdf-link-2")).to_have_text("pdf_3_13")
 
+    @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_delete(self):
         with sync_playwright() as p:
             # only display one pdf

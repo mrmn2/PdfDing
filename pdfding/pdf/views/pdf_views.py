@@ -13,6 +13,7 @@ from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
 from pdf.models import Pdf, Tag
+from rapidfuzz import fuzz, utils
 from users.models import Profile
 from users.service import get_demo_pdf, get_viewer_colors
 
@@ -136,8 +137,8 @@ class OverviewMixin(BasePdfMixin):
 
         return sorting_dict
 
-    @staticmethod
-    def filter_objects(request: HttpRequest) -> QuerySet:
+    @classmethod
+    def filter_objects(cls, request: HttpRequest) -> QuerySet:
         """Filter the PDFs when performing a search in the overview."""
 
         pdfs = request.user.profile.pdf_set
@@ -162,7 +163,23 @@ class OverviewMixin(BasePdfMixin):
             pdfs = pdfs.filter(Q(tags__name=tag) | Q(tags__name__startswith=f'{tag}/')).distinct()
 
         if search:
-            pdfs = pdfs.filter(name__icontains=search)
+            pdfs = cls.fuzzy_filter_pdfs(pdfs, search)
+
+        return pdfs
+
+    @staticmethod
+    def fuzzy_filter_pdfs(pdfs: QuerySet, search: str) -> QuerySet:
+        fuzzy_result = []
+
+        for pdf in pdfs:
+            w_ratio = fuzz.WRatio(search, pdf.name, processor=utils.default_process)
+            partial_ratio = fuzz.partial_ratio(search, pdf.name, processor=utils.default_process)
+
+            # better to be a bit more strict regarding this so we avoid false positives
+            if (w_ratio + partial_ratio) / 2 > 85 or partial_ratio > 95:
+                fuzzy_result.append(pdf.id)
+
+        pdfs = pdfs.filter(id__in=fuzzy_result)
 
         return pdfs
 

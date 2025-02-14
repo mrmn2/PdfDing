@@ -59,6 +59,8 @@ def construct_search_and_tag_queries(
     else:
         search = old_search
 
+    search = search.replace(' ', '+')
+
     # add new tags to old tags and remove tag if specified
     tags = old_tags + [new_tag for new_tag in new_tags if new_tag not in old_tags]
     tags = [tag for tag in tags if tag != remove_tag_query]
