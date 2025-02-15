@@ -1,5 +1,16 @@
 # Changelog
 
+##  v0.12.3 (Feb 15, 2025)
+## What's Changed
+* filter pdfs by fuzzy searching by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/89
+* adjust the viewer navbar so it compliments the normal one by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
+* add theme support to viewer navbar by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
+* fix: Set navbar background so the navbar does not get overwritten when scrolling by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
+* fix: handle not present user in the health endpoint by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
+
+
+
+
 ##  v0.12.2 (Feb 09, 2025)
 ## What's Changed
 * Improve demo startup time by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/80
