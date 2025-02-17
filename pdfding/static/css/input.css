@@ -10,6 +10,7 @@
   --color-tertiary2: var(--color-tertiary2);
   --color-creme: #e2dcd0;
   --color-creme-dark-light: #d9d2c9;
+  --color-creme-dark: #bcb6ae;
   --color-creme-light: #f2eae0;
 }
 
@@ -95,8 +96,8 @@ hr {
     @apply mt-6 mb-6
 }
 .button, button, [type='submit'], [type='button'] {
-    @apply bg-primary text-white font-bold px-6 py-4 inline-block
-    rounded-lg shadow-lg transition-all cursor-pointer
+    @apply bg-primary text-white font-bold px-4 py-3 inline-block
+    rounded-lg transition-all cursor-pointer
 }
 .button:hover, button:hover, [type='submit']:hover, [type='button']:hover {
     @apply bg-secondary

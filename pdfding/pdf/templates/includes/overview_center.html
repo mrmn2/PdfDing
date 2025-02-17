@@ -1,0 +1,14 @@
+{% if not page_obj %}
+<div class="pt-10 *:flex *:justify-center">
+  {% if search_query or tag_query or special_pdf_selection %}
+  <span class="text-2xl">There aren't any PDFs matching the current filters</span>
+  <span class="pt-4 text-lg">Please try different filters.</span>
+  {% else %}
+  <span class="text-2xl">You have no PDFs yet</span>
+  <span class="pt-4 text-lg">Get started by <a class="text-primary hover:text-secondary hover:underline px-1" href="{% url 'add_pdf' %}"> adding</a> PDFs.</span>
+  {% endif %}
+</div>
+{% endif %}
+<div class="px-5 bg-green-500">
+  asd
+</div>

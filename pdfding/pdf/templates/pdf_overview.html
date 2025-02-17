@@ -1,15 +1,19 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
+
+{% block header %}
+{% include 'includes/header.html' with special_header='pdf1' %}
+{% endblock %}
+
 {% block content %}
 <div x-data="{ show_tag_name_modal: false, show_preview_modal: false }">
-  <div class="flex justify-between block max-w-6xl mx-auto md:p-12 md:pb-0 pt-4! dark:text-slate-200 creme:text-stone-700"
-       :class="{ 'opacity-15': show_tag_name_modal, 'opacity-15': show_preview_modal }">
-    <div class="w-full md:w-[70%] md:p-8 p-3">
-      {% include 'includes/pdf_overview_top.html' %}
-      {% include 'includes/pdf_overview_center.html' %}
+  <div class="flex flex-col md:flex-row md:justify-between md:pb-0 pt-4!"
+       :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal }">
+    <div class="w-full md:w-60! lg:w-72! px-4 md:pt-2">
+      {% include 'includes/sidebar.html' with page='pdf_overview' %}
     </div>
-    <div class="md:w-[30%] md:p-8 p-3 hidden md:block">
-      {% include 'includes/pdf_overview_side.html' %}
+    <div class="md:p-8 p-3 bg-red-400">
+      {% include 'includes/overview_center.html' %}
     </div>
   </div>
   <div x-show="show_tag_name_modal" x-cloak
@@ -25,6 +29,5 @@
       <div id="preview"></div>
   </div>
 </div>
-
 
 {% endblock %}

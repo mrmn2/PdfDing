@@ -1,0 +1,47 @@
+{% load static %}
+{% if user.profile.tags_tree_mode == 'Enabled' %}
+<div
+    x-data="{ {% for tag_name, tag_info in tag_info_dict.items %}tag_{{ tag_info.slug }}_show_children: false, {% endfor %} }"
+>
+{% for tag_name, tag_info in tag_info_dict.items %}
+    <div {% if tag_info.level != 0 %}
+         x-show="{{ tag_info.show_cond }}"
+         x-cloak
+         class="ml-3 border-l-2 border-slate-100 dark:border-slate-700 creme:border-creme-dark-light pl-2" {% endif %}
+       >
+        <div class="flex justify-between items-center relative
+          {% if tag_info.level == 2 %} ml-3 border-l-2 border-slate-100 dark:border-slate-700 creme:border-creme-dark-light pl-2{% endif %}">
+            <div id="tag-{{ tag_name }}" x-data="{ hashtag_hovered: false, tag_options: false}"
+              class="pl-1 pr-2 my-[2px] flex justify-left items-center truncate border rounded-sm
+                     border-slate-200 dark:border-slate-800 creme:border-creme-dark-light
+                     hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
+                {% include 'includes/individual_tag.html' %}
+            </div>
+            {% if tag_info.has_children %}
+            <a id="open-children-{{ tag_name }}" class="cursor-pointer"
+               @click="tag_{{ tag_info.slug }}_show_children = !tag_{{ tag_info.slug }}_show_children">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="w-5 h-5 mr-2 text-slate-500! hover:text-black!
+                           dark:text-slate-300 dark:hover:text-white! creme:text-stone-400! creme:hover:text-stone-700!"
+                    :class="{ 'rotate-90': tag_{{ tag_info.slug }}_show_children }">
+                    <path d="m9 18 6-6-6-6"></path>
+                </svg>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+{% endfor %}
+</div>
+{% else %}
+<div class="w-full flex flex-row justify-start items-center relative flex-wrap py-1 gap-x-1">
+    {% for tag_name, tag_info in tag_info_dict.items %}
+        <div id="tag-{{ tag_name }}" x-data="{ hashtag_hovered: false, tag_options: false}"
+             class="pl-1 pr-2 my-[2px] flex justify-center items-center truncate cursor-pointer border rounded-sm
+                    border-slate-200 dark:border-slate-800 creme:border-creme-dark-light
+                    hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
+            {% include 'includes/individual_tag.html' %}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

@@ -1,11 +1,10 @@
 {% load static %}
-<a x-on:mouseenter="hashtag_hovered = true" x-on:mouseleave="hashtag_hovered = false"
+<div x-on:mouseenter="hashtag_hovered = true" x-on:mouseleave="hashtag_hovered = false"
    @click="tag_options = true"
-   class="cursor-pointer text-gray-400 dark:text-slate-400 creme:text-stone-500 [&>svg]:h-4 [&>svg]:w-4">
+   class="cursor-pointer text-primary hover:text-primary! [&>svg]:h-4 [&>svg]:w-4">
     <svg x-show="!hashtag_hovered" x-transition:enter.duration.100ms
          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-         >
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="4" x2="20" y1="9" y2="9"></line>
         <line x1="4" x2="20" y1="15" y2="15"></line>
         <line x1="10" x2="8" y1="3" y2="21"></line>
@@ -13,65 +12,67 @@
     </svg>
     <svg x-show="hashtag_hovered" x-cloak x-transition:enter.duration.100ms
          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-         >
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="1"></circle>
         <circle cx="12" cy="5" r="1"></circle>
         <circle cx="12" cy="19" r="1"></circle>
     </svg>
-</a>
+</div>
 <span>&thinsp;</span>
 <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag_name }}"
-   class="text-primary hover:text-secondary font-semibold text-ellipsis overflow-hidden">
+   class="text-slate-400 dark:text-slate-400 creme:text-stone-500 text-ellipsis overflow-hidden">
    {{ tag_info.display_name }}
 </a>
 <div class="absolute left-0 pt-3">
     <div x-data="{ tag_delete: false }"
          @keyup.escape.window="tag_options = false; tag_delete = false"
          @click.away="tag_options = false; tag_delete = false" tag_delete = false" x-show="tag_options" x-cloak
-         class="relative top-12  shadow-sm rounded-lg w-32 pl-4 py-3 z-20
-                bg-white dark:bg-slate-700 text-black dark:text-slate-50 creme:bg-creme-light creme:text-stone-700"
+         class="relative top-5 shadow-sm rounded-lg w-32 p-2 z-20 [&>div]:cursor-pointer border
+                bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
+                border-slate-300 dark:border-slate-700 creme:border-creme-dark-light
+                [&>div>div]:py-1 [&>div>div]:px-2 [&>div>div]:rounded-sm
+                [&>div>div]:hover:bg-slate-200 dark:[&>div>div]:hover:bg-slate-700 creme:[&>div>div]:hover:bg-creme-dark-light"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0 scale-90"
         x-transition:enter-end="opacity-100 scale-100"
         >
         <div>
-            <div x-show="!tag_delete" @click="tag_options = false; tag_delete = false"
-                 class="flex flex-row gap-x-1
-                 hover:cursor-pointer hover:[&>svg]:stroke-primary hover:[&>a]:text-primary!">
+            <div x-show="!tag_delete" @click="tag_options = false; tag_delete = false; show_tag_name_modal = true"
+                 class="flex flex-row gap-x-1"
+                 id="rename-tag-{{ tag_name }}"
+                 hx-get="{% url 'edit_tag'%}?tag_name={{ tag_name }}"
+                 hx-target="#edit_tag"
+                 hx-swap="innerHTML">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                     class="stroke-gray-500 dark:stroke-slate-400 w-5">
+                     class="stroke-gray-500 dark:stroke-slate-200 w-5">
                     <!--source: https://www.svgrepo.com/svg/488918/edit-03, license: PD License-->
                     <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12.5L17.75 3.75C18.4404 3.05964 19.5596 3.05964 20.25 3.75V3.75C20.9404 4.44036 20.9404 5.55964 20.25 6.25L15.5 11L11.5 15H9Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <a id="rename-tag-{{ tag_name }}"
-                   hx-get="{% url 'edit_tag'%}?tag_name={{ tag_name }}"
-                   hx-target="#edit_tag"
-                   hx-swap="innerHTML"
-                   @click="show_tag_name_modal = true"
-                   type="button" class="button-text dark:text-slate-400! creme:text-stone-700!">Rename</a>
+                <span>Rename</span>
             </div>
-            <form x-show="tag_delete" >
-                <a id="confirm-delete-tag-{{ tag_name }}"
-                     x-cloak
-                     hx-post="{% url 'delete_tag' %}"
-                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                     class="button-text-delete cursor-pointer">Confirm
-                </a>
+            <form x-show="tag_delete">
+                <div id="confirm-delete-tag-{{ tag_name }}"
+                      x-cloak
+                      hx-post="{% url 'delete_tag' %}"
+                      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                      class="text-red-400 py-1 px-2 rounded-sm
+                             hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark-light">
+                    <span>Confirm</span>
+                </div>
                 <input type="hidden" name="tag_name" value="{{ tag_name }}"/>
             </form>
         </div>
-        <div class="pt-2">
+        <div>
             <div id="delete-tag-{{ tag_name }}"
                  x-show="!tag_delete" @click="tag_delete = true"
-                 class="flex flex-row gap-x-1 hover:cursor-pointer hover:[&>a]:text-primary!">
+                 class="flex flex-row gap-x-1">
                 <img src="{% static 'images/trash.svg' %}" width="19">
-                <a type="button" class="button-text dark:text-slate-400! creme:text-stone-700!">Delete</a>
+                <a>Delete</a>
             </div>
-            <a id="cancel-delete-tag-{{ tag_name }}"
-                  x-show="tag_delete" x-cloak @click="tag_delete = false" type="button"
-                  class="button-text dark:text-slate-400! creme:text-stone-700! hover:text-primary!">Cancel
-            </a>
+            <div id="cancel-delete-tag-{{ tag_name }}"
+                  x-show="tag_delete" x-cloak @click="tag_delete = false">
+                <span>Cancel</span>
+            </div>
         </div>
     </div>
 </div>

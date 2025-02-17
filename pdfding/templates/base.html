@@ -32,8 +32,10 @@
     {% endif %}
 </head>
 <content class="flex flex-col min-h-screen">
-    {% include 'includes/header.html' %}
-    <body class="dark:bg-slate-800 creme:bg-creme">
+    {% block header %}
+    {% endblock %}
+
+    <body class="bg-slate-50 dark:bg-slate-900 creme:bg-creme text-slate-800 dark:text-slate-200 creme:text-stone-700">
 
         {% include 'includes/messages.html' %}
 
