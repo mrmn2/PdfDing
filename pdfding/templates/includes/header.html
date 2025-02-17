@@ -1,43 +1,84 @@
 {% load static %}
-<header x-data="{ mobilenavOpen: false }"
-        class="h-12 *:px-8 text-primary! sticky top-0 z-40 bg-white dark:bg-slate-800 creme:bg-creme">
-    <div class="flex items-center justify-between h-12">
-        <div class="md:pl-12">
-            <a class="flex items-center gap-2" href="/">
-                <div id="logo_div" class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
-                    <!-- bg-primary needed as profile image will flicker otherwise -->
-                    <img class="bg-primary rounded-lg h-6 w-6" src="{% static 'images/logo.svg' %}" alt="Logo"/>
+<header class="pt-4 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900 creme:bg-creme">
+    <div class="px-2 md:px-4 flex items-center justify-between">
+        <a class="flex items-center gap-x-2" href="/">
+            <div id="logo_div" class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
+                <!-- bg-primary needed as profile image will flicker otherwise -->
+                <img class="bg-primary rounded-lg h-6 w-6" src="{% static 'images/logo.svg' %}" alt="Logo"/>
+            </div>
+            <span class="text-xl font-bold text-primary">PdfDing</span>
+            {% if special_header == 'pdf' %}
+            <span class="text-xl font-bold">PdfDing </span>
+            {% endif %}
+        </a>
+        <div x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center gap-x-2">
+            <a class="cursor-pointer rounded-sm py-1 px-2 group relative
+                      hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"
+               href="{% url 'add_pdf' %}">
+                <svg class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- source: https://www.svgrepo.com/svg/471793/plus -->
+                    <!-- license: CC0 License-->
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="absolute pointer-events-none top-10 left-[2px] mt-1 px-2 py-1 rounded-sm opacity-0
+                             group-hover:opacity-100 group-hover:delay-350
+                             text-slate-600 dark:text-slate-200 creme:text-stone-700
+                             bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Add
+                </span>
+            </a>
+            <div @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false"
+               class="flex items-center justify-center px-2 rounded-full aspect-square cursor-pointer rounded-full! border-4
+                      text-primary hover:bg-primary hover:text-slate-200 border-primary">
+                <span class="text-lg font-extrabold!">{{ request.user.email.capitalize|first }}</span>
+            </div>
+            <div x-show="dropdownOpen" x-cloak
+                     class="absolute top-10 right-0 shadow-sm rounded-lg w-52 p-2 z-20 border
+                            bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
+                            border-slate-300 dark:border-slate-700 creme:border-creme-dark-light"
+                x-transition:enter="duration-300 ease-out"
+                x-transition:enter-start="opacity-0 scale-90"
+                x-transition:enter-end="opacity-100 scale-100"
+                >
+                <div class="mx-2">
+                    <div class="flex flex-row items-center gap-x-2">
+                        <div class="flex items-center justify-center px-2 mt-1 rounded-full aspect-square cursor-default
+                                    border-4 border-primary text-primary">
+                            <span class="text-lg font-extrabold!">{{ request.user.email.capitalize|first }}</span>
+                        </div>
+                        <div class="flex flex-col truncate [&>span]:text-sm">
+                            <span class="truncate">{{ request.user.email }}</span>
+                            <span>User ID: {{ user.id }}</span>
+                        </div>
+                    </div>
                 </div>
-                <span class="text-xl font-bold">PdfDing </span>
-            </a>
-        </div>
-        <div class="hidden md:flex">
-            {% include 'partials/header_menu.html' %}
-        </div>
-        <div class="md:hidden">
-            <a @click="mobilenavOpen = !mobilenavOpen" class="h-12 w-12 flex items-center justify-center cursor-pointer hover:bg-primary rounded-lg">
-                <svg x-show="!mobilenavOpen" class="w-6 h-6 fill-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- source: https://www.svgrepo.com/svg/499620/menu-burger -->
-                    <!-- license: PD -->
-                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M3 6C3 5.44772 3.44772 5 4 5H20C20.5523 5 21 5.44772 21 6C21 6.55228 20.5523 7 20 7H4C3.44772 7 3 6.55228 3 6ZM3 12C3 11.4477 3.44772 11 4 11H20C20.5523 11 21 11.4477 21 12C21 12.5523 20.5523 13 20 13H4C3.44772 13 3 12.5523 3 12ZM3 18C3 17.4477 3.44772 17 4 17H20C20.5523 17 21 17.4477 21 18C21 18.5523 20.5523 19 20 19H4C3.44772 19 3 18.5523 3 18Z"/>
-                </svg>
-                <!-- source: https://www.svgrepo.com/svg/499592/close-x -->
-                <!-- license: PD -->
-                <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                <svg x-show="mobilenavOpen" x-cloak class="w-6 h-6 fill-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z"/>
-                </svg>
-            </a>
-        </div>
-    </div>
-    <div x-show="mobilenavOpen" x-cloak class="md:hidden bg-white dark:bg-slate-800 creme:bg-creme h-screen w-screen"
-        x-transition:enter="duration-300 ease-out"
-        x-transition:enter-start="opacity-0 translate-y-0"
-        x-transition:enter-end="opacity-100 translate-y-0"
-    >
-        <div>
-            {% include 'partials/header_menu.html' %}
+                <div class="mt-2 mb-1 border-b border-slate-300 dark:border-slate-600 creme:border-stone-400"></div>
+                <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
+                            [&>a]:cursor-pointer [&>a]:rounded-sm
+                            [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark-light">
+                    <a href="{% url 'profile-settings' %}">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect id="view-box" width="24" height="24" fill="#141124" opacity="0"/>
+                            <path id="Shape"
+                                  d="M6.995,19.461a10.065,10.065,0,0,1-2.171-.9.756.756,0,0,1-.382-.7l.132-2.067a.151.151,0,0,0-.044-.116l-.707-.708a.149.149,0,0,0-.106-.043h-.01l-2.075.129-.047,0a.75.75,0,0,1-.654-.384,10.071,10.071,0,0,1-.9-2.176.755.755,0,0,1,.226-.766l1.559-1.376a.149.149,0,0,0,.05-.113V9.25a.151.151,0,0,0-.05-.113L.254,7.761a.754.754,0,0,1-.226-.766,10.115,10.115,
+                                  0,0,1,.9-2.177.75.75,0,0,1,.654-.382h.047l2.075.129h.01a.153.153,0,0,0,.106-.044l.7-.7a.15.15,0,0,0,.043-.116L4.436,1.632a.754.754,0,0,1,.382-.7,10.115,10.115,0,0,1,2.177-.9.751.751,0,0,1,.766.226L9.137,1.813a.151.151,0,0,0,.113.05h.988a.149.149,0,0,0,.113-.05L11.728.254a.751.751,0,0,1,.766-.226,10.071,10.071,0,0,1,2.176.9.753.753,0,0,1,.383.7l-.129,
+                                  2.075a.151.151,0,0,0,.043.116l.7.7a.155.155,0,0,0,.107.044h.009l2.075-.129H17.9a.752.752,0,0,1,.654.382,10.07,10.07,0,0,1,.9,2.177.753.753,0,0,1-.226.766L17.676,9.137a.152.152,0,0,0-.051.113v.988a.152.152,0,0,0,.051.113l1.559,1.376a.753.753,0,0,1,.226.766,10.026,10.026,0,0,1-.9,2.176.751.751,0,0,1-.654.384l-.047,0-2.075-.129h-.01a.149.149,
+                                  0,0,0-.106.043l-.7.7a.154.154,0,0,0-.043.116l.129,2.075a.744.744,0,0,1-.383.7,10.011,10.011,0,0,1-2.171.9.746.746,0,0,1-.767-.226l-1.371-1.557a.149.149,0,0,0-.113-.051h-1a.152.152,0,0,0-.113.051L7.761,19.235a.751.751,0,0,1-.766.226ZM4.883,13.907l.708.707a1.649,1.649,0,0,1,.48,1.273l-.1,1.582a8.373,8.373,0,0,0,.988.409l1.055-1.194a1.652,1.652,0,0,1,
+                                  1.238-.558h1a1.649,1.649,0,0,1,1.238.56l1.049,1.191a8.413,8.413,0,0,0,.989-.41l-.1-1.59a1.653,1.653,0,0,1,.481-1.27l.7-.7a1.664,1.664,0,0,1,1.167-.483l.1,0,1.59.1a8.376,8.376,0,0,0,.412-.994l-1.194-1.055a1.652,1.652,0,0,1-.558-1.238V9.25a1.652,1.652,0,0,1,.558-1.238l1.194-1.055a8.274,8.274,0,0,0-.412-.994l-1.59.1c-.033,0-.068,0-.1,0a1.642,1.642,0,0,
+                                  1-1.169-.484l-.7-.7a1.65,1.65,0,0,1-.481-1.269l.1-1.59a8.748,8.748,0,0,0-.994-.413l-1.055,1.2a1.652,1.652,0,0,1-1.238.558H9.25a1.652,1.652,0,0,1-1.238-.558L6.958,1.61a8.8,8.8,0,0,0-.994.413l.1,1.59a1.65,1.65,0,0,1-.481,1.269l-.7.7a1.638,1.638,0,0,1-1.168.484c-.033,0-.067,0-.1,0l-1.59-.1a8.748,8.748,0,0,0-.413.994l1.2,1.055A1.652,1.652,0,0,1,3.363,
+                                  9.25v.988a1.652,1.652,0,0,1-.558,1.238l-1.2,1.055a8.666,8.666,0,0,0,.413.994l1.59-.1.1,0A1.638,1.638,0,0,1,4.883,13.907Zm.106-4.168a4.75,4.75,0,1,1,4.75,4.75A4.756,4.756,0,0,1,4.989,9.739Zm1.5,0a3.25,3.25,0,1,0,3.25-3.25A3.254,3.254,0,0,0,6.489,9.739Z" transform="translate(2.261 2.261)" fill="currentColor"/>
+                        </svg>
+                        Settings
+                    </a>
+                    <a href="{% url 'account_logout' %}">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- source: https://www.svgrepo.com/svg/471638/log-out-01 -->
+                            <!-- license: CC0 License-->
+                            <path d="M16 17L21 12M21 12L16 7M21 12H9M9 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Log Out
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </header>
