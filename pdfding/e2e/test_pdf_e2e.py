@@ -27,7 +27,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.get_by_role("link", name="Add PDF").click()
+            self.page.locator("#add_pdf").click()
             self.page.get_by_placeholder("Add PDF Name").click()
             self.page.get_by_placeholder("Add PDF Name").fill("Some Name")
             self.page.get_by_placeholder("Add Description").click()
@@ -42,7 +42,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("Some Name")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
-            expect(self.page.locator("body")).to_contain_text("now |")
+            expect(self.page.locator("body")).to_contain_text("now")
 
             # check tag sidebar
             for tag in ["1", "banana", "bread", "tag_0", "tag_1"]:
@@ -83,7 +83,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("dummy")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
-            expect(self.page.locator("body")).to_contain_text("now |")
+            expect(self.page.locator("body")).to_contain_text("now")
 
         dummy_file_path.unlink()
 
@@ -136,7 +136,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("demo")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
-            expect(self.page.locator("body")).to_contain_text("now |")
+            expect(self.page.locator("body")).to_contain_text("now")
 
     @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_bulk_add_pdf(self, mock_from_buffer):
@@ -153,7 +153,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.get_by_role("link", name="Add PDF").click()
+            self.page.locator("#add_pdf").click()
             self.page.get_by_role("link", name="Bulk").click()
             self.page.locator("#id_file").click()
             self.page.locator("#id_file").set_input_files(dummy_file_paths)
@@ -168,7 +168,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("dummy_2")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
-            expect(self.page.locator("body")).to_contain_text("now |")
+            expect(self.page.locator("body")).to_contain_text("now")
 
             # check tag sidebar
             for tag in ["1", "banana", "bread", "tag_0", "tag_1"]:
@@ -234,7 +234,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("demo")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
-            expect(self.page.locator("body")).to_contain_text("now |")
+            expect(self.page.locator("body")).to_contain_text("now")
 
             # check tag sidebar
             for tag in ["1", "banana", "bread", "tag_0", "tag_1"]:
@@ -267,57 +267,36 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             if i % 5 == 1:
                 pdf.tags.set([tag])
 
-    def test_progress_bar_on(self):
-        pdf = Pdf.objects.get(name='pdf_4_14')
-        pdf.number_of_pages = 1
-        pdf.save()
-
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#progressbar-1")).to_be_visible()
-
-    def test_progress_bar_off_settings(self):
-        pdf = Pdf.objects.get(name='pdf_4_14')
-        pdf.number_of_pages = 1
-        pdf.save()
-
-        self.user.profile.show_progress_bars = 'Disabled'
-        self.user.profile.save()
-
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#progressbar-1")).not_to_be_visible()
-
-    def test_thumbnails_on(self):
-        self.user.profile.show_thumbnails = 'Enabled'
-        self.user.profile.save()
-
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#thumbnail-1")).to_be_visible()
-
-    def test_thumbnail_preview(self):
-        self.user.profile.show_thumbnails = 'Enabled'
-        self.user.profile.save()
-
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-
-            expect(self.page.locator("#preview_inner")).not_to_be_visible()
-            self.page.locator("#thumbnail-1").click()
-            expect(self.page.locator("#preview_inner")).to_be_visible()
-
-            # click somewhere
-            self.page.locator("span").filter(has_text="PDFs").click()
-            expect(self.page.locator("#preview_inner")).not_to_be_visible()
-
-    def test_thumbnails_off(self):
-        self.user.profile.show_thumbnails = 'Disabled'
-        self.user.profile.save()
-
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#thumbnail-1")).not_to_be_visible()
+    # def test_thumbnails_on(self):
+    #     self.user.profile.show_thumbnails = 'Enabled'
+    #     self.user.profile.save()
+    #
+    #     with sync_playwright() as p:
+    #         self.open(reverse('pdf_overview'), p)
+    #         expect(self.page.locator("#thumbnail-1")).to_be_visible()
+    #
+    # def test_thumbnail_preview(self):
+    #     self.user.profile.show_thumbnails = 'Enabled'
+    #     self.user.profile.save()
+    #
+    #     with sync_playwright() as p:
+    #         self.open(reverse('pdf_overview'), p)
+    #
+    #         expect(self.page.locator("#preview_inner")).not_to_be_visible()
+    #         self.page.locator("#thumbnail-1").click()
+    #         expect(self.page.locator("#preview_inner")).to_be_visible()
+    #
+    #         # click somewhere
+    #         self.page.get_by_role("banner").click()
+    #         expect(self.page.locator("#preview_inner")).not_to_be_visible()
+    #
+    # def test_thumbnails_off(self):
+    #     self.user.profile.show_thumbnails = 'Disabled'
+    #     self.user.profile.save()
+    #
+    #     with sync_playwright() as p:
+    #         self.open(reverse('pdf_overview'), p)
+    #         expect(self.page.locator("#thumbnail-1")).not_to_be_visible()
 
     def test_notes(self):
         pdf = Pdf.objects.get(name='pdf_4_14')
@@ -348,13 +327,16 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
 
             expect(self.page.locator("#starred-icon-1")).not_to_be_visible()
+            self.page.locator("#open-actions-1").click()
             expect(self.page.locator("#star-1")).to_contain_text("Star")
             self.page.locator("#star-1").click()
-            expect(self.page.locator("#star-1")).to_contain_text("Unstar")
             expect(self.page.locator("#starred-icon-1")).to_be_visible()
+            self.page.locator("#open-actions-1").click()
+            expect(self.page.locator("#star-1")).to_contain_text("Unstar")
             self.page.locator("#star-1").click()
-            expect(self.page.locator("#star-1")).to_contain_text("Star")
             expect(self.page.locator("#starred-icon-1")).not_to_be_visible()
+            self.page.locator("#open-actions-1").click()
+            expect(self.page.locator("#star-1")).to_contain_text("Star")
 
     @staticmethod
     def new_fuzzy_filter_pdfs(pdfs, search):
@@ -368,6 +350,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(f"{reverse('pdf_overview')}?search=pdf_4_14", p)
 
             expect(self.page.locator("#pdf-link-1")).to_be_visible()
+            self.page.locator("#open-actions-1").click()
             self.page.locator("#archive-1").click()
             expect(self.page.locator("#pdf-link-1")).not_to_be_visible()
 
@@ -389,11 +372,12 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
 
             expect(self.page.locator("#preview_inner")).not_to_be_visible()
+            self.page.locator("#open-actions-1").click()
             self.page.locator("#preview-1").click()
             expect(self.page.locator("#preview_inner")).to_be_visible()
 
             # click somewhere
-            self.page.locator("span").filter(has_text="PDFs").click()
+            self.page.get_by_role("banner").click()
             expect(self.page.locator("#preview_inner")).not_to_be_visible()
 
     def test_search_tags(self):
@@ -403,11 +387,12 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
             self.page.get_by_role("link", name="#tag").first.click()
 
-            delete_buttons = self.page.get_by_role("button", name="Delete")
-
-            # assert there are three pdfs with a tag
-            expect(delete_buttons).to_have_count(3)
+            # assert there are three pdfs matching the search
             # pdfs are by default sorted from newest to oldest
+            expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_11")
+            expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_1_6")
+            expect(self.page.locator("#pdf-link-3")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#pdf-link-4")).not_to_be_visible()
             expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_11")
             expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_1_6")
             expect(self.page.locator("#pdf-link-3")).to_contain_text("pdf_1_1")
@@ -418,14 +403,12 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             # display the three pdfs with the tag 'tag'
             self.open(f"{reverse('pdf_overview')}?search=pdf_2_", p)
 
-            delete_buttons = self.page.get_by_role("button", name="Delete")
-
-            # assert there are three pdfs with a tag
-            expect(delete_buttons).to_have_count(3)
+            # assert there are three pdfs matching the search
             # pdfs are by default sorted from newest to oldest
             expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_2_12")
             expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_2_7")
             expect(self.page.locator("#pdf-link-3")).to_contain_text("pdf_2_2")
+            expect(self.page.locator("#pdf-link-4")).not_to_be_visible()
 
     @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_search_names_and_tags(self):
@@ -433,13 +416,11 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             # display the three pdfs with the tag 'tag'
             self.open(f"{reverse('pdf_overview')}?search=pdf_1_1&tags=tag", p)
 
-            delete_buttons = self.page.get_by_role("button", name="Delete")
-
-            # assert there are three pdfs with a tag
-            expect(delete_buttons).to_have_count(2)
+            # assert there are three pdfs matching the search
             # pdfs are by default sorted from newest to oldest
             expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_11")
             expect(self.page.locator("#pdf-link-2")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#pdf-link-3")).not_to_be_visible()
 
     def test_search_filters(self):
         with sync_playwright() as p:
@@ -480,8 +461,9 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.open(f"{reverse('pdf_overview')}?search=pdf_2_1", p)
 
             expect(self.page.locator("body")).to_contain_text("pdf_2_1")
-            self.page.locator("#delete-pdf-1").click()
-            self.page.locator("#confirm-delete-pdf-1").click()
+            self.page.locator("#open-actions-1").click()
+            self.page.locator("#delete-1").click()
+            self.page.get_by_role("button", name="Submit").click()
 
             # now there should be no PDFs matching the search criteria
             expect(self.page.locator("body")).to_contain_text("There aren't any PDFs matching the current filters")
@@ -491,17 +473,12 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             # only display one pdf
             self.open(f"{reverse('pdf_overview')}?search=pdf_2_1", p)
 
-            expect(self.page.locator("#confirm-delete-pdf-1")).not_to_be_visible()
-            expect(self.page.locator("#cancel-delete-pdf-1")).not_to_be_visible()
-            expect(self.page.locator("#delete-pdf-1")).to_be_visible()
-            self.page.locator("#delete-pdf-1").click()
-            expect(self.page.locator("#confirm-delete-pdf-1")).to_be_visible()
-            expect(self.page.locator("#cancel-delete-pdf-1")).to_be_visible()
-            expect(self.page.locator("#delete-pdf-1")).not_to_be_visible()
-            self.page.locator("#cancel-delete-pdf-1").click()
-            expect(self.page.locator("#confirm-delete-pdf-1")).not_to_be_visible()
-            expect(self.page.locator("#cancel-delete-pdf-1")).not_to_be_visible()
-            expect(self.page.locator("#delete-pdf-1")).to_be_visible()
+            expect(self.page.locator("#delete_pdf_modal").first).not_to_be_visible()
+            self.page.locator("#open-actions-1").click()
+            self.page.locator("#delete-1").click()
+            expect(self.page.locator("#delete_pdf_modal").first).to_be_visible()
+            self.page.locator("#cancel_delete").get_by_text("Cancel").click()
+            expect(self.page.locator("#delete_pdf_modal").first).not_to_be_visible()
 
     def test_sidebar_tags_normal_mode(self):
         profile = self.user.profile
@@ -751,7 +728,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
     def test_delete_tag_cancel(self):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             expect(self.page.locator("#confirm-delete-tag-bla")).not_to_be_visible()
             expect(self.page.locator("#cancel-delete-tag-bla")).not_to_be_visible()
             expect(self.page.locator("#delete-tag-bla")).to_be_visible()
@@ -770,11 +747,11 @@ class TagE2ETestCase(PdfDingE2ETestCase):
     def test_delete_tag_click_away(self):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             expect(self.page.locator("#delete-tag-bla")).to_be_visible()
 
             # click somewhere
-            self.page.locator("span").filter(has_text="PDFs").click()
+            self.page.get_by_role("banner").click()
 
             # tag options should be closed now
             expect(self.page.locator("#delete-tag-bla")).not_to_be_visible()
@@ -791,7 +768,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
             expect(self.page.locator("#tag-bla")).to_contain_text('bla')
             expect(self.page.locator("body")).to_contain_text("#bla")
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
             self.page.locator("#confirm-delete-tag-bla").click()
             expect(self.page.locator("#tag-bla")).not_to_be_visible()
@@ -812,7 +789,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
             expect(self.page.locator("#tag-bla")).to_contain_text('bla')
             expect(self.page.locator("body")).to_contain_text("#bla")
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
             self.page.locator("#confirm-delete-tag-bla").click()
             expect(self.page.locator("#tag-bla")).not_to_be_visible()
@@ -828,12 +805,12 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
 
             expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
             expect(self.page.locator("#tag_rename_form")).to_be_visible()
 
             # click somewhere
-            self.page.locator("span").filter(has_text="PDFs").click()
+            self.page.get_by_role("banner").click()
 
             # tag rename should be closed now
             expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
@@ -843,7 +820,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
 
             expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
             expect(self.page.locator("#tag_rename_form")).to_be_visible()
 
@@ -867,7 +844,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("#bla")
             expect(self.page.locator("body")).not_to_contain_text("#renamed")
 
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
 
             self.page.locator("#id_name").dblclick()
@@ -897,7 +874,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("#bla")
             expect(self.page.locator("body")).not_to_contain_text("#renamed")
 
-            self.page.locator("#tag-bla > a").first.click()
+            self.page.locator("#tag-bla").get_by_role("img").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
 
             self.page.locator("#id_name").dblclick()

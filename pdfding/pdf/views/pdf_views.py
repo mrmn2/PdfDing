@@ -201,6 +201,7 @@ class OverviewMixin(BasePdfMixin):
             'tag_query': tag_query,
             'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': service.get_tag_info_dict(request.user.profile),
+            'page': 'pdf',
         }
 
         return extra_context
@@ -438,6 +439,20 @@ class Edit(EditPdfMixin, base_views.BaseDetailsEdit):
 
 class Delete(PdfMixin, base_views.BaseDelete):
     """View for deleting the PDF specified by its ID."""
+
+    def get(self, request: HttpRequest, identifier: str):
+        """Triggered by htmx. Display an inline form for deleting the pdf."""
+
+        if request.htmx:
+            pdf = self.get_object(request, identifier)
+
+            return render(
+                request,
+                'partials/delete_pdf.html',
+                {'pdf_id': identifier, 'pdf_name': pdf.name},
+            )
+
+        return redirect('pdf_overview')
 
 
 class Download(PdfMixin, base_views.BaseDownload):

@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from core.views import AboutView, HealthView
+from core.views import HealthView
 from django.urls import include, path
 from pdf.views.pdf_views import redirect_to_overview
 from users.views import (
@@ -36,7 +36,6 @@ urlpatterns = [
     path('accountoidc/login/', pdfding_oidc_login, name='oidc_login'),
     path('accountoidc/login/callback/', pdfding_oidc_callback, name='oidc_callback'),
     # normal inc
-    path('about', AboutView.as_view(), name='about'),
     path('admin/', include('admin.urls')),
     path('account', include('allauth.urls')),
     path('', redirect_to_overview, name='home'),

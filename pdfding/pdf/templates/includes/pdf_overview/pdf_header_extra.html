@@ -1,0 +1,55 @@
+<div x-data="{ sortOpen: false }" class="relative flex flex-row items-center md:gap-x-2">
+
+    <a @click="sortOpen = !sortOpen" @click.away="sortOpen = false" @keyup.escape.window="sortOpen = false"
+       class="cursor-pointer rounded-sm py-1 md:px-2 group relative
+              hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
+        <svg class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.293 4.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414L8 7.414V19a1 1 0 1 1-2 0V7.414L3.707 9.707a1 1 0 0 1-1.414-1.414l4-4zM16 16.586V5a1 1 0 1 1 2 0v11.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L16 16.586z" fill="currentColor"/>
+        </svg>
+
+        <span x-show="!sortOpen" class="absolute pointer-events-none top-10 left-[2px] mt-1 px-2 py-1 rounded-sm opacity-0
+                     group-hover:opacity-100 group-hover:delay-350
+                     text-slate-600 dark:text-slate-200 creme:text-stone-700
+                     bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Sort
+        </span>
+    </a>
+    <div x-show="sortOpen" x-cloak
+         class="absolute top-11 right-0 shadow-sm rounded-lg w-40 p-2 z-20 border
+                bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
+                border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+        <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
+                    [&>a]:cursor-pointer [&>a]:rounded-sm
+                    [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark">
+            <a href="{% url 'pdf_overview_query' %}?sort=newest"
+               x-bind:class="('{{ sorting_query }}' === 'newest' || '{{ sorting_query }}' === '') ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Newest
+            </a>
+            <a href="{% url 'pdf_overview_query' %}?sort=oldest"
+               x-bind:class="'{{ sorting_query }}' === 'oldest' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Oldest
+            </a>
+            <a href="{% url 'pdf_overview_query' %}?sort=title_asc"
+               x-bind:class="'{{ sorting_query }}' === 'title_asc' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                A - Z
+            </a>
+            <a href="{% url 'pdf_overview_query' %}?sort=title_desc"
+               x-bind:class="'{{ sorting_query }}' === 'title_desc' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Z - A
+            </a>
+            <a href="{% url 'pdf_overview_query' %}?sort=most_viewed"
+               x-bind:class="'{{ sorting_query }}' === 'most_viewed' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Most Viewed
+            </a>
+            <a href="{% url 'pdf_overview_query' %}?sort=least_viewed"
+               x-bind:class="'{{ sorting_query }}' === 'least_viewed' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Least Viewed
+            </a>
+            <a href="{% url 'pdf_overview_query' %}?sort=recently_viewed"
+               x-bind:class="'{{ sorting_query }}' === 'recently_viewed' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Recently Viewed
+            </a>
+        </div>
+
+    </div>
+
+</div>

@@ -1,18 +1,29 @@
 {% load static %}
-<header class="pt-4 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900 creme:bg-creme">
-    <div class="pr-2 pl-4 md:px-4 flex items-center justify-between">
+<header class="py-1 pt-1 md:pt-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900 creme:bg-creme">
+    <div class="pr-2 pl-2 md:pl-4 md:pr-4 lg:pr-6 flex items-center justify-between">
         <a class="flex items-center gap-x-2" href="/">
             <div id="logo_div" class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
                 <!-- bg-primary needed as profile image will flicker otherwise -->
                 <img class="bg-primary rounded-lg h-6 w-6" src="{% static 'images/logo.svg' %}" alt="Logo"/>
             </div>
-            <span class="text-xl font-bold text-primary">PdfDing</span>
-            {% if special_header == 'pdf' %}
-            <span class="text-xl font-bold">PdfDing </span>
-            {% endif %}
+            <span class="hidden md:block text-xl font-bold text-primary">PdfDing</span>
         </a>
-        <div x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center gap-x-2">
-            <a class="cursor-pointer rounded-sm py-1 px-2 group relative
+        {% if request.user.is_authenticated %}
+        <form class="flex grow md:hidden px-4" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form_mobile">
+            <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
+                          bg-slate-100 dark:bg-slate-800! creme:bg-creme-light-dark!
+                          border-slate-400 dark:border-slate-600 creme:border-stone-400"
+                    type="text" placeholder="Search"
+                    id="search_input_mobile"
+                    name="search"
+                    @keyup.enter="document.getElementById('search_form_mobile').submit()"
+            />
+        </form>
+        <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center md:gap-x-3">
+            {% if page == 'pdf' %}
+            {% include 'includes/pdf_overview/pdf_header_extra.html' %}
+            {% endif %}
+            <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:pr-1 group relative
                       hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"
                href="{% url 'add_pdf' %}">
                 <svg class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,15 +37,15 @@
                              bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Add
                 </span>
             </a>
-            <div @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false"
-               class="flex items-center justify-center px-2 rounded-full aspect-square cursor-pointer rounded-full! border-4
+            <div @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" @keyup.escape.window="dropdownOpen = false"
+               class="flex items-center justify-center px-2 ml-1 rounded-full aspect-square cursor-pointer rounded-full! border-4
                       text-primary hover:bg-primary hover:text-slate-200 border-primary">
                 <span class="text-lg font-extrabold!">{{ request.user.email.capitalize|first }}</span>
             </div>
             <div x-show="dropdownOpen" x-cloak
-                     class="absolute top-10 right-0 shadow-sm rounded-lg w-52 p-2 z-20 border
-                            bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
-                            border-slate-300 dark:border-slate-700 creme:border-creme-dark-light"
+                 class="absolute top-10 right-0 shadow-sm rounded-lg w-52 p-2 z-20 border
+                        bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
+                        border-slate-300 dark:border-slate-700 creme:border-creme-dark"
                 x-transition:enter="duration-300 ease-out"
                 x-transition:enter-start="opacity-0 scale-90"
                 x-transition:enter-end="opacity-100 scale-100"
@@ -54,10 +65,12 @@
                 <div class="mt-2 mb-1 border-b border-slate-300 dark:border-slate-600 creme:border-stone-400"></div>
                 <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
                             [&>a]:cursor-pointer [&>a]:rounded-sm
-                            [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark-light">
+                            [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark">
                     <a href="{% url 'profile-settings' %}">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <rect id="view-box" width="24" height="24" fill="#141124" opacity="0"/>
+                            <!-- source: https://www.svgrepo.com/svg/304474/settings -->
+                            <!-- license: PD License-->
+                            <rect id="view-box" width="24" height="24" fill="currentColor" opacity="0"/>
                             <path id="Shape"
                                   d="M6.995,19.461a10.065,10.065,0,0,1-2.171-.9.756.756,0,0,1-.382-.7l.132-2.067a.151.151,0,0,0-.044-.116l-.707-.708a.149.149,0,0,0-.106-.043h-.01l-2.075.129-.047,0a.75.75,0,0,1-.654-.384,10.071,10.071,0,0,1-.9-2.176.755.755,0,0,1,.226-.766l1.559-1.376a.149.149,0,0,0,.05-.113V9.25a.151.151,0,0,0-.05-.113L.254,7.761a.754.754,0,0,1-.226-.766,10.115,10.115,
                                   0,0,1,.9-2.177.75.75,0,0,1,.654-.382h.047l2.075.129h.01a.153.153,0,0,0,.106-.044l.7-.7a.15.15,0,0,0,.043-.116L4.436,1.632a.754.754,0,0,1,.382-.7,10.115,10.115,0,0,1,2.177-.9.751.751,0,0,1,.766.226L9.137,1.813a.151.151,0,0,0,.113.05h.988a.149.149,0,0,0,.113-.05L11.728.254a.751.751,0,0,1,.766-.226,10.071,10.071,0,0,1,2.176.9.753.753,0,0,1,.383.7l-.129,
@@ -69,6 +82,16 @@
                         </svg>
                         Settings
                     </a>
+                    {% if request.user.is_superuser and request.user.is_staff %}
+                    <a href="{% url 'admin_overview' %}">
+                        <svg class="w-5 h-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- source: https://www.svgrepo.com/svg/535465/key-skeleton -->
+                            <!-- license: PD License-->
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 9C12.9853 9 15 6.98528 15 4.5C15 2.01472 12.9853 0 10.5 0C8.01475 0 6.00003 2.01472 6.00003 4.5C6.00003 5.38054 6.25294 6.20201 6.69008 6.89574L0.585815 13L3.58292 15.9971L4.99714 14.5829L3.41424 13L5.00003 11.4142L6.58292 12.9971L7.99714 11.5829L6.41424 10L8.10429 8.30995C8.79801 8.74709 9.61949 9 10.5 9ZM10.5 7C11.8807 7 13 5.88071 13 4.5C13 3.11929 11.8807 2 10.5 2C9.11932 2 8.00003 3.11929 8.00003 4.5C8.00003 5.88071 9.11932 7 10.5 7Z" fill="currentColor"/>
+                        </svg>
+                        Admin
+                    </a>
+                    {% endif %}
                     <a href="{% url 'account_logout' %}">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- source: https://www.svgrepo.com/svg/471638/log-out-01 -->
@@ -80,5 +103,13 @@
                 </div>
             </div>
         </div>
+        {% else %}
+        <div class="flex flex-row items-center text-primary font-bold gap-x-6 [&>a]:py-2">
+            <a href="{% url 'login' %}">Login</a>
+            {% if not SOCIALACCOUNT_ONLY and not SIGNUP_CLOSED %}
+            <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 </header>

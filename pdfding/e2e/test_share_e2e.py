@@ -18,7 +18,8 @@ class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
 
-            self.page.get_by_role("link", name="Share", exact=True).click()
+            self.page.locator("#open-actions-1").click()
+            self.page.get_by_role("link", name="share Share", exact=True).click()
             self.page.get_by_placeholder("Add Share Name").click()
             self.page.get_by_placeholder("Add Share Name").fill("some_shared_pdf")
             self.page.get_by_placeholder("Add a private description").click()

@@ -310,6 +310,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': ['tagging'],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
+            'page': 'pdf',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -324,6 +325,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': 'starred',
+            'page': 'pdf',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -338,6 +340,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
+            'page': 'pdf',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -352,6 +355,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
+            'page': 'pdf',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -641,6 +645,23 @@ class TestViews(TestCase):
 
         response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_delete_get_no_htmx(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        response = self.client.get(reverse('delete_pdf', kwargs={'identifier': pdf.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_delete_get(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', starred=True)
+
+        # archive the pdf
+        response = self.client.get(reverse('delete_pdf', kwargs={'identifier': pdf.id}), **headers)
+
+        self.assertEqual(response.context['pdf_name'], 'pdf')
+        self.assertEqual(response.context['pdf_id'], str(pdf.id))
+        self.assertTemplateUsed(response, 'partials/delete_pdf.html')
 
 
 class TestTagViews(TestCase):

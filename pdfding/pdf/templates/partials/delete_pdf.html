@@ -1,0 +1,19 @@
+<div id="delete_pdf_modal" class="rounded-2xl drop-shadow-2xl shadow-black w-full py-4
+            bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
+            border border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+    <div class="px-4">
+        <h2 class="pb-2">Delete {{ pdf_name }}</h2>
+        <div>Are you sure you want to delete this PDF? This action is irreversible!</div>
+        <div class="pt-4 flex gap-x-2">
+            <button id="confirm_delete" class="flex! items-center justify-center py-1! px-1"
+                    hx-delete="{% url 'delete_pdf' pdf_id %}"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                Submit
+            </button>
+            <div id="cancel_delete" @click="show_delete_pdf_modal = false"
+                 class="flex! items-center font-semibold text-primary border-2 border-primary rounded-md cursor-pointer hover:bg-primary hover:text-white">
+                <span class="px-1">Cancel</span>
+            </div>
+        </div>
+    </div>
+</div>

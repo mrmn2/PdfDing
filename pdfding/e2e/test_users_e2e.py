@@ -21,7 +21,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator('html')).to_have_attribute('class', 'light')
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Green')
             expect(self.page.locator("#theme")).to_contain_text("Light + Green")
-            expect(self.page.locator('body')).to_have_css('background-color', 'rgba(0, 0, 0, 0)')
+            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.984 0.003 247.858)')
             expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(74, 222, 128)')
 
             # change to dark mode
@@ -37,7 +37,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator('html')).to_have_attribute('class', 'dark')
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Custom')
             expect(self.page.locator("#theme")).to_contain_text("Dark + Custom")
-            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.279 0.041 260.031)')
+            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.208 0.042 265.755)')
             expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(255, 163, 133)')
 
             # trigger dropdown again
@@ -213,9 +213,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
     def test_header_dropdown(self):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.get_by_role("banner").get_by_role("list").locator("li").filter(
-                has_text="Logged in as a@a.com User ID:"
-            ).locator("a").first.click()
+            self.page.locator("#open-user-dropdown > div:nth-child(3)").click()
             expect(self.page.get_by_role("banner")).to_contain_text("a@a.com")
             expect(self.page.get_by_role("banner")).to_contain_text(f"User ID: {self.user.id}")
 
@@ -280,7 +278,7 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             # test that light theme is used
             expect(self.page.locator('html')).to_have_attribute('class', 'dark')
             expect(self.page.locator('html')).to_have_attribute('data-theme', 'Blue')
-            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.279 0.041 260.031)')
+            expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.208 0.042 265.755)')
             expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(71, 147, 204)')
 
     @patch('users.views.create_demo_user')

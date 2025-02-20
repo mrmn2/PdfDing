@@ -1,33 +1,79 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
 
-{% block header %}
-{% include 'includes/header.html' with special_header='pdf1' %}
-{% endblock %}
-
 {% block content %}
-<div x-data="{ show_tag_name_modal: false, show_preview_modal: false }">
-  <div class="flex flex-col md:flex-row md:justify-between md:pb-0 pt-4!"
-       :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal }">
-    <div class="w-full md:w-60! lg:w-72! px-4 md:pt-2">
-      {% include 'includes/sidebar.html' with page='pdf_overview' %}
+<div class="" x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false }">
+    <div class="flex flex-col md:flex-row md:justify-start"
+         :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
+        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2 md:mr-28 min-[850px]:mr-36! lg:mr-0!">
+          {% include 'includes/sidebar.html' with page='pdf_overview' %}
+        </div>
+        <div class="flex w-full justify-center md:px-8 p-2">
+            <div class="flex flex-col w-full md:w-[71%] min-[850px]:w-[80%]! gap-y-5 pb-8">
+                {% if search_query or tag_query %}
+                {% include 'includes/pdf_overview/search_filters.html' %}
+                {% endif %}
+
+                {% if not page_obj %}
+                <div class="pt-10 *:flex *:justify-center">
+                    {% if search_query or tag_query or special_pdf_selection %}
+                    <span class="text-2xl">There aren't any PDFs matching the current filters</span>
+                    <span class="pt-4 text-lg">Please try different filters.</span>
+                    {% else %}
+                    <span class="text-2xl">You have no PDFs yet</span>
+                    <span class="pt-4 text-lg">
+                      Get started by <a class="text-primary hover:text-secondary hover:underline px-1" href="{% url 'add_pdf' %}">adding</a> PDFs.
+                    </span>
+                    {% endif %}
+                </div>
+                {% else %}
+                {% for pdf in page_obj %}
+                {% with loop_id=forloop.counter %}
+                <div class="border rounded-md bg-slate-100 border-slate-300
+                            dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-600
+                            creme:bg-creme-dark-light creme:border-creme-dark creme:hover:bg-creme-dark">
+                    <div class="px-3 md:px-5 py-1">
+                        {% if 1 %}
+                        {% include 'includes/pdf_overview/compact_pdf.html' %}
+                        {% endif %}
+                    </div>
+                    {% if pdf.number_of_pages > 0 %}
+                    <div class="hover:cursor-pointer pt-1 -mt-1!" x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
+                            <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
+                                 class="w-full h-1 rounded-sm">
+                                <div style="width: {{ pdf.progress }}%;" class="h-1 bg-primary! rounded-sm"></div>
+                            </div>
+                            <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
+                                class="z-50 absolute bg-primary text-gray-100 text-sm rounded-xs p-2 mt-1">
+                             {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}
+                            </span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endwith %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
     </div>
-    <div class="md:p-8 p-3 bg-red-400">
-      {% include 'includes/overview_center.html' %}
+    <div x-show="show_tag_name_modal" x-cloak
+         @click.away="show_tag_name_modal = false; $refs.edit_tag_inner.remove()"
+         @keyup.escape.window="show_tag_name_modal = false; $refs.edit_tag_inner.remove()"
+         class="fixed inset-x-0 top-40  mx-auto my-auto w-80 h-52 z-20">
+        <div id="edit_tag"></div>
     </div>
-  </div>
-  <div x-show="show_tag_name_modal" x-cloak
-       @click.away="show_tag_name_modal = false; $refs.edit_tag_inner.remove()"
-       @keyup.escape.window="show_tag_name_modal = false; $refs.edit_tag_inner.remove()"
-       class="fixed inset-x-0 top-40  mx-auto my-auto w-80 h-52 z-20">
-      <div id="edit_tag"></div>
-  </div>
-  <div x-show="show_preview_modal" x-cloak
-       @click.away="show_preview_modal = false; $refs.preview_inner.remove()"
-       @keyup.escape.window="show_preview_modal = false"
-       class="fixed inset-x-0 top-40 mx-auto my-auto w-80! lg:w-[28rem]! z-20">
-      <div id="preview"></div>
-  </div>
+    <div x-show="show_preview_modal" x-cloak
+         @click.away="show_preview_modal = false; $refs.preview_inner.remove()"
+         @keyup.escape.window="show_preview_modal = false"
+         class="fixed inset-x-0 top-40 mx-auto my-auto w-80! lg:w-[28rem]! z-20">
+        <div id="preview"></div>
+    </div>
+    <div x-show="show_delete_pdf_modal" x-cloak
+         @click.away="show_delete_pdf_modal = false"
+         @keyup.escape.window="show_delete_pdf_modal = false"
+         class="fixed inset-x-0 top-40 mx-auto my-auto w-80! lg:w-[28rem]! z-20">
+        <div id="delete_pdf_modal"></div>
+    </div>
 </div>
 
 {% endblock %}

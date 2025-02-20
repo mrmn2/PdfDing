@@ -31,20 +31,14 @@
     </style>
     {% endif %}
 </head>
-<content class="flex flex-col min-h-screen">
-    {% block header %}
-    {% endblock %}
+<content class="flex flex-col">
+    {% include 'includes/header.html' %}
 
-    <body class="bg-slate-50 dark:bg-slate-900 creme:bg-creme text-slate-800 dark:text-slate-200 creme:text-stone-700">
-
+    <body class="bg-slate-50 dark:bg-slate-900 creme:bg-creme text-slate-800 dark:text-slate-200 creme:text-stone-700 h-full">
         {% include 'includes/messages.html' %}
 
         {% block layout %}
         {% endblock %}
-
     </body>
-    <!--div needed for correct footer alignment-->
-    <div class="grow"></div>
-{% include 'includes/footer.html' %}
 </content>
 </html>
