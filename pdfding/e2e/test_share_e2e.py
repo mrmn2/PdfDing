@@ -67,8 +67,8 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             self.open(f"{reverse('shared_pdf_overview')}", p)
 
             expect(self.page.locator("#shared-pdf-link-1")).to_have_text("some_shared_pdf")
-            self.page.get_by_role("button", name="Delete").click()
-            self.page.get_by_text("Confirm").click()
+            self.page.locator("#delete_1 a").filter(has_text="Delete").click()
+            self.page.locator("#delete_1").get_by_text("Confirm").click()
 
             expect(self.page.locator("body")).to_contain_text("You have not shared any PDFs yet")
 
@@ -78,7 +78,14 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(f"{reverse('shared_pdf_overview')}", p)
 
-            cancel_delete_helper(self.page)
+            self.page.locator("#delete_1 a").filter(has_text="Delete").click()
+            expect(self.page.locator("#delete_1").get_by_text("Cancel")).to_be_visible()
+            expect(self.page.locator("#delete_1").get_by_text("Confirm")).to_be_visible()
+            expect(self.page.locator("#delete_1 a").filter(has_text="Delete")).not_to_be_visible()
+            self.page.locator("#delete_1").get_by_text("Cancel").click()
+            expect(self.page.locator("#delete_1 a").filter(has_text="Delete")).to_be_visible()
+            expect(self.page.locator("#delete_1 a").filter(has_text="Cancel")).not_to_be_visible()
+            expect(self.page.locator("#delete_1").get_by_text("Confirm")).not_to_be_visible()
 
     def test_details(self):
         shared_pdf = SharedPdf.objects.create(

@@ -20,8 +20,10 @@
             />
         </form>
         <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center md:gap-x-3">
-            {% if page == 'pdf' %}
-            {% include 'includes/pdf_overview/pdf_header_extra.html' %}
+            {% if page == 'pdf_overview' %}
+            {% include 'includes/pdf_overview/header_extra.html' %}
+            {% elif page == 'shared_pdf_overview' %}
+            {% include 'includes/shared_overview/header_extra.html' %}
             {% endif %}
             <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:pr-1 group relative
                       hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"

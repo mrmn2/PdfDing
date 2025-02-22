@@ -135,7 +135,7 @@ class OverviewMixin(BaseShareMixin):
     def get_extra_context(_) -> dict:  # pragma: no cover
         """get further information that needs to be passed to the template."""
 
-        return dict()
+        return {'page': 'shared_pdf_overview'}
 
 
 class SharedPdfMixin(BaseShareMixin):

@@ -24,7 +24,7 @@
                     <span class="hidden md:block">Home</span>
                 </a>
             </div>
-            <div {% if page == 'shared' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+            <div {% if page == 'shared_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
                 <a href="{% url 'shared_pdf_overview' %}">
                     <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" ><title>share</title>
                         <!-- source: https://www.svgrepo.com/svg/367868/share -->
@@ -56,6 +56,7 @@
             </div>
         </div>
     </div>
+    {% if page == 'pdf_overview' %}
     <div class="hidden md:block md:flex md:flex-row items-center pt-6 mt-6
                 border-t border-slate-300 dark:border-slate-600 creme:border-stone-400 gap-x-2 pb-2 pl-2 font-semibold">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,6 +66,7 @@
         </svg>
         <span>Tags</span>
     </div>
+    {% endif %}
     <div class="hidden md:block pl-3 overflow-auto flex-grow
                 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-gray-500 [&::-webkit-scrollbar-thumb]:bg-primary">
         {% include 'includes/tags.html' %}

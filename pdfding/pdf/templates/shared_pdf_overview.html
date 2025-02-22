@@ -1,14 +1,34 @@
 {% extends 'layouts/blank.html' %}
-{% load static %}
+
 {% block content %}
-<!--div needed for correct footer alignment-->
-<div>
-  <div class="flex justify-between block max-w-5xl mx-auto md:p-12 md:pb-0 pt-4! dark:text-slate-200 creme:text-stone-700">
-    <div class="w-full md:p-8 p-3">
-      {% include 'includes/share_overview_top.html' %}
-      {% include 'includes/share_overview_center.html' %}
+<div class="" >
+    <div class="flex flex-col md:flex-row md:justify-start"
+         :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
+        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2 md:mr-28 min-[850px]:mr-36! lg:mr-0!">
+          {% include 'includes/sidebar.html' with page='shared_overview' %}
+        </div>
+        <div class="flex w-full justify-center md:px-8 p-2">
+            <div class="flex flex-col w-full md:w-[71%] min-[850px]:w-[80%]! gap-y-5 pb-8">
+                {% if not page_obj %}
+                <div class="pt-10 *:flex *:justify-center">
+                    <span class="text-2xl">You have not shared any PDFs yet</span>
+                </div>
+                {% else %}
+                {% for shared_pdf in page_obj %}
+                {% with loop_id=forloop.counter %}
+                <div class="border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
+                            dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-600
+                            creme:bg-creme-dark-light creme:border-creme-dark creme:hover:border-stone-400">
+                    <div class="px-3 md:px-5 py-1">
+                        {% include 'includes/shared_overview/shared_pdf.html' %}
+                    </div>
+                </div>
+                {% endwith %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <script>
   // function for copying to the clipboard

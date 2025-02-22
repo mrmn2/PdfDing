@@ -310,7 +310,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': ['tagging'],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
-            'page': 'pdf',
+            'page': 'pdf_overview',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -325,7 +325,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': 'starred',
-            'page': 'pdf',
+            'page': 'pdf_overview',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -340,7 +340,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
-            'page': 'pdf',
+            'page': 'pdf_overview',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -355,7 +355,7 @@ class TestOverviewMixin(TestCase):
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
-            'page': 'pdf',
+            'page': 'pdf_overview',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)

@@ -1,0 +1,75 @@
+{% load static %}
+<div class="relative">
+    <div class="flex flex-row items-center gap-x-2">
+        <a id="shared-pdf-link-{{ loop_id }}"
+           href="{% url 'shared_pdf_details' shared_pdf.id %}"
+           {% if shared_pdf.inactive %}
+           class="text-lg font-bold text-slate-500 dark:text-slate-400 creme:text-stone-400
+                  hover:text-slate-800 dark:hover:text-slate-200 creme:hover:text-stone-700">
+            {{ shared_pdf.name }} | inactive
+           {% else %}
+           class="text-lg font-bold text-primary hover:text-secondary">
+            {{ shared_pdf.name }}
+           {% endif %}
+        </a>
+    </div>
+    <div class="truncate  [&>span]:text-slate-500 dark:[&>span]:text-slate-300 creme:[&>span]:text-stone-700">
+        <span>{{ shared_pdf.pdf.name }}</span>
+        {% if shared_pdf.description %}
+        <span>| {{ shared_pdf.description }}</span>
+        {% endif %}
+    </div>
+    <div x-data="{ tooltip_del: false, tooltip_exp: false }"
+           class="text-slate-500 text-sm dark:[&>span]:text-slate-400 creme:[&>span]:text-stone-600">
+        {% if shared_pdf.deletion_date %}
+        <span x-on:mouseenter="tooltip_del = true" x-on:mouseleave="tooltip_del = false">
+          {{ shared_pdf.deletes_in_string }} |
+        </span>
+        <span x-show="tooltip_del" x-transition:enter.duration.500ms x-cloak
+              class="-left-0 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
+          {{ shared_pdf.deletion_date }} UTC
+        </span>
+        {% else %}
+        <span>{{ shared_pdf.deletes_in_string }} |</span>
+        {% endif %}
+        {% if shared_pdf.expiration_date %}
+        <span x-on:mouseenter="tooltip_exp = true" x-on:mouseleave="tooltip_exp = false">
+          {{ shared_pdf.expires_in_string }} |
+        </span>
+        <span x-show="tooltip_exp" x-cloak x-transition:enter.duration.500ms
+              class="left-20 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
+          {{ shared_pdf.expiration_date }} UTC
+        </span>
+        {% else %}
+        <span>{{ shared_pdf.expires_in_string }} |</span>
+        {% endif %}
+        <span>{{ shared_pdf.views_string }}</span>
+    </div>
+    <div class="flex flex-row justify-between text-slate-500 text-sm dark:text-slate-400 creme:text-stone-600
+                [&>div>a]:hover:text-slate-700 dark:[&>div>a]:hover:text-slate-100 creme:[&>div>a]:hover:text-stone-700"
+         x-data="{ delete_{{ loop_id }}: false }">
+        <div class="flex flex-row gap-x-2 text-sm ">
+            <a class="cursor-pointer"
+               @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
+                Copy
+            </a>
+            <a href="{% url 'view_pdf' shared_pdf.pdf_id %}"> View</a>
+        </div>
+        <div id="delete_{{ loop_id }}" class="text-base [&>a]:cursor-pointer">
+            <a x-show="delete_{{ loop_id }}" x-cloak
+               hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               class="">Confirm
+            </a>
+            <a class="pl-1" x-show="delete_{{ loop_id }}" x-cloak @click="delete_{{ loop_id }} = false"
+                    class="">Cancel
+            </a>
+            <a class="flex flex-row gap-x-1" x-show="!delete_{{ loop_id }}" @click="delete_{{ loop_id }} = true">
+                <img src="{% static 'images/trash.svg' %}" width="19">
+                <span>Delete</span>
+            </a>
+
+        </div>
+
+    </div>
+</div>
