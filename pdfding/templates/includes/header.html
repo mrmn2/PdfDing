@@ -9,7 +9,15 @@
             <span class="hidden md:block text-xl font-bold text-primary">PdfDing</span>
         </a>
         {% if request.user.is_authenticated %}
-        <form class="flex grow md:hidden px-4" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form_mobile">
+        {% if page == 'pdf_overview' or page == 'user_overview' %}
+        <form class="flex grow md:hidden px-4"
+              method="GET" id="search_form_mobile"
+              {% if page == 'pdf_overview' %}
+              action="{% url 'pdf_overview_query' %}"
+              {% elif page == 'user_overview' %}
+              action="{% url 'user_overview_query' %}"
+              {% endif %}
+        >
             <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
                           bg-slate-100 dark:bg-slate-800! creme:bg-creme-light-dark!
                           border-slate-400 dark:border-slate-600 creme:border-stone-400"
@@ -19,11 +27,15 @@
                     @keyup.enter="document.getElementById('search_form_mobile').submit()"
             />
         </form>
+        {% elif page == 'user_overview' %}
+        {% endif %}
         <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center md:gap-x-3">
             {% if page == 'pdf_overview' %}
             {% include 'includes/pdf_overview/header_extra.html' %}
             {% elif page == 'shared_pdf_overview' %}
             {% include 'includes/shared_overview/header_extra.html' %}
+            {% elif page == 'user_overview' %}
+            {% include 'includes/user_header_extra.html' %}
             {% endif %}
             <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:pr-1 group relative
                       hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"
@@ -85,7 +97,7 @@
                         Settings
                     </a>
                     {% if request.user.is_superuser and request.user.is_staff %}
-                    <a href="{% url 'admin_overview' %}">
+                    <a href="{% url 'user_overview' %}">
                         <svg class="w-5 h-5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- source: https://www.svgrepo.com/svg/535465/key-skeleton -->
                             <!-- license: PD License-->

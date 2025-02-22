@@ -1,0 +1,56 @@
+<div x-data="{ delete{{ loop_id }}: false, admin{{ loop_id }}: false }">
+    <div class="text font-bold text-primary">
+        {% if user.is_superuser and request.user.is_staff %}
+        <span id="user-{{ loop_id }}">{{ user.email }} | Admin</span>
+        {% else %}
+        <span id="user-{{ loop_id }}">{{ user.email }}</span>
+        {% endif %}
+    </div>
+    <div x-data="{ tooltip_date: false }" class="text-slate-500 dark:text-slate-300 creme:text-stone-700 text-sm relative">
+      <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
+          Registered: {{ user.date_joined.date }}
+      </span>
+      <span>
+          | PDFs: {{ user.profile.pdf_set.all.count }}
+      </span>
+      <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
+            class="left-0 top-5 z-50 absolute bg-primary text-slate-200 rounded-xs p-2 mt-1">
+          {{ user.date_joined }} UTC
+      </span>
+    </div>
+    <div class="flex flex-row gap-x-2 [&>div>span]:hover:cursor-pointer text-sm
+                text-slate-500 dark:text-slate-300! creme:text-stone-700
+                [&>div>span]:hover:text-slate-900 dark:[&>div>span]:hover:text-slate-100 creme-[&>div>span]:hover:text-stone-900">
+        <div>
+            <span id="delete-confirm-{{ loop_id }}"
+                x-show="delete{{ loop_id }}" x-cloak
+                hx-delete="{% url 'admin_delete_profile' user.id %}"
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>Confirm
+            </span>
+            <span id="delete-cancel-{{ loop_id }}"
+                x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false">Cancel
+            </span>
+            <span id="delete-action-{{ loop_id }}"
+                x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true">Delete
+            </span>
+        </div>
+        <div>
+            <span id="admin-confirm-{{ loop_id }}"
+                 x-show="admin{{ loop_id }}" x-cloak
+                 hx-post="{% url 'admin_adjust_rights' user.id %}"
+                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'">Confirm
+            </span>
+            <span id="admin-cancel-{{ loop_id }}" x-show="admin{{ loop_id }}"
+                  x-cloak @click="admin{{ loop_id }} = false">Cancel
+            </span>
+            <span id="admin-action-{{ loop_id }}"
+                x-show="!admin{{ loop_id }}" @click="admin{{ loop_id }} = true">
+                {% if user.is_superuser and request.user.is_staff %}
+                Remove Admin Rights
+                {% else %}
+                Add Admin Rights
+                {% endif %}
+            </span>
+            </div>
+    </div>
+</div>

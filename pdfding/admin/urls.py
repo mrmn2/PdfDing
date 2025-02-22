@@ -1,10 +1,11 @@
-from admin.views import AdjustAdminRights, DeleteProfile, Overview, OverviewQuery
+from admin import views
 from django.urls import path
 
 urlpatterns = [
-    path('', Overview.as_view(), name='admin_overview'),
-    path('query/', OverviewQuery.as_view(), name='admin_overview_query'),
-    path('<int:page>/', Overview.as_view(), name='admin_overview_page'),
-    path('rights/<identifier>', AdjustAdminRights.as_view(), name='admin_adjust_rights'),
-    path('delete/<identifier>', DeleteProfile.as_view(), name='admin_delete_profile'),
+    path('users', views.Overview.as_view(), name='user_overview'),
+    path('info', views.Information.as_view(), name='instance_info'),
+    path('query/', views.OverviewQuery.as_view(), name='user_overview_query'),
+    path('<int:page>/', views.Overview.as_view(), name='user_overview_page'),
+    path('rights/<identifier>', views.AdjustAdminRights.as_view(), name='admin_adjust_rights'),
+    path('delete/<identifier>', views.DeleteProfile.as_view(), name='admin_delete_profile'),
 ]

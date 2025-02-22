@@ -15,7 +15,7 @@ class TestLoginRequired(TestCase):
         self.client.login(username='non_admin', password='password')
 
     def test_admin_required(self):
-        response = self.client.get(reverse('admin_overview'))
+        response = self.client.get(reverse('user_overview'))
 
         self.assertEqual(response.status_code, 404)
 
@@ -35,7 +35,7 @@ class TestOverviewMixin(TestCase):
             ['search=b@a.com&sort=oldest', 'search=@a&tags=admin'],
             [['1_b@a.com', '2_b@a.com', '3_b@a.com'], ['a@a.com']],
         ):
-            response = self.client.get(f'{reverse('admin_overview')}?{search_query}')
+            response = self.client.get(f'{reverse('user_overview')}?{search_query}')
             filtered_users = OverviewMixin.filter_objects(response.wsgi_request)
             user_emails = [user.email for user in filtered_users]
 
@@ -43,33 +43,19 @@ class TestOverviewMixin(TestCase):
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_get_extra_context(self, mock_get_latest_version):
-        response = self.client.get(f'{reverse('admin_overview')}?search=@a&tags=admin')
+        response = self.client.get(f'{reverse('user_overview')}?search=@a&tags=admin')
 
         generated_extra_context = OverviewMixin.get_extra_context(response.wsgi_request)
-        expected_extra_context = {
-            'search_query': '@a',
-            'tag_query': ['admin'],
-            'number_of_users': 4,
-            'number_of_pdfs': 0,
-            'current_version': 'DEV',
-            'latest_version': '0.0.0',
-        }
+        expected_extra_context = {'search_query': '@a', 'tag_query': ['admin'], 'page': 'user_overview'}
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_get_extra_context_empty_queries(self, mock_get_latest_version):
-        response = self.client.get(reverse('admin_overview'))
+        response = self.client.get(reverse('user_overview'))
 
         generated_extra_context = OverviewMixin.get_extra_context(response.wsgi_request)
-        expected_extra_context = {
-            'search_query': '',
-            'tag_query': [],
-            'number_of_users': 4,
-            'number_of_pdfs': 0,
-            'current_version': 'DEV',
-            'latest_version': '0.0.0',
-        }
+        expected_extra_context = {'search_query': '', 'tag_query': [], 'page': 'user_overview'}
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
@@ -111,4 +97,16 @@ class TestAdminViews(TestCase):
 
     def test_adjust_admin_rights_no_htmx(self):
         response = self.client.post(reverse('admin_adjust_rights', kwargs={'identifier': self.user.id}))
-        self.assertRedirects(response, reverse('admin_overview'), status_code=302)
+        self.assertRedirects(response, reverse('user_overview'), status_code=302)
+
+    @patch('admin.views.get_latest_version', return_value='0.0.0')
+    def test_get_information(self, mock_get_latest_version):
+        for i in range(1, 4):
+            User.objects.create_user(username=f'user_{i}', password='12345', email=f'{i}_b@a.com')
+
+        response = self.client.get(reverse('instance_info'))
+
+        self.assertEqual(response.context['number_of_users'], 4)
+        self.assertEqual(response.context['number_of_pdfs'], 0)
+        self.assertEqual(response.context['current_version'], 'DEV')
+        self.assertEqual(response.context['latest_version'], '0.0.0')

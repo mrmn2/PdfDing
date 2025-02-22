@@ -22,12 +22,13 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             for j in range(1, i + 1):
                 Pdf.objects.create(owner=user.profile, name=f"pdf_{j}")
 
-    def test_sidebar(self):
+    def test_instance_info(self):
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("#number_users")).to_contain_text("Users: 4")
-            expect(self.page.locator("#number_pdfs")).to_contain_text("PDFs: 6")
+            expect(self.page.locator("#number_of_users")).to_contain_text("4")
+            expect(self.page.locator("#number_of_pdfs")).to_contain_text("6")
+            expect(self.page.locator("#current_version")).to_contain_text("DEV")
 
     def test_overview(self):
         date_joined = self.user.date_joined.strftime("%b. %-d, %Y")
@@ -36,7 +37,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             date_joined.replace('.', '')
 
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("user_overview"), p)
 
             # test the displayed email addresses
             expect(self.page.locator("#user-1")).to_contain_text("a@a.com | Admin")
@@ -48,57 +49,57 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             for i in range(4):
                 expect(self.page.get_by_text(f"Registered: {date_joined} | PDFs: {i}")).to_have_count(1)
 
-            expect(self.page.get_by_role("button", name="Delete")).to_have_count(4)
-            expect(self.page.get_by_role("button", name="Remove Admin Rights")).to_have_count(1)
-            expect(self.page.get_by_role("button", name="Add Admin Rights")).to_have_count(3)
-            expect(self.page.locator("#current_version")).to_contain_text("Version: DEV")
+            expect(self.page.get_by_text("Delete")).to_have_count(4)
+            expect(self.page.get_by_text("Remove Admin Rights")).to_have_count(1)
+            expect(self.page.get_by_text("Add Admin Rights")).to_have_count(3)
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_new_version_available(self, mock_get_latest_version):
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("#new_version")).to_contain_text("0.0.0 available!")
+            expect(self.page.locator("content")).to_contain_text("New Version Available!")
+            expect(self.page.locator("#new_version")).to_contain_text("0.0.0")
 
     @patch('admin.views.get_latest_version', return_value='DEV')
     def test_new_version_same(self, mock_get_latest_version):
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("#new_version")).to_have_count(0)
+            expect(self.page.locator("content")).not_to_contain_text("New Version Available!")
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     @override_settings(VERSION='UNKNOWN')
     def test_new_version_unknown(self, mock_get_latest_version):
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("#new_version")).to_have_count(0)
+            expect(self.page.locator("content")).not_to_contain_text("New Version Available!")
 
     @patch('admin.views.get_latest_version', return_value='')
     def test_new_version_empty(self, mock_get_latest_version):
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("#new_version")).to_have_count(0)
+            expect(self.page.locator("content")).not_to_contain_text("New Version Available!")
 
     def test_search_admin(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?tags=admin", p)
+            self.open(f"{reverse('user_overview')}?tags=admin", p)
             expect(self.page.locator("#user-1")).to_contain_text("a@a.com | Admin")
 
-            expect(self.page.get_by_role("button", name="Delete")).to_have_count(1)
+            expect(self.page.get_by_text("Delete")).to_have_count(1)
 
     def test_search_email(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?search=1@a.", p)
+            self.open(f"{reverse('user_overview')}?search=1@a.", p)
             expect(self.page.locator("#user-1")).to_contain_text("1@a.com")
 
-            expect(self.page.get_by_role("button", name="Delete")).to_have_count(1)
+            expect(self.page.get_by_text("Delete")).to_have_count(1)
 
     def test_search_filters(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?search=a@a&tags=admin", p)
+            self.open(f"{reverse('user_overview')}?search=a@a&tags=admin", p)
 
             # check that filters have the correct text and are visible
             expect(self.page.locator("#search_filter")).to_contain_text("a@a")
@@ -114,7 +115,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
     def test_sort(self):
         with sync_playwright() as p:
-            self.open(f"{reverse('admin_overview')}?sort=newest", p)
+            self.open(f"{reverse('user_overview')}?sort=newest", p)
 
             for i in range(1, 4):
                 expect(self.page.locator(f"#user-{i}")).to_contain_text(f"{4 - i}@a.com")
@@ -123,7 +124,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
     def test_delete(self):
         with sync_playwright() as p:
             # only display one user
-            self.open(f"{reverse('admin_overview')}?q=1@a.", p)
+            self.open(f"{reverse('user_overview')}?q=1@a.", p)
 
             expect(self.page.locator("body")).to_contain_text("1@a.com")
             self.page.locator("#delete-action-1").click()
@@ -133,7 +134,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
     def test_chancel_delete(self):
         with sync_playwright() as p:
-            self.open(reverse('admin_overview'), p)
+            self.open(reverse('user_overview'), p)
 
             expect(self.page.locator("#delete-confirm-1")).not_to_be_visible()
             expect(self.page.locator("#delete-cancel-1")).not_to_be_visible()
@@ -150,7 +151,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
     def test_add_remove_admin_rights(self):
         with sync_playwright() as p:
             # only display one user
-            self.open(f"{reverse('admin_overview')}?search=1@a.", p)
+            self.open(f"{reverse('user_overview')}?search=1@a.", p)
 
             expect(self.page.locator("body")).to_contain_text("1@a.com")
             expect(self.page.locator("#admin-action-1")).to_contain_text("Add Admin Rights")
@@ -171,7 +172,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
     def test_admin_action_cancel(self):
         with sync_playwright() as p:
-            self.open(reverse('admin_overview'), p)
+            self.open(reverse('user_overview'), p)
 
             expect(self.page.locator("#admin-confirm-1")).not_to_be_visible()
             expect(self.page.locator("#admin-cancel-1")).not_to_be_visible()
@@ -189,5 +190,5 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 class NoAdminE2ETestCase(PdfDingE2ETestCase):
     def test_404(self):
         with sync_playwright() as p:
-            self.open(reverse("admin_overview"), p)
+            self.open(reverse("user_overview"), p)
             expect(self.page.locator("body")).to_contain_text("Error 404: This page doesn't exist or is unavailable")

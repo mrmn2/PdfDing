@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from django.http import Http404, HttpRequest
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRefresh
 from pdf.models import Pdf
@@ -66,10 +66,6 @@ class OverviewMixin(BaseAdminMixin):
     def get_extra_context(request: HttpRequest) -> dict:
         """get further information that needs to be passed to the template."""
 
-        number_of_users = User.objects.all().count()
-        number_of_pdfs = Pdf.objects.all().count()
-        latest_version = get_latest_version()
-
         tag_query = request.GET.get('tags', [])
         if tag_query:
             tag_query = tag_query.split(' ')
@@ -77,10 +73,7 @@ class OverviewMixin(BaseAdminMixin):
         extra_context = {
             'search_query': request.GET.get('search', ''),
             'tag_query': tag_query,
-            'number_of_users': number_of_users,
-            'number_of_pdfs': number_of_pdfs,
-            'current_version': settings.VERSION,
-            'latest_version': latest_version,
+            'page': 'user_overview',
         }
 
         return extra_context
@@ -104,7 +97,7 @@ class Overview(BaseAdminRequiredMixin, OverviewMixin, base_views.BaseOverview):
 class OverviewQuery(base_views.BaseOverviewQuery):
     """View for performing searches and sorting on the user overview page."""
 
-    obj_name = 'admin'
+    obj_name = 'user'
 
 
 class DeleteProfile(BaseAdminRequiredMixin, AdminMixin, base_views.BaseDelete):
@@ -131,4 +124,24 @@ class AdjustAdminRights(BaseAdminRequiredMixin, View):
 
             return HttpResponseClientRefresh()
 
-        return redirect('admin_overview')
+        return redirect('user_overview')
+
+
+class Information(View):  # pragma: no cover
+    """View for getting instance information"""
+
+    def get(self, request: HttpRequest):
+        """Get instance information"""
+
+        number_of_users = User.objects.all().count()
+        number_of_pdfs = Pdf.objects.all().count()
+        latest_version = get_latest_version()
+
+        context = {
+            'number_of_users': number_of_users,
+            'number_of_pdfs': number_of_pdfs,
+            'current_version': settings.VERSION,
+            'latest_version': latest_version,
+        }
+
+        return render(request, 'information.html', context=context)

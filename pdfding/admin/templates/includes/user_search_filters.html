@@ -1,4 +1,4 @@
-<div class="flex flex-wrap gap-x-2 -mb-1!">
+<div class="flex flex-wrap gap-x-2 gap-y-2 pt-3">
     <div class="flex items-center text-slate-500 dark:text-slate-300 creme:text-stone-600 text-sm">
         <span>Filters</span>
     </div>
@@ -7,8 +7,8 @@
          class="flex items-center px-2 py-1 text-sm rounded-md gap-x-1
                 bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-600 creme:bg-creme-dark creme:text-stone-700">
         <span>{{ search_query|truncatechars:40 }}</span>
-        <div class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
-             @click="window.open('{% url 'pdf_overview_query' %}?search=', '_self');">
+        <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"
+             @click="window.open('{% url 'user_overview_query' %}?search=', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">
                 <path d="M18 7 6 19"></path>
@@ -18,12 +18,12 @@
     </div>
     {% endif %}
     {% for tag in tag_query %}
-    <div id="tag_{{ tag }}_filter"  x-data="{}"
+    <div id="tag_{{ tag }}_filter" x-data="{}"
          class="flex items-center px-2 py-1 text-sm rounded-md gap-x-1
                 bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-600 creme:bg-creme-dark creme:text-stone-700">
         <span>#{{ tag|truncatechars:40 }}</span>
-        <div class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
-             @click="window.open('{% url 'pdf_overview_query' %}?remove={{ tag }}', '_self');">
+        <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"
+             @click="window.open('{% url 'user_overview_query' %}?remove={{ tag }}', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">
                 <path d="M18 7 6 19"></path>

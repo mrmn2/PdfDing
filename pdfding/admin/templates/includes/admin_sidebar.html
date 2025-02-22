@@ -1,0 +1,60 @@
+<div class="flex md:flex-col md:fixed md:h-full pb-2 md:pb-32 w-full md:w-60! lg:w-60!">
+    <div class="flex flex-col w-full">
+        {% if page == 'user_overview' %}
+        <form class="flex pb-4 hidden md:block" action="{% url 'user_overview_query' %}" method="GET" id="search_form">
+            <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
+                          bg-slate-100 dark:bg-slate-800! creme:bg-creme-light-dark!
+                          border-slate-400 dark:border-slate-600 creme:border-stone-400"
+                   type="text" placeholder="Search for mail or #admin"
+                   id="search_input"
+                   name="search"
+                   @keyup.enter="document.getElementById('search_form').submit()"/>
+        </form>
+        {% endif %}
+        <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
+                    [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
+                    [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:flex-row [&>div>a]:gap-x-2
+                    [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700 creme:[&>div]:hover:bg-creme-dark">
+            <div>
+                <a href="{% url 'pdf_overview' %}">
+                    <svg class="w-5 h-5" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400.004 400.004" xml:space="preserve">
+                        <!-- source: https://www.svgrepo.com/svg/97894/left-arrow -->
+                        <!-- license: CC0 License-->
+                        <path d="M382.688,182.686H59.116l77.209-77.214c6.764-6.76,6.764-17.726,0-24.485c-6.764-6.764-17.73-6.764-24.484,0L5.073,187.757
+                            c-6.764,6.76-6.764,17.727,0,24.485l106.768,106.775c3.381,3.383,7.812,5.072,12.242,5.072c4.43,0,8.861-1.689,12.242-5.072
+                            c6.764-6.76,6.764-17.726,0-24.484l-77.209-77.218h323.572c9.562,0,17.316-7.753,17.316-17.315
+                            C400.004,190.438,392.251,182.686,382.688,182.686z"/>
+                    </svg>
+                    <span class="hidden md:block">Back to App</span>
+                </a>
+            </div>
+            <div {% if page == 'user_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+                <a href="{% url 'user_overview' %}">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- source: https://www.svgrepo.com/svg/502899/user -->
+                        <!-- license: PD License-->
+                        <path d="M5 20V19C5 16.2386 7.23858 14 10 14H14C16.7614 14 19 16.2386 19 19V20M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="hidden md:block">Users</span>
+                </a>
+            </div>
+            <div {% if page == 'instance_info' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+                <a href="{% url 'instance_info' %}">
+                    <svg fill="currentColor" class="w-5 h-5" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <!-- source: https://www.svgrepo.com/svg/66446/stats -->
+                        <!-- license: CC0 License-->
+                        <path d="m80.1,405.6c3.5,2.4 17,9.1 28.4-5.3l77.2-112.8 81.7,78.8c4.3,4.1 10.2,6.3 16.2,5.6 5.9-0.6 11.3-3.7 14.8-8.6l135.5-194.3 4.9,65c1.2,16.5 16.7,19.2 21.9,18.8 11.2-0.9 19.7-10.6 18.8-21.9l-8.6-114.3c-0.8-11.2-10.6-19.7-21.9-18.8l-114.3,8.6c-11.2,0.8-19.7,10.6-18.8,21.9 0.8,11.2 10.5,19.6 21.9,18.8l65-4.9-124.2,178-81.9-79c-4.3-4.2-10.3-6.3-16.2-5.6-6,0.6-11.4,3.8-14.8,8.8l-90.9,132.8c-6.4,9.3-4,22 5.3,28.4z"/>
+                        <path d="M480.6,460.2H51.8V31.4c0-11.3-9.1-20.4-20.4-20.4S11,20.1,11,31.4v449.2c0,11.3,9.1,20.4,20.4,20.4h449.2    c11.3,0,20.4-9.1,20.4-20.4C501,469.3,491.9,460.2,480.6,460.2z"/>
+                    </svg>
+                    <span class="hidden md:block">Information</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="hidden md:block md:w-52! lg:w-60! py-2 absolute bottom-0 fixed
+                border-t border-slate-300 dark:border-slate-600 creme:border-stone-400
+                text-sm text-slate-400 creme:text-stone-500">
+        <a class="pl-1 hover:underline" href="https://github.com/mrmn2/PdfDing">PdfDing</a>
+        <span> {{ VERSION }}</span>
+    </div>
+</div>

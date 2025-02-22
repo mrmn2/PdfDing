@@ -4,13 +4,13 @@
 <div class="" >
     <div class="flex flex-col md:flex-row md:justify-start"
          :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
-        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2 md:mr-28 min-[850px]:mr-36! lg:mr-0!">
+        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
           {% include 'includes/sidebar.html' with page='shared_overview' %}
         </div>
         <div class="flex w-full justify-center md:px-8 p-2">
             <div class="flex flex-col w-full md:w-[71%] min-[850px]:w-[80%]! gap-y-5 pb-8">
                 {% if not page_obj %}
-                <div class="pt-10 *:flex *:justify-center">
+                <div class="pt-4 *:flex *:justify-center">
                     <span class="text-2xl">You have not shared any PDFs yet</span>
                 </div>
                 {% else %}

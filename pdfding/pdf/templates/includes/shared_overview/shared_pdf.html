@@ -4,16 +4,16 @@
         <a id="shared-pdf-link-{{ loop_id }}"
            href="{% url 'shared_pdf_details' shared_pdf.id %}"
            {% if shared_pdf.inactive %}
-           class="text-lg font-bold text-slate-500 dark:text-slate-400 creme:text-stone-400
+           class="truncate text-lg font-bold text-slate-500 dark:text-slate-400 creme:text-stone-400
                   hover:text-slate-800 dark:hover:text-slate-200 creme:hover:text-stone-700">
             {{ shared_pdf.name }} | inactive
            {% else %}
-           class="text-lg font-bold text-primary hover:text-secondary">
+           class="truncate text-lg font-bold text-primary hover:text-secondary">
             {{ shared_pdf.name }}
            {% endif %}
         </a>
     </div>
-    <div class="truncate  [&>span]:text-slate-500 dark:[&>span]:text-slate-300 creme:[&>span]:text-stone-700">
+    <div class="truncate [&>span]:text-slate-500 dark:[&>span]:text-slate-300 creme:[&>span]:text-stone-700">
         <span>{{ shared_pdf.pdf.name }}</span>
         {% if shared_pdf.description %}
         <span>| {{ shared_pdf.description }}</span>
@@ -68,8 +68,6 @@
                 <img src="{% static 'images/trash.svg' %}" width="19">
                 <span>Delete</span>
             </a>
-
         </div>
-
     </div>
 </div>
