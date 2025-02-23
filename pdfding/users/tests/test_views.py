@@ -239,6 +239,24 @@ class TestProfileViews(TestCase):
         changed_user = User.objects.get(id=self.user.id)
         self.assertTrue(changed_user.profile.tag_tree_mode)
 
+    def test_open_collapse_tags_post_no_htmx(self):
+        response = self.client.post(reverse('open_collapse_tags'))
+
+        self.assertRedirects(response, reverse('profile-settings'), status_code=302)
+
+    def test_open_collapse_tags_post(self):
+        self.assertFalse(self.user.profile.tags_open)
+
+        headers = {'HTTP_HX-Request': 'true'}
+
+        self.client.post(reverse('open_collapse_tags'), **headers)
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertTrue(changed_user.profile.tags_open)
+
+        self.client.post(reverse('open_collapse_tags'), **headers)
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertFalse(changed_user.profile.tags_open)
+
     def test_change_sorting_post_shared_pdf(self):
         self.assertEqual(self.user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NEWEST)
 

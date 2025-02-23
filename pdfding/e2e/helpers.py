@@ -21,6 +21,9 @@ class PdfDingE2ETestCase(StaticLiveServerTestCase):
         email_address.verified = True
         email_address.save()
 
+        self.user.profile.tags_open = True
+        self.user.profile.save()
+
         if login:
             self.client.login(username=self.username, password=self.password)
             self.cookie = self.client.cookies['sessionid']

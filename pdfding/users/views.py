@@ -152,6 +152,23 @@ class ChangeTreeMode(View):
         return redirect('profile-settings')
 
 
+class OpenCollapseTags(View):
+    """View for opening and collapsing tags in the pdf overview"""
+
+    def post(self, request: HttpRequest):
+        """Open or collapse the tags in the pdf overview"""
+
+        if request.htmx:
+            user_profile = request.user.profile
+            user_profile.tags_open = not user_profile.tags_open
+
+            user_profile.save()
+
+            return HttpResponseClientRefresh()
+
+        return redirect('profile-settings')
+
+
 class Delete(View):
     """View for deleting a user profile."""
 

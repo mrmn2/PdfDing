@@ -931,3 +931,18 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
         changed_user = User.objects.get(id=self.user.id)
         self.assertTrue(changed_user.profile.tag_tree_mode)
+
+    def test_open_collapse_tags(self):
+        profile = self.user.profile
+        profile.tags_open = False
+        profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#tag-bla")).not_to_be_visible()
+            self.page.locator("#tags_open_collapse_toggle").click()
+            expect(self.page.locator("#tag-bla")).to_be_visible()
+
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertTrue(changed_user.profile.tags_open)
