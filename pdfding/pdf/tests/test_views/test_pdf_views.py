@@ -703,7 +703,7 @@ class TestTagViews(TestCase):
     @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_edit_tag_post_normal_mode(self, mock_adjust_referer_for_tag_view, mock_rename_tag):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Disabled'
+        profile.tag_tree_mode = False
         profile.save()
 
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
@@ -719,7 +719,7 @@ class TestTagViews(TestCase):
     @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_edit_tag_post_tree_mode(self, mock_adjust_referer_for_tag_view, mock_rename_tag):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Enabled'
+        profile.tag_tree_mode = True
         profile.save()
 
         tags = []
@@ -775,7 +775,7 @@ class TestTagViews(TestCase):
     @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_delete_tag_normal_mode(self, mock_adjust_referer_for_tag_view):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Disabled'
+        profile.tag_tree_mode = False
         profile.save()
 
         tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
@@ -793,7 +793,7 @@ class TestTagViews(TestCase):
     @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_delete_tag_tree_mode(self, mock_adjust_referer_for_tag_view):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Enabled'
+        profile.tag_tree_mode = True
         profile.save()
 
         tags = []

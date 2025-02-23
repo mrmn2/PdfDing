@@ -44,7 +44,7 @@ def get_tag_info_dict(profile: Profile) -> dict[str, dict]:
     Get the tag info dict used for displaying the tags in the pdf overview.
     """
 
-    if profile.tags_tree_mode == 'Enabled':
+    if profile.tag_tree_mode:
         tag_info_dict = get_tag_info_dict_tree_mode(profile)
     else:
         tag_info_dict = get_tag_info_dict_normal_mode(profile)

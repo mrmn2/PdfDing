@@ -41,7 +41,6 @@ class ChangeSetting(View):
         'custom_theme_color': forms.CustomThemeColorForm,
         'show_progress_bars': forms.create_user_field_form(['show_progress_bars']),
         'show_thumbnails': forms.create_user_field_form(['show_thumbnails']),
-        'tags_tree_mode': forms.create_user_field_form(['tags_tree_mode']),
     }
 
     def get(self, request: HttpRequest, field_name: str):
@@ -55,7 +54,6 @@ class ChangeSetting(View):
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
             'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
             'show_thumbnails': {'show_thumbnails': request.user.profile.show_thumbnails},
-            'tags_tree_mode': {'tags_tree_mode': request.user.profile.tags_tree_mode},
         }
 
         if request.htmx:
@@ -114,8 +112,10 @@ class ChangeSetting(View):
 
 
 class ChangeSorting(View):
+    """View for changing the sorting settings for the overviews"""
+
     def post(self, request: HttpRequest, sorting_category: str, sorting: str):
-        """Delete the user"""
+        """Change the sorting setting."""
 
         if request.htmx:
             user_profile = request.user.profile
@@ -127,6 +127,23 @@ class ChangeSorting(View):
                     user_profile.shared_pdf_sorting = Profile.SharedPdfSortingChoice[str.upper(sorting)]
                 case 'user_sorting':
                     user_profile.user_sorting = Profile.UserSortingChoice[str.upper(sorting)]
+
+            user_profile.save()
+
+            return HttpResponseClientRefresh()
+
+        return redirect('profile-settings')
+
+
+class ChangeTreeMode(View):
+    """View for turning tag tree mode on and off."""
+
+    def post(self, request: HttpRequest):
+        """Change the sorting setting."""
+
+        if request.htmx:
+            user_profile = request.user.profile
+            user_profile.tag_tree_mode = not user_profile.tag_tree_mode
 
             user_profile.save()
 

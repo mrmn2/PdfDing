@@ -91,7 +91,7 @@
                 <span id="tags">
                 {% if pdf.tags.all %}
                     {% for tag in pdf.tags.all|dictsort:"name" %}
-                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}">#{{ tag }}</a>
+                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview_query' %}?search=%23{{ tag }}">#{{ tag }}</a>
                     {% endfor %}
                 {% else %}
                     no tags available

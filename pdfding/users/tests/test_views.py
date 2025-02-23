@@ -97,7 +97,6 @@ class TestProfileViews(TestCase):
             'email',
             'show_progress_bars',
             'show_thumbnails',
-            'tags_tree_mode',
         ]
         form_list = [
             forms.GenericUserFieldForm,
@@ -105,7 +104,6 @@ class TestProfileViews(TestCase):
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
             forms.EmailForm,
-            forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
         ]
@@ -117,7 +115,6 @@ class TestProfileViews(TestCase):
             {'email': 'a@a.com'},
             {'show_progress_bars': 'Enabled'},
             {'show_thumbnails': 'Disabled'},
-            {'tags_tree_mode': 'Enabled'},
         ]
 
         for field_name, form, initial_dict in zip(field_names, form_list, initial_dicts):
@@ -193,12 +190,11 @@ class TestProfileViews(TestCase):
             [
                 'pdfs_per_page',
                 'pdf_inverted_mode',
-                'tags_tree_mode',
                 'show_progress_bars',
                 'show_thumbnails',
             ],
-            [25, 'Disabled', 'Enabled', 'Enabled', 'Disabled'],
-            [10, 'Enabled', 'Disabled', 'Disabled', 'Enabled'],
+            [25, 'Disabled', 'Enabled', 'Disabled'],
+            [10, 'Enabled', 'Disabled', 'Enabled'],
         ):
             self.assertEqual(getattr(self.user.profile, field_name), val_before)
             self.client.post(
@@ -224,6 +220,24 @@ class TestProfileViews(TestCase):
         )
         changed_user = User.objects.get(id=self.user.id)
         self.assertEqual(changed_user.profile.pdf_sorting, Profile.PdfSortingChoice.OLDEST)
+
+    def test_change_tree_mode_post_no_htmx(self):
+        response = self.client.post(reverse('change_tree_mode'))
+
+        self.assertRedirects(response, reverse('profile-settings'), status_code=302)
+
+    def test_change_tree_mode_post(self):
+        self.assertTrue(self.user.profile.tag_tree_mode)
+
+        headers = {'HTTP_HX-Request': 'true'}
+
+        self.client.post(reverse('change_tree_mode'), **headers)
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertFalse(changed_user.profile.tag_tree_mode)
+
+        self.client.post(reverse('change_tree_mode'), **headers)
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertTrue(changed_user.profile.tag_tree_mode)
 
     def test_change_sorting_post_shared_pdf(self):
         self.assertEqual(self.user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NEWEST)

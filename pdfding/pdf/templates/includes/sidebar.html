@@ -65,6 +65,34 @@
             <path d="M8 8H8.01M2 5.2L2 9.67451C2 10.1637 2 10.4083 2.05526 10.6385C2.10425 10.8425 2.18506 11.0376 2.29472 11.2166C2.4184 11.4184 2.59135 11.5914 2.93726 11.9373L10.6059 19.6059C11.7939 20.7939 12.388 21.388 13.0729 21.6105C13.6755 21.8063 14.3245 21.8063 14.927 21.6105C15.612 21.388 16.2061 20.7939 17.3941 19.6059L19.6059 17.3941C20.7939 16.2061 21.388 15.612 21.6105 14.927C21.8063 14.3245 21.8063 13.6755 21.6105 13.0729C21.388 12.388 20.7939 11.7939 19.6059 10.6059L11.9373 2.93726C11.5914 2.59135 11.4184 2.4184 11.2166 2.29472C11.0376 2.18506 10.8425 2.10425 10.6385 2.05526C10.4083 2 10.1637 2 9.67452 2L5.2 2C4.0799 2 3.51984 2 3.09202 2.21799C2.7157 2.40973 2.40973 2.71569 2.21799 3.09202C2 3.51984 2 4.07989 2 5.2ZM8.5 8C8.5 8.27614 8.27614 8.5 8 8.5C7.72386 8.5 7.5 8.27614 7.5 8C7.5 7.72386 7.72386 7.5 8 7.5C8.27614 7.5 8.5 7.72386 8.5 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <span>Tags</span>
+        <div x-data="{ show_tag_mode_settings: false }" class="relative">
+            <svg id="show_tag_mode_settings" @click="show_tag_mode_settings = !show_tag_mode_settings"
+                 class="w-[16px] h-[16px] cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+
+            <div id="tag_mode_settings" x-show="show_tag_mode_settings" x-cloak
+                 @click.away="show_tag_mode_settings = false"
+                 @keyup.escape.window="show_tag_mode_settings = false"
+                 class="flex flex-row items-center z-20 w-35 top-5 py-1 px-2  absolute rounded-sm border gap-x-2
+                        bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
+                        border-slate-300 dark:border-slate-700 creme:border-creme-dark-light">
+                <span class="font-semibold">Tree Mode</span>
+
+                <div id="tag_mode_toggle" class="flex items-center cursor-pointer w-8 h-4 rounded-full bg-slate-600"
+                     hx-post="{% url 'change_tree_mode' %}"
+                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                    {% if request.user.profile.tag_tree_mode %}
+                    <div class="h-3 w-3 rounded-full bg-primary ml-4"></div>
+                    {% else %}
+                    <div class="h-3 w-3 rounded-full bg-slate-400 ml-1"></div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
     <div class="hidden md:block pl-3 overflow-auto flex-grow
                 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-gray-500 [&::-webkit-scrollbar-thumb]:bg-primary">

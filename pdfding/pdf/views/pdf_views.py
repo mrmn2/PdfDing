@@ -526,7 +526,7 @@ class EditTag(TagMixin, View):
         if form.is_valid():
             new_name = form.data.get('name')
 
-            if user_profile.tags_tree_mode == 'Enabled':
+            if user_profile.tag_tree_mode:
                 tags = self.get_tags_by_name(request, original_tag_name)
 
                 for tag in tags:
@@ -584,7 +584,7 @@ class DeleteTag(TagMixin, View):
         if request.htmx:
             tag_name = request.POST.get('tag_name', '')
 
-            if request.user.profile.tags_tree_mode == 'Enabled':
+            if request.user.profile.tag_tree_mode:
                 tags = self.get_tags_by_name(request, tag_name)
             else:
                 tags = [self.get_tag_by_name(request, tag_name)]

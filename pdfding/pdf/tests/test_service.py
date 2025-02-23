@@ -39,7 +39,7 @@ class TestService(TestCase):
     @mock.patch('pdf.service.get_tag_info_dict_tree_mode')
     def test_get_tag_info_dict_tree_mode_enabled(self, mock_get_tag_info_dict_tree_mode):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Enabled'
+        profile.tag_tree_mode = True
         profile.save()
 
         service.get_tag_info_dict(profile)
@@ -48,7 +48,7 @@ class TestService(TestCase):
     @mock.patch('pdf.service.get_tag_info_dict_normal_mode')
     def test_get_tag_info_dict_tree_mode_disabled(self, mock_get_tag_info_dict_normal_mode):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Disabled'
+        profile.tag_tree_mode = False
         profile.save()
 
         service.get_tag_info_dict(profile)

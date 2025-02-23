@@ -68,7 +68,8 @@ class Profile(models.Model):
     )
     show_progress_bars = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
     show_thumbnails = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
-    tags_tree_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
+    tags_open = models.BooleanField(default=False)
+    tag_tree_mode = models.BooleanField(default=True)
     user_sorting = models.CharField(choices=UserSortingChoice, max_length=15, default=UserSortingChoice.NEWEST)
 
     def __str__(self):  # pragma: no cover

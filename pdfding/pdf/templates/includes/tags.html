@@ -1,5 +1,5 @@
 {% load static %}
-{% if user.profile.tags_tree_mode == 'Enabled' %}
+{% if user.profile.tag_tree_mode %}
 <div
     x-data="{ {% for tag_name, tag_info in tag_info_dict.items %}tag_{{ tag_info.slug }}_show_children: false, {% endfor %} }"
 >

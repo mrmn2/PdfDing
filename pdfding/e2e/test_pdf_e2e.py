@@ -500,7 +500,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
 
     def test_sidebar_tags_normal_mode(self):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Disabled'
+        profile.tag_tree_mode = False
         profile.save()
 
         tags = []
@@ -527,9 +527,9 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             for tag_name in ['hobbies', 'programming\\/python']:
                 expect(self.page.locator(f"#tag-{tag_name}")).not_to_be_visible()
 
-    def test_sidebar_tags_tree_mode(self):
+    def test_sidebar_tag_tree_mode(self):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Enabled'
+        profile.tag_tree_mode = True
         profile.save()
 
         tags = []
@@ -776,7 +776,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
     def test_delete_tag_normal_mode(self):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Disabled'
+        profile.tag_tree_mode = False
         profile.save()
 
         tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
@@ -797,7 +797,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
     def test_delete_tag_tree_mode(self):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Enabled'
+        profile.tag_tree_mode = True
         profile.save()
 
         tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
@@ -850,7 +850,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
     def test_rename_tag_normal_mode(self):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Disabled'
+        profile.tag_tree_mode = False
         profile.save()
 
         tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
@@ -880,7 +880,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
     def test_rename_tag_tree_mode(self):
         profile = self.user.profile
-        profile.tags_tree_mode = 'Enabled'
+        profile.tag_tree_mode = True
         profile.save()
 
         tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', owner=self.user.profile)
@@ -907,3 +907,27 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
         self.assertEqual(self.user.profile.tag_set.filter(id=self.tag.id).first().name, 'renamed')
         self.assertEqual(self.user.profile.tag_set.filter(id=tag_2.id).first().name, 'renamed/child')
+
+    def test_open_tag_mode_settings(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#tag_mode_settings")).not_to_be_visible()
+
+            self.page.locator("#show_tag_mode_settings").click()
+            expect(self.page.locator("#tag_mode_settings")).to_be_visible()
+            self.page.get_by_role("banner").click()
+            expect(self.page.locator("#tag_mode_settings")).not_to_be_visible()
+
+    def test_change_tag_mode(self):
+        profile = self.user.profile
+        profile.tag_tree_mode = False
+        profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            self.page.locator("#show_tag_mode_settings").click()
+            self.page.locator("#tag_mode_toggle").click()
+
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertTrue(changed_user.profile.tag_tree_mode)
