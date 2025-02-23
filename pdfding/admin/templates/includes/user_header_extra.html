@@ -1,5 +1,8 @@
 <div x-data="{ sortOpen: false }" class="relative flex flex-row items-center md:gap-x-2">
-    <a @click="sortOpen = !sortOpen" @click.away="sortOpen = false" @keyup.escape.window="sortOpen = false"
+    <a id="sorting_settings"
+       @click="sortOpen = !sortOpen"
+       @click.away="sortOpen = false"
+       @keyup.escape.window="sortOpen = false"
        class="cursor-pointer rounded-sm py-1 md:px-2 group relative
               hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
         <svg class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -17,22 +20,26 @@
                 bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
                 border-slate-300 dark:border-slate-700 creme:border-creme-dark">
         <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
-                    [&>a]:cursor-pointer [&>a]:rounded-sm
+                    [&>a]:cursor-pointer [&>a]:rounded-sm [&>a]:cursor-pointer
                     [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark">
-            <a href="{% url 'user_overview_query' %}?sort=newest"
-               x-bind:class="('{{ sorting_query }}' === 'newest' || '{{ sorting_query }}' === '') ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+            <a hx-post="{% url 'change_sorting' 'user_sorting' 'newest' %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               x-bind:class="'{{ sorting }}' === '-date_joined' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 Newest
             </a>
-            <a href="{% url 'user_overview_query' %}?sort=oldest"
-               x-bind:class="'{{ sorting_query }}' === 'oldest' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+            <a hx-post="{% url 'change_sorting' 'user_sorting' 'oldest' %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               x-bind:class="'{{ sorting }}' === 'date_joined' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 Oldest
             </a>
-            <a href="{% url 'user_overview_query' %}?sort=title_asc"
-               x-bind:class="'{{ sorting_query }}' === 'title_asc' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+            <a hx-post="{% url 'change_sorting' 'user_sorting' 'email_asc' %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               x-bind:class="'{{ sorting }}' === 'Lower(F(email))' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 A - Z
             </a>
-            <a href="{% url 'user_overview_query' %}?sort=title_desc"
-               x-bind:class="'{{ sorting_query }}' === 'title_desc' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+            <a hx-post="{% url 'change_sorting' 'user_sorting' 'email_desc' %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               x-bind:class="'{{ sorting }}' === 'OrderBy(Lower(F(email)), descending=True)' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 Z - A
             </a>
         </div>

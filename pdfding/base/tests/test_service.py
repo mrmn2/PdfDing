@@ -48,25 +48,17 @@ class TestService(TestCase):
         self.assertEqual(search, '')
         self.assertEqual(tags, ['old'])
 
-    def test_construct_query_overview_url_sort(self):
-        referer_url = f'{reverse('pdf_overview')}?search=searching&tags=asd&sort=title_desc'
-        generated_url = construct_query_overview_url(referer_url, 'title_asc', '', '', '', 'pdf')
-
-        self.assertEqual(generated_url, f'{reverse('pdf_overview')}?search=searching&tags=asd&sort=title_asc')
-
     @patch('base.service.construct_search_and_tag_queries')
     def test_construct_query_overview_url_search(self, mock_construct_search_and_tag_queries):
         mock_construct_search_and_tag_queries.return_value = ('search', ['tag'])
-        referer_url = f'{reverse('pdf_overview')}?search=searching&tags=asd&sort=title_desc'
-        generated_url = construct_query_overview_url(referer_url, '', 'search #tag', '', 're', 'pdf')
+        referer_url = f'{reverse('pdf_overview')}?search=searching&tags=asd'
+        generated_url = construct_query_overview_url(referer_url, 'search #tag', '', 're', 'pdf')
 
-        self.assertEqual(generated_url, f'{reverse('pdf_overview')}?search=search&tags=tag&sort=title_desc')
+        self.assertEqual(generated_url, f'{reverse('pdf_overview')}?search=search&tags=tag')
         mock_construct_search_and_tag_queries.assert_called_once_with('search #tag', 're', 'asd', 'searching')
 
     def test_construct_query_overview_url_selection(self):
-        referer_url = f'{reverse('pdf_overview')}?search=searching&tags=asd&sort=title_desc&selection=starred'
-        generated_url = construct_query_overview_url(referer_url, '', '', 'starred', '', 'pdf')
+        referer_url = f'{reverse('pdf_overview')}?search=searching&tags=asd&selection=starred'
+        generated_url = construct_query_overview_url(referer_url, '', 'starred', '', 'pdf')
 
-        self.assertEqual(
-            generated_url, f'{reverse('pdf_overview')}?search=searching&tags=asd&sort=title_desc&selection=starred'
-        )
+        self.assertEqual(generated_url, f'{reverse('pdf_overview')}?search=searching&tags=asd&selection=starred')

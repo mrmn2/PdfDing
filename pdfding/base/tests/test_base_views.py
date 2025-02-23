@@ -12,6 +12,7 @@ from django.urls import path, reverse
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf.forms import AddForm, DescriptionForm
 from pdf.models import Pdf
+from users.models import Profile
 
 test_patterns = [
     path('test/add/<identifier>', base_view_definitions.Add.as_view(), name='test_add'),
@@ -79,43 +80,43 @@ class TestViews(TestCase):
     @override_settings(ROOT_URLCONF=__name__)
     def test_overview_get(self):
         # Also test sorting by title with capitalization taken into account
+        self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
+        self.user.profile.save()
 
         # create some pdfs
         # Kaki and fig need be removed by the filter function
         for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
             Pdf.objects.create(owner=self.user.profile, name=pdf_name)
 
-        response = self.client.get(f'{reverse('test_overview')}?sort=title_desc')
+        response = self.client.get(f'{reverse('test_overview')}')
         pdf_names = [pdf.name for pdf in response.context['page_obj']]
 
         self.assertEqual(pdf_names, ['Raspberry', 'orange', 'banana', 'Apple'])
         self.assertEqual(response.context['other'], 1234)
-        self.assertEqual(response.context['sorting_query'], 'title_desc')
         self.assertTemplateUsed(response, 'pdf_overview.html')
 
     @override_settings(ROOT_URLCONF=__name__)
     @patch('base.base_views.construct_query_overview_url')
     def test_overview_query_get(self, mock_construct_query_overview_url):
-        mock_return_value = f'{reverse('pdf_overview')}?sort=title_desc'
+        mock_return_value = f'{reverse('pdf_overview')}?search=searching'
         mock_construct_query_overview_url.return_value = mock_return_value
         response = self.client.get(
-            f'{reverse('test_overview_query')}'
-            '?sort=title_desc&search=searching&tags=tag&selection=starred&remove=other_tag'
+            f'{reverse('test_overview_query')}' '?search=searching&tags=tag&selection=starred&remove=other_tag'
         )
 
         mock_construct_query_overview_url.assert_called_once_with(
-            'pdf_overview', 'title_desc', 'searching', 'starred', 'other_tag', 'pdf'
+            'pdf_overview', 'searching', 'starred', 'other_tag', 'pdf'
         )
         self.assertRedirects(response, mock_return_value, status_code=302)
 
     @override_settings(ROOT_URLCONF=__name__)
     @patch('base.base_views.construct_query_overview_url')
     def test_overview_query_get_no_queries(self, mock_construct_query_overview_url):
-        mock_return_value = f'{reverse('pdf_overview')}?sort=title_desc'
+        mock_return_value = f'{reverse('pdf_overview')}?search=searching'
         mock_construct_query_overview_url.return_value = mock_return_value
         response = self.client.get(reverse('test_overview_query'))
 
-        mock_construct_query_overview_url.assert_called_once_with('pdf_overview', '', '', '', '', 'pdf')
+        mock_construct_query_overview_url.assert_called_once_with('pdf_overview', '', '', '', 'pdf')
         self.assertRedirects(response, mock_return_value, status_code=302)
 
     @override_settings(ROOT_URLCONF=__name__)
@@ -151,7 +152,6 @@ class TestViews(TestCase):
         response = self.client.get(reverse('test_details', kwargs={'identifier': pdf.id}))
 
         self.assertEqual(response.context['pdf'], pdf)
-        self.assertEqual(response.context['sort_query'], '')
         self.assertTemplateUsed(response, 'pdf_details.html')
 
         # test without sort query
@@ -160,16 +160,6 @@ class TestViews(TestCase):
         )
 
         self.assertEqual(response.context['pdf'], pdf)
-        self.assertEqual(response.context['sort_query'], '')
-
-        # test with sort query
-        response = self.client.get(
-            reverse('test_details', kwargs={'identifier': pdf.id}),
-            HTTP_REFERER='pdfding.com/details/?q=search&sort=oldest',
-        )
-
-        self.assertEqual(response.context['pdf'], pdf)
-        self.assertEqual(response.context['sort_query'], 'oldest')
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_get_no_htmx(self):

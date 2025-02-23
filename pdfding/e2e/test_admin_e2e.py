@@ -6,6 +6,7 @@ from django.urls import reverse
 from helpers import PdfDingE2ETestCase
 from pdf.models import Pdf
 from playwright.sync_api import expect, sync_playwright
+from users.models import Profile
 
 
 class AdminE2ETestCase(PdfDingE2ETestCase):
@@ -31,6 +32,9 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#current_version")).to_contain_text("DEV")
 
     def test_overview(self):
+        self.user.profile.user_sorting = Profile.UserSortingChoice.EMAIL_ASC
+        self.user.profile.save()
+
         date_joined = self.user.date_joined.strftime("%b. %-d, %Y")
         # months that are not shortened do not need the dot
         if 'May' in date_joined or 'July' in date_joined or 'June' in date_joined:
@@ -40,9 +44,10 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse("user_overview"), p)
 
             # test the displayed email addresses
-            expect(self.page.locator("#user-1")).to_contain_text("a@a.com | Admin")
             for i in range(1, 4):
-                expect(self.page.locator(f"#user-{i + 1}")).to_contain_text(f"{i}@a.com")
+                expect(self.page.locator(f"#user-{i}")).to_contain_text(f"{i}@a.com")
+
+            expect(self.page.locator("#user-4")).to_contain_text("a@a.com | Admin")
 
             # assert there is only one admin
             expect(self.page.get_by_text("| Admin")).to_have_count(1)
@@ -52,6 +57,19 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.get_by_text("Delete")).to_have_count(4)
             expect(self.page.get_by_text("Remove Admin Rights")).to_have_count(1)
             expect(self.page.get_by_text("Add Admin Rights")).to_have_count(3)
+
+    def test_change_sorting(self):
+        self.assertEqual(self.user.profile.user_sorting, Profile.UserSortingChoice.NEWEST)
+
+        with sync_playwright() as p:
+            self.open(reverse("user_overview"), p)
+
+            self.page.locator("#sorting_settings").click()
+            self.page.get_by_text("A - Z").click()
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertEqual(changed_user.profile.user_sorting, Profile.UserSortingChoice.EMAIL_ASC)
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_new_version_available(self, mock_get_latest_version):
@@ -114,8 +132,11 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag_admin_filter")).not_to_be_visible()
 
     def test_sort(self):
+        self.user.profile.user_sorting = Profile.UserSortingChoice.NEWEST
+        self.user.profile.save()
+
         with sync_playwright() as p:
-            self.open(f"{reverse('user_overview')}?sort=newest", p)
+            self.open(reverse('user_overview'), p)
 
             for i in range(1, 4):
                 expect(self.page.locator(f"#user-{i}")).to_contain_text(f"{4 - i}@a.com")

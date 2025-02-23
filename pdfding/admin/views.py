@@ -26,20 +26,19 @@ class BaseAdminMixin:
 
 class OverviewMixin(BaseAdminMixin):
     @staticmethod
-    def get_sorting_dict():
-        """
-        Get the sorting dict which describes the sorting in the overview page.
-        """
+    def get_sorting(request: HttpRequest):
+        """Get the sorting of the overview page."""
+
+        profile = request.user.profile
 
         sorting_dict = {
-            '': 'date_joined',
-            'newest': '-date_joined',
-            'oldest': 'date_joined',
-            'title_asc': Lower('email'),
-            'title_desc': Lower('email').desc(),
+            'Newest': '-date_joined',
+            'Oldest': 'date_joined',
+            'Email_asc': Lower('email'),
+            'Email_desc': Lower('email').desc(),
         }
 
-        return sorting_dict
+        return sorting_dict[profile.user_sorting]
 
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:

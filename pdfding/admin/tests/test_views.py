@@ -32,7 +32,7 @@ class TestOverviewMixin(TestCase):
     def test_filter_objects(self):
         for search_query, expected_result in zip(
             # also use some spaces in the admin search to verify this also works
-            ['search=b@a.com&sort=oldest', 'search=@a&tags=admin'],
+            ['search=b@a.com', 'search=@a&tags=admin'],
             [['1_b@a.com', '2_b@a.com', '3_b@a.com'], ['a@a.com']],
         ):
             response = self.client.get(f'{reverse('user_overview')}?{search_query}')

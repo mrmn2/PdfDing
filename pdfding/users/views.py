@@ -15,7 +15,9 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
+from django_htmx.http import HttpResponseClientRefresh
 from users import forms
+from users.models import Profile
 from users.service import create_demo_user, get_color_shades
 
 
@@ -107,6 +109,28 @@ class ChangeSetting(View):
                 messages.warning(request, dict(form.errors)[field_name][0])
             except:  # noqa # pragma: no cover
                 messages.warning(request, 'Input is not valid!')
+
+        return redirect('profile-settings')
+
+
+class ChangeSorting(View):
+    def post(self, request: HttpRequest, sorting_category: str, sorting: str):
+        """Delete the user"""
+
+        if request.htmx:
+            user_profile = request.user.profile
+
+            match sorting_category:
+                case 'pdf_sorting':
+                    user_profile.pdf_sorting = Profile.PdfSortingChoice[str.upper(sorting)]
+                case 'shared_pdf_sorting':
+                    user_profile.shared_pdf_sorting = Profile.SharedPdfSortingChoice[str.upper(sorting)]
+                case 'user_sorting':
+                    user_profile.user_sorting = Profile.UserSortingChoice[str.upper(sorting)]
+
+            user_profile.save()
+
+            return HttpResponseClientRefresh()
 
         return redirect('profile-settings')
 

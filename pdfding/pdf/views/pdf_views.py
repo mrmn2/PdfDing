@@ -121,21 +121,22 @@ class BulkAddPdfMixin(BasePdfMixin):
 
 class OverviewMixin(BasePdfMixin):
     @staticmethod
-    def get_sorting_dict():
-        """Get the sorting dict which describes the sorting in the overview page."""
+    def get_sorting(request: HttpRequest):
+        """Get the sorting of the overview page."""
+
+        profile = request.user.profile
 
         sorting_dict = {
-            '': '-creation_date',
-            'newest': '-creation_date',
-            'oldest': 'creation_date',
-            'title_asc': Lower('name'),
-            'title_desc': Lower('name').desc(),
-            'least_viewed': 'views',
-            'most_viewed': '-views',
-            'recently_viewed': '-last_viewed_date',
+            'Newest': '-creation_date',
+            'Oldest': 'creation_date',
+            'Name_asc': Lower('name'),
+            'Name_desc': Lower('name').desc(),
+            'Least_viewed': 'views',
+            'Most_viewed': '-views',
+            'Recently_viewed': '-last_viewed_date',
         }
 
-        return sorting_dict
+        return sorting_dict[profile.pdf_sorting]
 
     @classmethod
     def filter_objects(cls, request: HttpRequest) -> QuerySet:

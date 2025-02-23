@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
+from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase, cancel_delete_helper
 from pdf.models import Pdf, SharedPdf
 from playwright.sync_api import expect, sync_playwright
+from users.models import Profile
 
 
 class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
@@ -48,17 +50,33 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         self.pdf = Pdf.objects.create(owner=self.user.profile, name='some_pdf', description='some_description')
 
     def test_sort(self):
+        self.user.profile.shared_pdf_sorting = Profile.SharedPdfSortingChoice.NAME_DESC
+        self.user.profile.save()
+
         # create some shared pdfs
         for name in ['Some_share', 'another_share', 'this is a share', 'PDF is shared']:
             SharedPdf.objects.create(owner=self.user.profile, name=name, pdf=self.pdf)
 
         with sync_playwright() as p:
-            self.open(f"{reverse('shared_pdf_overview')}?sort=title_desc", p)
+            self.open(reverse('shared_pdf_overview'), p)
 
             expect(self.page.locator("#shared-pdf-link-1")).to_have_text("this is a share")
             expect(self.page.locator("#shared-pdf-link-2")).to_have_text("Some_share")
             expect(self.page.locator("#shared-pdf-link-3")).to_have_text("PDF is shared")
             expect(self.page.locator("#shared-pdf-link-4")).to_have_text("another_share")
+
+    def test_change_sorting(self):
+        self.assertEqual(self.user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NEWEST)
+
+        with sync_playwright() as p:
+            self.open(reverse("shared_pdf_overview"), p)
+
+            self.page.locator("#sorting_settings").click()
+            self.page.get_by_text("A - Z").click()
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertEqual(changed_user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NAME_ASC)
 
     def test_delete(self):
         SharedPdf.objects.create(owner=self.user.profile, name='some_shared_pdf', pdf=self.pdf)

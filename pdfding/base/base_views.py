@@ -48,14 +48,13 @@ class BaseOverview(View):
         objects = self.filter_objects(request)
 
         # sort objects
-        sorting_query = request.GET.get('sort', '')
-        sorting_dict = self.get_sorting_dict()
-        objects = objects.order_by(sorting_dict[sorting_query])
+        sorting = self.get_sorting(request)
+        objects = objects.order_by(sorting)
 
         paginator = Paginator(objects, per_page=request.user.profile.pdfs_per_page, allow_empty_first_page=True)
         page_object = paginator.get_page(page)
 
-        context = {'page_obj': page_object, 'sorting_query': request.GET.get('sort', '')}
+        context = {'page_obj': page_object, 'sorting': sorting}
 
         context |= self.get_extra_context(request)
 
@@ -63,18 +62,17 @@ class BaseOverview(View):
 
 
 class BaseOverviewQuery(View):
-    """Base view for performing searches and sorting on the overview pages."""
+    """Base view for performing searches in the overview pages."""
 
     def get(self, request: HttpRequest):
         referer_url = request.META.get('HTTP_REFERER', f'{self.obj_name}_overview')
 
-        sort_query = request.GET.get('sort', '')
         search_query = request.GET.get('search', '')
         remove_tag_query = request.GET.get('remove', '')
         special_selection_query = request.GET.get('selection', '')
 
         redirect_url = construct_query_overview_url(
-            referer_url, sort_query, search_query, special_selection_query, remove_tag_query, self.obj_name
+            referer_url, search_query, special_selection_query, remove_tag_query, self.obj_name
         )
 
         return redirect(redirect_url)
@@ -133,16 +131,6 @@ class BaseDetails(View):
 
         obj = self.get_object(request, identifier)
         context = {self.obj_name: obj}
-
-        if self.obj_name == 'pdf':
-            sort_query = request.META.get('HTTP_REFERER', '').split('sort=')
-
-            if len(sort_query) > 1:
-                sort_query = sort_query[-1]
-            else:
-                sort_query = ''
-
-            context['sort_query'] = sort_query
 
         return render(request, f'{self.obj_name}_details.html', context)
 

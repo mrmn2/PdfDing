@@ -91,11 +91,7 @@
                 <span id="tags">
                 {% if pdf.tags.all %}
                     {% for tag in pdf.tags.all|dictsort:"name" %}
-                        {% if sort_query %}
-                        <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}&sort={{ sort_query }}">#{{ tag }}</a>
-                        {% else %}
                         <a class="text-primary hover:text-secondary hover:underline" href="{% url 'pdf_overview' %}?q=%23{{ tag }}">#{{ tag }}</a>
-                        {% endif %}
                     {% endfor %}
                 {% else %}
                     no tags available

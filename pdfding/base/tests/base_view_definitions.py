@@ -29,18 +29,17 @@ class BaseAddMixin(BaseMixin):
 
 class OverviewMixin(BaseMixin):
     @staticmethod
-    def get_sorting_dict():
-        """Get the sorting dict which describes the sorting in the overview page."""
+    def get_sorting(request: HttpRequest):
+        """Get the sorting of the overview page."""
+
+        profile = request.user.profile
 
         sorting_dict = {
-            '': '-creation_date',
-            'newest': '-creation_date',
-            'oldest': 'creation_date',
-            'title_asc': Lower('name'),
-            'title_desc': Lower('name').desc(),
+            'Newest': '-creation_date',
+            'Name_desc': Lower('name').desc(),
         }
 
-        return sorting_dict
+        return sorting_dict[profile.pdf_sorting]
 
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:

@@ -208,6 +208,43 @@ class TestProfileViews(TestCase):
             user = User.objects.get(username=self.username)
             self.assertEqual(getattr(user.profile, field_name), val_after)
 
+    def test_change_sorting_post_no_htmx(self):
+        response = self.client.post(
+            reverse('change_sorting', kwargs={'sorting_category': 'pdf_sorting', 'sorting': 'Oldest'})
+        )
+
+        self.assertRedirects(response, reverse('profile-settings'), status_code=302)
+
+    def test_change_sorting_post_pdf(self):
+        self.assertEqual(self.user.profile.pdf_sorting, Profile.PdfSortingChoice.NEWEST)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(
+            reverse('change_sorting', kwargs={'sorting_category': 'pdf_sorting', 'sorting': 'oldest'}), **headers
+        )
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertEqual(changed_user.profile.pdf_sorting, Profile.PdfSortingChoice.OLDEST)
+
+    def test_change_sorting_post_shared_pdf(self):
+        self.assertEqual(self.user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NEWEST)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(
+            reverse('change_sorting', kwargs={'sorting_category': 'shared_pdf_sorting', 'sorting': 'oldest'}), **headers
+        )
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertEqual(changed_user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.OLDEST)
+
+    def test_change_sorting_post_user(self):
+        self.assertEqual(self.user.profile.user_sorting, Profile.UserSortingChoice.NEWEST)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(
+            reverse('change_sorting', kwargs={'sorting_category': 'user_sorting', 'sorting': 'oldest'}), **headers
+        )
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertEqual(changed_user.profile.user_sorting, Profile.UserSortingChoice.OLDEST)
+
     def test_delete_post(self):
         # in this test we test that the user is successfully deleted
         # we also test that the associated profile, pdfs, and tags are also deleted

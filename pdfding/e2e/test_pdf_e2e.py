@@ -1,12 +1,14 @@
 from pathlib import Path
 from unittest.mock import patch
 
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase, cancel_delete_helper
 from pdf.models import Pdf, Tag
 from playwright.sync_api import expect, sync_playwright
+from users.models import Profile
 
 
 class NoPdfE2ETestCase(PdfDingE2ETestCase):
@@ -439,6 +441,9 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag_tag_filter")).not_to_be_visible()
 
     def test_sort(self):
+        self.user.profile.pdf_sorting = Profile.PdfSortingChoice.MOST_VIEWED
+        self.user.profile.save()
+
         # we test if sorting works with most viewed
         pdf = self.user.profile.pdf_set.get(name='pdf_2_12')
         pdf.views = 1001
@@ -449,10 +454,23 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         pdf.save()
 
         with sync_playwright() as p:
-            self.open(f"{reverse('pdf_overview')}?sort=most_viewed", p)
+            self.open(reverse('pdf_overview'), p)
 
             expect(self.page.locator("#pdf-link-1")).to_have_text("pdf_2_12")
             expect(self.page.locator("#pdf-link-2")).to_have_text("pdf_3_13")
+
+    def test_change_sorting(self):
+        self.assertEqual(self.user.profile.pdf_sorting, Profile.PdfSortingChoice.NEWEST)
+
+        with sync_playwright() as p:
+            self.open(reverse("pdf_overview"), p)
+
+            self.page.locator("#sorting_settings").click()
+            self.page.get_by_text("A - Z").click()
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertEqual(changed_user.profile.pdf_sorting, Profile.PdfSortingChoice.NAME_ASC)
 
     @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_delete(self):

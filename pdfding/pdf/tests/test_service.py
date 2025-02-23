@@ -302,7 +302,7 @@ class TestService(TestCase):
 
     def test_adjust_referer_for_tag_view_no_replace(self):
         # url of searched for #other
-        url = f'{reverse("pdf_overview")}?sort=title_asc&search=searching&tags=tag1+tag2'
+        url = f'{reverse("pdf_overview")}?search=searching&tags=tag1+tag2'
         adjusted_url = service.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
 
         self.assertEqual(url, adjusted_url)
@@ -316,19 +316,19 @@ class TestService(TestCase):
 
     def test_adjust_referer_for_tag_view_space(self):
         # url of searched for #other
-        url = f'{reverse("pdf_overview")}?sort=title_asc&search=searching&tags=tag1+tag2'
+        url = f'{reverse("pdf_overview")}?search=searching&tags=tag1+tag2'
 
         adjusted_url = service.adjust_referer_for_tag_view(url, 'tag1', '')
-        expected_url = f'{reverse("pdf_overview")}?sort=title_asc&search=searching&tags=tag2'
+        expected_url = f'{reverse("pdf_overview")}?search=searching&tags=tag2'
 
         self.assertEqual(expected_url, adjusted_url)
 
     def test_adjust_referer_for_tag_view_space_remove(self):
         # url of searched for #other
-        url = f'{reverse("pdf_overview")}?sort=title_asc&search=searching&tags=other'
+        url = f'{reverse("pdf_overview")}?search=searching&tags=other'
 
         adjusted_url = service.adjust_referer_for_tag_view(url, 'other', '')
-        expected_url = f'{reverse("pdf_overview")}?sort=title_asc&search=searching'
+        expected_url = f'{reverse("pdf_overview")}?search=searching'
 
         self.assertEqual(expected_url, adjusted_url)
 
