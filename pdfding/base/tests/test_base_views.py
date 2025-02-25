@@ -16,7 +16,8 @@ from users.models import Profile
 
 test_patterns = [
     path('test/add/<identifier>', base_view_definitions.Add.as_view(), name='test_add'),
-    path('test/overview', base_view_definitions.Overview.as_view(), name='test_overview'),
+    path('test/overview/<items_per_page>', base_view_definitions.Overview.as_view(), name='test_overview'),
+    path('test/overview/<page>/<items_per_page>', base_view_definitions.Overview.as_view(), name='test_get_next_page'),
     path('test/overview_query', base_view_definitions.OverviewQuery.as_view(), name='test_overview_query'),
     path('test/serve/<identifier>', base_view_definitions.Serve.as_view(), name='test_serve'),
     path('test/download/<identifier>', base_view_definitions.Download.as_view(), name='test_download'),
@@ -88,12 +89,39 @@ class TestViews(TestCase):
         for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
             Pdf.objects.create(owner=self.user.profile, name=pdf_name)
 
-        response = self.client.get(f'{reverse('test_overview')}')
+        response = self.client.get(f'{reverse('test_overview', kwargs={'items_per_page': 3})}')
         pdf_names = [pdf.name for pdf in response.context['page_obj']]
 
-        self.assertEqual(pdf_names, ['Raspberry', 'orange', 'banana', 'Apple'])
+        self.assertEqual(pdf_names, ['Raspberry', 'orange', 'banana'])
         self.assertEqual(response.context['other'], 1234)
+        self.assertEqual(response.context['next_page_available'], True)
+        self.assertEqual(response.context['items_per_page'], '3')
+        self.assertEqual(str(response.context['sorting']), 'OrderBy(Lower(F(name)), descending=True)')
         self.assertTemplateUsed(response, 'pdf_overview.html')
+
+    @override_settings(ROOT_URLCONF=__name__)
+    def test_overview_get_htmx(self):
+        # Also test sorting by title with capitalization taken into account
+        self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
+        self.user.profile.save()
+        headers = {'HTTP_HX-Request': 'true'}
+
+        # create some pdfs
+        # Kaki and fig need be removed by the filter function
+        for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
+            Pdf.objects.create(owner=self.user.profile, name=pdf_name)
+
+        response = self.client.get(
+            f'{reverse('test_get_next_page', kwargs={'items_per_page': 3, 'page': 2})}', **headers
+        )
+        pdf_names = [pdf.name for pdf in response.context['page_obj']]
+
+        # since we are getting the second page only apple should be there and no next page
+        self.assertEqual(pdf_names, ['Apple'])
+        self.assertEqual(response.context['next_page_available'], False)
+        self.assertEqual(response.context['items_per_page'], '3')
+        self.assertEqual(response.context['current_page'], '2')
+        self.assertTemplateUsed(response, 'includes/pdf_overview/overview_page.html')
 
     @override_settings(ROOT_URLCONF=__name__)
     @patch('base.base_views.construct_query_overview_url')

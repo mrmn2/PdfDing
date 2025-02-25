@@ -71,6 +71,23 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
         self.assertEqual(changed_user.profile.user_sorting, Profile.UserSortingChoice.EMAIL_ASC)
 
+    def test_load_next_page(self):
+        self.user.profile.user_sorting = Profile.UserSortingChoice.OLDEST
+        self.user.profile.save()
+
+        for i in range(4, 17):
+            User.objects.create_user(username=i, password="password", email=f"{i}@a.com")
+
+        with sync_playwright() as p:
+            self.open(reverse('user_overview'), p)
+            expect(self.page.locator("#user-15")).to_be_visible()
+            expect(self.page.locator("#user-16")).not_to_be_visible()
+
+            self.page.locator("#next_page_1_toggle").click()
+            expect(self.page.locator("#user-16")).to_be_visible()
+            expect(self.page.locator("#user-16")).to_contain_text('15@a.com')
+            expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
+
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     def test_new_version_available(self, mock_get_latest_version):
         with sync_playwright() as p:

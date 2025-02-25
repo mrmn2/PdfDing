@@ -25,6 +25,8 @@ class BaseAdminMixin:
 
 
 class OverviewMixin(BaseAdminMixin):
+    overview_page_name = 'user_overview_page'
+
     @staticmethod
     def get_sorting(request: HttpRequest):
         """Get the sorting of the overview page."""

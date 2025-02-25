@@ -1,0 +1,14 @@
+{% for user in page_obj %}
+{% widthratio current_page|add:-1 1 items_per_page as loop_offset %}
+{% with loop_id=forloop.counter|add:loop_offset %}
+<div class="border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
+            dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-600
+            creme:bg-creme-dark-light creme:border-creme-dark creme:hover:border-stone-400">
+    <div class="px-3 md:px-5 py-1">
+        {% include 'includes/user.html' %}
+    </div>
+</div>
+{% endwith %}
+{% endfor %}
+
+{% include 'includes/get_next_page.html' with get_next_overview_page_name='get_next_user_overview_page' %}

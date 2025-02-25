@@ -269,6 +269,23 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             if i % 5 == 1:
                 pdf.tags.set([tag])
 
+    def test_load_next_page(self):
+        self.user.profile.pdf_sorting = Profile.PdfSortingChoice.OLDEST
+        self.user.profile.save()
+
+        Pdf.objects.create(owner=self.user.profile, name='page_1_pdf')
+        Pdf.objects.create(owner=self.user.profile, name='page_2_pdf')
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#pdf-15")).to_be_visible()
+            expect(self.page.locator("#pdf-16")).not_to_be_visible()
+
+            self.page.locator("#next_page_1_toggle").click()
+            expect(self.page.locator("#pdf-16")).to_be_visible()
+            expect(self.page.locator("#pdf-16")).to_contain_text('page_2_pdf')
+            expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
+
     # def test_thumbnails_on(self):
     #     self.user.profile.show_thumbnails = 'Enabled'
     #     self.user.profile.save()

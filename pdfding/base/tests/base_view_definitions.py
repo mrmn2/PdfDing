@@ -28,6 +28,8 @@ class BaseAddMixin(BaseMixin):
 
 
 class OverviewMixin(BaseMixin):
+    overview_page_name = 'pdf_overview/overview_page'
+
     @staticmethod
     def get_sorting(request: HttpRequest):
         """Get the sorting of the overview page."""

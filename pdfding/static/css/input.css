@@ -158,14 +158,14 @@ label {
 }
 input[type=file] {
     @apply  w-full text-gray-400 dark:text-slate-200 bg-gray-100 dark:bg-slate-600 creme:text-stone-700 creme:bg-creme-light file:cursor-pointer
-    cursor-pointer file:border-0 file:py-4 file:px-4 file:-my-7 file:-ml-5 file:mr-4 file:bg-primary
+    cursor-pointer file:border-0 file:py-3 file:px-4 file:-my-7 file:-ml-5 file:mr-4 file:bg-primary
     file:hover:bg-secondary file:text-white file:font-bold file:rounded-lg
 }
 input[type=checkbox] {
     @apply  accent-primary
 }
 .textarea, textarea, input {
-    @apply w-full rounded-lg py-4 px-5 bg-gray-100 dark:bg-slate-600 creme:bg-creme-dark-light creme:text-stone-700
+    @apply w-full rounded-lg py-3 px-5 bg-gray-100 dark:bg-slate-600 creme:bg-creme-dark-light creme:text-stone-700
 }
 .textarea:focus, textarea:focus, input:focus {
     @apply outline outline-1 outline-primary

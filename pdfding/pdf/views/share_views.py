@@ -99,6 +99,8 @@ class AddSharedPdfMixin(BaseShareMixin):
 
 
 class OverviewMixin(BaseShareMixin):
+    overview_page_name = 'shared_overview/overview_page'
+
     @staticmethod
     def get_sorting(request: HttpRequest):
         """Get the sorting of the overview page."""

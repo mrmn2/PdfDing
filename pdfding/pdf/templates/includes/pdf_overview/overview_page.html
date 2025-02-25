@@ -1,0 +1,28 @@
+{% for pdf in page_obj %}
+{% widthratio current_page|add:-1 1 items_per_page as loop_offset %}
+{% with loop_id=forloop.counter|add:loop_offset %}
+<div id="pdf-{{ loop_id }}" class="border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
+            dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-600
+            creme:bg-creme-dark-light creme:border-creme-dark creme:hover:border-stone-400">
+    <div class="px-3 md:px-5 py-1">
+        {% if 1 %}
+        {% include 'includes/pdf_overview/compact_pdf.html' %}
+        {% endif %}
+    </div>
+    {% if pdf.number_of_pages > 0 %}
+    <div class="hover:cursor-pointer pt-1 -mt-1!" x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
+            <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
+                 class="w-full h-1 rounded-sm">
+                <div style="width: {{ pdf.progress }}%;" class="h-1 bg-primary! rounded-sm"></div>
+            </div>
+            <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
+                class="z-50 absolute bg-primary text-gray-100 text-sm rounded-xs p-2 mt-1">
+             {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}
+            </span>
+    </div>
+    {% endif %}
+</div>
+{% endwith %}
+{% endfor %}
+
+{% include 'includes/get_next_page.html' with get_next_overview_page_name='get_next_pdf_overview_page' %}
