@@ -1,5 +1,13 @@
 # Changelog
 
+##  v1.0.0 (Feb 26, 2025)
+## What's Changed
+* Revamp overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/97
+* Revamp admin area and shared overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/101
+* make overview sorting settings persistant by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/102
+* Activiate nested tags directly in overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/103
+* Load additional items without changing pages in the overviews by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/104
+
 ##  v0.12.3 (Feb 15, 2025)
 ## What's Changed
 * filter pdfs by fuzzy searching by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/89
