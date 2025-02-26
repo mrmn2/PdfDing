@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {% block layout %}
-<div>
-    <div class="block max-w-6xl mx-auto md:p-12 pb-6">
-        <div class="bg-white dark:bg-slate-700 rounded-b-2xl md:rounded-2xl md:drop-shadow-2xl
-                    shadow-black dark:shadow-white dark:text-slate-200 creme:bg-creme-light creme:text-stone-700 w-full">
+<div class="flex md:flex-row w-full pt-2 md:pt-0">
+    <div class="hidden min-[1400px]:block px-4 pt-2 md:-mr-8!">
+        {% include 'includes/sidebar.html' %}
+    </div>
+    <div class="w-full lg:w-[80%] min-[1400px]:w-[60%]! mx-auto min-[600px]:p-6 md:p-12 pb-6">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl
+                    border border-slate-200 dark:border-slate-700 creme:border-creme-dark-light
+                    dark:text-slate-200 creme:bg-creme-light creme:text-stone-700">
             <div>
             {% block optional %}
             {% endblock %}

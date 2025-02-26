@@ -52,7 +52,7 @@ def get_color_shades(custom_color: str) -> tuple[str, ...]:
 
 
 def get_viewer_colors(user_profile: Profile = None) -> dict[str, str]:
-    primary_color_dict = {'light': '255 255 255', 'dark': '30 41 59', 'inverted': '71 71 71', 'creme': '226 220 208'}
+    primary_color_dict = {'light': '255 255 255', 'dark': '15 23 42', 'inverted': '71 71 71', 'creme': '226 220 208'}
     secondary_color_dict = {'light': '242 242 242', 'dark': '25 34 50', 'inverted': '61 61 61', 'creme': '196 191 181'}
     text_color_dict = {'light': '15 23 42', 'dark': '226 232 240', 'inverted': '226 232 240', 'creme': '68 64 60'}
     theme_color_dict = {

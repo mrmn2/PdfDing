@@ -196,15 +196,18 @@ class OverviewMixin(BasePdfMixin):
 
         if request.GET.get('selection', '') in ['starred', 'archived']:
             special_pdf_selection = request.GET.get('selection')
+            page = f'pdf_overview_{special_pdf_selection}'
+
         else:
             special_pdf_selection = ''
+            page = 'pdf_overview'
 
         extra_context = {
             'search_query': request.GET.get('search', ''),
             'tag_query': tag_query,
             'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': service.get_tag_info_dict(request.user.profile),
-            'page': 'pdf_overview',
+            'page': page,
         }
 
         return extra_context

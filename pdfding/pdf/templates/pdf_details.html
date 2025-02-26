@@ -7,7 +7,7 @@
             [&>div>div>div>a]:text-sm [&>div>div>div>a]:cursor-pointer [&>div>div>div>a]:text-primary">
     <div class="pb-0! border-none!">
         <div class="flex flex-row items-center gap-x-1 truncate">
-            <a href="{% url 'view_pdf' pdf.id %}" class="text-3xl font-bold hover:text-primary hover:underline">{{ pdf.name }}</a>
+            <a href="{% url 'view_pdf' pdf.id %}" class="text-3xl font-bold hover:text-primary hover:underline truncate">{{ pdf.name }}</a>
             {% if pdf.starred %}
             <svg id="starred_icon" class="fill-primary text-primary" width="34" height="34" viewBox="0 0 24 24"
                  fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -216,14 +216,17 @@
     {% else %}
     <a href="{% url 'pdf_overview' %}" class="text-md font-bold! text-primary hover:text-secondary">Back</a>
     {% endif %}
-    <div x-data="{ delete_pdf: false }" class="pr-4">
+    <div x-data="{ delete_pdf: false }"
+         class="pr-4 [&>a]:font-bold [&>a]:cursor-pointer [&>a]:text-slate-600 [&>a]:hover:text-slate-800
+                dark:[&>a]:text-slate-300 dark:[&>a]:hover:text-slate-50
+                creme:[&>a]:text-stone-500 creme:[&>a]:hover:text-stone-700">
         <a x-show="delete_pdf" x-cloak
           hx-delete="{% url 'delete_pdf' pdf.id %}"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-          class="button-text-delete cursor-pointer font-bold!">Confirm
+          class="cursor-pointer pr-2">Confirm
         </a>
-        <button x-show="delete_pdf" x-cloak @click="delete_pdf = false" type="button" class="button-text-delete font-bold!">Cancel</button>
-        <button x-show="!delete_pdf" @click="delete_pdf = true" type="button" class="button-text-delete font-bold!">Delete</button>
+        <a x-show="delete_pdf" x-cloak @click="delete_pdf = false" class="">Cancel</a>
+        <a x-show="!delete_pdf" @click="delete_pdf = true" class="font-bold! text-red-500! hover:text-red-600!">Delete</a>
     </div>
 </div>
 {% endblock %}

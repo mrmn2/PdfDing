@@ -34,7 +34,7 @@
                     <span class="hidden md:block">Shared</span>
                 </a>
             </div>
-            <div {% if page == 'starred' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+            <div {% if page == 'pdf_overview_starred' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
                 <a href="{% url 'pdf_overview_query' %}?selection=starred">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <!-- source: https://www.svgrepo.com/svg/471930/star-01 -->
@@ -44,7 +44,7 @@
                     <span class="hidden md:block">Starred</span>
                 </a>
             </div>
-            <div {% if page == 'archived' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+            <div {% if page == 'pdf_overview_archived' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
                 <a href="{% url 'pdf_overview_query' %}?selection=archived">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <!-- source: https://www.svgrepo.com/svg/470978/archive -->

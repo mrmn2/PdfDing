@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from django.urls import reverse
-from helpers import PdfDingE2ETestCase, cancel_delete_helper
+from helpers import PdfDingE2ETestCase
 from pdf.models import Pdf, Tag
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
@@ -738,7 +738,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
             expect(self.page.locator("body")).to_contain_text("pdf_1_1")
-            self.page.get_by_role("button", name="Delete").click()
+            self.page.get_by_text("Delete").click()
             self.page.get_by_text("Confirm").click()
 
             expect(self.page.locator("body")).not_to_have_text("pdf_1_1")
@@ -749,7 +749,17 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
-            cancel_delete_helper(self.page)
+            expect(self.page.get_by_text("Confirm")).not_to_be_visible()
+            expect(self.page.get_by_text("Cancel")).not_to_be_visible()
+            expect(self.page.get_by_text("Delete")).to_be_visible()
+            self.page.get_by_text("Delete").click()
+            expect(self.page.get_by_text("Confirm")).to_be_visible()
+            expect(self.page.get_by_text("Cancel")).to_be_visible()
+            expect(self.page.get_by_text("Delete")).not_to_be_visible()
+            self.page.get_by_text("Cancel").click()
+            expect(self.page.get_by_text("Confirm")).not_to_be_visible()
+            expect(self.page.get_by_text("Cancel")).not_to_be_visible()
+            expect(self.page.get_by_text("Delete")).to_be_visible()
 
 
 class TagE2ETestCase(PdfDingE2ETestCase):
