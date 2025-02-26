@@ -124,6 +124,9 @@ def create_demo_user(email: str, password: str):
     email_address.verified = True
     email_address.save()
 
+    user.profile.tags_open = True
+    user.profile.save()
+
     for pdf_name, description, tag_names in zip(pdf_names, descriptions, tag_names_list):
         tags = [Tag.objects.create(name=tag_name, owner=user.profile) for tag_name in tag_names]
 
