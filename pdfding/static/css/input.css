@@ -164,6 +164,9 @@ input[type=file] {
 input[type=checkbox] {
     @apply  accent-primary
 }
+select {
+    @apply rounded-sm px-2
+}
 .textarea, textarea, input {
     @apply w-full rounded-lg py-3 px-5 bg-gray-100 dark:bg-slate-700 creme:bg-creme-dark-light creme:text-stone-700
 }

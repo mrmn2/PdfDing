@@ -66,14 +66,14 @@ class TestProfileViews(TestCase):
 
     def test_settings(self):
         # test without social account
-        response = self.client.get(reverse('profile-settings'))
+        response = self.client.get(reverse('account_settings'))
         self.assertEqual(response.context['uses_social'], False)
 
         # test with social account
         social_account = SocialAccount.objects.create(user=self.user)
         self.user.socialaccount_set.set([social_account])
 
-        response = self.client.get(reverse('profile-settings'))
+        response = self.client.get(reverse('account_settings'))
         self.assertEqual(response.context['uses_social'], True)
 
     def test_change_settings_get_no_htmx(self):
@@ -92,11 +92,9 @@ class TestProfileViews(TestCase):
         field_names = [
             'pdf_inverted_mode',
             'custom_theme_color',
-            'pdfs_per_page',
             'theme',
+            'theme_color',
             'email',
-            'show_progress_bars',
-            'show_thumbnails',
         ]
         form_list = [
             forms.GenericUserFieldForm,
@@ -104,17 +102,13 @@ class TestProfileViews(TestCase):
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
             forms.EmailForm,
-            forms.GenericUserFieldForm,
-            forms.GenericUserFieldForm,
         ]
         initial_dicts = [
             {'pdf_inverted_mode': 'Disabled'},
             {'custom_theme_color': '#ffa385'},
-            {'pdfs_per_page': 25},
-            {'dark_mode': 'Light', 'theme_color': 'Green'},
+            {'dark_mode': 'Light'},
+            {'theme_color': 'Green'},
             {'email': 'a@a.com'},
-            {'show_progress_bars': 'Enabled'},
-            {'show_thumbnails': 'Disabled'},
         ]
 
         for field_name, form, initial_dict in zip(field_names, form_list, initial_dicts):
@@ -170,31 +164,37 @@ class TestProfileViews(TestCase):
 
     def test_change_settings_dark_mode_post_correct(self):
         self.user.profile.dark_mode = 'Light'
-        self.user.profile.theme_color = 'Green'
         self.user.profile.save()
 
         self.assertEqual(self.user.profile.dark_mode, 'Light')
-        self.assertEqual(self.user.profile.theme_color, 'Green')
         self.client.post(
             reverse('profile-setting-change', kwargs={'field_name': 'theme'}),
-            data={'dark_mode': 'Dark', 'theme_color': 'Blue'},
+            data={'dark_mode': 'Dark'},
         )
 
         # get the user and check if dark mode was changed
         user = User.objects.get(username=self.username)
         self.assertEqual(user.profile.dark_mode, 'Dark')
+
+    def test_change_settings_theme_color_post_correct(self):
+        self.user.profile.theme_color = 'Green'
+        self.user.profile.save()
+
+        self.assertEqual(self.user.profile.theme_color, 'Green')
+        self.client.post(
+            reverse('profile-setting-change', kwargs={'field_name': 'theme_color'}),
+            data={'theme_color': 'Blue'},
+        )
+
+        # get the user and check if dark mode was changed
+        user = User.objects.get(username=self.username)
         self.assertEqual(user.profile.theme_color, 'Blue')
 
     def test_change_settings_normal_post_correct(self):
         for field_name, val_before, val_after in zip(
-            [
-                'pdfs_per_page',
-                'pdf_inverted_mode',
-                'show_progress_bars',
-                'show_thumbnails',
-            ],
-            [25, 'Disabled', 'Enabled', 'Disabled'],
-            [10, 'Enabled', 'Disabled', 'Enabled'],
+            ['pdf_inverted_mode'],
+            ['Disabled'],
+            ['Enabled'],
         ):
             self.assertEqual(getattr(self.user.profile, field_name), val_before)
             self.client.post(
@@ -209,7 +209,7 @@ class TestProfileViews(TestCase):
             reverse('change_sorting', kwargs={'sorting_category': 'pdf_sorting', 'sorting': 'Oldest'})
         )
 
-        self.assertRedirects(response, reverse('profile-settings'), status_code=302)
+        self.assertRedirects(response, reverse('account_settings'), status_code=302)
 
     def test_change_sorting_post_pdf(self):
         self.assertEqual(self.user.profile.pdf_sorting, Profile.PdfSortingChoice.NEWEST)
@@ -224,7 +224,7 @@ class TestProfileViews(TestCase):
     def test_change_tree_mode_post_no_htmx(self):
         response = self.client.post(reverse('change_tree_mode'))
 
-        self.assertRedirects(response, reverse('profile-settings'), status_code=302)
+        self.assertRedirects(response, reverse('account_settings'), status_code=302)
 
     def test_change_tree_mode_post(self):
         self.assertTrue(self.user.profile.tag_tree_mode)
@@ -242,7 +242,7 @@ class TestProfileViews(TestCase):
     def test_open_collapse_tags_post_no_htmx(self):
         response = self.client.post(reverse('open_collapse_tags'))
 
-        self.assertRedirects(response, reverse('profile-settings'), status_code=302)
+        self.assertRedirects(response, reverse('account_settings'), status_code=302)
 
     def test_open_collapse_tags_post(self):
         self.assertFalse(self.user.profile.tags_open)

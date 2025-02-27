@@ -21,13 +21,27 @@ from users.models import Profile
 from users.service import create_demo_user, get_color_shades
 
 
-def settings(request):
-    """View for the profile settings page"""
+def account_settings(request):
+    """View for the account settings page"""
 
     uses_social = request.user.socialaccount_set.exists()
 
     # pragma: no cover
-    return render(request, 'profile_settings.html', {'uses_social': uses_social})
+    return render(request, 'account_settings.html', {'uses_social': uses_social})
+
+
+def ui_settings(request):  # pragma: no cover
+    """View for the ui settings page"""
+
+    # pragma: no cover
+    return render(request, 'ui_settings.html')
+
+
+def danger_settings(request):  # pragma: no cover
+    """View for the danger settings page"""
+
+    # pragma: no cover
+    return render(request, 'danger_settings.html')
 
 
 class ChangeSetting(View):
@@ -35,12 +49,10 @@ class ChangeSetting(View):
 
     form_dict = {
         'email': forms.EmailForm,
-        'pdfs_per_page': forms.create_user_field_form(['pdfs_per_page']),
-        'theme': forms.create_user_field_form(['dark_mode', 'theme_color']),
+        'theme': forms.create_user_field_form(['dark_mode']),
+        'theme_color': forms.create_user_field_form(['theme_color']),
         'pdf_inverted_mode': forms.create_user_field_form(['pdf_inverted_mode']),
         'custom_theme_color': forms.CustomThemeColorForm,
-        'show_progress_bars': forms.create_user_field_form(['show_progress_bars']),
-        'show_thumbnails': forms.create_user_field_form(['show_thumbnails']),
     }
 
     def get(self, request: HttpRequest, field_name: str):
@@ -48,12 +60,10 @@ class ChangeSetting(View):
 
         initial_dict = {
             'email': {'email': request.user.email},
-            'pdfs_per_page': {'pdfs_per_page': request.user.profile.pdfs_per_page},
-            'theme': {'dark_mode': request.user.profile.dark_mode, 'theme_color': request.user.profile.theme_color},
+            'theme': {'dark_mode': request.user.profile.dark_mode},
+            'theme_color': {'theme_color': request.user.profile.theme_color},
             'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
-            'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
-            'show_thumbnails': {'show_thumbnails': request.user.profile.show_thumbnails},
         }
 
         if request.htmx:
@@ -84,7 +94,7 @@ class ChangeSetting(View):
                 email = form.cleaned_data['email']
                 if User.objects.filter(email=email).exclude(id=request.user.id).exists():
                     messages.warning(request, f'{email} is already in use.')
-                    return redirect('profile-settings')
+                    return redirect('account_settings')
                 form.save()
 
                 # Then send confirmation email
@@ -108,7 +118,7 @@ class ChangeSetting(View):
             except:  # noqa # pragma: no cover
                 messages.warning(request, 'Input is not valid!')
 
-        return redirect('profile-settings')
+        return redirect(request.META.get('HTTP_REFERER', 'account_settings'))
 
 
 class ChangeSorting(View):
@@ -132,7 +142,7 @@ class ChangeSorting(View):
 
             return HttpResponseClientRefresh()
 
-        return redirect('profile-settings')
+        return redirect('account_settings')
 
 
 class ChangeTreeMode(View):
@@ -149,7 +159,7 @@ class ChangeTreeMode(View):
 
             return HttpResponseClientRefresh()
 
-        return redirect('profile-settings')
+        return redirect('account_settings')
 
 
 class OpenCollapseTags(View):
@@ -166,7 +176,7 @@ class OpenCollapseTags(View):
 
             return HttpResponseClientRefresh()
 
-        return redirect('profile-settings')
+        return redirect('account_settings')
 
 
 class Delete(View):
