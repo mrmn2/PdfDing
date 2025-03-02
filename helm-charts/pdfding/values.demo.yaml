@@ -5,7 +5,6 @@ pdfding:
     hostName: "demo.pdfding.com"
     disableUserSignup:
       enabled: true
-    secretKey: "some_secret"
     secureHstsSeconds: "31536000"
 
   extraConfig:
