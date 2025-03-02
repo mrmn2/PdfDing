@@ -18,7 +18,7 @@ PdfDing is a PDF manager, viewer and editor that you can host yourself. It offer
 devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
-your PDFs. Inspired by [linkding](https://github.com/sissbruecker/linkding).
+your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/linkding).
 
 ## Live Demo
 Try PdfDing on the demo instance: https://demo.pdfding.com
@@ -29,14 +29,11 @@ This is a temporary live demo with shared user accounts, all data will be delete
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
 * Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
 * Edit PDFs by adding annotations, highlighting and drawings
-* Clean, intuitive UI with dark mode, inverted color mode and custom theme colors
+* Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
 * SSO support via OIDC
 * Share PDFs with an external audience via a link or a QR Code with optional access control
 * Markdown Notes
 * Progress bars show the reading progress of each PDF at a quick glance
-
-## Screenshots
-Screenshots can be found [here](https://github.com/mrmn2/PdfDing/blob/master/docs/screenshots.md).
 
 ## Getting started
 ### Using Docker
@@ -101,7 +98,3 @@ different focus, it is all about reading and organizing your PDFs. All features 
 improving the reading experience or making the management of your PDF collection simpler. PdfDing's editing
 functionalities were added with the same idea in mind. You can add annotations, highlighting and drawings to
 PDFs, so that you can highlight or add information that will be beneficial to your reading experience.
-
-## Acknowledements
-* This project started by adjusting the django starter of Andreas Jud: [django-starter](https://github.com/andyjud/django-starter), [django-starter-assets](https://github.com/andyjud/django-starter-assets)
-* As mentioned above, inspired by [linkding](https://github.com/sissbruecker/linkding).
