@@ -1,5 +1,11 @@
 # Changelog
 
+##  v1.1.0 (Mar 02, 2025)
+## What's Changed
+* add list and grid layouts for pdf overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/109
+* revamped settings by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/107
+* minor ui adjustments to detail pages by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/109
+
 ##  v1.0.0 (Feb 26, 2025)
 ## What's Changed
 * Revamp overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/97
