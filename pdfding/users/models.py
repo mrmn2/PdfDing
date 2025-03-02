@@ -52,6 +52,11 @@ class Profile(models.Model):
         EMAIL_ASC = 'Email_asc'
         EMAIL_DESC = 'Email_desc'
 
+    class LayoutChoice(models.TextChoices):
+        COMPACT = 'Compact'
+        LIST = 'List'
+        GRID = 'Grid'
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # set dummy default colors, will be overwritten
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=5, default=DarkMode.DARK)
@@ -60,14 +65,12 @@ class Profile(models.Model):
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     custom_theme_color_tertiary_1 = models.CharField(max_length=7, default='#99614f')
     custom_theme_color_tertiary_2 = models.CharField(max_length=7, default='#ffc7b5')
+    layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
-    pdfs_per_page = models.IntegerField(choices=PdfsPerPage.choices, default=PdfsPerPage.p_25)
     pdf_sorting = models.CharField(choices=PdfSortingChoice, max_length=15, default=PdfSortingChoice.NEWEST)
     shared_pdf_sorting = models.CharField(
         choices=SharedPdfSortingChoice, max_length=15, default=SharedPdfSortingChoice.NEWEST
     )
-    show_progress_bars = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
-    show_thumbnails = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     tags_open = models.BooleanField(default=False)
     tag_tree_mode = models.BooleanField(default=True)
     user_sorting = models.CharField(choices=UserSortingChoice, max_length=15, default=UserSortingChoice.NEWEST)

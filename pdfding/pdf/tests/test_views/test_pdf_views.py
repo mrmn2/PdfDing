@@ -311,6 +311,7 @@ class TestOverviewMixin(TestCase):
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
             'page': 'pdf_overview',
+            'layout': 'Compact',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -326,6 +327,7 @@ class TestOverviewMixin(TestCase):
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': 'starred',
             'page': 'pdf_overview_starred',
+            'layout': 'Compact',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -341,6 +343,7 @@ class TestOverviewMixin(TestCase):
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
             'page': 'pdf_overview',
+            'layout': 'Compact',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -356,6 +359,7 @@ class TestOverviewMixin(TestCase):
             'tag_info_dict': 'tag_info_dict',
             'special_pdf_selection': '',
             'page': 'pdf_overview',
+            'layout': 'Compact',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)

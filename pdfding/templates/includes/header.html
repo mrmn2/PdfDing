@@ -37,15 +37,15 @@
             {% elif page == 'user_overview' %}
             {% include 'includes/user_header_extra.html' %}
             {% endif %}
-            <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:pr-1 group relative
+            <a id="add_pdf" class="cursor-pointer rounded-sm py-1 group relative
                       hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"
                href="{% url 'add_pdf' %}">
-                <svg class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <!-- source: https://www.svgrepo.com/svg/471793/plus -->
                     <!-- license: CC0 License-->
                     <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span class="absolute pointer-events-none top-10 left-[2px] mt-1 px-2 py-1 rounded-sm opacity-0
+                <span class="absolute pointer-events-none top-8 -left-2! mt-1 px-2 py-1 rounded-sm opacity-0
                              group-hover:opacity-100 group-hover:delay-350
                              text-slate-600 dark:text-slate-200 creme:text-stone-700
                              bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Add

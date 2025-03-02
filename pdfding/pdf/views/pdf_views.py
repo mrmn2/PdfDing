@@ -208,6 +208,7 @@ class OverviewMixin(BasePdfMixin):
             'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': service.get_tag_info_dict(request.user.profile),
             'page': page,
+            'layout': request.user.profile.layout,
         }
 
         return extra_context

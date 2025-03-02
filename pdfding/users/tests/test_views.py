@@ -226,6 +226,19 @@ class TestProfileViews(TestCase):
 
         self.assertRedirects(response, reverse('account_settings'), status_code=302)
 
+    def test_change_layout_post(self):
+        self.assertEqual(self.user.profile.layout, Profile.LayoutChoice.COMPACT)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(reverse('change_layout', kwargs={'layout': 'grid'}), **headers)
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertEqual(changed_user.profile.layout, Profile.LayoutChoice.GRID)
+
+    def test_change_layout_post_no_htmx(self):
+        response = self.client.post(reverse('change_layout', kwargs={'layout': 'grid'}))
+
+        self.assertRedirects(response, reverse('account_settings'), status_code=302)
+
     def test_change_tree_mode_post(self):
         self.assertTrue(self.user.profile.tag_tree_mode)
 

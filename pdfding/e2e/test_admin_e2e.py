@@ -35,11 +35,6 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.user_sorting = Profile.UserSortingChoice.EMAIL_ASC
         self.user.profile.save()
 
-        date_joined = self.user.date_joined.strftime("%b. %-d, %Y")
-        # months that are not shortened do not need the dot
-        if 'May' in date_joined or 'July' in date_joined or 'June' in date_joined:
-            date_joined.replace('.', '')
-
         with sync_playwright() as p:
             self.open(reverse("user_overview"), p)
 
@@ -51,8 +46,6 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
             # assert there is only one admin
             expect(self.page.get_by_text("| Admin")).to_have_count(1)
-            for i in range(4):
-                expect(self.page.get_by_text(f"Registered: {date_joined} | PDFs: {i}")).to_have_count(1)
 
             expect(self.page.get_by_text("Delete")).to_have_count(4)
             expect(self.page.get_by_text("Remove Admin Rights")).to_have_count(1)

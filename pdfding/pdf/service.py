@@ -214,13 +214,20 @@ def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: st
     return overview_url
 
 
-def process_with_pypdfium(pdf: Pdf, extract_thumbnail_and_preview: bool = True):
+def process_with_pypdfium(
+    pdf: Pdf, extract_thumbnail_and_preview: bool = True, delete_existing_thumbnail_and_preview: bool = False
+):
     """
     Process the pdf with pypdfium. This will extract the number of pages and optionally the thumbnail + preview of the
     Pdf.
     """
 
     try:
+        if delete_existing_thumbnail_and_preview:  # pragma: no cover
+            pdf.thumbnail.delete()
+            pdf.preview.delete()
+            pdf.save()
+
         pdf_document = PdfDocument(pdf.file.path, autoclose=True)
         pdf.number_of_pages = len(pdf_document)
         if extract_thumbnail_and_preview:
@@ -235,8 +242,8 @@ def process_with_pypdfium(pdf: Pdf, extract_thumbnail_and_preview: bool = True):
 def set_thumbnail_and_preview(
     pdf: Pdf,
     pdf_document: PdfDocument,
-    desired_thumbnail_width: int = 120,
-    desired_thumbnail_width_height_ratio: float = 1.9,
+    desired_thumbnail_width: int = 135,
+    desired_thumbnail_width_height_ratio: float = 1 / 1.414,
     desired_preview_width: int = 450,
 ):
     """Extract and set the thumbnail and the preview image of the pdf file."""

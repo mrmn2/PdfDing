@@ -145,6 +145,22 @@ class ChangeSorting(View):
         return redirect('account_settings')
 
 
+class ChangeLayout(View):
+    """View for changing the layout settings for the pdf overview"""
+
+    def post(self, request: HttpRequest, layout: str):
+        """Change the layout setting."""
+
+        if request.htmx:
+            user_profile = request.user.profile
+            user_profile.layout = Profile.LayoutChoice[str.upper(layout)]
+            user_profile.save()
+
+            return HttpResponseClientRefresh()
+
+        return redirect('account_settings')
+
+
 class ChangeTreeMode(View):
     """View for turning tag tree mode on and off."""
 

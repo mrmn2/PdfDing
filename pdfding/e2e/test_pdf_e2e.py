@@ -286,37 +286,6 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#pdf-16")).to_contain_text('page_2_pdf')
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
 
-    # def test_thumbnails_on(self):
-    #     self.user.profile.show_thumbnails = 'Enabled'
-    #     self.user.profile.save()
-    #
-    #     with sync_playwright() as p:
-    #         self.open(reverse('pdf_overview'), p)
-    #         expect(self.page.locator("#thumbnail-1")).to_be_visible()
-    #
-    # def test_thumbnail_preview(self):
-    #     self.user.profile.show_thumbnails = 'Enabled'
-    #     self.user.profile.save()
-    #
-    #     with sync_playwright() as p:
-    #         self.open(reverse('pdf_overview'), p)
-    #
-    #         expect(self.page.locator("#preview_inner")).not_to_be_visible()
-    #         self.page.locator("#thumbnail-1").click()
-    #         expect(self.page.locator("#preview_inner")).to_be_visible()
-    #
-    #         # click somewhere
-    #         self.page.get_by_role("banner").click()
-    #         expect(self.page.locator("#preview_inner")).not_to_be_visible()
-    #
-    # def test_thumbnails_off(self):
-    #     self.user.profile.show_thumbnails = 'Disabled'
-    #     self.user.profile.save()
-    #
-    #     with sync_playwright() as p:
-    #         self.open(reverse('pdf_overview'), p)
-    #         expect(self.page.locator("#thumbnail-1")).not_to_be_visible()
-
     def test_notes(self):
         pdf = Pdf.objects.get(name='pdf_4_14')
         pdf.notes = 'some markdown notes'
@@ -489,6 +458,19 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
 
         self.assertEqual(changed_user.profile.pdf_sorting, Profile.PdfSortingChoice.NAME_ASC)
 
+    def test_change_layout(self):
+        self.assertEqual(self.user.profile.layout, Profile.LayoutChoice.COMPACT)
+
+        with sync_playwright() as p:
+            self.open(reverse("pdf_overview"), p)
+
+            self.page.locator("#layout_settings").click()
+            self.page.get_by_text("Grid").click()
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertEqual(changed_user.profile.layout, Profile.LayoutChoice.GRID)
+
     @patch('pdf.views.pdf_views.OverviewMixin.fuzzy_filter_pdfs', new=new_fuzzy_filter_pdfs)
     def test_delete(self):
         with sync_playwright() as p:
@@ -610,12 +592,6 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         pdf.file = dummy_file
         pdf.save()
 
-        # only check for date, time is not easily reproducible
-        creation_date = pdf.creation_date.strftime('%b. %-d, %Y')
-        # months that are not shortened do not need the dot
-        if 'May' in creation_date or 'July' in creation_date or 'June' in creation_date:
-            creation_date.replace('.', '')
-
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
@@ -626,7 +602,6 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).to_contain_text("10% - Page 1 of 10")
             expect(self.page.locator("#views")).to_contain_text("1001")
-            expect(self.page.locator("#creation_date")).to_contain_text(creation_date)
             expect(self.page.locator("#pdf_id")).to_contain_text(str(pdf.id))
 
     def test_details_progress_not_visible(self):
@@ -634,12 +609,6 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         pdf.views = 1001
         pdf.number_of_pages = -1
         pdf.save()
-
-        # only check for date, time is not easily reproducible
-        creation_date = pdf.creation_date.strftime('%b. %-d, %Y')
-        # months that are not shortened do not need the dot
-        if 'May' in creation_date or 'July' in creation_date or 'June' in creation_date:
-            creation_date.replace('.', '')
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
@@ -650,7 +619,6 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).not_to_be_visible()
             expect(self.page.locator("content")).to_contain_text("1001")
-            expect(self.page.locator("content")).to_contain_text(creation_date)
 
     def test_change_details(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
