@@ -72,7 +72,7 @@
             <div class="w-5/6 pr-4">
                 <span id="name">{{ pdf.name }}</span>
             </div>
-            <div class="w-1/6 pl-2 md:pl-8">
+            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
                 <a id="name-edit" class="hover:underline"
                     hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='name' %}"
                     hx-target="#name"
@@ -98,7 +98,7 @@
                 {% endif%}
                 </span>
             </div>
-            <div class="w-1/6 pl-2 md:pl-8">
+            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
                 <a id="tags-edit" class="hover:underline"
                     hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='tags' %}"
                     hx-target="#tags"
@@ -122,7 +122,7 @@
                 {% endif%}
                 </span>
             </div>
-            <div class="w-1/6 pl-2 md:pl-8">
+            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
                 <a id="description-edit" class="hover:underline"
                     hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='description' %}"
                     hx-target="#description"
@@ -148,7 +148,7 @@
                 </span>
                 {% endif%}
             </div>
-            <div class="w-1/6 pl-2 md:pl-8">
+            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
                 <a id="notes-edit" class="hover:underline"
                     hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='notes' %}"
                     hx-target="#notes"

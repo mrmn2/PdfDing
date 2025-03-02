@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from django.contrib.auth.models import User
 from django.urls import reverse
-from helpers import PdfDingE2ETestCase, cancel_delete_helper
+from helpers import PdfDingE2ETestCase
 from pdf.models import Pdf, SharedPdf
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
@@ -217,7 +217,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_details', kwargs={'identifier': shared_pdf.id}), p)
 
-            self.page.get_by_role("button", name="Delete").click()
+            self.page.locator("#delete_shared").click()
             self.page.get_by_text("Confirm").click()
 
             expect(self.page.locator("body")).to_contain_text("You have not shared any PDFs yet")
@@ -228,4 +228,14 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_details', kwargs={'identifier': shared_pdf.id}), p)
 
-            cancel_delete_helper(self.page)
+            expect(self.page.get_by_text("Confirm")).not_to_be_visible()
+            expect(self.page.get_by_text("Cancel")).not_to_be_visible()
+            expect(self.page.locator("#delete_shared")).to_be_visible()
+            self.page.locator("#delete_shared").click()
+            expect(self.page.get_by_text("Confirm")).to_be_visible()
+            expect(self.page.get_by_text("Cancel")).to_be_visible()
+            expect(self.page.locator("#delete_shared")).not_to_be_visible()
+            self.page.get_by_text("Cancel").click()
+            expect(self.page.get_by_text("Confirm")).not_to_be_visible()
+            expect(self.page.get_by_text("Cancel")).not_to_be_visible()
+            expect(self.page.locator("#delete_shared")).to_be_visible()
