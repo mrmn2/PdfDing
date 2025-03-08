@@ -68,6 +68,7 @@ class Profile(models.Model):
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_sorting = models.CharField(choices=PdfSortingChoice, max_length=15, default=PdfSortingChoice.NEWEST)
+    show_progress_bars = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
     shared_pdf_sorting = models.CharField(
         choices=SharedPdfSortingChoice, max_length=15, default=SharedPdfSortingChoice.NEWEST
     )

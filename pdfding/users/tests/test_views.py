@@ -89,19 +89,14 @@ class TestProfileViews(TestCase):
 
         headers = {'HTTP_HX-Request': 'true'}
 
-        field_names = [
-            'pdf_inverted_mode',
-            'custom_theme_color',
-            'theme',
-            'theme_color',
-            'email',
-        ]
+        field_names = ['pdf_inverted_mode', 'custom_theme_color', 'theme', 'theme_color', 'email', 'show_progress_bars']
         form_list = [
             forms.GenericUserFieldForm,
             forms.CustomThemeColorForm,
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
             forms.EmailForm,
+            forms.GenericUserFieldForm,
         ]
         initial_dicts = [
             {'pdf_inverted_mode': 'Disabled'},
@@ -109,6 +104,7 @@ class TestProfileViews(TestCase):
             {'dark_mode': 'Light'},
             {'theme_color': 'Green'},
             {'email': 'a@a.com'},
+            {'show_progress_bars': 'Enabled'},
         ]
 
         for field_name, form, initial_dict in zip(field_names, form_list, initial_dicts):
@@ -192,9 +188,9 @@ class TestProfileViews(TestCase):
 
     def test_change_settings_normal_post_correct(self):
         for field_name, val_before, val_after in zip(
-            ['pdf_inverted_mode'],
-            ['Disabled'],
-            ['Enabled'],
+            ['pdf_inverted_mode', 'show_progress_bars'],
+            ['Disabled', 'Enabled'],
+            ['Enabled', 'Disabled'],
         ):
             self.assertEqual(getattr(self.user.profile, field_name), val_before)
             self.client.post(

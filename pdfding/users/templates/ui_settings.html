@@ -74,6 +74,22 @@
                     </a>
                 </div>
             </div>
+            <div class="pt-6">
+                <span class="text-lg font-bold">Show Progress Bars</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-5/6">
+                    <span id="show_progress_bars">{{ user.profile.show_progress_bars }}</span>
+                </div>
+                <div class="pr-6">
+                    <a id="show_progress_bars_edit" class="cursor-pointer text-primary hover:text-secondary"
+                        hx-get="{% url 'profile-setting-change' 'show_progress_bars' %}"
+                        hx-target="#show_progress_bars"
+                        hx-swap="innerHTML" >
+                        Edit
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

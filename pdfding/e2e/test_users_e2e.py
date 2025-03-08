@@ -125,6 +125,21 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             # check inverted color mode after changing
             expect(self.page.locator("#pdf_inverted_mode")).to_contain_text("Enabled")
 
+    def test_settings_change_show_progress_bars(self):
+        with sync_playwright() as p:
+            self.open(reverse('ui_settings'), p)
+
+            # check inverted color mode before changing
+            expect(self.page.locator("#show_progress_bars")).to_contain_text("Enabled")
+
+            # change inverted color mode
+            self.page.locator("#show_progress_bars_edit").click()
+            self.page.locator("#id_show_progress_bars").select_option("Disabled")
+            self.page.get_by_role("button", name="Submit").click()
+
+            # check inverted color mode after changing
+            expect(self.page.locator("#show_progress_bars")).to_contain_text("Disabled")
+
     def test_settings_delete(self):
         with sync_playwright() as p:
             self.open(reverse('danger_settings'), p)
