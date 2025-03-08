@@ -69,9 +69,11 @@
                 <span class="truncate">{{ pdf.views }} Views</span>
                 {% endif %}
             </div>
+            {% if pdf.number_of_pages > 0 %}
             <div class="pb-1">
                 <span class="truncate"> {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}</span>
             </div>
+            {% endif %}
             {% if pdf.tags.all %}
             <div class="truncate md:text-base pb-1">
                 {% for tag in pdf.tags.all|dictsort:"name" %}
