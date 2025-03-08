@@ -243,7 +243,7 @@ def set_thumbnail_and_preview(
     pdf: Pdf,
     pdf_document: PdfDocument,
     desired_thumbnail_width: int = 135,
-    desired_thumbnail_width_height_ratio: float = 1 / 1.414,
+    desired_thumbnail_width_height_ratio: float = 0.77,
     desired_preview_width: int = 450,
 ):
     """Extract and set the thumbnail and the preview image of the pdf file."""

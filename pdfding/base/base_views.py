@@ -44,34 +44,21 @@ class BaseOverview(View):
         Display the overview.
         """
 
+        sorting = self.get_sorting(request)
+        page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page)
+        context = {
+            'page_obj': page_object,
+            'sorting': sorting,
+            'items_per_page': items_per_page,
+            'next_page_available': next_page_available,
+            'current_page': page,
+        }
+
+        context |= self.get_extra_context(request)
+
         if request.htmx:
-            sorting = self.get_sorting(request)
-            page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page)
-
-            return render(
-                request,
-                f'includes/{self.overview_page_name}.html',
-                context={
-                    'page_obj': page_object,
-                    'items_per_page': items_per_page,
-                    'next_page_available': next_page_available,
-                    'current_page': page,
-                },
-            )
+            return render(request, f'includes/{self.overview_page_name}.html', context)
         else:
-            sorting = self.get_sorting(request)
-            page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page)
-
-            context = {
-                'page_obj': page_object,
-                'sorting': sorting,
-                'current_page': 1,
-                'items_per_page': items_per_page,
-                'next_page_available': next_page_available,
-            }
-
-            context |= self.get_extra_context(request)
-
             return render(request, f'{self.obj_name}_overview.html', context)
 
     def get_page_objects(self, request: HttpRequest, sorting: str, page: int, items_per_page: int):

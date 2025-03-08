@@ -118,9 +118,11 @@ class TestViews(TestCase):
 
         # since we are getting the second page only apple should be there and no next page
         self.assertEqual(pdf_names, ['Apple'])
+        self.assertEqual(response.context['other'], 1234)
         self.assertEqual(response.context['next_page_available'], False)
         self.assertEqual(response.context['items_per_page'], '3')
         self.assertEqual(response.context['current_page'], '2')
+        self.assertEqual(str(response.context['sorting']), 'OrderBy(Lower(F(name)), descending=True)')
         self.assertTemplateUsed(response, 'includes/pdf_overview/overview_page.html')
 
     @override_settings(ROOT_URLCONF=__name__)

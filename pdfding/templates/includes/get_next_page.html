@@ -2,13 +2,13 @@
      x-data="{ in_progress: false }"
      class="flex justify-center items-center gap-x-1 font-semibold
             text-slate-500 dark:text-slate-400 creme:text-stone-500
-            [&>div>div]:flex [&>div>div]:flex-row [&>div>div]:items-center [&>div>div]:gap-x-1">
+            [&>div>div]:flex [&>div>div]:flex-row [&>div>div]:items-center [&>div>div]:gap-x-1 pt-2">
     {% if next_page_available %}
     <div id="next_page_{{ current_page }}_toggle">
         <div class="cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 creme:hover:text-stone-700"
              x-show="!in_progress"
              @click="in_progress = true"
-             hx-get="{% url get_next_overview_page_name page=current_page|add:1 %}"
+             hx-get="{% url get_next_overview_page_name page=current_page|add:1 %}?{{ request.META.QUERY_STRING }}"
              hx-target="#next_page_{{ current_page }}"
              hx-swap="outerHTML">
             <a>Load More</a>

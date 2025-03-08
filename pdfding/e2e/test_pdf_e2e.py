@@ -273,17 +273,20 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.OLDEST
         self.user.profile.save()
 
-        Pdf.objects.create(owner=self.user.profile, name='page_1_pdf')
-        Pdf.objects.create(owner=self.user.profile, name='page_2_pdf')
+        # in set up 14 pdfs were already created
+        # other should not be shown as we'll search for pdf
+        Pdf.objects.create(owner=self.user.profile, name='other')
+        Pdf.objects.create(owner=self.user.profile, name='pdf_page_2')
 
         with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#pdf-15")).to_be_visible()
-            expect(self.page.locator("#pdf-16")).not_to_be_visible()
+            self.open(f"{reverse('pdf_overview')}?search=pdf", p)
+            expect(self.page.locator("#pdf-12")).to_be_visible()
+            expect(self.page.locator("#pdf-15")).not_to_be_visible()
 
             self.page.locator("#next_page_1_toggle").click()
-            expect(self.page.locator("#pdf-16")).to_be_visible()
-            expect(self.page.locator("#pdf-16")).to_contain_text('page_2_pdf')
+            # since other is not visible #pdf-15 will contain pdf_page_2
+            expect(self.page.locator("#pdf-15")).to_be_visible()
+            expect(self.page.locator("#pdf-15")).to_contain_text('pdf_page_2')
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
 
     def test_notes(self):

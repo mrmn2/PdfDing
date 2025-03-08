@@ -1,6 +1,6 @@
 <div  x-data="{ show_notes_{{ loop_id }}: false }">
-    <div class="flex flex-row -ml-2! md:-ml-3! pt-1 min-h-38" x-data="{ tooltip_date: false }">
-        <div id="thumbnail-{{ loop_id }}" class="pb-1 [&>div]:cursor-pointer"
+    <div class="flex flex-row pt-1 pb-0 min-h-36" x-data="{ tooltip_date: false }">
+        <div id="thumbnail-{{ loop_id }}" class="[&>div]:cursor-pointer"
              hx-get="{% url 'show_preview' pdf.id %}"
              hx-target="#preview"
              hx-swap="innerHTML"
@@ -11,7 +11,7 @@
                    src="{% url 'serve_thumbnail' pdf.id %}"/>
             </div>
             {% else %}
-            <div class="flex items-center justify-center !rounded-md border-[1px] w-26! h-36!
+            <div class="flex items-center justify-center !rounded-md border-[1px] w-26! h-34!
                         border-slate-200 !bg-slate-100 text-slate-700
                         dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200
                         creme:border-stone-400 creme:!bg-creme-light creme:text-stone-400">
@@ -24,7 +24,7 @@
             </div>
             {% endif %}
         </div>
-        <div class="truncate w-full flex flex-col pl-3 md:pl-8 text-sm text-slate-700 dark:text-slate-300 creme:text-stone-700">
+        <div class="truncate w-full flex flex-col pl-3 md:pl-5 text-sm text-slate-700 dark:text-slate-300 creme:text-stone-700">
             <div class="flex flex-row justify-between relative -mb-1
                         text-slate-400 dark:text-slate-500 creme:text-stone-500">
                 <div>

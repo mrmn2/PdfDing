@@ -68,17 +68,17 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.user_sorting = Profile.UserSortingChoice.OLDEST
         self.user.profile.save()
 
-        for i in range(4, 17):
+        for i in range(4, 14):
             User.objects.create_user(username=i, password="password", email=f"{i}@a.com")
 
         with sync_playwright() as p:
             self.open(reverse('user_overview'), p)
-            expect(self.page.locator("#user-15")).to_be_visible()
-            expect(self.page.locator("#user-16")).not_to_be_visible()
+            expect(self.page.locator("#user-12")).to_be_visible()
+            expect(self.page.locator("#user-13")).not_to_be_visible()
 
             self.page.locator("#next_page_1_toggle").click()
-            expect(self.page.locator("#user-16")).to_be_visible()
-            expect(self.page.locator("#user-16")).to_contain_text('15@a.com')
+            expect(self.page.locator("#user-13")).to_be_visible()
+            expect(self.page.locator("#user-13")).to_contain_text('12@a.com')
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')

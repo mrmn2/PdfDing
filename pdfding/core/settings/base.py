@@ -165,7 +165,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 # number of items of overview paginations
-ITEMS_PER_PAGE = 15
+ITEMS_PER_PAGE = 12
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

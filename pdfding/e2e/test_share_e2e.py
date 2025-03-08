@@ -82,17 +82,17 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.shared_pdf_sorting = Profile.SharedPdfSortingChoice.OLDEST
         self.user.profile.save()
 
-        for i in range(17):
+        for i in range(14):
             SharedPdf.objects.create(owner=self.user.profile, name=f'shared_{i}', pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_overview'), p)
-            expect(self.page.locator("#shared-pdf-15")).to_be_visible()
-            expect(self.page.locator("#shared-pdf-16")).not_to_be_visible()
+            expect(self.page.locator("#shared-pdf-12")).to_be_visible()
+            expect(self.page.locator("#shared-pdf-13")).not_to_be_visible()
 
             self.page.locator("#next_page_1_toggle").click()
-            expect(self.page.locator("#shared-pdf-16")).to_be_visible()
-            expect(self.page.locator("#shared-pdf-16")).to_contain_text('shared_15')
+            expect(self.page.locator("#shared-pdf-13")).to_be_visible()
+            expect(self.page.locator("#shared-pdf-13")).to_contain_text('shared_12')
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
 
     def test_delete(self):
