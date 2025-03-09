@@ -9,7 +9,7 @@
     {% with loop_id=forloop.counter|add:loop_offset %}
     <div x-data="{ show_actions_{{ loop_id }}: false }"
          id="pdf-{{ loop_id }}"
-         class="relative border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
+         class="h-min relative border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
                 dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-600
                 creme:bg-creme-dark-light creme:border-creme-dark creme:hover:border-stone-400">
         <div class="px-3 py-1">
@@ -21,7 +21,7 @@
         </div>
         {% include 'includes/pdf_overview/pdf_actions_menu.html' %}
         {% if request.user.profile.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 %}
-        <div class="hover:cursor-pointer -mt-1!" x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
+        <div class="hover:cursor-pointer" x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
                 <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
                      class="w-full h-1 rounded-sm">
                     <div style="width: {{ pdf.progress }}%;" class="h-1 bg-primary! rounded-sm"></div>
