@@ -7,15 +7,17 @@ from uuid import uuid4
 import pdf.service as service
 from django.contrib.auth.models import User
 from django.core.files import File
+from django.db.models.functions import Lower
 from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
-from pdf.models import Pdf, Tag
+from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
 from PIL import Image
 from pypdfium2 import PdfDocument
+from users.service import get_demo_pdf
 
 
-class TestService(TestCase):
+class TestTagServices(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
 
@@ -23,7 +25,7 @@ class TestService(TestCase):
         Tag.objects.create(name='existing', owner=self.user.profile)
 
         tag_names = ['existing', 'generated']
-        tags = service.process_tag_names(tag_names, self.user.profile)
+        tags = service.TagServices.process_tag_names(tag_names, self.user.profile)
 
         for tag, tag_name in zip(tags, tag_names):
             self.assertEqual(tag.name, tag_name)
@@ -32,26 +34,26 @@ class TestService(TestCase):
         self.assertEqual(tags[1].owner, self.user.profile)
 
     def test_process_tag_names_empty(self):
-        tags = service.process_tag_names([], self.user.profile)
+        tags = service.TagServices.process_tag_names([], self.user.profile)
 
         self.assertEqual(tags, [])
 
-    @mock.patch('pdf.service.get_tag_info_dict_tree_mode')
+    @mock.patch('pdf.service.TagServices.get_tag_info_dict_tree_mode')
     def test_get_tag_info_dict_tree_mode_enabled(self, mock_get_tag_info_dict_tree_mode):
         profile = self.user.profile
         profile.tag_tree_mode = True
         profile.save()
 
-        service.get_tag_info_dict(profile)
+        service.TagServices.get_tag_info_dict(profile)
         mock_get_tag_info_dict_tree_mode.assert_called_once_with(profile)
 
-    @mock.patch('pdf.service.get_tag_info_dict_normal_mode')
+    @mock.patch('pdf.service.TagServices.get_tag_info_dict_normal_mode')
     def test_get_tag_info_dict_tree_mode_disabled(self, mock_get_tag_info_dict_normal_mode):
         profile = self.user.profile
         profile.tag_tree_mode = False
         profile.save()
 
-        service.get_tag_info_dict(profile)
+        service.TagServices.get_tag_info_dict(profile)
         mock_get_tag_info_dict_normal_mode.assert_called_once_with(profile)
 
     def test_get_tag_info_dict_normal_mode(self):
@@ -76,7 +78,7 @@ class TestService(TestCase):
 
         pdf.tags.set(tags)
 
-        generated_tag_dict = service.get_tag_info_dict_normal_mode(self.user.profile)
+        generated_tag_dict = service.TagServices.get_tag_info_dict_normal_mode(self.user.profile)
         create_list = [(tag_name, {'display_name': tag_name}) for tag_name in sorted(tag_names, key=str.casefold)]
         expected_tag_dict = OrderedDict(create_list)
 
@@ -105,7 +107,7 @@ class TestService(TestCase):
 
         pdf.tags.set(tags)
 
-        generated_tag_dict = service.get_tag_info_dict_tree_mode(self.user.profile)
+        generated_tag_dict = service.TagServices.get_tag_info_dict_tree_mode(self.user.profile)
         expected_tag_dict = OrderedDict(
             [
                 (
@@ -227,6 +229,154 @@ class TestService(TestCase):
 
         self.assertEqual(expected_tag_dict, generated_tag_dict)
 
+
+class TestPdfProcessingServices(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
+
+    @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
+    def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        self.assertEqual(pdf.number_of_pages, -1)
+
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            pdf.file = File(f, name=dummy_path.name)
+            pdf.save()
+
+        service.PdfProcessingServices.process_with_pypdfium(pdf, False)
+
+        pdf = self.user.profile.pdf_set.get(name=pdf.name)
+        self.assertEqual(pdf.number_of_pages, 2)
+        mock_set_thumbnail_and_preview.assert_not_called()
+
+    @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
+    def test_set_process_with_pypdfium_with_images(self, mock_set_thumbnail_and_preview):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        self.assertEqual(pdf.number_of_pages, -1)
+
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        with dummy_path.open(mode="rb") as f:
+            pdf.file = File(f, name=dummy_path.name)
+            pdf.save()
+
+        mock_set_thumbnail_and_preview.return_value = pdf
+
+        service.PdfProcessingServices.process_with_pypdfium(pdf)
+
+        pdf = self.user.profile.pdf_set.get(name=pdf.name)
+        self.assertEqual(pdf.number_of_pages, 2)
+        mock_set_thumbnail_and_preview.assert_called_once()
+
+    def test_set_process_with_pypdfium_exception(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+
+        file_mock = mock.MagicMock(spec=File, name='FileMock')
+        file_mock.name = 'test1.pdf'
+        pdf.file = file_mock
+        pdf.save()
+
+        service.PdfProcessingServices.process_with_pypdfium(pdf, False)
+        pdf = self.user.profile.pdf_set.get(name=pdf.name)
+        self.assertEqual(pdf.number_of_pages, -1)
+
+    def test_set_thumbnail_and_preview(self):
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        with dummy_path.open(mode="rb") as f:
+            pdf.file = File(f, name=dummy_path.name)
+            pdf.save()
+
+        pdf_document = PdfDocument(pdf.file.path, autoclose=True)
+
+        pdf = service.PdfProcessingServices.set_thumbnail_and_preview(pdf, pdf_document, 120, 2, 400)
+        thumbnail_pil_image = Image.open(pdf.thumbnail.file)
+        preview_pil_image = Image.open(pdf.preview.file)
+
+        self.assertEqual(thumbnail_pil_image.size, (120, 60))
+        self.assertEqual(preview_pil_image.width, 400)
+
+        pdf_document.close()
+
+    def test_set_thumbnail_and_preview_exception(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        # check that exception is caught and thumbnail stays unset
+        pdf = service.PdfProcessingServices.set_thumbnail_and_preview(pdf, None, 120, 2, 150)
+
+        self.assertFalse(pdf.thumbnail)
+
+    def test_get_pdf_info_list(self):
+        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+
+        for i in range(3):
+            pdf = Pdf.objects.create(owner=self.user.profile, name=f'pdf_{i}')
+            with dummy_path.open(mode="rb") as f:
+                pdf.file = File(f, name=dummy_path.name)
+                pdf.save()
+
+        generated_info_list = service.get_pdf_info_list(self.user.profile)
+        expected_info_list = [(f'pdf_{i}', 8885) for i in range(3)]
+
+        self.assertEqual(generated_info_list, expected_info_list)
+
+    def test_set_highlights_and_comments(self):
+        creation_date = datetime.strptime('20250311081649-+00:00', '%Y%m%d%H%M%S-%z')
+
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations', file=get_demo_pdf())
+        pdf_dummy = Pdf.objects.create(owner=self.user.profile, name='dummy')
+        service.PdfProcessingServices.set_highlights_and_comments(pdf)
+
+        comment_1 = PdfComment.objects.create(
+            text='demo comment page 2', page=2, creation_date=creation_date, pdf=pdf_dummy
+        )
+        comment_2 = PdfComment.objects.create(text='last page', page=5, creation_date=creation_date, pdf=pdf_dummy)
+
+        for generated_comment, expected_comment in zip(
+            pdf.pdfcomment_set.all().order_by(Lower('text')), [comment_1, comment_2]
+        ):
+            self.assertEqual(generated_comment.text, expected_comment.text)
+            self.assertEqual(generated_comment.creation_date, expected_comment.creation_date)
+            self.assertEqual(generated_comment.page, expected_comment.page)
+
+        highlight_1 = PdfHighlight.objects.create(
+            text='Massa ullamcorper aenean molestie laoreet aenean sed laoreet. '
+            'Ante non cursus proin mauris dictumst magnis',
+            page=3,
+            creation_date=creation_date,
+            pdf=pdf_dummy,
+        )
+        highlight_2 = PdfHighlight.objects.create(
+            text='Semper curabitur est maecenas orci dis accumsan sem dictum commodo?',
+            page=2,
+            creation_date=creation_date,
+            pdf=pdf_dummy,
+        )
+
+        for generated_highlight, expected_comment_highlight in zip(
+            pdf.pdfhighlight_set.all().order_by(Lower('text')), [highlight_1, highlight_2]
+        ):
+            self.assertEqual(generated_highlight.text, expected_comment_highlight.text)
+            self.assertEqual(generated_highlight.creation_date, expected_comment_highlight.creation_date)
+            self.assertEqual(generated_highlight.page, expected_comment_highlight.page)
+
+    def test_set_highlights_and_comments_exception(self):
+        pdf = Pdf.objects.create(
+            owner=self.user.profile,
+            name='pdf_with_annotations',
+        )
+
+        # check that exception is caught and thumbnail stays unset
+        service.PdfProcessingServices.set_highlights_and_comments(pdf)
+
+        self.assertFalse(pdf.pdfcomment_set.count())
+        self.assertFalse(pdf.pdfhighlight_set.count())
+
+
+class TestOtherServices(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
+
     @staticmethod
     @service.check_object_access_allowed
     def get_object(pdf_id: str, user: User):
@@ -340,89 +490,3 @@ class TestService(TestCase):
         expected_url = f'{reverse("pdf_overview")}?tags=another'
 
         self.assertEqual(expected_url, adjusted_url)
-
-    @mock.patch('pdf.service.set_thumbnail_and_preview')
-    def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        self.assertEqual(pdf.number_of_pages, -1)
-
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
-        with dummy_path.open(mode="rb") as f:
-            pdf.file = File(f, name=dummy_path.name)
-            pdf.save()
-
-        service.process_with_pypdfium(pdf, False)
-
-        pdf = self.user.profile.pdf_set.get(name=pdf.name)
-        self.assertEqual(pdf.number_of_pages, 2)
-        mock_set_thumbnail_and_preview.assert_not_called()
-
-    @mock.patch('pdf.service.set_thumbnail_and_preview')
-    def test_set_process_with_pypdfium_with_images(self, mock_set_thumbnail_and_preview):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        self.assertEqual(pdf.number_of_pages, -1)
-
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
-        with dummy_path.open(mode="rb") as f:
-            pdf.file = File(f, name=dummy_path.name)
-            pdf.save()
-
-        mock_set_thumbnail_and_preview.return_value = pdf
-
-        service.process_with_pypdfium(pdf)
-
-        pdf = self.user.profile.pdf_set.get(name=pdf.name)
-        self.assertEqual(pdf.number_of_pages, 2)
-        mock_set_thumbnail_and_preview.assert_called_once()
-
-    def test_set_process_with_pypdfium_exception(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.pdf'
-        pdf.file = file_mock
-        pdf.save()
-
-        service.process_with_pypdfium(pdf, False)
-        pdf = self.user.profile.pdf_set.get(name=pdf.name)
-        self.assertEqual(pdf.number_of_pages, -1)
-
-    def test_set_thumbnail_and_preview(self):
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-        with dummy_path.open(mode="rb") as f:
-            pdf.file = File(f, name=dummy_path.name)
-            pdf.save()
-
-        pdf_document = PdfDocument(pdf.file.path, autoclose=True)
-
-        pdf = service.set_thumbnail_and_preview(pdf, pdf_document, 120, 2, 400)
-        thumbnail_pil_image = Image.open(pdf.thumbnail.file)
-        preview_pil_image = Image.open(pdf.preview.file)
-
-        self.assertEqual(thumbnail_pil_image.size, (120, 60))
-        self.assertEqual(preview_pil_image.width, 400)
-
-        pdf_document.close()
-
-    def test_set_thumbnail_and_preview_exception(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-
-        # check that exception is caught and thumbnail stays unset
-        pdf = service.set_thumbnail_and_preview(pdf, None, 120, 2, 150)
-
-        self.assertFalse(pdf.thumbnail)
-
-    def test_get_pdf_info_list(self):
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
-
-        for i in range(3):
-            pdf = Pdf.objects.create(owner=self.user.profile, name=f'pdf_{i}')
-            with dummy_path.open(mode="rb") as f:
-                pdf.file = File(f, name=dummy_path.name)
-                pdf.save()
-
-        generated_info_list = service.get_pdf_info_list(self.user.profile)
-        expected_info_list = [(f'pdf_{i}', 8885) for i in range(3)]
-
-        self.assertEqual(generated_info_list, expected_info_list)

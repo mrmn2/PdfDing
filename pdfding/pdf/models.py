@@ -173,6 +173,30 @@ class Pdf(models.Model):
         return file_id
 
 
+class PdfAnnotation(models.Model):
+    """Model for the base pdf annotation"""
+
+    creation_date = models.DateTimeField(null=True, blank=False, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    page = models.IntegerField(null=True, blank=False)
+    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
+    text = models.TextField(null=True, blank=False)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.text  # pragma: no cover
+
+
+class PdfComment(PdfAnnotation):
+    """Model for the pdf comments."""
+
+
+class PdfHighlight(PdfAnnotation):
+    """Model for the pdf highlights."""
+
+
 class SharedPdf(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)

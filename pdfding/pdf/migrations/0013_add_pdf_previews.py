@@ -1,6 +1,6 @@
 import pdf.models
 from django.db import migrations, models
-from pdf.service import process_with_pypdfium
+from pdf.service import PdfProcessingServices
 
 
 def fill_thumbnails_and_previews(apps, schema_editor):
@@ -9,7 +9,7 @@ def fill_thumbnails_and_previews(apps, schema_editor):
     pdf_model = apps.get_model("pdf", "Pdf")
 
     for pdf_object in pdf_model.objects.all():
-        process_with_pypdfium(pdf_object)
+        PdfProcessingServices.process_with_pypdfium(pdf_object)
 
 
 def reverse_func(apps, schema_editor):  # pragma: no cover

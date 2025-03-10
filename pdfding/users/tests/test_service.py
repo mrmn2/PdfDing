@@ -63,9 +63,9 @@ class TestUserServices(TestCase):
     def test_get_demo_pdf(self):
         demo_pdf = service.get_demo_pdf()
 
-        self.assertEqual(demo_pdf.size, 26140)
+        self.assertEqual(demo_pdf.size, 29451)
 
-    @patch('users.service.process_with_pypdfium')
+    @patch('users.service.PdfProcessingServices.process_with_pypdfium')
     def test_create_demo_user(self, mock_process_with_pypdfium):
         email = 'demo@pdfding.com'
         user = service.create_demo_user(email, 'password')

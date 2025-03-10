@@ -13,6 +13,7 @@ from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
 from pdf.models import Pdf, Tag
+from pdf.service import PdfProcessingServices
 from rapidfuzz import fuzz, utils
 from users.models import Profile
 from users.service import get_demo_pdf, get_viewer_colors
@@ -55,12 +56,13 @@ class AddPdfMixin(BasePdfMixin):
         pdf.owner = request.user.profile
         pdf.save()  # we need to save otherwise the file will not be found in the next step
 
-        service.process_with_pypdfium(pdf)
+        service.PdfProcessingServices.process_with_pypdfium(pdf)
+        service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
         tag_string = form.data.get('tag_string')
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
-        tags = service.process_tag_names(tag_names, pdf.owner)
+        tags = service.TagServices.process_tag_names(tag_names, pdf.owner)
 
         pdf.tags.set(tags)
 
@@ -88,7 +90,7 @@ class BulkAddPdfMixin(BasePdfMixin):
         tag_string = form.data.get('tag_string')
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
-        tags = service.process_tag_names(tag_names, profile)
+        tags = service.TagServices.process_tag_names(tag_names, profile)
 
         if form.data.get('skip_existing'):
             pdf_info_list = service.get_pdf_info_list(profile)
@@ -116,7 +118,8 @@ class BulkAddPdfMixin(BasePdfMixin):
                 )
                 pdf.tags.set(tags)
 
-                service.process_with_pypdfium(pdf)
+                service.PdfProcessingServices.process_with_pypdfium(pdf)
+                service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
 
 class OverviewMixin(BasePdfMixin):
@@ -206,7 +209,7 @@ class OverviewMixin(BasePdfMixin):
             'search_query': request.GET.get('search', ''),
             'tag_query': tag_query,
             'special_pdf_selection': special_pdf_selection,
-            'tag_info_dict': service.get_tag_info_dict(request.user.profile),
+            'tag_info_dict': service.TagServices.get_tag_info_dict(request.user.profile),
             'page': page,
             'layout': request.user.profile.layout,
         }
@@ -302,7 +305,7 @@ class EditPdfMixin(PdfMixin):
                 if tag.name not in tag_names and tag.pdf_set.count() == 1:
                     tag.delete()
 
-            tags = service.process_tag_names(tag_names, request.user.profile)
+            tags = service.TagServices.process_tag_names(tag_names, request.user.profile)
 
             pdf.tags.set(tags)
 
@@ -398,12 +401,14 @@ class UpdatePdf(PdfMixin, View):
             updated_pdf = get_demo_pdf()
         else:
             updated_pdf = request.FILES.get('updated_pdf')
-
         try:
+            # make sure a valid pdf is sent
             updated_pdf = forms.CleanHelpers.clean_file(updated_pdf)
             pdf.file = updated_pdf
             pdf.revision += 1
             pdf.save()
+
+            PdfProcessingServices.set_highlights_and_comments(pdf)
 
             return HttpResponse(status=200)
         except ValidationError:

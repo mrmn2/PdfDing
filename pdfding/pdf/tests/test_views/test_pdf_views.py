@@ -14,7 +14,7 @@ from pdf import forms
 from pdf.models import Pdf, Tag
 from pdf.views import pdf_views
 
-DEMO_FILE_SIZE = 26140
+DEMO_FILE_SIZE = 29451
 
 
 def set_up(self):
@@ -37,9 +37,10 @@ class TestAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.AddForm}, generated_context)
 
-    @mock.patch('pdf.views.pdf_views.service.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save(self, mock_from_buffer, mock_process_with_pypdfium):
+    def test_obj_save(self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -65,9 +66,14 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
         mock_process_with_pypdfium.assert_called_once_with(pdf)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_use_file_name(self, mock_from_buffer):
+    def test_obj_save_use_file_name(
+        self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
+    ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -85,8 +91,13 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
 
+        mock_process_with_pypdfium.assert_called_once_with(pdf)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
+
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @override_settings(DEMO_MODE=True)
-    def test_obj_save_demo_mode(self):
+    def test_obj_save_demo_mode(self, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = forms.AddFormNoFile(data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'}, owner=self.user.profile)
@@ -98,6 +109,9 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
+
+        mock_process_with_pypdfium.assert_called_once_with(pdf)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
 
 class TestBulkAddPDFMixin(TestCase):
@@ -114,9 +128,12 @@ class TestBulkAddPDFMixin(TestCase):
 
         self.assertEqual({'form': forms.BulkAddForm}, generated_context)
 
-    @mock.patch('pdf.views.pdf_views.service.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_single_file_no_skipping(self, mock_from_buffer, mock_process_with_pypdfium):
+    def test_obj_save_single_file_no_skipping(
+        self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
+    ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock = mock.MagicMock(spec=File, name='FileMock')
@@ -135,9 +152,14 @@ class TestBulkAddPDFMixin(TestCase):
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
         mock_process_with_pypdfium.assert_called_once_with(pdf)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_multiple_files_no_skipping(self, mock_from_buffer):
+    def test_obj_save_multiple_files_no_skipping(
+        self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
+    ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         file_mock_1 = mock.MagicMock(spec=File, name='FileMock1')
@@ -163,9 +185,13 @@ class TestBulkAddPDFMixin(TestCase):
             # in this test there should be an exception as a mock file is used.
             self.assertEqual(pdf.number_of_pages, -1)
 
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.service.uuid4', return_value='123456789')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_multiple_files_skipping(self, mock_from_buffer, mock_uuid4):
+    def test_obj_save_multiple_files_skipping(
+        self, mock_from_buffer, mock_uuid4, mock_process_with_pypdfium, mock_set_highlights_and_comments
+    ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
 
@@ -203,8 +229,10 @@ class TestBulkAddPDFMixin(TestCase):
         for i in range(2):
             self.assertEqual(old_pdfs[i], self.user.profile.pdf_set.get(name=f'test{i + 1}'))
 
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
     @override_settings(DEMO_MODE=True)
-    def test_obj_save_demo_mode(self):
+    def test_obj_save_demo_mode(self, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = forms.BulkAddFormNoFile(
@@ -219,6 +247,9 @@ class TestBulkAddPDFMixin(TestCase):
         self.assertEqual('description', 'description')
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
+
+        mock_process_with_pypdfium.assert_called_once_with(pdf)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
 
 class TestOverviewMixin(TestCase):
@@ -300,7 +331,7 @@ class TestOverviewMixin(TestCase):
         filtered_pdfs = pdf_views.OverviewMixin.fuzzy_filter_pdfs(Pdf.objects.all(), 'self hosted')
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_self_hosting, pdf_self_hosted])
 
-    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
 
@@ -316,7 +347,7 @@ class TestOverviewMixin(TestCase):
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
-    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=starred')
 
@@ -332,7 +363,7 @@ class TestOverviewMixin(TestCase):
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
-    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection_invalid(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=invalid')
 
@@ -348,7 +379,7 @@ class TestOverviewMixin(TestCase):
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
-    @patch('pdf.service.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_empty_queries(self, mock_get_tag_info_dict):
         response = self.client.get(reverse('pdf_overview'))
 
@@ -539,7 +570,8 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 422)
 
-    def test_update_pdf_post_correct(self):
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    def test_update_pdf_post_correct(self, mock_set_highlights_and_comments):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
 
         # assign empty file and check size
@@ -563,9 +595,11 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pdf.file.size, 8885)
         self.assertEqual(pdf.revision, 1)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
+    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
     @override_settings(DEMO_MODE=True)
-    def test_update_pdf_post_demo_mode(self):
+    def test_update_pdf_post_demo_mode(self, mock_set_highlights_and_comments):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
 
         # assign empty file and check size
@@ -583,6 +617,7 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
+        mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
     def test_star(self):
         headers = {'HTTP_HX-Request': 'true'}

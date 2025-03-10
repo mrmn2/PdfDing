@@ -35,7 +35,7 @@ def consume_function(skip_existing: bool):
 
     for user_consume_path in user_consume_paths:
         user = User.objects.get(id=user_consume_path.name)
-        tags = service.process_tag_names(tag_names, user.profile)
+        tags = service.TagServices.process_tag_names(tag_names, user.profile)
         user_consume_file_paths = [path for path in user_consume_path.iterdir() if path.is_file()]
 
         if skip_existing:
@@ -53,7 +53,7 @@ def consume_function(skip_existing: bool):
                         pdf = Pdf.objects.create(owner=user.profile, name=pdf_name, file=pdf_file)
 
                     pdf.tags.set(tags)
-                    service.process_with_pypdfium(pdf)
+                    service.PdfProcessingServices.process_with_pypdfium(pdf)
 
             except Exception as e:  # pragma: no cover # nosec # noqa
                 logger.info(f'Could not create pdf from "{file_path.name}" of user "{user.id}"')

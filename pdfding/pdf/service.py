@@ -1,3 +1,4 @@
+import re
 import traceback
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
@@ -14,101 +15,252 @@ from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
-from pdf.models import Pdf, Tag
+from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pypdf import PdfReader
 from pypdfium2 import PdfDocument
 from users.models import Profile
 
 logger = getLogger(__file__)
 
 
-def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]:
-    """
-    Process the specified tags. If the tag is existing it will simply be added to the return list. If it does not
-    exist it, it will be created and then be added to the return list.
-    """
+class TagServices:
+    @staticmethod
+    def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]:
+        """
+        Process the specified tags. If the tag is existing it will simply be added to the return list. If it does not
+        exist it, it will be created and then be added to the return list.
+        """
 
-    tags = []
-    for tag_name in tag_names:
+        tags = []
+        for tag_name in tag_names:
+            try:
+                tag = Tag.objects.get(owner=owner_profile, name=tag_name)
+            except Tag.DoesNotExist:
+                tag = Tag.objects.create(name=tag_name, owner=owner_profile)
+
+            tags.append(tag)
+
+        return tags
+
+    @classmethod
+    def get_tag_info_dict(cls, profile: Profile) -> dict[str, dict]:
+        """
+        Get the tag info dict used for displaying the tags in the pdf overview.
+        """
+
+        if profile.tag_tree_mode:
+            tag_info_dict = cls.get_tag_info_dict_tree_mode(profile)
+        else:
+            tag_info_dict = cls.get_tag_info_dict_normal_mode(profile)
+
+        return tag_info_dict
+
+    @staticmethod
+    def get_tag_info_dict_normal_mode(profile: Profile) -> dict[str, dict]:
+        """
+        Get the tag info dict used for displaying the tags in the pdf overview when normal mode is activated.
+        Key: name of the tag. Value: display name of the tag
+        """
+
+        # it is important that the tags are sorted. As parent tags need come before children,
+        # e.g. "programming" before "programming/python"
+        tags = profile.tag_set.all().order_by(Lower('name'))
+        tag_info_dict = OrderedDict()
+
+        for tag in tags:
+            tag_info_dict[tag.name] = {'display_name': tag.name}
+
+        return tag_info_dict
+
+    @staticmethod
+    def get_tag_info_dict_tree_mode(profile: Profile) -> dict[str, dict]:
+        """
+        Get the tag info dict used for displaying the tags in the pdf overview when tree mode is activated.
+        Key: name of the tag. Value: Information about the tag necessary for displaying it in tree mode, e.g. display
+        name, indent level, has_children, slug and the condition for showing it via alpine js.
+        """
+
+        # it is important that the tags are sorted. As parent tags need come before children,
+        # e.g. "programming" before "programming/python"
+        tags = profile.tag_set.all().order_by(Lower('name'))
+        tag_info_dict = OrderedDict()
+
+        for tag in tags:
+            tag_split = tag.name.split('/', maxsplit=2)
+            current = ''
+            words = []
+            show_conditions = []
+
+            for level, word in enumerate(tag_split):
+                prev = current
+                words.append(word)
+                current = '/'.join(words)
+
+                if level:
+                    tag_info_dict[prev]['has_children'] = True
+
+                if current not in tag_info_dict:
+                    tag_info_dict[current] = {
+                        'display_name': current.split('/', level)[-1],
+                        'level': level,
+                        'has_children': False,
+                        'show_cond': ' && '.join(show_conditions),
+                        'slug': current.replace('-', '_').replace('/', '___'),
+                    }
+
+                # alpine js will not work if the tag starts with a number. therefore, we have "tag_" in front so it
+                # will still work.
+                show_conditions.append(f'tag_{current.replace('-', '_').replace('/', '___')}_show_children')
+
+        return tag_info_dict
+
+
+class PdfProcessingServices:
+    @classmethod
+    def process_with_pypdfium(
+        cls, pdf: Pdf, extract_thumbnail_and_preview: bool = True, delete_existing_thumbnail_and_preview: bool = False
+    ):
+        """
+        Process the pdf with pypdfium. This will extract the number of pages and optionally the thumbnail + preview of
+        the Pdf.
+        """
+
         try:
-            tag = Tag.objects.get(owner=owner_profile, name=tag_name)
-        except Tag.DoesNotExist:
-            tag = Tag.objects.create(name=tag_name, owner=owner_profile)
+            if delete_existing_thumbnail_and_preview:  # pragma: no cover
+                pdf.thumbnail.delete()
+                pdf.preview.delete()
+                pdf.save()
 
-        tags.append(tag)
+            pdf_document = PdfDocument(pdf.file.path, autoclose=True)
+            pdf.number_of_pages = len(pdf_document)
+            if extract_thumbnail_and_preview:
+                pdf = cls.set_thumbnail_and_preview(pdf, pdf_document)
+            pdf_document.close()
+            pdf.save()
+        except Exception as e:  # nosec # noqa
+            logger.info(f'Could not process "{pdf.name}" of user "{pdf.owner.user.email}" with Pypdfium')
+            logger.info(traceback.format_exc())
 
-    return tags
+    @staticmethod
+    def set_thumbnail_and_preview(
+        pdf: Pdf,
+        pdf_document: PdfDocument,
+        desired_thumbnail_width: int = 135,
+        desired_thumbnail_width_height_ratio: float = 0.77,
+        desired_preview_width: int = 450,
+    ):
+        """Extract and set the thumbnail and the preview image of the pdf file."""
 
+        try:
+            page = pdf_document[0]
+            preview_width_height_ratio = page.get_width() / page.get_height()
 
-def get_tag_info_dict(profile: Profile) -> dict[str, dict]:
-    """
-    Get the tag info dict used for displaying the tags in the pdf overview.
-    """
+            image_files = dict()
+            for image_name, desired_width, desired_ratio in zip(
+                ['thumbnail', 'preview'],
+                [desired_thumbnail_width, desired_preview_width],
+                [desired_thumbnail_width_height_ratio, preview_width_height_ratio],
+            ):
+                # extract image with predefined width
+                scale_factor = desired_width / page.get_width()
 
-    if profile.tag_tree_mode:
-        tag_info_dict = get_tag_info_dict_tree_mode(profile)
-    else:
-        tag_info_dict = get_tag_info_dict_normal_mode(profile)
+                bitmap = page.render(scale=scale_factor)
+                pil_image = bitmap.to_pil()
 
-    return tag_info_dict
+                desired_height = round(desired_width / desired_ratio)
+                width, height = pil_image.size
 
+                # we crop the image as we want a thumbnail with a ratio of 1.9 x 1. If the image is large enough we also
+                # want the thumbnail not to start at the top but instead with a little offset
+                height_diff = height - desired_height
+                if image_name == 'thumbnail' and height_diff > 0:
+                    offset = floor(0.15 * height_diff)
+                    pil_image = pil_image.crop((0, offset, desired_width, desired_height + offset))
 
-def get_tag_info_dict_normal_mode(profile: Profile) -> dict[str, dict]:
-    """
-    Get the tag info dict used for displaying the tags in the pdf overview when normal mode is activated.
-    Key: name of the tag. Value: display name of the tag
-    """
+                # convert pillow image to django file
+                image_io = BytesIO()
+                pil_image.save(image_io, format='PNG')
+                image_files[image_name] = image_io
 
-    # it is important that the tags are sorted. As parent tags need come before children,
-    # e.g. "programming" before "programming/python"
-    tags = profile.tag_set.all().order_by(Lower('name'))
-    tag_info_dict = OrderedDict()
+            pdf.thumbnail = File(file=image_files['thumbnail'], name='thumbnail')
+            pdf.preview = File(file=image_files['preview'], name='preview')
 
-    for tag in tags:
-        tag_info_dict[tag.name] = {'display_name': tag.name}
+        except Exception as e:  # nosec # noqa
+            logger.info(f'Could not extract thumbnail for "{pdf.name}" of user "{pdf.owner.user.email}"')
+            logger.info(traceback.format_exc())
 
-    return tag_info_dict
+        return pdf
 
+    @classmethod
+    def set_highlights_and_comments(cls, pdf: Pdf):
+        """Set the highlights and comments of a pdf"""
 
-def get_tag_info_dict_tree_mode(profile: Profile) -> dict[str, dict]:
-    """
-    Get the tag info dict used for displaying the tags in the pdf overview when tree mode is activated.
-    Key: name of the tag. Value: Information about the tag necessary for displaying it in tree mode, e.g. display name,
-    indent level, has_children, slug and the condition for showing it via alpine js.
-    """
+        try:
+            # delete old comments and highlights
+            pdf.pdfhighlight_set.all().delete()
+            pdf.pdfcomment_set.all().delete()
 
-    # it is important that the tags are sorted. As parent tags need come before children,
-    # e.g. "programming" before "programming/python"
-    tags = profile.tag_set.all().order_by(Lower('name'))
-    tag_info_dict = OrderedDict()
+            pypdf_pdf = PdfReader(pdf.file)
+            pyreadium_pdf = PdfDocument(pdf.file, autoclose=True)
 
-    for tag in tags:
-        tag_split = tag.name.split('/', maxsplit=2)
-        current = ''
-        words = []
-        show_conditions = []
+            for i, pypdf_page in enumerate(pypdf_pdf.pages):
+                pdfium_page = pyreadium_pdf[i]
 
-        for level, word in enumerate(tag_split):
-            prev = current
-            words.append(word)
-            current = '/'.join(words)
+                if "/Annots" in pypdf_page:
+                    for annotation in pypdf_page["/Annots"]:
+                        annotation_object = annotation.get_object()
 
-            if level:
-                tag_info_dict[prev]['has_children'] = True
+                        annotation_type = annotation_object["/Subtype"]
 
-            if current not in tag_info_dict:
-                tag_info_dict[current] = {
-                    'display_name': current.split('/', level)[-1],
-                    'level': level,
-                    'has_children': False,
-                    'show_cond': ' && '.join(show_conditions),
-                    'slug': current.replace('-', '_').replace('/', '___'),
-                }
+                        if annotation_type in ["/FreeText", "/Highlight"]:
+                            date_time_string = f'{annotation_object["/CreationDate"].split(':')[-1]}-+00:00'
+                            creation_date = datetime.strptime(date_time_string, '%Y%m%d%H%M%S-%z')
 
-            # alpine js will not work if the tag starts with a number. therefore, we have "tag_" in front so it
-            # will still work.
-            show_conditions.append(f'tag_{current.replace('-', '_').replace('/', '___')}_show_children')
+                            if annotation_type == "/FreeText":
+                                comment_text = annotation_object["/Contents"]
+                                PdfComment.objects.create(
+                                    text=comment_text, page=i + 1, creation_date=creation_date, pdf=pdf
+                                )
 
-    return tag_info_dict
+                            elif annotation_type == "/Highlight":
+                                highlight_text = cls.extract_pdf_highlight_text(annotation_object, pdfium_page)
+                                PdfHighlight.objects.create(
+                                    text=highlight_text, page=i + 1, creation_date=creation_date, pdf=pdf
+                                )
+
+            pyreadium_pdf.close()
+
+        except Exception as e:  # nosec # noqa
+            logger.info(f'Could not extract highlights and comments for "{pdf.name}" of user "{pdf.owner.user.email}"')
+            logger.info(traceback.format_exc())
+
+    @staticmethod
+    def extract_pdf_highlight_text(annotation, pdfium_page):
+        """Extract the text from a highlight annotation"""
+
+        # every highlighted lines is represented by a rectangle which consists of 4 quad points
+        # the 4 quad points are stored in a list in the following way:
+        # [bot_left_x, bot_left_y, bot_right_x, bot_right_y, top_left_x, top_left_y, top_right_x, top_right_y]
+
+        quad_points = annotation["/QuadPoints"]
+        rectangles = [quad_points[8 * i : 8 * (i + 1)] for i in range(len(quad_points) // 8)]  # noqa
+
+        highlight_lines = []
+
+        for rectangle in rectangles:
+            text_page = pdfium_page.get_textpage()
+            text = text_page.get_text_bounded(
+                left=rectangle[0], bottom=rectangle[5], right=rectangle[2], top=rectangle[1]
+            )
+
+            # sometimes the same line is present multiple times, we only want one
+            if not highlight_lines or text != highlight_lines[-1]:
+                highlight_lines.append(text)
+
+        highlight_text = ' '.join(highlight_lines).strip()
+        highlight_text = re.sub(r'\s+', ' ', highlight_text)
+
+        return highlight_text
 
 
 def check_object_access_allowed(get_object):
@@ -212,81 +364,6 @@ def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: st
         overview_url = f'{overview_url}?{query_string}'
 
     return overview_url
-
-
-def process_with_pypdfium(
-    pdf: Pdf, extract_thumbnail_and_preview: bool = True, delete_existing_thumbnail_and_preview: bool = False
-):
-    """
-    Process the pdf with pypdfium. This will extract the number of pages and optionally the thumbnail + preview of the
-    Pdf.
-    """
-
-    try:
-        if delete_existing_thumbnail_and_preview:  # pragma: no cover
-            pdf.thumbnail.delete()
-            pdf.preview.delete()
-            pdf.save()
-
-        pdf_document = PdfDocument(pdf.file.path, autoclose=True)
-        pdf.number_of_pages = len(pdf_document)
-        if extract_thumbnail_and_preview:
-            pdf = set_thumbnail_and_preview(pdf, pdf_document)
-        pdf_document.close()
-        pdf.save()
-    except Exception as e:  # nosec # noqa
-        logger.info(f'Could not process "{pdf.name}" of user "{pdf.owner.user.email}" with Pypdfium')
-        logger.info(traceback.format_exc())
-
-
-def set_thumbnail_and_preview(
-    pdf: Pdf,
-    pdf_document: PdfDocument,
-    desired_thumbnail_width: int = 135,
-    desired_thumbnail_width_height_ratio: float = 0.77,
-    desired_preview_width: int = 450,
-):
-    """Extract and set the thumbnail and the preview image of the pdf file."""
-
-    try:
-        page = pdf_document[0]
-        preview_width_height_ratio = page.get_width() / page.get_height()
-
-        image_files = dict()
-        for image_name, desired_width, desired_ratio in zip(
-            ['thumbnail', 'preview'],
-            [desired_thumbnail_width, desired_preview_width],
-            [desired_thumbnail_width_height_ratio, preview_width_height_ratio],
-        ):
-            # extract image with predefined width
-            scale_factor = desired_width / page.get_width()
-
-            bitmap = page.render(scale=scale_factor)
-            pil_image = bitmap.to_pil()
-
-            desired_height = round(desired_width / desired_ratio)
-            width, height = pil_image.size
-
-            # we crop the image as we want a thumbnail with a ratio of 1.9 x 1. If the image is large enough we also
-            # want the thumbnail not to start at the top but instead with a little offset
-            height_diff = height - desired_height
-            if image_name == 'thumbnail' and height_diff > 0:
-                offset = floor(0.15 * height_diff)
-                pil_image = pil_image.crop((0, offset, desired_width, desired_height + offset))
-
-            # convert pillow image to django file
-            image_io = BytesIO()
-            pil_image.save(image_io, format='PNG')
-            image_files[image_name] = image_io
-
-        pdf.thumbnail = File(file=image_files['thumbnail'], name='thumbnail')
-        pdf.preview = File(file=image_files['preview'], name='preview')
-
-    except Exception as e:  # nosec # noqa
-        logger.info(f'Could not extract thumbnail for "{pdf.name}" of user "{pdf.owner.user.email}"')
-        logger.info(traceback.format_exc())
-
-    return pdf
 
 
 def get_pdf_info_list(profile: Profile) -> list[tuple]:

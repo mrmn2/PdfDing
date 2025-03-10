@@ -8,9 +8,11 @@ from django.core.files import File
 from django.db import connection
 from django.test import TestCase
 from pdf.models import Pdf
+from users.service import get_demo_pdf
 
 add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0009_readd_number_of_pages_with_new_default')
 add_pdf_previews = importlib.import_module('pdf.migrations.0013_add_pdf_previews')
+add_comments_highlights = importlib.import_module('pdf.migrations.0015_add_comments_highlights')
 
 
 class TestMigrations(TestCase):
@@ -18,7 +20,7 @@ class TestMigrations(TestCase):
         self.user = User.objects.create_user(username='test_user', password='12345')
         self.pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
 
-    @patch('pdf.service.set_thumbnail_and_preview')
+    @patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
     def test_fill_number_of_pages(self, mock_set_thumbnail_and_preview):
         # as I cannot mock the migration file since it has an illegal name and applying the migration
         # in the test did not work either I am using a dummy pdf file -.-. The dummy file has two pages.
@@ -64,3 +66,21 @@ class TestMigrations(TestCase):
     def test_fill_thumbnails_and_previews_exception_caught(self):
         self.assertEqual(self.pdf.number_of_pages, -1)
         add_pdf_previews.fill_thumbnails_and_previews(apps, connection.schema_editor())
+
+    def test_set_highlights_and_comments(self):
+        self.assertFalse(self.pdf.pdfcomment_set.count())
+        self.assertFalse(self.pdf.pdfhighlight_set.count())
+
+        self.pdf.file = get_demo_pdf()
+        self.pdf.save()
+
+        add_comments_highlights.set_highlights_and_comments(apps, connection.schema_editor())
+
+        pdf = Pdf.objects.get(id=self.pdf.id)
+        self.assertTrue(pdf.pdfcomment_set.count())
+        self.assertTrue(pdf.pdfhighlight_set.count())
+
+    def test_set_highlights_and_comments_exception_caught(self):
+        self.assertFalse(self.pdf.pdfcomment_set.count())
+        self.assertFalse(self.pdf.pdfhighlight_set.count())
+        add_comments_highlights.set_highlights_and_comments(apps, connection.schema_editor())

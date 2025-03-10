@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 from pdf.models import Pdf, Tag
-from pdf.service import process_with_pypdfium
+from pdf.service import PdfProcessingServices
 from users.models import Profile
 
 
@@ -146,7 +146,8 @@ def create_demo_user(email: str, password: str):
             number_of_pages=5,
         )
         pdf.tags.set(tags)
-        process_with_pypdfium(pdf)
+        PdfProcessingServices.process_with_pypdfium(pdf)
+        PdfProcessingServices.set_highlights_and_comments(pdf)
 
     return user
 
