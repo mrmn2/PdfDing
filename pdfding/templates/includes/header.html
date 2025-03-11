@@ -29,7 +29,7 @@
         </form>
         {% elif page == 'user_overview' %}
         {% endif %}
-        <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center md:gap-x-3">
+        <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center ">
             {% if page == 'pdf_overview' %}
             {% include 'includes/pdf_overview/header_extra.html' %}
             {% elif page == 'shared_pdf_overview' %}
@@ -37,7 +37,7 @@
             {% elif page == 'user_overview' %}
             {% include 'includes/user_header_extra.html' %}
             {% endif %}
-            <a id="add_pdf" class="cursor-pointer rounded-sm py-1 group relative
+            <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:px-2 md:-ml-1! group relative
                       hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"
                href="{% url 'add_pdf' %}">
                 <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,14 +45,14 @@
                     <!-- license: CC0 License-->
                     <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span class="absolute pointer-events-none top-8 -left-2! mt-1 px-2 py-1 rounded-sm opacity-0
+                <span class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                              group-hover:opacity-100 group-hover:delay-350
                              text-slate-600 dark:text-slate-200 creme:text-stone-700
                              bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Add
                 </span>
             </a>
             <div @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" @keyup.escape.window="dropdownOpen = false"
-               class="flex items-center justify-center px-2 ml-1 rounded-full aspect-square cursor-pointer rounded-full! border-4
+               class="flex items-center justify-center px-2 ml-1 md:ml-2 rounded-full aspect-square cursor-pointer rounded-full! border-4
                       text-primary hover:bg-primary hover:text-slate-200 border-primary">
                 <span class="text-lg font-extrabold!">{{ request.user.email.capitalize|first }}</span>
             </div>

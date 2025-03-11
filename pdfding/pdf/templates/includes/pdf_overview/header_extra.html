@@ -10,7 +10,7 @@
             <!-- license: PD -->
             <path fill-rule="evenodd" d="M10,19 L21,19 L21,10 L10,10 L10,19 Z M8,19 L8,10 L3,10 L3,19 L8,19 Z M21,8 L21,5 L3,5 L3,8 L21,8 Z M2.81818182,3 L21.1818182,3 C22.1859723,3 23,3.8954305 23,5 L23,19 C23,20.1045695 22.1859723,21 21.1818182,21 L2.81818182,21 C1.81402773,21 1,20.1045695 1,19 L1,5 C1,3.8954305 1.81402773,3 2.81818182,3 Z"/>
         </svg>
-        <span x-show="!layoutOpen" class="absolute pointer-events-none top-8 -left-2 mt-1 px-2 py-1 rounded-sm opacity-0
+        <span x-show="!layoutOpen" class="absolute pointer-events-none top-8 -left-3! mt-1 px-2 py-1 rounded-sm opacity-0
                      group-hover:opacity-100 group-hover:delay-350
                      text-slate-600 dark:text-slate-200 creme:text-stone-700
                      bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Layout
@@ -20,7 +20,7 @@
        @click="sortOpen = !sortOpen"
        @click.away="sortOpen = false"
        @keyup.escape.window="sortOpen = false"
-       class="cursor-pointer rounded-sm py-1 md:pl-1 group relative
+       class="cursor-pointer rounded-sm py-1 md:px-2 group relative
               hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
         <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!-- source: https://www.svgrepo.com/svg/361828/sort -->
@@ -28,7 +28,7 @@
             <path d="M6.293 4.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414L8 7.414V19a1 1 0 1 1-2 0V7.414L3.707 9.707a1 1 0 0 1-1.414-1.414l4-4zM16 16.586V5a1 1 0 1 1 2 0v11.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L16 16.586z" fill="currentColor"/>
         </svg>
 
-        <span x-show="!sortOpen" class="absolute pointer-events-none top-8 -left-2! mt-1 px-2 py-1 rounded-sm opacity-0
+        <span x-show="!sortOpen" class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                      group-hover:opacity-100 group-hover:delay-350
                      text-slate-600 dark:text-slate-200 creme:text-stone-700
                      bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Sort
