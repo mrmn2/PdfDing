@@ -324,13 +324,24 @@ class TestPdfProcessingServices(TestCase):
         creation_date = datetime.strptime('20250311081649-+00:00', '%Y%m%d%H%M%S-%z')
 
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations', file=get_demo_pdf())
-        pdf_dummy = Pdf.objects.create(owner=self.user.profile, name='dummy')
-        service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
-        comment_1 = PdfComment.objects.create(
-            text='demo comment page 2', page=2, creation_date=creation_date, pdf=pdf_dummy
+        comment_1 = PdfComment.objects.create(text='demo comment page 2', page=2, creation_date=creation_date, pdf=pdf)
+        comment_2 = PdfComment.objects.create(text='last page', page=5, creation_date=creation_date, pdf=pdf)
+        highlight_1 = PdfHighlight.objects.create(
+            text='Massa ullamcorper aenean molestie laoreet aenean sed laoreet. '
+            'Ante non cursus proin mauris dictumst magnis',
+            page=3,
+            creation_date=creation_date,
+            pdf=pdf,
         )
-        comment_2 = PdfComment.objects.create(text='last page', page=5, creation_date=creation_date, pdf=pdf_dummy)
+        highlight_2 = PdfHighlight.objects.create(
+            text='Semper curabitur est maecenas orci dis accumsan sem dictum commodo?',
+            page=2,
+            creation_date=creation_date,
+            pdf=pdf,
+        )
+
+        service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
         for generated_comment, expected_comment in zip(
             pdf.pdfcomment_set.all().order_by(Lower('text')), [comment_1, comment_2]
@@ -338,20 +349,8 @@ class TestPdfProcessingServices(TestCase):
             self.assertEqual(generated_comment.text, expected_comment.text)
             self.assertEqual(generated_comment.creation_date, expected_comment.creation_date)
             self.assertEqual(generated_comment.page, expected_comment.page)
-
-        highlight_1 = PdfHighlight.objects.create(
-            text='Massa ullamcorper aenean molestie laoreet aenean sed laoreet. '
-            'Ante non cursus proin mauris dictumst magnis',
-            page=3,
-            creation_date=creation_date,
-            pdf=pdf_dummy,
-        )
-        highlight_2 = PdfHighlight.objects.create(
-            text='Semper curabitur est maecenas orci dis accumsan sem dictum commodo?',
-            page=2,
-            creation_date=creation_date,
-            pdf=pdf_dummy,
-        )
+            # if id is different it comments were as expected recreated
+            self.assertNotEqual(generated_comment.id, expected_comment.id)
 
         for generated_highlight, expected_comment_highlight in zip(
             pdf.pdfhighlight_set.all().order_by(Lower('text')), [highlight_1, highlight_2]
@@ -359,6 +358,8 @@ class TestPdfProcessingServices(TestCase):
             self.assertEqual(generated_highlight.text, expected_comment_highlight.text)
             self.assertEqual(generated_highlight.creation_date, expected_comment_highlight.creation_date)
             self.assertEqual(generated_highlight.page, expected_comment_highlight.page)
+            # if id is different it highlights were as expected recreated
+            self.assertNotEqual(generated_highlight.id, expected_comment_highlight.id)
 
     def test_set_highlights_and_comments_exception(self):
         pdf = Pdf.objects.create(

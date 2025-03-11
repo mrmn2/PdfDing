@@ -54,6 +54,7 @@ def consume_function(skip_existing: bool):
 
                     pdf.tags.set(tags)
                     service.PdfProcessingServices.process_with_pypdfium(pdf)
+                    service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
             except Exception as e:  # pragma: no cover # nosec # noqa
                 logger.info(f'Could not create pdf from "{file_path.name}" of user "{user.id}"')

@@ -14,8 +14,9 @@ class TestTasks(TestCase):
         self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
 
     @override_settings(CONSUME_DIR=Path(__file__).parent / 'data' / 'consume')
+    @mock.patch('pdf.service.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.service.uuid4', return_value='12345678')
-    def test_consume_function(self, mock_uuid4):
+    def test_consume_function(self, mock_uuid4, mock_set_highlights_and_comments):
         # prepare data
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
         pdf = Pdf.objects.create(owner=self.user.profile, name='dummy_1')
@@ -71,6 +72,8 @@ class TestTasks(TestCase):
         # test number_of_pages and thumbnail were created
         self.assertEqual(dummy_3.number_of_pages, 2)
         self.assertTrue(dummy_3.thumbnail)
+
+        self.assertEqual(mock_set_highlights_and_comments.call_count, 3)
 
         # clean up
         wrong_pdf_path.unlink()
