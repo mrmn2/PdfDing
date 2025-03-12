@@ -234,6 +234,30 @@ class TestPdfProcessingServices(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
 
+    def test_create_pdf(self):
+        pdf_name = 'some_pdf'
+        pdf_file = get_demo_pdf()
+        tag_string = 'some tags'
+        description = 'some description'
+        owner = self.user.profile
+
+        pdf = service.PdfProcessingServices.create_pdf(
+            name=pdf_name, owner=owner, pdf_file=pdf_file, tag_string=tag_string, description=description
+        )
+
+        self.assertEqual(pdf.name, pdf_name)
+        self.assertEqual(pdf.owner, owner)
+        self.assertEqual(pdf.description, description)
+        self.assertEqual(pdf.notes, '')
+        self.assertEqual(pdf.number_of_pages, 5)
+        self.assertTrue(pdf.preview)
+        self.assertTrue(pdf.thumbnail)
+        self.assertEqual(pdf.pdfcomment_set.count(), 2)
+        self.assertEqual(pdf.pdfhighlight_set.count(), 2)
+
+        for tag, expected_tag_name in zip(pdf.tags.all().order_by('name'), tag_string.split(' ')):
+            self.assertEqual(tag.name, expected_tag_name)
+
     @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')

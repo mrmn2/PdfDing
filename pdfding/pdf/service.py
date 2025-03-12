@@ -117,6 +117,24 @@ class TagServices:
 
 class PdfProcessingServices:
     @classmethod
+    def create_pdf(
+        cls, name: str, owner: Profile, pdf_file: File, description: str = '', notes: str = '', tag_string: str = ''
+    ):
+        pdf = Pdf.objects.create(name=name, description=description, notes=notes, file=pdf_file, owner=owner)
+
+        # process with pdf libraries: add number of pages, thumbnail, preview, highlights and comments
+        cls.process_with_pypdfium(pdf)
+        cls.set_highlights_and_comments(pdf)
+
+        # get unique tag names
+        tag_names = Tag.parse_tag_string(tag_string)
+        tags = TagServices.process_tag_names(tag_names, pdf.owner)
+
+        pdf.tags.set(tags)
+
+        return pdf
+
+    @classmethod
     def process_with_pypdfium(
         cls, pdf: Pdf, extract_thumbnail_and_preview: bool = True, delete_existing_thumbnail_and_preview: bool = False
     ):

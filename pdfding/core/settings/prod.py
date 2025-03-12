@@ -70,7 +70,7 @@ else:
 # consume settings
 if os.environ.get('CONSUME_ENABLE') == 'TRUE':
     CONSUME_ENABLED = True
-    CONSUME_TAG_STRING = os.environ.get('CONSUME_TAGS')
+    CONSUME_TAG_STRING = os.environ.get('CONSUME_TAGS', '')
     if os.environ.get('CONSUME_SKIP_EXISTING') == 'FALSE':
         CONSUME_SKIP_EXISTING = False
     else:

@@ -9,7 +9,6 @@ from django.core.files import File
 from huey import crontab
 from huey.contrib.djhuey import periodic_task
 from pdf import service
-from pdf.models import Pdf, Tag
 
 logger = logging.getLogger('huey')
 
@@ -31,11 +30,9 @@ def consume_function(skip_existing: bool):
         settings.CONSUME_DIR.mkdir(exist_ok=True)
 
     user_consume_paths = [path for path in settings.CONSUME_DIR.iterdir() if path.is_dir()]
-    tag_names = Tag.parse_tag_string(settings.CONSUME_TAG_STRING)
 
     for user_consume_path in user_consume_paths:
         user = User.objects.get(id=user_consume_path.name)
-        tags = service.TagServices.process_tag_names(tag_names, user.profile)
         user_consume_file_paths = [path for path in user_consume_path.iterdir() if path.is_file()]
 
         if skip_existing:
@@ -50,11 +47,10 @@ def consume_function(skip_existing: bool):
 
                     with file_path.open(mode="rb") as f:
                         pdf_file = File(f, name=file_path.name)
-                        pdf = Pdf.objects.create(owner=user.profile, name=pdf_name, file=pdf_file)
 
-                    pdf.tags.set(tags)
-                    service.PdfProcessingServices.process_with_pypdfium(pdf)
-                    service.PdfProcessingServices.set_highlights_and_comments(pdf)
+                        service.PdfProcessingServices.create_pdf(
+                            name=pdf_name, owner=user.profile, pdf_file=pdf_file, tag_string=settings.CONSUME_TAG_STRING
+                        )
 
             except Exception as e:  # pragma: no cover # nosec # noqa
                 logger.info(f'Could not create pdf from "{file_path.name}" of user "{user.id}"')

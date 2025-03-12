@@ -2,7 +2,6 @@ from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
-from pdf.models import Pdf, Tag
 from pdf.service import PdfProcessingServices
 from users.models import Profile
 
@@ -114,7 +113,7 @@ def create_demo_user(email: str, password: str):
         'Everyone will understand this guide!',
         'A guide about getting starting with self-hosting apps on k8s',
     ]
-    tag_names_list = [['self-hosted/apps'], ['books'], ['guide'], ['self-hosted', 'k8s']]
+    tag_strings = ['self-hosted/apps', 'books', 'guide', 'self-hosted k8s']
 
     user = User.objects.create_user(username=email, password=password, email=email)  # nosec
 
@@ -127,9 +126,7 @@ def create_demo_user(email: str, password: str):
     user.profile.tags_open = True
     user.profile.save()
 
-    for pdf_name, description, tag_names in zip(pdf_names, descriptions, tag_names_list):
-        tags = [Tag.objects.create(name=tag_name, owner=user.profile) for tag_name in tag_names]
-
+    for pdf_name, description, tag_string in zip(pdf_names, descriptions, tag_strings):
         pdf_file = get_demo_pdf()
 
         if pdf_name == 'Self-hosting Guide':
@@ -137,17 +134,14 @@ def create_demo_user(email: str, password: str):
         else:
             notes = ''
 
-        pdf = Pdf.objects.create(
-            owner=user.profile,
+        PdfProcessingServices.create_pdf(
             name=pdf_name,
-            file=pdf_file,
+            owner=user.profile,
+            pdf_file=pdf_file,
             description=description,
+            tag_string=tag_string,
             notes=notes,
-            number_of_pages=5,
         )
-        pdf.tags.set(tags)
-        PdfProcessingServices.process_with_pypdfium(pdf)
-        PdfProcessingServices.set_highlights_and_comments(pdf)
 
     return user
 

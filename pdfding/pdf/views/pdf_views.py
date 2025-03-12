@@ -42,29 +42,28 @@ class AddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.AddForm | forms.AddFormNoFile, request: HttpRequest, __):
         """Save the PDF based on the submitted form."""
 
-        pdf = form.save(commit=False)
+        name = form.data['name']
+        description = form.data.get('description', '')
+        notes = form.data.get('notes', '')
+        tag_string = form.data.get('tag_string', '')
+        profile = request.user.profile
 
         if settings.DEMO_MODE:
             pdf_file = get_demo_pdf()
-            pdf.file = pdf_file
         else:
             pdf_file = form.files['file']
 
         if form.data.get('use_file_name'):
-            pdf.name = service.create_unique_name_from_file(pdf_file, request.user.profile)
+            name = service.create_unique_name_from_file(pdf_file, request.user.profile)
 
-        pdf.owner = request.user.profile
-        pdf.save()  # we need to save otherwise the file will not be found in the next step
-
-        service.PdfProcessingServices.process_with_pypdfium(pdf)
-        service.PdfProcessingServices.set_highlights_and_comments(pdf)
-
-        tag_string = form.data.get('tag_string')
-        # get unique tag names
-        tag_names = Tag.parse_tag_string(tag_string)
-        tags = service.TagServices.process_tag_names(tag_names, pdf.owner)
-
-        pdf.tags.set(tags)
+        service.PdfProcessingServices.create_pdf(
+            name=name,
+            owner=profile,
+            pdf_file=pdf_file,
+            description=description,
+            notes=notes,
+            tag_string=tag_string,
+        )
 
 
 class BulkAddPdfMixin(BasePdfMixin):
@@ -87,10 +86,9 @@ class BulkAddPdfMixin(BasePdfMixin):
         """Save the multiple PDFs based on the submitted form."""
 
         profile = request.user.profile
-        tag_string = form.data.get('tag_string')
-        # get unique tag names
-        tag_names = Tag.parse_tag_string(tag_string)
-        tags = service.TagServices.process_tag_names(tag_names, profile)
+        description = form.data.get('description', '')
+        notes = form.data.get('notes', '')
+        tag_string = form.data.get('tag_string', '')
 
         if form.data.get('skip_existing'):
             pdf_info_list = service.get_pdf_info_list(profile)
@@ -109,17 +107,14 @@ class BulkAddPdfMixin(BasePdfMixin):
             ):
                 pdf_name = service.create_unique_name_from_file(file, profile)
 
-                pdf = Pdf.objects.create(
-                    owner=profile,
+                service.PdfProcessingServices.create_pdf(
                     name=pdf_name,
-                    description=form.data.get('description'),
-                    notes=form.data.get('notes'),
-                    file=file,
+                    owner=profile,
+                    pdf_file=file,
+                    description=description,
+                    notes=notes,
+                    tag_string=tag_string,
                 )
-                pdf.tags.set(tags)
-
-                service.PdfProcessingServices.process_with_pypdfium(pdf)
-                service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
 
 class OverviewMixin(BasePdfMixin):
