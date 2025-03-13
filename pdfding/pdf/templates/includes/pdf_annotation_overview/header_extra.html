@@ -22,25 +22,15 @@
         <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
                     [&>a]:cursor-pointer [&>a]:rounded-sm [&>a]:cursor-pointer
                     [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark">
-            <a hx-post="{% url 'change_sorting' 'user_sorting' 'newest' %}"
+            <a hx-post="{% url 'change_sorting' 'annotation_sorting' 'newest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === '-date_joined' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+               x-bind:class="'{{ sorting }}' === '-creation_date' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 Newest
             </a>
-            <a hx-post="{% url 'change_sorting' 'user_sorting' 'oldest' %}"
+            <a hx-post="{% url 'change_sorting' 'annotation_sorting' 'oldest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === 'date_joined' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+               x-bind:class="'{{ sorting }}' === 'creation_date' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 Oldest
-            </a>
-            <a hx-post="{% url 'change_sorting' 'user_sorting' 'email_asc' %}"
-               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === 'Lower(F(email))' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
-                A - Z
-            </a>
-            <a hx-post="{% url 'change_sorting' 'user_sorting' 'email_desc' %}"
-               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === 'OrderBy(Lower(F(email)), descending=True)' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
-                Z - A
             </a>
         </div>
     </div>

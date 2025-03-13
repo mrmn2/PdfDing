@@ -52,6 +52,10 @@ class Profile(models.Model):
         EMAIL_ASC = 'Email_asc'
         EMAIL_DESC = 'Email_desc'
 
+    class AnnotationsSortingChoice(models.TextChoices):
+        NEWEST = 'Newest'
+        OLDEST = 'Oldest'
+
     class LayoutChoice(models.TextChoices):
         COMPACT = 'Compact'
         LIST = 'List'
@@ -59,6 +63,9 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # set dummy default colors, will be overwritten
+    annotation_sorting = models.CharField(
+        choices=AnnotationsSortingChoice, max_length=15, default=AnnotationsSortingChoice.NEWEST
+    )
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=5, default=DarkMode.DARK)
     theme_color = models.CharField(choices=ThemeColor.choices, max_length=6, default=ThemeColor.RED)
     custom_theme_color = models.CharField(max_length=7, default='#ffa385')

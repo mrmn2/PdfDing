@@ -133,6 +133,8 @@ class ChangeSorting(View):
             user_profile = request.user.profile
 
             match sorting_category:
+                case 'annotation_sorting':
+                    user_profile.annotation_sorting = Profile.AnnotationsSortingChoice[str.upper(sorting)]
                 case 'pdf_sorting':
                     user_profile.pdf_sorting = Profile.PdfSortingChoice[str.upper(sorting)]
                 case 'shared_pdf_sorting':

@@ -20,6 +20,20 @@ urlpatterns = [
     path('update_page', pdf_views.UpdatePage.as_view(), name='update_page'),
     path('update_pdf', pdf_views.UpdatePdf.as_view(), name='update_pdf'),
     path('view/<identifier>', pdf_views.ViewerView.as_view(), name='view_pdf'),
+    path('star/<identifier>', pdf_views.Star.as_view(), name='star'),
+    path('archive/<identifier>', pdf_views.Archive.as_view(), name='archive'),
+    path('highlights', pdf_views.HighlightOverview.as_view(), name='pdf_highlight_overview'),
+    path(
+        'highlights/get_next_overview_page/<int:page>/',
+        pdf_views.HighlightOverview.as_view(),
+        name='get_next_pdf_highlight_overview_page',
+    ),
+    path('comments', pdf_views.CommentOverview.as_view(), name='pdf_comment_overview'),
+    path(
+        'comments/get_next_overview_page/<int:page>/',
+        pdf_views.CommentOverview.as_view(),
+        name='get_next_pdf_comment_overview_page',
+    ),
     path('share/<identifier>', share_views.Share.as_view(), name='share_pdf'),
     path('shared/overview/', share_views.Overview.as_view(), name='shared_pdf_overview'),
     path(
@@ -39,6 +53,4 @@ urlpatterns = [
     path('shared/<identifier>', share_views.ViewShared.as_view(), name='view_shared_pdf'),
     path('delete_tag/', pdf_views.DeleteTag.as_view(), name='delete_tag'),
     path('edit_tag/', pdf_views.EditTag.as_view(), name='edit_tag'),
-    path('star/<identifier>', pdf_views.Star.as_view(), name='star'),
-    path('archive/<identifier>', pdf_views.Archive.as_view(), name='archive'),
 ]

@@ -14,7 +14,7 @@ class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('shared_pdf_overview'), p)
             expect(self.page.locator("body")).to_contain_text("You have not shared any PDFs yet")
 
-    def test_add_pdf(self):
+    def test_share_pdf(self):
         Pdf.objects.create(owner=self.user.profile, name='some_pdf', description='description')
 
         with sync_playwright() as p:
@@ -36,10 +36,11 @@ class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_placeholder("Delete in").fill("1d0h22m")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#shared-pdf-link-1")).to_contain_text("some_shared_pdf | inactive")
-            expect(self.page.locator("body")).to_contain_text("some_pdf | some_description")
+            expect(self.page.locator("body")).to_contain_text("some_pdf")
+            expect(self.page.locator("body")).to_contain_text("some_description")
             # needs to be split because of hover tooltips
-            expect(self.page.locator("body")).to_contain_text("deletes in 1 day |")
-            expect(self.page.locator("body")).to_contain_text("expired |")
+            expect(self.page.locator("body")).to_contain_text("deletes in 1 day")
+            expect(self.page.locator("body")).to_contain_text("expired")
             expect(self.page.locator("body")).to_contain_text("0/3 Views")
 
 

@@ -286,6 +286,16 @@ class TestProfileViews(TestCase):
         changed_user = User.objects.get(id=self.user.id)
         self.assertEqual(changed_user.profile.user_sorting, Profile.UserSortingChoice.OLDEST)
 
+    def test_change_sorting_post_annotation(self):
+        self.assertEqual(self.user.profile.annotation_sorting, Profile.AnnotationsSortingChoice.NEWEST)
+
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(
+            reverse('change_sorting', kwargs={'sorting_category': 'annotation_sorting', 'sorting': 'oldest'}), **headers
+        )
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertEqual(changed_user.profile.annotation_sorting, Profile.AnnotationsSortingChoice.OLDEST)
+
     def test_delete_post(self):
         # in this test we test that the user is successfully deleted
         # we also test that the associated profile, pdfs, and tags are also deleted

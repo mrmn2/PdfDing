@@ -1,0 +1,29 @@
+{% extends 'layouts/blank.html' %}
+
+{% block content %}
+<div class="" x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false }">
+    <div class="flex flex-col md:flex-row md:justify-start"
+         :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
+        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
+          {% include 'includes/sidebar.html' %}
+        </div>
+        <div class="flex w-full justify-center md:px-8 p-2">
+            <div class="w-full md:w-[78%] min-[850px]:w-[90%]! lg:w-[90%]! pb-4">
+                {% if not page_obj %}
+                <div class="pt-4 *:flex *:justify-center">
+                    {% if page == 'pdf_highlight_overview' %}
+                    <span class="text-2xl">You do not have any PDF highlights yet!</span>
+                    {% elif page == 'pdf_comment_overview' %}
+                    <span class="text-2xl">You do not have any PDF comments yet!</span>
+                    {% endif %}
+                    <span class="pt-4 text-lg">Start by adding them in the pdf viewer.</span>
+                </div>
+                {% else %}
+                {% include 'includes/pdf_annotation_overview/overview_page.html' %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

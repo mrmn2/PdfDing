@@ -1,0 +1,31 @@
+<div x-data="{ tooltip_date: false }">
+    <div class="flex flex-row justify-between text-sm relative
+                text-slate-400 dark:text-slate-500 creme:text-stone-500">
+        <div class="flex flex-row items-center">
+            <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
+                {% if pdf.natural_age == 'now' %}
+                {{ annotation.natural_age }}
+                {% else %}
+                {{ annotation.natural_age }} ago
+                {% endif %}
+            </span>
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dot ">
+                <circle cx="12.1" cy="12.1" r="1"></circle>
+            </svg>
+            <a class="hover:text-slate-900 dark:hover:text-slate-100 creme:hover:text-stone-900"
+               href="{% url 'pdf_details' annotation.pdf.id %}">{{ annotation.pdf.name }}</a>
+            <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
+                  class="left-0 -bottom-10 z-50 absolute bg-primary text-slate-200 rounded-xs p-2 mt-1">
+              {{ annotation.creation_date }} UTC
+            </span>
+        </div>
+    </div>
+    <div class="flex flex-row items-center gap-x-2">
+        <a id="annotation-text-{{ loop_id }}"
+           href="{% url 'view_pdf' annotation.pdf.id %}"
+           class="pl-2 md:pl-2 my-1 border-l-3 border-primary text-slate-700 dark:text-slate-300 creme:text-stone-700
+                  hover:text-slate-900 dark:hover:text-slate-100 creme:hover:text-stone-900">
+            {{ annotation.text }}
+        </a>
+    </div>
+</div>

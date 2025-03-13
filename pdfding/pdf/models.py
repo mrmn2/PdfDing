@@ -5,6 +5,7 @@ import markdown
 import nh3
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
+from django.db.models import DateTimeField
 from django.utils.safestring import mark_safe
 from users.models import Profile
 
@@ -76,6 +77,21 @@ def get_qrcode_file_path(instance, _):
     return str(file_path)
 
 
+def convert_to_natural_age(creation_date: DateTimeField):
+    """Convert the creation date into a natural age, e.g: 2 minutes, 1 hour,  2 months, etc"""
+
+    natural_time = naturaltime(creation_date)
+
+    if ',' in natural_time:
+        natural_time = natural_time.split(sep=', ')[0]
+    else:
+        natural_time = natural_time.replace(' ago', '')
+
+    # naturaltime will include space characters that will cause failed unit tests
+    # splitting and joining fixes that
+    return ' '.join(natural_time.split())
+
+
 class Pdf(models.Model):
     """Model for the pdf files."""
 
@@ -103,22 +119,13 @@ class Pdf(models.Model):
         return self.name  # pragma: no cover
 
     @property
-    def natural_age(self) -> str:
+    def natural_age(self) -> str:  # pragma: no cover
         """
         Get the natural age of a file. This converts the creation date to a natural age,
         e.g: 2 minutes, 1 hour,  2 months, etc
         """
 
-        natural_time = naturaltime(self.creation_date)
-
-        if ',' in natural_time:
-            natural_time = natural_time.split(sep=', ')[0]
-        else:
-            natural_time = natural_time.replace(' ago', '')
-
-        # naturaltime will include space characters that will cause failed unit tests
-        # splitting and joining fixes that
-        return ' '.join(natural_time.split())
+        return convert_to_natural_age(self.creation_date)
 
     @property
     def progress(self) -> int:
@@ -187,6 +194,15 @@ class PdfAnnotation(models.Model):
 
     def __str__(self):
         return self.text  # pragma: no cover
+
+    @property
+    def natural_age(self) -> str:  # pragma: no cover
+        """
+        Get the natural age of a file. This converts the creation date to a natural age,
+        e.g: 2 minutes, 1 hour,  2 months, etc
+        """
+
+        return convert_to_natural_age(self.creation_date)
 
 
 class PdfComment(PdfAnnotation):

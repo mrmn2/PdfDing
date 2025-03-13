@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 from django_htmx.http import HttpResponseClientRedirect
 from pdf import forms
-from pdf.models import Pdf, Tag
+from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.views import pdf_views
 
 DEMO_FILE_SIZE = 29451
@@ -701,6 +701,41 @@ class TestViews(TestCase):
         self.assertEqual(response.context['pdf_name'], 'pdf')
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
         self.assertTemplateUsed(response, 'partials/delete_pdf.html')
+
+
+class TestAnnotationMixin(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        self.user = None
+        set_up(self)
+
+    def test_filter_highlights(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        highlight_1 = PdfHighlight.objects.create(text='highlight_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
+        highlight_2 = PdfHighlight.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
+
+        # dummy request
+        response = self.client.get(reverse('pdf_overview'))
+
+        filtered_highlights = pdf_views.HighlightOverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(sorted(list(filtered_highlights), key=lambda a: a.text), [highlight_1, highlight_2])
+
+    def test_filter_comments(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        comment_1 = PdfComment.objects.create(text='comment_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
+        comment_2 = PdfComment.objects.create(text='comment_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
+
+        # dummy request
+        response = self.client.get(reverse('pdf_overview'))
+
+        filtered_comments = pdf_views.CommentOverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(sorted(list(filtered_comments), key=lambda a: a.text), [comment_1, comment_2])
 
 
 class TestTagViews(TestCase):

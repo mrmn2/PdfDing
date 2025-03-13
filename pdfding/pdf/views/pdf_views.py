@@ -12,7 +12,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
-from pdf.models import Pdf, Tag
+from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.service import PdfProcessingServices
 from rapidfuzz import fuzz, utils
 from users.models import Profile
@@ -305,6 +305,62 @@ class EditPdfMixin(PdfMixin):
             pdf.tags.set(tags)
 
 
+class AnnotationOverviewMixin:
+    obj_name = 'pdf_annotation'
+    overview_page_name = 'pdf_annotation_overview/overview_page'
+
+    @staticmethod
+    def get_sorting(request: HttpRequest):  # pragma: no cover
+        """Get the sorting of the overview page."""
+
+        profile = request.user.profile
+
+        sorting_dict = {
+            'Newest': '-creation_date',
+            'Oldest': 'creation_date',
+        }
+
+        return sorting_dict[profile.annotation_sorting]
+
+
+class HighlightOverviewMixin(AnnotationOverviewMixin):
+    @staticmethod
+    def filter_objects(request: HttpRequest) -> QuerySet:
+        """
+        Filter the shared PDFs when performing a search in the overview. As there is no search functionality, this is
+        just a dummy function
+        """
+
+        highlights = PdfHighlight.objects.filter(pdf__owner=request.user.profile)
+
+        return highlights
+
+    @staticmethod
+    def get_extra_context(_) -> dict:  # pragma: no cover
+        """get further information that needs to be passed to the template."""
+
+        return {'page': 'pdf_highlight_overview', 'get_next_overview_page': 'get_next_pdf_highlight_overview_page'}
+
+
+class CommentOverviewMixin(AnnotationOverviewMixin):
+    @staticmethod
+    def filter_objects(request: HttpRequest) -> QuerySet:
+        """
+        Filter the shared PDFs when performing a search in the overview. As there is no search functionality, this is
+        just a dummy function
+        """
+
+        comments = PdfComment.objects.filter(pdf__owner=request.user.profile)
+
+        return comments
+
+    @staticmethod
+    def get_extra_context(_) -> dict:  # pragma: no cover
+        """get further information that needs to be passed to the template."""
+
+        return {'page': 'pdf_comment_overview', 'get_next_overview_page': 'get_next_pdf_comment_overview_page'}
+
+
 @login_not_required
 def redirect_to_overview(request: HttpRequest):  # pragma: no cover
     """
@@ -441,6 +497,20 @@ class Edit(EditPdfMixin, base_views.BaseDetailsEdit):
     """
     The view for editing a PDF's name, tags and description. The field, that is to be changed, is specified by the
     'field' argument.
+    """
+
+
+class HighlightOverview(HighlightOverviewMixin, base_views.BaseOverview):
+    """
+    View for the PDF highlight overview page. This view performs sorting of the PDFs highlights. It's also responsible
+    for paginating the PDF highlights.
+    """
+
+
+class CommentOverview(CommentOverviewMixin, base_views.BaseOverview):
+    """
+    View for the PDF comment overview page. This view performs sorting of the PDFs comments. It's also responsible
+    for paginating the PDF comments.
     """
 
 

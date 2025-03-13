@@ -44,6 +44,39 @@
                     <span class="hidden md:block">Starred</span>
                 </a>
             </div>
+            <div {% if page == 'pdf_highlight_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+                <a href="{% url 'pdf_highlight_overview' %}">
+                    <svg fill=currentColor version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5" viewBox="0 0 92.274 92.273" xml:space="preserve">
+                            <!-- source: https://www.svgrepo.com/svg/118905/pencil-diagonal-outline-symbol-on-a-line -->
+                            <!-- license: CC0 License-->
+                            <path d="M12.879,83.265l18.137-6.483c2.271,0.721,4.869,0.177,6.717-1.671l48.378-50.906c2.555-2.556,2.556-6.714,0-9.27
+                                L73.092,1.916c-2.534-2.535-6.646-2.554-9.207-0.062L12.523,49.85l-0.102,0.1c-1.803,1.801-2.327,4.396-1.589,6.67L4.476,74.91
+                                c-0.523,1.512-0.14,3.188,0.991,4.318l3.058,3.06C9.665,83.428,11.362,83.809,12.879,83.265z M68.416,9.038L78.979,19.6
+                                L32.992,67.991L19.627,54.627L68.416,9.038z M17.126,63.923l6.604,6.604l-10.162,3.632L17.126,63.923z"/>
+                            <rect x="5.583" y="85.239" width="82.3" height="7.034"/>
+                    </svg>
+                    <span class="hidden md:block">Highlights</span>
+                </a>
+            </div>
+            <div {% if page == 'pdf_comment_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+                <a href="{% url 'pdf_comment_overview' %}">
+                    <svg fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5" viewBox="0 0 98.167 98.167" xml:space="preserve">
+                        <!-- source: https://www.svgrepo.com/svg/158876/write-a-note -->
+                        <!-- license: CC0 License-->
+                        <path d="M80.708,12.67v-2.127c0-1.001-0.812-1.813-1.813-1.813H1.813C0.812,8.73,0,9.543,0,10.543v77.08
+                            c0,1.002,0.811,1.813,1.813,1.813h77.082c1.002,0,1.813-0.813,1.813-1.813V48.776v-1.009l-9.656,9.654v22.357H9.657V18.386h61.395
+                            v3.94L80.708,12.67z"/>
+                        <path d="M47.654,50.303c-0.19,0.189-0.303,0.443-0.315,0.693l-1.847,12.851c-0.045,0.338,0.07,0.685,0.312,0.926
+                            c0.207,0.206,0.48,0.319,0.773,0.319c0.053,0,0.104-0.004,0.156-0.012l12.792-1.84c0.285-0.007,0.547-0.119,0.754-0.328
+                            l29.02-29.026l-12.609-12.61L47.654,50.303z"/>
+                        <path d="M98.167,24.562c0-0.293-0.114-0.567-0.321-0.772L86.785,12.729c-0.395-0.399-1.15-0.399-1.547-0.001l-5.221,5.221
+                            l12.608,12.609l5.222-5.223C98.053,25.128,98.167,24.854,98.167,24.562z"/>
+                    </svg>
+                    <span class="hidden md:block">Comments</span>
+                </a>
+            </div>
             <div {% if page == 'pdf_overview_archived' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
                 <a href="{% url 'pdf_overview_query' %}?selection=archived">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +89,7 @@
             </div>
         </div>
     </div>
-    {% if page == 'pdf_overview' %}
+    {% if page == 'pdf_overview' or page == 'pdf_overview_starred' or page == 'pdf_overview_archived' %}
     <div class="hidden md:block md:flex md:flex-row items-center pt-6 mt-6
                 border-t border-slate-300 dark:border-slate-600 creme:border-stone-400 gap-x-2 pb-2 pl-2 font-semibold">
         <div class="flex flex-row items-center justify-between! w-full">

@@ -35,10 +35,10 @@ class TestPdf(TestCase):
 
     def test_natural_age(self):
         self.pdf.creation_date = datetime.now() - timedelta(minutes=5)
-        self.assertEqual(self.pdf.natural_age, '5 minutes')
+        self.assertEqual(models.convert_to_natural_age(self.pdf.creation_date), '5 minutes')
 
         self.pdf.creation_date -= timedelta(days=3, hours=2)
-        self.assertEqual(self.pdf.natural_age, '3 days')
+        self.assertEqual(models.convert_to_natural_age(self.pdf.creation_date), '3 days')
 
     def test_progress(self):
         self.pdf.number_of_pages = 1000
