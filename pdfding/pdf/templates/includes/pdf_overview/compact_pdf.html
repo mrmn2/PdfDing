@@ -32,7 +32,7 @@
         {% endif %}
     </div>
     {% if pdf.description or pdf.tags.all %}
-    <div class="truncate text-slate-700 dark:text-slate-300 creme:text-stone-700 text-sm pb-1">
+    <div class="flex flex-row items-center truncate text-slate-700 dark:text-slate-300 creme:text-stone-700 text-sm pb-1">
         {% for tag in pdf.tags.all|dictsort:"name" %}
         <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
            class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark px-[2px]
@@ -42,7 +42,9 @@
         {% endfor %}
         {% if pdf.description %}
         {% if pdf.tags.all %}
-        <span class="">|</span>
+        <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12.1" cy="12.1" r="1"></circle>
+        </svg>
         {% endif %}
         <span class="truncate">{{ pdf.description }}</span>
         {% endif %}

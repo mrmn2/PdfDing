@@ -29,8 +29,11 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
     </div>
+    {% endif %}
+    {% if next_page_available and current_page > 1 %}
     <span x-show="!in_progress" class="cursor-default mb-1 pl-1 pr-2">|</span>
     {% endif %}
+    {% if current_page > 1 %}
     <div>
         <div x-show="!in_progress"
              class="cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 creme:hover:text-stone-700"
@@ -48,4 +51,5 @@
             </svg>
         </div>
     </div>
+    {% endif %}
 </div>

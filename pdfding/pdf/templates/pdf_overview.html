@@ -4,11 +4,14 @@
 <div class="" x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false }">
     <div class="flex flex-col md:flex-row md:justify-start"
          :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
-        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2 md:mr-28 min-[850px]:mr-36! lg:mr-0!">
+        <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
           {% include 'includes/sidebar.html' %}
         </div>
         <div class="flex w-full justify-center md:px-8 p-2">
-            <div class="w-full md:w-[71%] min-[850px]:w-[80%]! pb-4">
+            <div class="{% if layout == 'Compact' %} w-full md:w-[71%] min-[850px]:w-[80%] lg:w-[90%]! md:ml-48 min-[850px]:ml-40! lg:ml-0!
+                        {% else %} w-full md:w-[78%] min-[850px]:w-[90%]! lg:w-[90%]!
+                        {% endif %}
+                        pb-4">
                 {% if search_query or tag_query %}
                 {% include 'includes/pdf_overview/search_filters.html' %}
                 {% endif %}

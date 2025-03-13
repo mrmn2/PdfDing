@@ -20,29 +20,35 @@
         {% endif %}
     </div>
     <div x-data="{ tooltip_del: false, tooltip_exp: false }"
-           class="text-slate-500 text-sm dark:[&>span]:text-slate-400 creme:[&>span]:text-stone-600">
+           class="flex flex-row items-center text-slate-500 text-sm dark:[&>span]:text-slate-400 creme:[&>span]:text-stone-600">
         {% if shared_pdf.deletion_date %}
         <span x-on:mouseenter="tooltip_del = true" x-on:mouseleave="tooltip_del = false">
-          {{ shared_pdf.deletes_in_string }} |
+          {{ shared_pdf.deletes_in_string }}
         </span>
         <span x-show="tooltip_del" x-transition:enter.duration.500ms x-cloak
               class="-left-0 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
           {{ shared_pdf.deletion_date }} UTC
         </span>
         {% else %}
-        <span>{{ shared_pdf.deletes_in_string }} |</span>
+        <span>{{ shared_pdf.deletes_in_string }}</span>
         {% endif %}
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12.1" cy="12.1" r="1"></circle>
+        </svg>
         {% if shared_pdf.expiration_date %}
         <span x-on:mouseenter="tooltip_exp = true" x-on:mouseleave="tooltip_exp = false">
-          {{ shared_pdf.expires_in_string }} |
+          {{ shared_pdf.expires_in_string }}
         </span>
         <span x-show="tooltip_exp" x-cloak x-transition:enter.duration.500ms
               class="left-20 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
           {{ shared_pdf.expiration_date }} UTC
         </span>
         {% else %}
-        <span>{{ shared_pdf.expires_in_string }} |</span>
+        <span>{{ shared_pdf.expires_in_string }}</span>
         {% endif %}
+        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12.1" cy="12.1" r="1"></circle>
+        </svg>
         <span>{{ shared_pdf.views_string }}</span>
     </div>
     <div class="flex flex-row justify-between text-slate-500 text-sm dark:text-slate-400 creme:text-stone-600
