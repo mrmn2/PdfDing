@@ -327,7 +327,7 @@ class HighlightOverviewMixin(AnnotationOverviewMixin):
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """
-        Filter the shared PDFs when performing a search in the overview. As there is no search functionality, this is
+        Filter the PDF highlights when performing a search in the overview. As there is no search functionality, this is
         just a dummy function
         """
 
@@ -346,7 +346,7 @@ class CommentOverviewMixin(AnnotationOverviewMixin):
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """
-        Filter the shared PDFs when performing a search in the overview. As there is no search functionality, this is
+        Filter the PDF comments when performing a search in the overview. As there is no search functionality, this is
         just a dummy function
         """
 
