@@ -386,11 +386,18 @@ class ViewerView(PdfMixin, View):
 
         color_dict = get_viewer_colors(request.user.profile)
 
+        page = request.GET.get('page')
+
+        if page:
+            current_page = page
+        else:
+            current_page = pdf.current_page
+
         return render(
             request,
             'viewer.html',
             {
-                'current_page': pdf.current_page,
+                'current_page': current_page,
                 'pdf_id': identifier,
                 'revision': pdf.revision,
                 'tab_title': pdf.name,

@@ -504,6 +504,16 @@ class TestViews(TestCase):
         self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
         self.assertEqual(response.context['user_view_bool'], True)
 
+    def test_view_get_different_page(self):
+        # in this test we are just interested if the current_page is set to the value specified by the query.
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        self.assertEqual(pdf.current_page, 1)
+
+        response = self.client.get(f"{reverse('view_pdf', kwargs={'identifier': pdf.id})}?page=20")
+
+        self.assertEqual(response.context['current_page'], '20')
+
     def test_get_notes_no_htmx(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
         response = self.client.get(reverse('get_notes', kwargs={'identifier': pdf.id}))
