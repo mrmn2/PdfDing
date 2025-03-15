@@ -6,7 +6,7 @@
       {% include 'includes/settings_sidebar.html' with page='account_settings' %}
     </div>
     <div class="flex w-full justify-start items-center py-2 px-3 md:px-8">
-        <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 px-4 py-4 md:pb-8 border
+        <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 min-[1600px]:ml-40! px-4 py-4 md:pb-8 border
                     bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
                     border-slate-300 dark:border-slate-700 creme:border-creme-dark">
             <span class="text-2xl font-bold">Account Information</span>
@@ -21,7 +21,7 @@
                 </div>
             </div>
             {% if not uses_social %}
-            <div class="pt-6">
+            <div class="pt-4">
                 <span class="text-lg font-bold">Email Address</span>
             </div>
             <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
@@ -35,7 +35,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="pr-6">
+                <div class="pr-0 md:pr-6">
                     <a id="email_edit" class="cursor-pointer text-primary hover:text-secondary"
                         hx-get="{% url 'profile-setting-change' 'email' %}"
                         hx-target="#email_address"
@@ -44,14 +44,14 @@
                     </a>
                 </div>
             </div>
-            <div class="pt-6">
+            <div class="pt-3">
                 <span  class="text-lg font-bold">Password</span>
             </div>
-            <div class="flex justify-between dark:text-slate-400">
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
                 <div>
                     <span>***</span>
                 </div>
-                <div class="pr-6">
+                <div class="pr-0 md:pr-6">
                     <a href="{% url 'account_change_password' %}" class="cursor-pointer text-primary hover:text-secondary">
                         Edit
                     </a>

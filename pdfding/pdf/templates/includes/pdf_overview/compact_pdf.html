@@ -19,8 +19,8 @@
     <div class="flex flex-row items-center gap-x-2">
         <a id="pdf-link-{{ loop_id }}"
            href="{% url 'view_pdf' pdf.id %}"
-           class="text-lg font-bold truncate text-slate-700 dark:text-slate-300 creme:text-stone-700
-                  hover:text-slate-900 dark:hover:text-slate-100 creme:hover:text-stone-900">
+           class="text-lg font-bold truncate text-slate-700 dark:text-slate-200 creme:text-stone-700
+                  hover:text-slate-900 dark:hover:text-white creme:hover:text-stone-900">
             {{ pdf.name }}
         </a>
         {% if pdf.starred %}

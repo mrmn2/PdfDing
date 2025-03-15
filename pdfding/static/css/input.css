@@ -207,7 +207,6 @@ form[action="/accountpassword/change/"] ul.errorlist {
 }
 
 .markdown {
-    @apply text-slate-800 dark:text-slate-300 creme:text-stone-700;
     & p,
     & ol,
     & ul,
@@ -259,7 +258,7 @@ form[action="/accountpassword/change/"] ul.errorlist {
     }
 
     & code {
-        @apply bg-slate-200 dark:bg-slate-600 px-1 pt-1
+        @apply bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light px-1 pt-1
     }
 
     & blockquote {
