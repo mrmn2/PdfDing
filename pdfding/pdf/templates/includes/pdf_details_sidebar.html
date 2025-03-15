@@ -33,7 +33,7 @@
                 </a>
             </div>
             <div {% if page == 'pdf_details_highlights' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
-                <a href="{% url 'pdf_highlight_overview' %}">
+                <a href="{% url 'pdf_details_highlight_overview' pdf.id %}">
                     <svg fill=currentColor version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                         class="w-5 h-5" viewBox="0 0 92.274 92.273" xml:space="preserve">
                             <!-- source: https://www.svgrepo.com/svg/118905/pencil-diagonal-outline-symbol-on-a-line -->
@@ -48,7 +48,7 @@
                 </a>
             </div>
             <div {% if page == 'pdf_details_comments' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
-                <a href="{% url 'pdf_comment_overview' %}">
+                <a href="{% url 'pdf_details_comment_overview' pdf.id %}">
                     <svg fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                          class="w-5 h-5" viewBox="0 0 98.167 98.167" xml:space="preserve">
                         <!-- source: https://www.svgrepo.com/svg/158876/write-a-note -->

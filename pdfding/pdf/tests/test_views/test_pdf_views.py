@@ -745,3 +745,68 @@ class TestAnnotationMixin(TestCase):
         filtered_comments = pdf_views.CommentOverviewMixin.filter_objects(response.wsgi_request)
 
         self.assertEqual(sorted(list(filtered_comments), key=lambda a: a.text), [comment_1, comment_2])
+
+    def test_filter_details_highlights(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        highlight_1 = PdfHighlight.objects.create(text='highlight_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
+        highlight_2 = PdfHighlight.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
+
+        # we create a second pdf to verify only the highlights of correct pdf will be returned
+        other_pdf = Pdf.objects.create(owner=self.user.profile, name='other_pdf')
+        PdfHighlight.objects.create(text='other_highlight', page=1, creation_date=pdf.creation_date, pdf=other_pdf)
+
+        # dummy request
+        response = self.client.get(reverse('pdf_overview'))
+
+        filtered_highlights = pdf_views.DetailsHighlightOverviewMixin.filter_objects(response.wsgi_request, pdf.id)
+
+        self.assertEqual(sorted(list(filtered_highlights), key=lambda a: a.text), [highlight_1, highlight_2])
+
+    def test_filter_details_comments(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        comment_1 = PdfComment.objects.create(text='comment_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
+        comment_2 = PdfComment.objects.create(text='comment_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
+
+        # we create a second pdf to verify only the highlights of correct pdf will be returned
+        other_pdf = Pdf.objects.create(owner=self.user.profile, name='other_pdf')
+        PdfComment.objects.create(text='other_comment', page=1, creation_date=pdf.creation_date, pdf=other_pdf)
+
+        # dummy request
+        response = self.client.get(reverse('pdf_overview'))
+
+        filtered_comments = pdf_views.DetailsCommentOverviewMixin.filter_objects(response.wsgi_request, pdf.id)
+
+        self.assertEqual(sorted(list(filtered_comments), key=lambda a: a.text), [comment_1, comment_2])
+
+    def test_details_highlights_get_extra_context(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        # dummy request
+        response = self.client.get(reverse('pdf_overview'))
+
+        generated_extra_context = pdf_views.DetailsHighlightOverviewMixin.get_extra_context(
+            response.wsgi_request, pdf.id
+        )
+        expected_extra_context = {
+            'page': 'pdf_details_highlights',
+            'get_next_overview_page': 'get_next_pdf_details_highlight_overview_page',
+            'pdf': pdf,
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+    def test_details_comments_get_extra_context(self):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        # dummy request
+        response = self.client.get(reverse('pdf_overview'))
+
+        generated_extra_context = pdf_views.DetailsCommentOverviewMixin.get_extra_context(response.wsgi_request, pdf.id)
+        expected_extra_context = {
+            'page': 'pdf_details_comments',
+            'get_next_overview_page': 'get_next_pdf_details_comment_overview_page',
+            'pdf': pdf,
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)

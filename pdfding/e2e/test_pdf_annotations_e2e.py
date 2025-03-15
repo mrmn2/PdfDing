@@ -52,7 +52,7 @@ class HighlightOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#annotation-13")).not_to_be_visible()
 
             self.page.locator("#next_page_1_toggle").click()
-            # since other is not visible #pdf-15 will contain pdf_page_2
+            # since other is not visible #annotation-13 will contain pdf_highlight_2
             expect(self.page.locator("#annotation-13")).to_be_visible()
             expect(self.page.locator("#annotation-text-13")).to_contain_text("highlight_page_2")
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
@@ -131,7 +131,7 @@ class CommentOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#annotation-13")).not_to_be_visible()
 
             self.page.locator("#next_page_1_toggle").click()
-            # since other is not visible #pdf-15 will contain pdf_page_2
+            # since other is not visible #annotation-13 will contain comment_page_2
             expect(self.page.locator("#annotation-13")).to_be_visible()
             expect(self.page.locator("#annotation-text-13")).to_contain_text("comment_page_2")
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()

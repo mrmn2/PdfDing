@@ -209,7 +209,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
                 expect(self.page.locator(edit_name)).to_contain_text("Edit")
                 self.page.locator(edit_name).click()
                 expect(self.page.locator(edit_name)).to_contain_text("Cancel")
-                self.page.get_by_role("link", name="Cancel").click()
+                self.page.locator(edit_name).click()
                 expect(self.page.locator(edit_name)).to_contain_text("Edit")
 
     def test_details_delete(self):

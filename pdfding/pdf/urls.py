@@ -3,13 +3,13 @@ import pdf.views.share_views as share_views
 from django.urls import path
 
 urlpatterns = [
+    # pdf related views
     path('', pdf_views.Overview.as_view(), name='pdf_overview'),
     path('query/', pdf_views.OverviewQuery.as_view(), name='pdf_overview_query'),
     path('get_next_overview_page/<int:page>/', pdf_views.Overview.as_view(), name='get_next_pdf_overview_page'),
     path('add', pdf_views.Add.as_view(), name='add_pdf'),
     path('bulk_add', pdf_views.BulkAdd.as_view(), name='bulk_add_pdfs'),
     path('delete/<identifier>', pdf_views.Delete.as_view(), name='delete_pdf'),
-    path('details/<identifier>', pdf_views.Details.as_view(), name='pdf_details'),
     path('download/<identifier>', pdf_views.Download.as_view(), name='download_pdf'),
     path('edit/<identifier>/<field_name>', pdf_views.Edit.as_view(), name='edit_pdf'),
     path('get/<identifier>/<revision>', pdf_views.Serve.as_view(), name='serve_pdf'),
@@ -34,6 +34,29 @@ urlpatterns = [
         pdf_views.CommentOverview.as_view(),
         name='get_next_pdf_comment_overview_page',
     ),
+    # pdf details related views
+    path('details/<identifier>', pdf_views.Details.as_view(), name='pdf_details'),
+    path(
+        'details/<identifier>/highlights',
+        pdf_views.DetailsHighlightOverview.as_view(),
+        name='pdf_details_highlight_overview',
+    ),
+    path(
+        'details/<identifier>/get_next_highlight_overview_page/<int:page>/',
+        pdf_views.DetailsHighlightOverview.as_view(),
+        name='get_next_pdf_details_highlight_overview_page',
+    ),
+    path(
+        'details/<identifier>/comments',
+        pdf_views.DetailsCommentOverview.as_view(),
+        name='pdf_details_comment_overview',
+    ),
+    path(
+        'details/<identifier>/get_next_comment_overview_page/<int:page>/',
+        pdf_views.DetailsCommentOverview.as_view(),
+        name='get_next_pdf_details_comment_overview_page',
+    ),
+    # sharing related views
     path('share/<identifier>', share_views.Share.as_view(), name='share_pdf'),
     path('shared/overview/', share_views.Overview.as_view(), name='shared_pdf_overview'),
     path(
@@ -51,6 +74,7 @@ urlpatterns = [
     path('shared/get_qrcode/<identifier>', share_views.ServeQrCode.as_view(), name='serve_qrcode'),
     path('shared/download_qrcode/<identifier>', share_views.DownloadQrCode.as_view(), name='download_qrcode'),
     path('shared/<identifier>', share_views.ViewShared.as_view(), name='view_shared_pdf'),
+    # tag related views
     path('delete_tag/', pdf_views.DeleteTag.as_view(), name='delete_tag'),
     path('edit_tag/', pdf_views.EditTag.as_view(), name='edit_tag'),
 ]

@@ -8,7 +8,11 @@
         <div class="cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 creme:hover:text-stone-700"
              x-show="!in_progress"
              @click="in_progress = true"
+             {% if page == 'pdf_details_highlights' or page == 'pdf_details_comments' %}
+             hx-get="{% url get_next_overview_page_name page=current_page|add:1 identifier=pdf.id %}?{{ request.META.QUERY_STRING }}"
+             {% else %}
              hx-get="{% url get_next_overview_page_name page=current_page|add:1 %}?{{ request.META.QUERY_STRING }}"
+             {% endif %}
              hx-target="#next_page_{{ current_page }}"
              hx-swap="outerHTML">
             <a>Load More</a>

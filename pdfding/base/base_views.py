@@ -39,13 +39,13 @@ class BaseOverview(View):
     paginating the objects.
     """
 
-    def get(self, request: HttpRequest, page: int = 1, items_per_page: int = ITEMS_PER_PAGE):
+    def get(self, request: HttpRequest, page: int = 1, items_per_page: int = ITEMS_PER_PAGE, **kwargs):
         """
         Display the overview.
         """
 
         sorting = self.get_sorting(request)
-        page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page)
+        page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page, **kwargs)
         context = {
             'page_obj': page_object,
             'sorting': sorting,
@@ -54,16 +54,16 @@ class BaseOverview(View):
             'current_page': page,
         }
 
-        context |= self.get_extra_context(request)
+        context |= self.get_extra_context(request, **kwargs)
 
         if request.htmx:
             return render(request, f'includes/{self.overview_page_name}.html', context)
         else:
             return render(request, f'{self.obj_name}_overview.html', context)
 
-    def get_page_objects(self, request: HttpRequest, sorting: str, page: int, items_per_page: int):
+    def get_page_objects(self, request: HttpRequest, sorting: str, page: int, items_per_page: int, **kwargs):
         # filter objects
-        objects = self.filter_objects(request)
+        objects = self.filter_objects(request, **kwargs)
 
         # sort objects
         objects = objects.order_by(sorting)

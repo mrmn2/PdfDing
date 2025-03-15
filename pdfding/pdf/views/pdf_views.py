@@ -327,8 +327,7 @@ class HighlightOverviewMixin(AnnotationOverviewMixin):
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """
-        Filter the PDF highlights when performing a search in the overview. As there is no search functionality, this is
-        just a dummy function
+        Filter the PDF highlights in the overview. As there is no filtering needed this is just a dummy function.
         """
 
         highlights = PdfHighlight.objects.filter(pdf__owner=request.user.profile)
@@ -346,8 +345,7 @@ class CommentOverviewMixin(AnnotationOverviewMixin):
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """
-        Filter the PDF comments when performing a search in the overview. As there is no search functionality, this is
-        just a dummy function
+        Filter the PDF comments in the overview. As there is no filtering needed this is just a dummy function.
         """
 
         comments = PdfComment.objects.filter(pdf__owner=request.user.profile)
@@ -359,6 +357,62 @@ class CommentOverviewMixin(AnnotationOverviewMixin):
         """get further information that needs to be passed to the template."""
 
         return {'page': 'pdf_comment_overview', 'get_next_overview_page': 'get_next_pdf_comment_overview_page'}
+
+
+class DetailsAnnotationOverviewMixin(AnnotationOverviewMixin):
+    obj_name = 'pdf_details_annotation'
+
+
+class DetailsHighlightOverviewMixin(DetailsAnnotationOverviewMixin, PdfMixin):
+    @classmethod
+    def filter_objects(cls, request: HttpRequest, identifier: str) -> QuerySet:
+        """
+        Filter the highlights of a single pdf.
+        """
+
+        pdf = cls.get_object(request, identifier)
+
+        highlights = pdf.pdfhighlight_set.all()
+
+        return highlights
+
+    @classmethod
+    def get_extra_context(cls, request: HttpRequest, identifier) -> dict:  # pragma: no cover
+        """get further information that needs to be passed to the template."""
+
+        pdf = cls.get_object(request, identifier)
+
+        return {
+            'page': 'pdf_details_highlights',
+            'get_next_overview_page': 'get_next_pdf_details_highlight_overview_page',
+            'pdf': pdf,
+        }
+
+
+class DetailsCommentOverviewMixin(DetailsAnnotationOverviewMixin, PdfMixin):
+    @classmethod
+    def filter_objects(cls, request: HttpRequest, identifier: str) -> QuerySet:
+        """
+        Filter the comments of a single pdf.
+        """
+
+        pdf = cls.get_object(request, identifier)
+
+        highlights = pdf.pdfcomment_set.all()
+
+        return highlights
+
+    @classmethod
+    def get_extra_context(cls, request: HttpRequest, identifier) -> dict:  # pragma: no cover
+        """get further information that needs to be passed to the template."""
+
+        pdf = cls.get_object(request, identifier)
+
+        return {
+            'page': 'pdf_details_comments',
+            'get_next_overview_page': 'get_next_pdf_details_comment_overview_page',
+            'pdf': pdf,
+        }
 
 
 @login_not_required
@@ -517,6 +571,20 @@ class HighlightOverview(HighlightOverviewMixin, base_views.BaseOverview):
 class CommentOverview(CommentOverviewMixin, base_views.BaseOverview):
     """
     View for the PDF comment overview page. This view performs sorting of the PDFs comments. It's also responsible
+    for paginating the PDF comments.
+    """
+
+
+class DetailsHighlightOverview(DetailsHighlightOverviewMixin, base_views.BaseOverview):
+    """
+    View for the highlights of a single pdf. This view performs sorting of the PDFs highlights. It's also responsible
+    for paginating the PDF highlights.
+    """
+
+
+class DetailsCommentOverview(DetailsCommentOverviewMixin, base_views.BaseOverview):
+    """
+    View for the comments of a single pdf. This view performs sorting of the PDFs comments. It's also responsible
     for paginating the PDF comments.
     """
 
