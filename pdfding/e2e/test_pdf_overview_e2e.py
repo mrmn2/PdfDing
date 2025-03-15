@@ -414,7 +414,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag_tag_filter")).to_be_visible()
 
             # check that filters are invisible
-            self.page.locator("#search_filter").get_by_role("img").click()
+            self.page.locator("#search_filter_close").get_by_role("img").click()
             self.page.locator("#tag_tag_filter").get_by_role("img").click()
             expect(self.page.locator("#search_filter")).not_to_be_visible()
             expect(self.page.locator("#tag_tag_filter")).not_to_be_visible()

@@ -1,13 +1,26 @@
 <div class="flex flex-wrap gap-x-2 pb-1 md:pb-2">
-    <div class="flex items-center text-slate-500 dark:text-slate-300 creme:text-stone-600 text-sm">
+    <div class="flex flex-row items-center text-slate-500 dark:text-slate-300 creme:text-stone-600 text-sm">
+        <svg class="w-4 h-4 mr-[2px] mt-[2px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!--source: https://www.svgrepo.com/svg/471431/filter-funnel-02 -->
+            <!--License: CC0-->
+            <path d="M3.38589 5.66687C2.62955 4.82155 2.25138 4.39889 2.23712 4.03968C2.22473 3.72764 2.35882 3.42772 2.59963 3.22889C2.87684 3 3.44399 3 4.57828 3H19.4212C20.5555 3 21.1227 3 21.3999 3.22889C21.6407 3.42772 21.7748 3.72764 21.7624 4.03968C21.7481 4.39889 21.3699 4.82155 20.6136 5.66687L14.9074 12.0444C14.7566 12.2129 14.6812 12.2972 14.6275 12.3931C14.5798 12.4781 14.5448 12.5697 14.5236 12.6648C14.4997 12.7721 14.4997 12.8852 14.4997 13.1113V18.4584C14.4997 18.6539 14.4997 18.7517 14.4682 18.8363C14.4403 18.911 14.395 18.9779 14.336 19.0315C14.2692 19.0922 14.1784 19.1285 13.9969 19.2012L10.5969 20.5612C10.2293 20.7082 10.0455 20.7817 9.89802 20.751C9.76901 20.7242 9.6558 20.6476 9.583 20.5377C9.49975 20.4122 9.49975 20.2142 9.49975 19.8184V13.1113C9.49975 12.8852 9.49975 12.7721 9.47587 12.6648C9.45469 12.5697 9.41971 12.4781 9.37204 12.3931C9.31828 12.2972 9.2429 12.2129 9.09213 12.0444L3.38589 5.66687Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <span>Filters</span>
     </div>
     {% if search_query %}
     <div id="search_filter" x-data="{}"
          class="flex items-center px-2 py-1 text-sm rounded-md gap-x-1
-                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-600 creme:bg-creme-dark creme:text-stone-700">
-        <span>{{ search_query|truncatechars:40 }}</span>
-        <div class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
+                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 creme:bg-creme-dark-light creme:text-stone-700">
+        <div class="flex flex-row items-center">
+            <svg class="w-4 h-4 mt-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!--source: https://www.svgrepo.com/svg/489122/search -->
+                <!--License: PD-->
+                <path d="M13.3891 13.3891L19 19M9.5 15C12.5376 15 15 12.5376 15 9.5C15 6.46243 12.5376 4 9.5 4C6.46243 4 4 6.46243 4 9.5C4 12.5376 6.46243 15 9.5 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ search_query|truncatechars:40 }}</span>
+        </div>
+        <div id="search_filter_close"
+             class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
              @click="window.open('{% url 'pdf_overview_query' %}?search=', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">
@@ -20,7 +33,7 @@
     {% for tag in tag_query %}
     <div id="tag_{{ tag }}_filter"  x-data="{}"
          class="flex items-center px-2 py-1 text-sm rounded-md gap-x-1
-                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-600 creme:bg-creme-dark creme:text-stone-700">
+                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 creme:bg-creme-dark-light creme:text-stone-700">
         <span>#{{ tag|truncatechars:40 }}</span>
         <div class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
              @click="window.open('{% url 'pdf_overview_query' %}?remove={{ tag }}', '_self');">
