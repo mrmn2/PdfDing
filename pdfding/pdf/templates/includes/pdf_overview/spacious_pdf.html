@@ -2,10 +2,7 @@
     <div class="flex flex-row pt-1 {% if layout == 'Grid' %} min-h-36 -mb-1! {% endif %}"
          x-data="{ tooltip_date: false }">
         <div id="thumbnail-{{ loop_id }}" class="[&>div]:cursor-pointer"
-             hx-get="{% url 'show_preview' pdf.id %}"
-             hx-target="#preview"
-             hx-swap="innerHTML"
-             @click="show_preview_modal = true">
+             @click="window.open('{% url 'view_pdf' pdf.id %}', '_self');">
             {% if pdf.thumbnail %}
             <div class="w-26!">
                 <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600 creme:border-stone-400"
