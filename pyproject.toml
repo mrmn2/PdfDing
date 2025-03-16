@@ -7,23 +7,24 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
-django = "==5.1.5"
-django-allauth = {extras = ["socialaccount"], version = "==65.3.1"}
+django = "==5.1.7"
+django-allauth = {extras = ["socialaccount"], version = "==65.5.0"}
 django-cleanup = "==9.0.0"
-django-htmx = "==1.21.0"
+django-htmx = "==1.23.0"
 gunicorn = "==23.0.0"
 huey = "==2.5.2"
 Markdown = "==3.7"
 minio = "==7.2.15"
-nh3 = "==0.2.20"
+nh3 = "==0.2.21"
 psycopg2-binary = "==2.9.10"
 pypdfium2 = "==4.30.1"
 pypdf = "==5.3.1"
 python-magic = "==0.4.27"
 qrcode= {extras = ["pil"], version = "==8.0 "}
-RapidFuzz = "==3.12.1"
+RapidFuzz = "==3.12.2"
+ruamel-yaml = "==0.18.10"
 supervisor = "==4.2.5"
-whitenoise = {extras = ["brotli"], version = "==6.8.2 "}
+whitenoise = {extras = ["brotli"], version = "==6.9.0 "}
 
 [tool.poetry.group.dev.dependencies]
 bandit = "==1.8.2"

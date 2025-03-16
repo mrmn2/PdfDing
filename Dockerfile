@@ -1,10 +1,10 @@
-FROM python:3.12.8-alpine AS python-base
+FROM python:3.12.9-alpine AS python-base
 
 # The frontend build image , used to create the css and js files
-FROM node:22.13.0-bookworm-slim AS npm-build
+FROM node:22.14.0-bookworm-slim AS npm-build
 
 # do not add the 'v' of the version, only use x.y.z instead of vx.y.z
-ARG PDFJS_VERSION=4.10.38
+ARG PDFJS_VERSION=5.0.375
 
 WORKDIR /build
 
