@@ -398,9 +398,9 @@ class DetailsCommentOverviewMixin(DetailsAnnotationOverviewMixin, PdfMixin):
 
         pdf = cls.get_object(request, identifier)
 
-        highlights = pdf.pdfcomment_set.all()
+        comments = pdf.pdfcomment_set.all()
 
-        return highlights
+        return comments
 
     @classmethod
     def get_extra_context(cls, request: HttpRequest, identifier) -> dict:  # pragma: no cover

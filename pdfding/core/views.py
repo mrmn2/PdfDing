@@ -4,8 +4,18 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
+
+
+class SupportView(View):
+    """The view for displaying the support page"""
+
+    def get(self, request: HttpRequest):
+        """Display the support page"""
+
+        return render(request, 'support.html')
 
 
 @method_decorator(login_not_required, name="dispatch")

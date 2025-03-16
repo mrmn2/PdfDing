@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from core.views import HealthView
+from core.views import HealthView, SupportView
 from django.urls import include, path
 from pdf.views.pdf_views import redirect_to_overview
 from users.views import (
@@ -42,4 +42,5 @@ urlpatterns = [
     path('profile/', include('users.urls')),
     path('pdf/', include('pdf.urls')),
     path('healthz', HealthView.as_view(), name='healthz'),
+    path('support', SupportView.as_view(), name='support'),
 ]
