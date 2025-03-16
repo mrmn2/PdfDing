@@ -171,13 +171,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_CHANGE_EMAIL = True  # users are limited to one email address. this address can be changed.
-# ACCOUNT_DEFAULT_HTTP_PROTOCOL = True
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accountlogin/'
-ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_ADAPTER = 'core.adapters.DisableSignupAccountAdapter'
 
 LOGIN_REDIRECT_URL = '/pdf'
