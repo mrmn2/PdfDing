@@ -34,6 +34,8 @@ urlpatterns = [
         pdf_views.CommentOverview.as_view(),
         name='get_next_pdf_comment_overview_page',
     ),
+    path('annotations/export/<kind>', pdf_views.ExportAnnotations.as_view(), name='export_annotations'),
+    path('annotations/export/<kind>/<identifier>', pdf_views.ExportAnnotations.as_view(), name='export_annotations'),
     # pdf details related views
     path('details/<identifier>', pdf_views.Details.as_view(), name='pdf_details'),
     path(

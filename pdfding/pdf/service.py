@@ -1,6 +1,6 @@
 import re
 import traceback
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from logging import getLogger
@@ -9,15 +9,18 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
+from core.settings import MEDIA_ROOT
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
+from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
-from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.models import Pdf, PdfAnnotation, PdfComment, PdfHighlight, Tag
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
+from ruamel.yaml import YAML
 from users.models import Profile
 
 logger = getLogger(__file__)
@@ -279,6 +282,55 @@ class PdfProcessingServices:
         highlight_text = re.sub(r'\s+', ' ', highlight_text)
 
         return highlight_text
+
+    @classmethod
+    def export_annotations(cls, profile: Profile, kind: str, pdf: Pdf = None):
+        """Export annotations to yaml. Annotations can be comments or highlights of a single or all pdfs of a user."""
+
+        if pdf:
+            if kind == 'comments':
+                pdf_annotations = pdf.pdfcomment_set.all()
+            else:
+                pdf_annotations = pdf.pdfhighlight_set.all()
+        else:
+            if kind == 'comments':
+                pdf_annotations = PdfComment.objects.filter(pdf__owner=profile).all()
+            else:
+                pdf_annotations = PdfHighlight.objects.filter(pdf__owner=profile).all()
+
+        cls.export_annotations_to_yaml(pdf_annotations, str(profile.user.id))
+
+    @classmethod
+    def export_annotations_to_yaml(cls, annotations: QuerySet[PdfAnnotation], user_id: str):
+        """Export the provided annotations to yaml."""
+
+        export_path = cls.get_annotation_export_path(user_id)
+        export_path.parent.mkdir(exist_ok=True)
+
+        serialized_annotations = defaultdict(list)
+
+        for annotation in annotations.order_by('page'):
+            serialized_annotations[annotation.pdf.name].append(
+                {
+                    'text': annotation.text,
+                    'page': annotation.page,
+                    'creation_date': str(annotation.creation_date),
+                }
+            )
+
+        serialized_annotations = dict(sorted(serialized_annotations.items(), key=lambda x: str.lower(x[0])))
+
+        yaml = YAML()
+        yaml.indent(mapping=2, sequence=4, offset=2)
+
+        with open(export_path, 'wb') as f:
+            yaml.dump(dict(serialized_annotations), f)
+
+    @staticmethod
+    def get_annotation_export_path(user_id: str):  # pragma: no cover
+        """Get the annotation export path uf the specified user."""
+
+        return MEDIA_ROOT / user_id / 'annotations' / 'annotations_export.yaml'
 
 
 def check_object_access_allowed(get_object):

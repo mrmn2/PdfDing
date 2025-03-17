@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_not_required
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
 from django.forms import ValidationError
-from django.http import HttpRequest, HttpResponse
+from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
@@ -338,7 +338,11 @@ class HighlightOverviewMixin(AnnotationOverviewMixin):
     def get_extra_context(_) -> dict:  # pragma: no cover
         """get further information that needs to be passed to the template."""
 
-        return {'page': 'pdf_highlight_overview', 'get_next_overview_page': 'get_next_pdf_highlight_overview_page'}
+        return {
+            'page': 'pdf_highlight_overview',
+            'get_next_overview_page': 'get_next_pdf_highlight_overview_page',
+            'kind': 'highlights',
+        }
 
 
 class CommentOverviewMixin(AnnotationOverviewMixin):
@@ -356,7 +360,11 @@ class CommentOverviewMixin(AnnotationOverviewMixin):
     def get_extra_context(_) -> dict:  # pragma: no cover
         """get further information that needs to be passed to the template."""
 
-        return {'page': 'pdf_comment_overview', 'get_next_overview_page': 'get_next_pdf_comment_overview_page'}
+        return {
+            'page': 'pdf_comment_overview',
+            'get_next_overview_page': 'get_next_pdf_comment_overview_page',
+            'kind': 'comments',
+        }
 
 
 class DetailsAnnotationOverviewMixin(AnnotationOverviewMixin):
@@ -386,6 +394,7 @@ class DetailsHighlightOverviewMixin(DetailsAnnotationOverviewMixin, PdfMixin):
             'page': 'pdf_details_highlights',
             'get_next_overview_page': 'get_next_pdf_details_highlight_overview_page',
             'pdf': pdf,
+            'kind': 'highlights',
         }
 
 
@@ -412,6 +421,7 @@ class DetailsCommentOverviewMixin(DetailsAnnotationOverviewMixin, PdfMixin):
             'page': 'pdf_details_comments',
             'get_next_overview_page': 'get_next_pdf_details_comment_overview_page',
             'pdf': pdf,
+            'kind': 'comments',
         }
 
 
@@ -790,3 +800,29 @@ class Archive(PdfMixin, View):
             return HttpResponseClientRefresh()
 
         return redirect('pdf_overview')
+
+
+class ExportAnnotations(View, PdfMixin):
+    """View for exporting annotations to yaml and downloading the file."""
+
+    def get(self, request: HttpRequest, kind: str, identifier: str = ''):
+        """Return the exported annotations yaml as a FileResponse."""
+
+        if kind not in ['comments', 'highlights']:  # pragma: no cover
+            return redirect('pdf_overview')
+        else:
+            profile = request.user.profile
+
+            if identifier:
+                pdf = PdfMixin.get_object(request, identifier)
+                PdfProcessingServices.export_annotations(profile, kind, pdf)
+            else:
+                PdfProcessingServices.export_annotations(profile, kind)
+
+            export_path = PdfProcessingServices.get_annotation_export_path(str(profile.user.id))
+            response = FileResponse(open(export_path, 'rb'), as_attachment=True, filename='export.yaml')
+
+            # delete the file
+            export_path.unlink()
+
+            return response

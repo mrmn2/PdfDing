@@ -1,3 +1,4 @@
+import filecmp
 from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -386,16 +387,72 @@ class TestPdfProcessingServices(TestCase):
             self.assertNotEqual(generated_highlight.id, expected_comment_highlight.id)
 
     def test_set_highlights_and_comments_exception(self):
-        pdf = Pdf.objects.create(
-            owner=self.user.profile,
-            name='pdf_with_annotations',
-        )
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations')
 
         # check that exception is caught and thumbnail stays unset
         service.PdfProcessingServices.set_highlights_and_comments(pdf)
 
         self.assertFalse(pdf.pdfcomment_set.count())
         self.assertFalse(pdf.pdfhighlight_set.count())
+
+    @mock.patch('pdf.service.PdfProcessingServices.export_annotations_to_yaml')
+    def test_export_annotations(self, mock_export_annotation_to_yaml):
+        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_2')
+
+        comment_1 = PdfComment.objects.create(text='c1', page=1, creation_date=pdf_1.creation_date, pdf=pdf_1)
+        comment_2 = PdfComment.objects.create(text='c2', page=2, creation_date=pdf_2.creation_date, pdf=pdf_2)
+        highlight_1 = PdfHighlight.objects.create(text='h1', page=1, creation_date=pdf_1.creation_date, pdf=pdf_1)
+        highlight_2 = PdfHighlight.objects.create(text='h2', page=2, creation_date=pdf_2.creation_date, pdf=pdf_2)
+
+        # kind = comments and all pdfs
+        service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='comments')
+        comment_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        self.assertEqual(id_arg, str(self.user.id))
+        for actual_comment, expected_comment in zip(comment_arg.order_by('text'), [comment_1, comment_2]):
+            self.assertEqual(actual_comment, expected_comment)
+
+        # kind = highlights and all pdfs
+        service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='highlights')
+        highlight_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        self.assertEqual(id_arg, str(self.user.id))
+        for actual_highlight, expected_highlight in zip(highlight_arg.order_by('text'), [highlight_1, highlight_2]):
+            self.assertEqual(actual_highlight, expected_highlight)
+
+        # kind = comments and single pdfs
+        service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='comments', pdf=pdf_1)
+        comment_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        self.assertEqual(id_arg, str(self.user.id))
+        for actual_comment, expected_comment in zip(comment_arg.order_by('text'), [comment_1]):
+            self.assertEqual(actual_comment, expected_comment)
+
+        # kind = highlights and single pdfs
+        service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='highlights', pdf=pdf_1)
+        highlight_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        self.assertEqual(id_arg, str(self.user.id))
+        for actual_highlight, expected_highlight in zip(highlight_arg.order_by('text'), [highlight_1]):
+            self.assertEqual(actual_highlight, expected_highlight)
+
+    @mock.patch(
+        'pdf.service.PdfProcessingServices.get_annotation_export_path',
+        return_value=Path(__file__).parent / 'data' / 'tmp_export.yaml',
+    )
+    def test_export_annotation_to_yaml(self, mock_get_annotation_export_path):
+        creation_date = datetime.strptime('2025-03-17 20:26:48+00:00', '%Y-%m-%d %H:%M:%S%z')
+
+        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='some_pdf')
+        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='another_pdf')
+
+        PdfComment.objects.create(text='c1', page=1, creation_date=creation_date, pdf=pdf_1)
+        PdfComment.objects.create(text='c2', page=2, creation_date=creation_date, pdf=pdf_2)
+        PdfComment.objects.create(text='another c', page=0, creation_date=creation_date, pdf=pdf_2)
+
+        export_path = service.PdfProcessingServices.get_annotation_export_path(str(self.user.id))
+        service.PdfProcessingServices.export_annotations_to_yaml(PdfComment.objects.all(), str(self.user.id))
+
+        self.assertTrue(filecmp.cmp(export_path, Path(__file__).parent / 'data' / 'dummy_export.yaml', shallow=False))
+
+        export_path.unlink()
 
 
 class TestOtherServices(TestCase):

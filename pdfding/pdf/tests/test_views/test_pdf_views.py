@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 from pdf import forms
 from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.service import PdfProcessingServices
 from pdf.views import pdf_views
 
 DEMO_FILE_SIZE = 29451
@@ -711,6 +712,36 @@ class TestViews(TestCase):
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
         self.assertTemplateUsed(response, 'partials/delete_pdf.html')
 
+    @mock.patch('pdf.service.PdfProcessingServices.export_annotations')
+    def test_export_annotations_with_identifier(self, mock_export_annotations):
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        export_path = PdfProcessingServices.get_annotation_export_path(str(self.user.id))
+        export_path.parent.mkdir(exist_ok=True)
+        export_path.touch()
+        self.client.get(reverse('export_annotations', kwargs={'kind': 'comments', 'identifier': pdf.id}))
+
+        # assert that the file was deleted
+        self.assertFalse(export_path.exists())
+        mock_export_annotations.assert_called_once_with(self.user.profile, 'comments', pdf)
+
+        export_path.parent.rmdir()
+
+    @mock.patch('pdf.service.PdfProcessingServices.export_annotations')
+    def test_export_annotations_without_identifier(self, mock_export_annotations):
+        Pdf.objects.create(owner=self.user.profile, name='pdf')
+
+        export_path = PdfProcessingServices.get_annotation_export_path(str(self.user.id))
+        export_path.parent.mkdir(exist_ok=True)
+        export_path.touch()
+        self.client.get(reverse('export_annotations', kwargs={'kind': 'highlights'}))
+
+        # assert that the file was deleted
+        self.assertFalse(export_path.exists())
+        mock_export_annotations.assert_called_once_with(self.user.profile, 'highlights')
+
+        export_path.parent.rmdir()
+
 
 class TestAnnotationMixin(TestCase):
     username = 'user'
@@ -792,6 +823,7 @@ class TestAnnotationMixin(TestCase):
             'page': 'pdf_details_highlights',
             'get_next_overview_page': 'get_next_pdf_details_highlight_overview_page',
             'pdf': pdf,
+            'kind': 'highlights',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -807,6 +839,7 @@ class TestAnnotationMixin(TestCase):
             'page': 'pdf_details_comments',
             'get_next_overview_page': 'get_next_pdf_details_comment_overview_page',
             'pdf': pdf,
+            'kind': 'comments',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)

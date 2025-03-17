@@ -1,0 +1,11 @@
+another_pdf:
+  - text: another c
+    page: 0
+    creation_date: '2025-03-17 20:26:48+00:00'
+  - text: c2
+    page: 2
+    creation_date: '2025-03-17 20:26:48+00:00'
+some_pdf:
+  - text: c1
+    page: 1
+    creation_date: '2025-03-17 20:26:48+00:00'

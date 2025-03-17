@@ -1,11 +1,39 @@
 <div x-data="{ sortOpen: false }" class="relative flex flex-row items-center md:gap-x-2">
+    <a id="export_annotations"
+       {% if pdf %}
+       onclick="location.href='{% url 'export_annotations' kind=kind identifier=pdf.id %}'"
+       {% else %}
+       onclick="location.href='{% url 'export_annotations' kind=kind %}'"
+       {% endif %}
+       class="cursor-pointer rounded-sm py-1 px-2 md:-mr-1! group relative
+              hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
+        <svg fill="currentColor" class="h-5 w-5 text-primary" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 0 67.671 67.671" xml:space="preserve">
+            <!-- source: https://www.svgrepo.com/svg/62103/export -->
+            <!-- license: CC0 -->
+            <path d="M52.946,23.348H42.834v6h10.112c3.007,0,5.34,1.536,5.34,2.858v26.606c0,1.322-2.333,2.858-5.34,2.858H14.724
+                c-3.007,0-5.34-1.536-5.34-2.858V32.207c0-1.322,2.333-2.858,5.34-2.858h10.11v-6h-10.11c-6.359,0-11.34,3.891-11.34,8.858v26.606
+                c0,4.968,4.981,8.858,11.34,8.858h38.223c6.358,0,11.34-3.891,11.34-8.858V32.207C64.286,27.239,59.305,23.348,52.946,23.348z"/>
+            <path d="M24.957,14.955c0.768,0,1.535-0.293,2.121-0.879l3.756-3.756v13.028v6v11.494c0,1.657,1.343,3,3,3s3-1.343,3-3V29.348v-6
+                V10.117l3.959,3.959c0.586,0.586,1.354,0.879,2.121,0.879s1.535-0.293,2.121-0.879c1.172-1.171,1.172-3.071,0-4.242l-8.957-8.957
+                C35.492,0.291,34.725,0,33.958,0c-0.008,0-0.015,0-0.023,0s-0.015,0-0.023,0c-0.767,0-1.534,0.291-2.12,0.877l-8.957,8.957
+                c-1.172,1.171-1.172,3.071,0,4.242C23.422,14.662,24.189,14.955,24.957,14.955z"/>
+        </svg>
+        <span x-show="!sortOpen" class="absolute pointer-events-none top-8 -left-3! mt-1 px-2 py-1 rounded-sm opacity-0
+                     group-hover:opacity-100 group-hover:delay-350
+                     text-slate-600 dark:text-slate-200 creme:text-stone-700
+                     bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Export
+        </span>
+    </a>
     <a id="sorting_settings"
        @click="sortOpen = !sortOpen"
        @click.away="sortOpen = false"
        @keyup.escape.window="sortOpen = false"
-       class="cursor-pointer rounded-sm py-1 md:px-2 group relative
+       class="cursor-pointer rounded-sm py-1 px-2 group relative
               hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
         <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- source: https://www.svgrepo.com/svg/361828/sort -->
+            <!-- license: PD -->
             <path d="M6.293 4.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414L8 7.414V19a1 1 0 1 1-2 0V7.414L3.707 9.707a1 1 0 0 1-1.414-1.414l4-4zM16 16.586V5a1 1 0 1 1 2 0v11.586l2.293-2.293a1 1 0 0 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L16 16.586z" fill="currentColor"/>
         </svg>
 
