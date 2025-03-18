@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0015_add_pdf_overview_layouts'),
+        ('pdf', '0014_add_pdf_revision'),
     ]
 
     operations = [

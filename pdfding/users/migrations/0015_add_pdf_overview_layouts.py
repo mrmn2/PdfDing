@@ -1,18 +1,4 @@
 from django.db import migrations, models
-from pdf.service import PdfProcessingServices
-
-
-def adjust_thumbnails(apps, schema_editor):
-    """Regenerate thumbnail images after changing thumbnail dimensions"""
-
-    pdf_model = apps.get_model("pdf", "Pdf")
-
-    for pdf_object in pdf_model.objects.all():
-        PdfProcessingServices.process_with_pypdfium(pdf_object, delete_existing_thumbnail_and_preview=True)
-
-
-def reverse_func(apps, schema_editor):  # pragma: no cover
-    pass
 
 
 class Migration(migrations.Migration):
@@ -41,5 +27,4 @@ class Migration(migrations.Migration):
                 choices=[('Compact', 'Compact'), ('List', 'List'), ('Grid', 'Grid')], default='Compact', max_length=7
             ),
         ),
-        migrations.RunPython(adjust_thumbnails, reverse_func),
     ]

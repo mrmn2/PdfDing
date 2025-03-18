@@ -19,9 +19,7 @@ def reverse_func(apps, schema_editor):  # pragma: no cover
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('pdf', '0014_add_pdf_revision'),
-    ]
+    dependencies = [('pdf', '0014_add_pdf_revision'), ('users', '0017_add_annotation_sorting')]
 
     operations = [
         migrations.CreateModel(
