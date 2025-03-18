@@ -1,5 +1,21 @@
 # Changelog
 
+##  v1.2.0 (Mar 18, 2025)
+## What's Changed
+
+* Add PDF comment and highlight extraction to backend by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/114
+* Add section for PDF comments and highlights by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/116
+* Display comments and highlights per PDF in the details by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/121
+* Revamp PDF details page by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/121
+* Export comments highlights by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/125
+* Change license to AGPLv3 by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/122
+* Add progress bar setting by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/112
+* Add sponsor section by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/124
+* Update dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/124
+* Various minor UI improvements by @mrmn2
+* fix: make whole thumbnails and ToC buttons clickable on left sidebar in viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/124
+
+
 ##  v1.1.0 (Mar 02, 2025)
 ## What's Changed
 * add list and grid layouts for pdf overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/109
