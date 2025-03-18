@@ -28,7 +28,8 @@ This is a temporary live demo with shared user accounts, all data will be delete
 ## Features
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
 * Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
-* Edit PDFs by adding annotations, highlighting and drawings
+* Edit PDFs by adding comments, highlighting and drawings
+* Manage and export PDF highlights and comments in dedicated sections
 * Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
 * SSO support via OIDC
 * Share PDFs with an external audience via a link or a QR Code with optional access control
@@ -76,6 +77,20 @@ helm install -n ns --create-namespace my-release pdfding/pdfding
 ## Guides
 Guides about various aspects of PdfDing can be found in the
 [guides](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md) section of the docs.
+
+## Sponsor
+I hope you enjoy using PdfDing as much as I enjoy developing it. If you want to give back,
+you can support me on various platforms. This allows me to spend more time on improving PdfDing. Thanks!
+
+<a href="https://github.com/sponsors/mrmn2" target="_blank">
+  <img alt="gh sponsor" src="https://img.shields.io/badge/Sponsor-%23475569?style=flat&logo=github" height=30 style="padding:0px 5px 0 0px"/>
+</a>
+<a href="https://www.buymeacoffee.com/mrmn2" target="_blank">
+  <img alt="buy me a coffee" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height=30 style="padding:0px 5px 0 0px"/>
+</a>
+<a href="https://ko-fi.com/mrmn2" target="_blank">
+  <img alt="ko-fi" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" height=30/>
+</a>
 
 ## Configuration
 Information about the different configuration options can be found in the
