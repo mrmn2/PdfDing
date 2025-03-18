@@ -1,5 +1,10 @@
 # Changelog
 
+##  v1.2.1 (Mar 18, 2025)
+## What's Changed
+* Fix migrations introduced in v1.2.0 by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/128
+
+
 ##  v1.2.0 (Mar 18, 2025)
 ## What's Changed
 
