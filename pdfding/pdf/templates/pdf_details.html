@@ -6,203 +6,224 @@
         {% include 'includes/pdf_details_sidebar.html' with page='pdf_details' %}
     </div>
     <div class="flex w-full justify-start items-center py-2 px-3 md:px-8">
-        <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 min-[1600px]:ml-40! px-4 py-4 md:pb-6 border
+        <div class="rounded-md w-full min-[1200px]:w-4xl! min-[1600px]:w-5xl! md:ml-10 min-[1600px]:ml-40! px-4 py-3 md:pb-6 border
                     bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
                     border-slate-300 dark:border-slate-700 creme:border-creme-dark">
-            <div class="flex flex-row items-center gap-x-1 truncate">
-                <a href="{% url 'view_pdf' pdf.id %}"
-                   class="text-3xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate">
-                    {{ pdf.name }}
-                </a>
-                {% if pdf.starred %}
-                <svg id="starred_icon" class="fill-primary text-primary" width="34" height="34" viewBox="0 0 24 24"
-                     fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                    <!--source: https://www.svgrepo.com/svg/489797/star-->
-                    <!--License: PD-->
-                    <path d="M14.65 8.93274L12.4852 4.30901C12.2923 3.89699 11.7077 3.897 11.5148 4.30902L9.35002 8.93274L4.45559 9.68243C4.02435 9.74848 3.84827 10.2758 4.15292 10.5888L7.71225 14.2461L6.87774 19.3749C6.80571 19.8176 7.27445 20.1487 7.66601 19.9317L12 17.5299L16.334 19.9317C16.7256 20.1487 17.1943 19.8176 17.1223 19.3749L16.2878 14.2461L19.8471 10.5888C20.1517 10.2758 19.9756 9.74848 19.5444 9.68243L14.65 8.93274Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                {% elif pdf.archived %}
-                <div id="archived_icon" class="pl-2">
-                    <svg class="fill-primary text-primary" xmlns="http://www.w3.org/2000/svg"
-                         width="28" height="28" viewBox="0 0 973.199 973.199">
-                        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                        <!-- source: https://www.svgrepo.com/svg/150399/archive-filled-box-->
-                        <!--License: CCO-->
-                        <g>
-                            <path d="M924,828.75V315.649c-3.6,0.3-7.199,0.5-10.801,0.5H60c-3.6,0-7.3-0.2-10.8-0.5V828.75c0,33.1,26.9,60,60,60H864
-                                C897.1,888.75,924,861.949,924,828.75z M687,513.35c0,16.6-13.4,30-30,30H316.2c-16.6,0-30-13.4-30-30v-79.6
-                                c0-16.601,13.4-30,30-30H656.9c16.6,0,30,13.399,30,30v79.6H687z" stroke="currentColor"/>
-                            <path d="M973.199,196.149v-51.7c0-33.1-26.898-60-60-60H60c-33.1,0-60,26.9-60,60v51.7c0,29.4,21.2,53.9,49.2,59
-                                c3.5,0.6,7.1,1,10.8,1h853.1c3.701,0,7.301-0.4,10.801-1C952,250.049,973.199,225.549,973.199,196.149z" stroke="currentColor"/>
-                        </g>
-                    </svg>
-                </div>
-                {% endif %}
-            </div>
-            <div class="flex flex-row items-center text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer">
-                <a href="{% url 'share_pdf' pdf.id %}">Share</a>
-                <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12.1" cy="12.1" r="1"></circle>
-                </svg>
-                <a href="{% url 'download_pdf' pdf.id %}">Download</a>
-                <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12.1" cy="12.1" r="1"></circle>
-                </svg>
-                <a id="star"
-                   hx-post="{% url 'star' pdf.id %}"
-                   hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-                   {% if pdf.starred %}
-                   Unstar
-                   {% else %}
-                   Star
-                   {% endif %}
-                </a>
-                <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12.1" cy="12.1" r="1"></circle>
-                </svg>
-                <a id="archive"
-                   hx-post="{% url 'archive' pdf.id %}"
-                   hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-                   {% if pdf.archived %}
-                   Unarchive
-                   {% else %}
-                   Archive
-                   {% endif %}
-                </a>
-            </div>
-            <div class="pt-4">
-                <span class="text-lg font-bold">Name</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6 text-sm">
-                    <span id="name">{{ pdf.name }}</span>
-                </div>
-                <div class="pr-0 md:pr-6">
-                    <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
-                        hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='name' %}"
-                        hx-target="#name"
-                        hx-swap="innerHTML" >
-                        Edit
-                    </a>
-                </div>
-            </div>
-            <div class="pt-2">
-                <span class="text-lg font-bold">Tags</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6">
-                    {% if pdf.tags.all %}
-                    <span id="tags">
-                        {% for tag in pdf.tags.all|dictsort:"name" %}
-                            <a class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark px-[2px] md:px-[4px]
-                                      border border-slate-200 dark:border-slate-700 creme:border-creme-dark mr-[2px] md:mr-[4px]"
-                               href="{% url 'pdf_overview_query' %}?search=%23{{ tag }}">
-                                <span class="text-primary">#</span>{{ tag }}
-                            </a>
-                        {% endfor %}
-                    </span>
-                    {% else %}
-                    <span class="text-sm" id="tags">
-                        no tags available
-                    {% endif%}
-                    </span>
-                </div>
-                <div class="pr-0 md:pr-6">
-                    <a id="tags-edit" class="cursor-pointer text-primary hover:text-secondary"
-                        hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='tags' %}"
-                        hx-target="#tags"
-                        hx-swap="innerHTML" >
-                        Edit
-                    </a>
-                </div>
-            </div>
-            <div class="pt-2">
-                <span class="text-lg font-bold">Description</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6 text-sm">
-                    <span id="description">
-                        {% if pdf.description %}
-                        {{ pdf.description }}
+            <div class="flex flex-row gap-x-10">
+                <div class="hidden min-[1200px]:block pt-2">
+                    <div id="preview" class="[&>div]:cursor-base">
+                        {% if pdf.preview %}
+                        <div class="w-60!">
+                            <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600 creme:border-stone-400"
+                               src="{% url 'serve_preview' pdf.id %}"/>
+                        </div>
                         {% else %}
-                        no description available
-                        {% endif%}
-                    </span>
-                </div>
-                <div class="pr-0 md:pr-6">
-                    <a id="description-edit" class="cursor-pointer text-primary hover:text-secondary"
-                        hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='description' %}"
-                        hx-target="#description"
-                        hx-swap="innerHTML" >
-                        Edit
-                    </a>
-                </div>
-            </div>
-            <div class="pt-2">
-                <span class="text-lg font-bold">Notes</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6">
-                    {% if pdf.notes %}
-                    <div id="notes"
-                         class="markdown py-1 px-2 mr-2 md:mr-0! rounded-sm bg-slate-100 dark:bg-slate-700! creme:bg-creme-dark!">
-                        {{ pdf.notes_html }}
+                        <div class="flex items-center justify-center !rounded-md border-[1px] w-60! h-77!
+                                    border-slate-200 !bg-slate-100 text-slate-700
+                                    dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200
+                                    creme:border-stone-400 creme:!bg-creme-light creme:text-stone-400">
+                            <svg class="w-20! h-20! py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                              <!-- source: https://www.svgrepo.com/svg/489003/image -->
+                              <!-- license: PD License -->
+                                <path d="M4 17L7.58959 13.7694C8.38025 13.0578 9.58958 13.0896 10.3417 13.8417L11.5 15L15.0858 11.4142C15.8668 10.6332 17.1332 10.6332 17.9142 11.4142L20 13.5M11 9C11 9.55228 10.5523 10 10 10C9.44772 10 9 9.55228 9 9C9 8.44772 9.44772 8 10 8C10.5523 8 11 8.44772 11 9ZM6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <span id="notes">
-                        no notes available
-                    </span>
-                    {% endif%}
                 </div>
-                <div class="pr-0 md:pr-6">
-                    <a id="notes-edit" class="cursor-pointer text-primary hover:text-secondary"
-                        hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='notes' %}"
-                        hx-target="#notes"
-                        hx-swap="innerHTML" >
-                        Edit
-                    </a>
-                </div>
-            </div>
-            {% if pdf.number_of_pages > 0 %}
-            <div class="pt-2">
-                <span class="text-lg font-bold">Progress</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6 text-sm">
-                    <span id="progress">{{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}</span>
-                </div>
-            </div>
-            {% endif %}
-            <div class="pt-2">
-                <span class="text-lg font-bold">Date added</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6 text-sm">
-                    <span id="creation_date">{{ pdf.creation_date }}</span>
-                </div>
-            </div>
-            <div class="pt-2">
-                <span class="text-lg font-bold">Views</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6 text-sm">
-                    <span id="views">{{ pdf.views }}</span>
-                </div>
-            </div>
-            <div class="pt-2">
-                <span class="text-lg font-bold">File ID</span>
-            </div>
-            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
-                <div class="w-5/6 text-sm">
-                    <span id="pdf_id">{{ pdf.file_id }}</span>
+                <div class="w-full">
+                    <div class="flex flex-row items-center gap-x-1 truncate pb-1">
+                        <div class="flex w-full items-center justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                            <div id="name" class="w-5/6 text-sm flex flex-row">
+                                <a href="{% url 'view_pdf' pdf.id %}"
+                                   class="text-3xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate">
+                                    {{ pdf.name }}
+                                </a>
+                                {% if pdf.starred %}
+                                <svg id="starred_icon" class="fill-primary text-primary" width="34" height="34" viewBox="0 0 24 24"
+                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                    <!--source: https://www.svgrepo.com/svg/489797/star-->
+                                    <!--License: PD-->
+                                    <path d="M14.65 8.93274L12.4852 4.30901C12.2923 3.89699 11.7077 3.897 11.5148 4.30902L9.35002 8.93274L4.45559 9.68243C4.02435 9.74848 3.84827 10.2758 4.15292 10.5888L7.71225 14.2461L6.87774 19.3749C6.80571 19.8176 7.27445 20.1487 7.66601 19.9317L12 17.5299L16.334 19.9317C16.7256 20.1487 17.1943 19.8176 17.1223 19.3749L16.2878 14.2461L19.8471 10.5888C20.1517 10.2758 19.9756 9.74848 19.5444 9.68243L14.65 8.93274Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                {% elif pdf.archived %}
+                                <div id="archived_icon" class="pl-2">
+                                    <svg class="fill-primary text-primary" xmlns="http://www.w3.org/2000/svg"
+                                         width="28" height="28" viewBox="0 0 973.199 973.199">
+                                        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+                                        <!-- source: https://www.svgrepo.com/svg/150399/archive-filled-box-->
+                                        <!--License: CCO-->
+                                        <g>
+                                            <path d="M924,828.75V315.649c-3.6,0.3-7.199,0.5-10.801,0.5H60c-3.6,0-7.3-0.2-10.8-0.5V828.75c0,33.1,26.9,60,60,60H864
+                                                C897.1,888.75,924,861.949,924,828.75z M687,513.35c0,16.6-13.4,30-30,30H316.2c-16.6,0-30-13.4-30-30v-79.6
+                                                c0-16.601,13.4-30,30-30H656.9c16.6,0,30,13.399,30,30v79.6H687z" stroke="currentColor"/>
+                                            <path d="M973.199,196.149v-51.7c0-33.1-26.898-60-60-60H60c-33.1,0-60,26.9-60,60v51.7c0,29.4,21.2,53.9,49.2,59
+                                                c3.5,0.6,7.1,1,10.8,1h853.1c3.701,0,7.301-0.4,10.801-1C952,250.049,973.199,225.549,973.199,196.149z" stroke="currentColor"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="pr-0 md:pr-6">
+                                <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                    hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='name' %}"
+                                    hx-target="#name"
+                                    hx-swap="innerHTML" >
+                                    Edit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-row items-center text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer">
+                        <a href="{% url 'share_pdf' pdf.id %}">Share</a>
+                        <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12.1" cy="12.1" r="1"></circle>
+                        </svg>
+                        <a href="{% url 'download_pdf' pdf.id %}">Download</a>
+                        <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12.1" cy="12.1" r="1"></circle>
+                        </svg>
+                        <a id="star"
+                           hx-post="{% url 'star' pdf.id %}"
+                           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                           {% if pdf.starred %}
+                           Unstar
+                           {% else %}
+                           Star
+                           {% endif %}
+                        </a>
+                        <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12.1" cy="12.1" r="1"></circle>
+                        </svg>
+                        <a id="archive"
+                           hx-post="{% url 'archive' pdf.id %}"
+                           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                           {% if pdf.archived %}
+                           Unarchive
+                           {% else %}
+                           Archive
+                           {% endif %}
+                        </a>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Tags</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6">
+                            {% if pdf.tags.all %}
+                            <span id="tags">
+                                {% for tag in pdf.tags.all|dictsort:"name" %}
+                                    <a class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark px-[2px] md:px-[4px]
+                                              border border-slate-200 dark:border-slate-700 creme:border-creme-dark mr-[2px] md:mr-[4px]"
+                                       href="{% url 'pdf_overview_query' %}?search=%23{{ tag }}">
+                                        <span class="text-primary">#</span>{{ tag }}
+                                    </a>
+                                {% endfor %}
+                            </span>
+                            {% else %}
+                            <span class="text-sm" id="tags">
+                                no tags available
+                            {% endif%}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="tags-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='tags' %}"
+                                hx-target="#tags"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Description</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="description">
+                                {% if pdf.description %}
+                                {{ pdf.description }}
+                                {% else %}
+                                no description available
+                                {% endif%}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="description-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='description' %}"
+                                hx-target="#description"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Notes</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6">
+                            {% if pdf.notes %}
+                            <div id="notes"
+                                 class="markdown py-1 px-2 mr-2 md:mr-0! rounded-sm bg-slate-100 dark:bg-slate-700! creme:bg-creme-dark!">
+                                {{ pdf.notes_html }}
+                            </div>
+                            {% else %}
+                            <span id="notes">
+                                no notes available
+                            </span>
+                            {% endif%}
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="notes-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='notes' %}"
+                                hx-target="#notes"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    {% if pdf.number_of_pages > 0 %}
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Progress</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="progress">{{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Date added</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="creation_date">{{ pdf.creation_date }}</span>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Views</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="views">{{ pdf.views }}</span>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">File ID</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="pdf_id">{{ pdf.file_id }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-end pt-4">
                 <div x-data="{ delete_pdf: false }"
-                     class="pr-4 [&>a]:font-bold [&>a]:cursor-pointer [&>a]:text-slate-600 [&>a]:hover:text-slate-800
-                            dark:[&>a]:text-slate-300 dark:[&>a]:hover:text-slate-50
-                            creme:[&>a]:text-stone-500 creme:[&>a]:hover:text-stone-700">
+                     class="pr-4 [&>a]:font-bold [&>a]:cursor-pointer
+                            [&>a]:hover:text-black dark:[&>a]:hover:text-white creme:[&>a]:hover:text-stone-1000">
                     <a x-show="delete_pdf" x-cloak
                       hx-delete="{% url 'delete_pdf' pdf.id %}"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
