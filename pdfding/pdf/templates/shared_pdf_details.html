@@ -1,212 +1,206 @@
-{% extends 'layouts/box_large.html' %}
+{% extends 'layouts/blank.html' %}
 {% load static %}
 {% block content %}
-<div class="[&>div]:flex [&>div]:justify-between [&>div]:py-4
-            [&>div]:border-b [&>div]:border-slate-200 dark:[&>div]:border-slate-600 creme:[&>div]:border-stone-400
-            [&>div>div>span]:font-bold [&>div>div>span]:text-gray-900 dark:[&>div>div>span]:text-slate-200 creme:[&>div>div>span]:text-stone-700
-            [&>div>div>div>span]:text-sm [&>div>div>div>span]:text-gray-500 dark:[&>div>div>div>span]:text-slate-300 creme:[&>div>div>div>span]:text-stone-600
-            [&>div>div>div>a]:text-sm [&>div>div>div>a]:cursor-pointer [&>div>div>div>a]:text-primary">
-    <div class="pb-0! border-none!">
-        <span href="{% url 'view_pdf' shared_pdf.pdf.id %}" class="text-3xl font-bold truncate">
-            {% if shared_pdf.inactive %}
-            {{ shared_pdf.name }} | inactive
-            {% else %}
-            {{ shared_pdf.name }}
-            {% endif %}
-        </span>
+<div class="flex flex-col md:flex-row md:justify-end">
+    <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
+        {% include 'includes/sidebar.html' %}
     </div>
-    <div class="justify-center! items-center! border-none! pb-0!">
-        <img class="h-48 w-48 bg-white creme:border-[1px] creme:border-stone-500" src={% url 'serve_qrcode' shared_pdf.id %}>
-    </div>
-    <div class="justify-center! pb-0! border-none!">
-        <a href="{% url 'view_shared_pdf' shared_pdf.id %}"
-             class="text-sm! text-primary hover:text-secondary hover:underline">
-             {{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}
-          </a>
-    </div>
-    <div x-data="{ }"
-         class="justify-center! pb-6! pt-1! border-none! gap-x-2
-                [&>a]:font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer">
-        <a @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
-           Copy Link
-        </a>
-        <span>|</span>
-        <a onclick="location.href='{% url 'download_qrcode' shared_pdf.id %}'">
-           Download QR Code
-        </a>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span>Name</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6">
-                <span id="name">{{ shared_pdf.name }}</span>
+    <div class="flex w-full justify-start items-center py-2 px-3 md:px-8">
+        <div class="rounded-md w-full min-[1200px]:w-4xl! min-[1600px]:w-5xl! md:ml-10 min-[1600px]:ml-40! px-4 py-3 md:pb-6 border
+                    bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
+                    border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+            <div class="flex flex-row gap-x-10">
+                <div class="hidden min-[1200px]:block pt-2">
+                    <div id="qr_code" class="[&>div]:cursor-base">
+                        <div class="w-60 h-60">
+                            <img class="w-60 h-60 bg-white creme:border-[1px] creme:border-stone-500"
+                               src="{% url 'serve_qrcode' shared_pdf.id %}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full">
+                    <div class="flex flex-row items-center gap-x-1 truncate pb-1">
+                        <div class="flex w-full items-center justify-between">
+                            <div id="name" class="w-5/6 text-sm flex flex-row">
+                                <a href="{% url 'view_pdf' shared_pdf.pdf.id %}"
+                                   class="text-3xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate">
+                                    {% if shared_pdf.inactive %}
+                                    {{ shared_pdf.name }} | inactive
+                                    {% else %}
+                                    {{ shared_pdf.name }}
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="pr-0 md:pr-6">
+                                <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='name' %}"
+                                    hx-target="#name"
+                                    hx-swap="innerHTML" >
+                                    Edit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div x-data="{}"
+                         class="flex flex-row items-center text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer">
+                        <a @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
+                           Copy Link
+                        </a>
+                        <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12.1" cy="12.1" r="1"></circle>
+                        </svg>
+                        <a onclick="location.href='{% url 'download_qrcode' shared_pdf.id %}'">
+                           Download QR Code
+                        </a>
+                    </div>
+                    <div class="pt-4">
+                        <span class="text-lg font-bold">Description</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="description">
+                                {% if shared_pdf.description %}
+                                {{ shared_pdf.description }}
+                                {% else %}
+                                no description available
+                                {% endif%}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="description-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='description' %}"
+                                hx-target="#description"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Password</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="password">
+                                {% if shared_pdf.password %}
+                                ***
+                                {% else %}
+                                not set
+                                {% endif%}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="password-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='password' %}"
+                                hx-target="#password"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Views</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="max_views">
+                                {% if shared_pdf.max_views %}
+                                {{ shared_pdf.views }}/{{ shared_pdf.max_views }}
+                                {% else %}
+                                {{ shared_pdf.views }} | not set
+                                {% endif%}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="max_views-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='max_views' %}"
+                                hx-target="#max_views"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Expiration</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="expiration_date">
+                                {{ shared_pdf.expires_in_string }}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="expiration_date-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='expiration_date' %}"
+                                hx-target="#expiration_date"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Deletion</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="deletion_date">
+                                {{ shared_pdf.deletes_in_string }}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="deletion_date-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='deletion_date' %}"
+                                hx-target="#deletion_date"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">PDF</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="pdf">
+                                {{ shared_pdf.pdf.name }}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-6">
+                            <a id="pdf-view" href="{% url 'view_pdf' shared_pdf.pdf.id %}"
+                               class="cursor-pointer text-primary hover:text-secondary">
+                                View
+                            </a>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Date added</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-5/6 text-sm">
+                            <span id="creation_date">{{ shared_pdf.creation_date }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="name-edit" class="hover:underline"
-                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='name' %}"
-                    hx-target="#name"
-                    hx-swap="innerHTML" >
-                    Edit
-                </a>
+            <div class="flex justify-end pt-4">
+                <div x-data="{ delete_shared_pdf: false }"
+                     class="pr-4 [&>a]:font-bold [&>a]:cursor-pointer
+                            [&>a]:hover:text-black dark:[&>a]:hover:text-white creme:[&>a]:hover:text-stone-1000">
+                    <a x-show="delete_shared_pdf" x-cloak
+                      hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
+                      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                      class="cursor-pointer pr-2">Confirm
+                    </a>
+                    <a x-show="delete_shared_pdf" x-cloak @click="delete_shared_pdf = false" class="">Cancel</a>
+                    <a id="delete_shared"
+                       class="flex flex-row gap-x-1"
+                       x-show="!delete_shared_pdf"
+                       @click="delete_shared_pdf = true">
+                        <img src="{% static 'images/trash.svg' %}" width="19">
+                        <span>Delete</span>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span class="hyphens-manual">Des&shy;cription</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6 pr-6  ">
-                <span id="description">
-                {% if shared_pdf.description %}
-                {{ shared_pdf.description }}
-                {% else %}
-                no description available
-                {% endif%}
-                </span>
-            </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="description-edit" class="hover:underline"
-                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='description' %}"
-                    hx-target="#description"
-                    hx-swap="innerHTML" >
-                    Edit
-                </a>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span class="hyphens-manual">Password</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6 pr-6  ">
-                <span id="password">
-                {% if shared_pdf.password %}
-                ***
-                {% else %}
-                not set
-                {% endif%}
-                </span>
-            </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="password-edit" class="hover:underline"
-                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='password' %}"
-                    hx-target="#password"
-                    hx-swap="innerHTML" >
-                    Edit
-                </a>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span class="hyphens-manual">Views</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6 pr-6  ">
-                <span id="max_views">
-                {% if shared_pdf.max_views %}
-                {{ shared_pdf.views }}/{{ shared_pdf.max_views }}
-                {% else %}
-                {{ shared_pdf.views }} | not set
-                {% endif%}
-                </span>
-            </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="max_views-edit" class="hover:underline"
-                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='max_views' %}"
-                    hx-target="#max_views"
-                    hx-swap="innerHTML" >
-                    Edit
-                </a>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span class="hyphens-manual">Expiration</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6 pr-6  ">
-                <span id="expiration_date">
-                {{ shared_pdf.expires_in_string }}
-                </span>
-            </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="expiration_date-edit" class="hover:underline"
-                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='expiration_date' %}"
-                    hx-target="#expiration_date"
-                    hx-swap="innerHTML" >
-                    Edit
-                </a>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span class="hyphens-manual">Deletion</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6 pr-6  ">
-                <span id="deletion_date">
-                {{ shared_pdf.deletes_in_string }}
-                </span>
-            </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="deletion_date-edit" class="hover:underline"
-                    hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='deletion_date' %}"
-                    hx-target="#deletion_date"
-                    hx-swap="innerHTML" >
-                    Edit
-                </a>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span>PDF</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6">
-                <span id="pdf">{{ shared_pdf.pdf.name }}</span>
-            </div>
-            <div class="flex justify-end w-1/6 pr-2 md:pr-4">
-                <a id="pdf-view" href="{% url 'view_pdf' shared_pdf.pdf.id %}" class="hover:underline">View</a>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div class="w-1/6">
-            <span>Date added</span>
-        </div>
-        <div class="flex justify-between w-5/6 pl-8 md:pl-4">
-            <div class="w-5/6">
-                <span>{{ shared_pdf.creation_date }}</span>
-            </div>
-            <div class="w-1/6">
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="flex justify-between pt-10 pb-2">
-    {% if "/?" in request.META.HTTP_REFERER %}
-    <a href="{{ request.META.HTTP_REFERER }}" class="text-md font-bold! text-primary hover:text-secondary">Back</a>
-    {% else %}
-    <a href="{% url 'shared_pdf_overview' %}" class="text-md font-bold! text-primary hover:text-secondary">Back</a>
-    {% endif %}
-    <div x-data="{ delete_shared_pdf: false }"
-         class="pr-4 [&>a]:font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer">
-        <a x-show="delete_shared_pdf" x-cloak
-          hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
-          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-          class="cursor-pointer font-bold!">Confirm
-        </a>
-        <a x-show="delete_shared_pdf" x-cloak @click="delete_shared_pdf = false" class="pl-2">Cancel</a>
-        <a id="delete_shared" x-show="!delete_shared_pdf" @click="delete_shared_pdf = true">Delete</a>
     </div>
 </div>
 

@@ -142,7 +142,6 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
 
             expect(self.page.locator("content")).to_contain_text("some_shared_pdf | inactive")
             expect(self.page.locator("#name")).to_contain_text("some_shared_pdf")
-            expect(self.page.locator("content")).to_contain_text(f"pdf/shared/{shared_pdf.id}")
             expect(self.page.locator("#description")).to_contain_text("some_description")
             expect(self.page.locator("#pdf")).to_contain_text("some_pdf")
             expect(self.page.locator("content")).to_contain_text("1001")
