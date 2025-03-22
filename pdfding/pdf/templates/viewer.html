@@ -1,14 +1,43 @@
 {% load static %}
 <!DOCTYPE html>
+
+<!--
+This viewer is based on the in build firefox pdf viewer.
+The original file can be found under web/viewer.html of the following prebuilt pdf.js release:
+https://github.com/mozilla/pdf.js/releases/download/v5.0.375/pdfjs-5.0.375-dist.zip
+Below you can find the license of said base viewer.
+
+--------------------------------------------------------------------------
+Copyright 2012 Mozilla Foundation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Adobe CMap resources are covered by their own copyright but the same license:
+
+    Copyright 1990-2015 Adobe Systems Incorporated.
+
+See https://github.com/adobe-type-tools/cmap-resources
+-->
+
 <html dir="ltr" mozdisallowselectionprint>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
-    <script src="../../static/pdfjs/build/pdf.mjs" type="module"></script>
-    <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
+    <script src="{% static 'pdfjs/build/pdf.mjs' %}" type="module"></script>
+    <link rel="stylesheet" href="{% static 'pdfjs/web/viewer.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
-    <script src="../../static/pdfjs/web/viewer.mjs" type="module"></script>
+    <script src="{% static 'pdfjs/web/viewer.mjs' %}" type="module"></script>
     <script>
       // get the start page
       var page_number = {{ current_page }};
@@ -178,8 +207,18 @@
       .pdfSidebarNotification::after {
         background-color: rgb({{ theme_color }});
       }
+      .doorHanger, .doorHangerRight {
+          background-color: rgb({{ secondary_color }});
+      }
+      dialog {
+          background-color: rgb({{ secondary_color }});
+      }
       .editorParamsToolbarContainer {
         background-color:rgb({{ secondary_color }});
+      }
+      .horizontalToolbarSeparator {
+        border-top: 1px solid rgb({{ text_color }});
+        opacity: 0.2;
       }
       .splitToolbarButtonSeparator{
         border-left:1px solid rgb({{ text_color }});
@@ -187,6 +226,31 @@
       }
       .toolbarField:focus{
         border-color: rgb({{ theme_color }});
+      }
+      <!-- right sidebar -->
+      .toolbarButton::before{
+        color: rgb({{ text_color }});
+      }
+      .toolbarButton.labeled:hover{
+        color: rgb({{ text_color }});
+      }
+      .toolbarButton.labeled:hover{
+        color: rgb({{ text_color }});
+      }
+      .toolbarButton.labeled::before {
+          background-color: rgb({{ text_color }});
+      }
+      .toolbarButton.toggled:hover{
+        color: rgb({{ text_color }});
+      }
+      .toolbarButton.toggled::before {
+          background-color: rgb({{ text_color }});
+      }
+      .toolbarButton.toggled {
+          color: rgb({{ text_color }});
+      }
+      .toolbarButton.toggled:hover{
+        color: rgb({{ text_color }});
       }
       .logo {
          width: 22px;
@@ -326,15 +390,6 @@
                 </div>
                 <div class="toolbarHorizontalGroup" >
                   {% if user_view_bool %}
-                  <button onclick="location.href='{% url 'download_pdf' pdf_id %}'" class="button1" title="Download">
-                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                      <!-- source: https://www.svgrepo.com/svg/502629/download-2 -->
-                      <!-- license: PD -->
-                      <path opacity="0.7" fill="currentColor" d="M16 8C15.4477 8 15 8.44772 15 9C15 9.55228 15.4477 10 16 10V8ZM8 10C8.55228 10 9 9.55228 9 9C9 8.44772 8.55228 8 8 8V10ZM5.07805 19.7748L4.61708 20.6622L4.61708 20.6622L5.07805 19.7748ZM4.22517 18.9219L5.11259 18.461L5.11259 18.461L4.22517 18.9219ZM19.7748 18.9219L20.6622 19.3829L19.7748 18.9219ZM18.9219 19.7748L19.3829 20.6622L18.9219 19.7748ZM19.7748 10.0781L20.6622 9.61708L20.6622 9.61708L19.7748 10.0781ZM18.9219 9.22517L18.461 10.1126H18.461L18.9219 9.22517ZM4.22517 10.0781L3.33776 9.61708L4.22517 10.0781ZM5.07805 9.22517L4.61708 8.33776L5.07805 9.22517ZM13 4C13 3.44772 12.5523 3 12 3C11.4477 3 11 3.44772 11 4H13ZM12 14L11.2929 14.7071C11.6834 15.0976 12.3166 15.0976 12.7071 14.7071L12 14ZM10.2071 10.7929C9.81658 10.4024 9.18342 10.4024 8.79289 10.7929C8.40237 11.1834 8.40237 11.8166 8.79289 12.2071L10.2071 10.7929ZM15.2071 12.2071C15.5976 11.8166 15.5976 11.1834 15.2071 10.7929C14.8166 10.4024 14.1834 10.4024 13.7929 10.7929L15.2071 12.2071ZM19 12.22V16.78H21V12.22H19ZM16.78 19H7.22V21H16.78V19ZM5 16.78V12.22H3V16.78H5ZM16 10H16.78V8H16V10ZM7.22 10H8V8H7.22V10ZM7.22 19C6.63372 19 6.25517 18.9992 5.96722 18.9753C5.69125 18.9524 5.58924 18.9135 5.53903 18.8874L4.61708 20.6622C5.00034 20.8613 5.39982 20.935 5.8017 20.9684C6.19162 21.0008 6.66729 21 7.22 21V19ZM3 16.78C3 17.3327 2.9992 17.8084 3.03158 18.1983C3.06495 18.6002 3.13867 18.9997 3.33776 19.3829L5.11259 18.461C5.0865 18.4108 5.04763 18.3088 5.02472 18.0328C5.0008 17.7448 5 17.3663 5 16.78H3ZM5.53903 18.8874C5.35638 18.7925 5.20746 18.6436 5.11259 18.461L3.33776 19.3829C3.62239 19.9309 4.06915 20.3776 4.61708 20.6622L5.53903 18.8874ZM19 16.78C19 17.3663 18.9992 17.7448 18.9753 18.0328C18.9524 18.3088 18.9135 18.4108 18.8874 18.461L20.6622 19.3829C20.8613 18.9997 20.935 18.6002 20.9684 18.1983C21.0008 17.8084 21 17.3327 21 16.78H19ZM16.78 21C17.3327 21 17.8084 21.0008 18.1983 20.9684C18.6002 20.935 18.9997 20.8613 19.3829 20.6622L18.461 18.8874C18.4108 18.9135 18.3088 18.9524 18.0328 18.9753C17.7448 18.9992 17.3663 19 16.78 19V21ZM18.8874 18.461C18.7925 18.6436 18.6436 18.7925 18.461 18.8874L19.3829 20.6622C19.9309 20.3776 20.3776 19.9309 20.6622 19.3829L18.8874 18.461ZM21 12.22C21 11.6673 21.0008 11.1916 20.9684 10.8017C20.935 10.3998 20.8613 10.0003 20.6622 9.61708L18.8874 10.539C18.9135 10.5892 18.9524 10.6912 18.9753 10.9672C18.9992 11.2552 19 11.6337 19 12.22H21ZM16.78 10C17.3663 10 17.7448 10.0008 18.0328 10.0247C18.3088 10.0476 18.4108 10.0865 18.461 10.1126L19.3829 8.33776C18.9997 8.13867 18.6002 8.06495 18.1983 8.03158C17.8084 7.9992 17.3327 8 16.78 8V10ZM20.6622 9.61708C20.3776 9.06915 19.9309 8.62239 19.3829 8.33776L18.461 10.1126C18.6436 10.2075 18.7925 10.3564 18.8874 10.539L20.6622 9.61708ZM5 12.22C5 11.6337 5.0008 11.2552 5.02472 10.9672C5.04763 10.6912 5.0865 10.5892 5.11259 10.539L3.33776 9.61708C3.13867 10.0003 3.06495 10.3998 3.03158 10.8017C2.9992 11.1916 3 11.6673 3 12.22H5ZM7.22 8C6.66729 8 6.19162 7.9992 5.8017 8.03158C5.39982 8.06495 5.00034 8.13867 4.61708 8.33776L5.53903 10.1126C5.58924 10.0865 5.69125 10.0476 5.96722 10.0247C6.25517 10.0008 6.63372 10 7.22 10V8ZM5.11259 10.539C5.20746 10.3564 5.35638 10.2075 5.53903 10.1126L4.61708 8.33776C4.06915 8.62239 3.62239 9.06915 3.33776 9.61708L5.11259 10.539ZM11 4V14H13V4H11ZM12.7071 13.2929L10.2071 10.7929L8.79289 12.2071L11.2929 14.7071L12.7071 13.2929ZM12.7071 14.7071L15.2071 12.2071L13.7929 10.7929L11.2929 13.2929L12.7071 14.7071Z"/>
-                    </svg>
-                  </button>
-                  <div class="splitToolbarButtonSeparator hiddenSmallView" style="margin: 4px;"></div>
                   <button onclick="update_pdf()" class="button1" title="Save">
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
@@ -343,15 +398,6 @@
                       <path opacity="0.6" d="M4 6C4 4.89543 4.89543 4 6 4H12H14.1716C14.702 4 15.2107 4.21071 15.5858 4.58579L19.4142 8.41421C19.7893 8.78929 20 9.29799 20 9.82843V12V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       <path opacity="0.6" d="M8 4H13V7C13 7.55228 12.5523 8 12 8H9C8.44772 8 8 7.55228 8 7V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       <path opacity="0.6" d="M7 15C7 13.8954 7.89543 13 9 13H15C16.1046 13 17 13.8954 17 15V20H7V15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-                  {% else %}
-                  <button onclick="location.href='{% url 'download_shared_pdf' shared_pdf_id %}'" class="button1"  title="Download">
-                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-                      <!-- source: https://www.svgrepo.com/svg/502629/download-2 -->
-                      <!-- license: PD -->
-                      <path opacity="0.7" fill="currentColor" d="M16 8C15.4477 8 15 8.44772 15 9C15 9.55228 15.4477 10 16 10V8ZM8 10C8.55228 10 9 9.55228 9 9C9 8.44772 8.55228 8 8 8V10ZM5.07805 19.7748L4.61708 20.6622L4.61708 20.6622L5.07805 19.7748ZM4.22517 18.9219L5.11259 18.461L5.11259 18.461L4.22517 18.9219ZM19.7748 18.9219L20.6622 19.3829L19.7748 18.9219ZM18.9219 19.7748L19.3829 20.6622L18.9219 19.7748ZM19.7748 10.0781L20.6622 9.61708L20.6622 9.61708L19.7748 10.0781ZM18.9219 9.22517L18.461 10.1126H18.461L18.9219 9.22517ZM4.22517 10.0781L3.33776 9.61708L4.22517 10.0781ZM5.07805 9.22517L4.61708 8.33776L5.07805 9.22517ZM13 4C13 3.44772 12.5523 3 12 3C11.4477 3 11 3.44772 11 4H13ZM12 14L11.2929 14.7071C11.6834 15.0976 12.3166 15.0976 12.7071 14.7071L12 14ZM10.2071 10.7929C9.81658 10.4024 9.18342 10.4024 8.79289 10.7929C8.40237 11.1834 8.40237 11.8166 8.79289 12.2071L10.2071 10.7929ZM15.2071 12.2071C15.5976 11.8166 15.5976 11.1834 15.2071 10.7929C14.8166 10.4024 14.1834 10.4024 13.7929 10.7929L15.2071 12.2071ZM19 12.22V16.78H21V12.22H19ZM16.78 19H7.22V21H16.78V19ZM5 16.78V12.22H3V16.78H5ZM16 10H16.78V8H16V10ZM7.22 10H8V8H7.22V10ZM7.22 19C6.63372 19 6.25517 18.9992 5.96722 18.9753C5.69125 18.9524 5.58924 18.9135 5.53903 18.8874L4.61708 20.6622C5.00034 20.8613 5.39982 20.935 5.8017 20.9684C6.19162 21.0008 6.66729 21 7.22 21V19ZM3 16.78C3 17.3327 2.9992 17.8084 3.03158 18.1983C3.06495 18.6002 3.13867 18.9997 3.33776 19.3829L5.11259 18.461C5.0865 18.4108 5.04763 18.3088 5.02472 18.0328C5.0008 17.7448 5 17.3663 5 16.78H3ZM5.53903 18.8874C5.35638 18.7925 5.20746 18.6436 5.11259 18.461L3.33776 19.3829C3.62239 19.9309 4.06915 20.3776 4.61708 20.6622L5.53903 18.8874ZM19 16.78C19 17.3663 18.9992 17.7448 18.9753 18.0328C18.9524 18.3088 18.9135 18.4108 18.8874 18.461L20.6622 19.3829C20.8613 18.9997 20.935 18.6002 20.9684 18.1983C21.0008 17.8084 21 17.3327 21 16.78H19ZM16.78 21C17.3327 21 17.8084 21.0008 18.1983 20.9684C18.6002 20.935 18.9997 20.8613 19.3829 20.6622L18.461 18.8874C18.4108 18.9135 18.3088 18.9524 18.0328 18.9753C17.7448 18.9992 17.3663 19 16.78 19V21ZM18.8874 18.461C18.7925 18.6436 18.6436 18.7925 18.461 18.8874L19.3829 20.6622C19.9309 20.3776 20.3776 19.9309 20.6622 19.3829L18.8874 18.461ZM21 12.22C21 11.6673 21.0008 11.1916 20.9684 10.8017C20.935 10.3998 20.8613 10.0003 20.6622 9.61708L18.8874 10.539C18.9135 10.5892 18.9524 10.6912 18.9753 10.9672C18.9992 11.2552 19 11.6337 19 12.22H21ZM16.78 10C17.3663 10 17.7448 10.0008 18.0328 10.0247C18.3088 10.0476 18.4108 10.0865 18.461 10.1126L19.3829 8.33776C18.9997 8.13867 18.6002 8.06495 18.1983 8.03158C17.8084 7.9992 17.3327 8 16.78 8V10ZM20.6622 9.61708C20.3776 9.06915 19.9309 8.62239 19.3829 8.33776L18.461 10.1126C18.6436 10.2075 18.7925 10.3564 18.8874 10.539L20.6622 9.61708ZM5 12.22C5 11.6337 5.0008 11.2552 5.02472 10.9672C5.04763 10.6912 5.0865 10.5892 5.11259 10.539L3.33776 9.61708C3.13867 10.0003 3.06495 10.3998 3.03158 10.8017C2.9992 11.1916 3 11.6673 3 12.22H5ZM7.22 8C6.66729 8 6.19162 7.9992 5.8017 8.03158C5.39982 8.06495 5.00034 8.13867 4.61708 8.33776L5.53903 10.1126C5.58924 10.0865 5.69125 10.0476 5.96722 10.0247C6.25517 10.0008 6.63372 10 7.22 10V8ZM5.11259 10.539C5.20746 10.3564 5.35638 10.2075 5.53903 10.1126L4.61708 8.33776C4.06915 8.62239 3.62239 9.06915 3.33776 9.61708L5.11259 10.539ZM11 4V14H13V4H11ZM12.7071 13.2929L10.2071 10.7929L8.79289 12.2071L11.2929 14.7071L12.7071 13.2929ZM12.7071 14.7071L15.2071 12.2071L13.7929 10.7929L11.2929 13.2929L12.7071 14.7071Z"/>
                     </svg>
                   </button>
                   {% endif %}
@@ -422,7 +468,67 @@
                     </div>
                   </div>
                 </div>
+                <div class="splitToolbarButtonSeparator hiddenSmallView" style="margin: 4px;"></div>
                 {% endif %}
+                <div id="secondaryToolbarToggle" class="toolbarButtonWithContainer">
+                  <button id="secondaryToolbarToggleButton" class="toolbarButton" type="button" tabindex="0" title="Tools" aria-expanded="false" aria-haspopup="true" aria-controls="secondaryToolbar">
+                  </button>
+                  <div id="secondaryToolbar" class="hidden doorHangerRight menu">
+                    <div id="secondaryToolbarButtonContainer" class="menuContainer">
+                      <div >
+                        <button id="secondaryPrint" class="toolbarButton labeled" type="button" tabindex="0">
+                          <span>Print</span>
+                        </button>
+                        <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0">
+                          <span>Download</span>
+                        </button>
+                      </div>
+                      <button id="firstPage" class="toolbarButton labeled" type="button" tabindex="0">
+                        <span>Go to first page</span>
+                      </button>
+                      <button id="lastPage" class="toolbarButton labeled" type="button" tabindex="0">
+                        <span>Go to last page</span>
+                      </button>
+                      <div class="horizontalToolbarSeparator"></div>
+                      <div id="cursorToolButtons" role="radiogroup">
+                        <button id="cursorSelectTool" class="toolbarButton labeled toggled" type="button" tabindex="0" role="radio" aria-checked="true">
+                          <span>Text Selection Tool</span>
+                        </button>
+                        <button id="cursorHandTool" class="toolbarButton labeled" type="button" tabindex="0" role="radio" aria-checked="false">
+                          <span>Hand Tool</span>
+                        </button>
+                      </div>
+                      <div class="horizontalToolbarSeparator"></div>
+                      <div id="scrollModeButtons" role="radiogroup">
+                        <button id="scrollPage" class="toolbarButton labeled" type="button" tabindex="0" role="radio" aria-checked="false">
+                          <span>Page Scrolling</span>
+                        </button>
+                        <button id="scrollVertical" class="toolbarButton labeled toggled" type="button" tabindex="0" role="radio" aria-checked="true">
+                          <span>Vertical Scrolling</span>
+                        </button>
+                        <button id="scrollHorizontal" class="toolbarButton labeled" type="button" tabindex="0" role="radio" aria-checked="false">
+                          <span>Horizontal Scrolling</span>
+                        </button>
+                        <button id="scrollWrapped" class="toolbarButton labeled" type="button" tabindex="0" role="radio" aria-checked="false">
+                          <span>Wrapped Scrolling</span>
+                        </button>
+                      </div>
+                      <div class="horizontalToolbarSeparator"></div>
+                      <div id="spreadModeButtons" role="radiogroup">
+                        <button id="spreadNone" class="toolbarButton labeled toggled" type="button" tabindex="0" role="radio" aria-checked="true">
+                          <span>No Spreads</span>
+                        </button>
+                        <button id="spreadOdd" class="toolbarButton labeled" type="button" tabindex="0" role="radio" aria-checked="false">
+                          <span>Odd Spreads</span>
+                        </button>
+                        <button id="spreadEven" class="toolbarButton labeled" type="button" tabindex="0" role="radio" aria-checked="false">
+                          <span>Even Spreads</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>  <!-- secondaryToolbar -->
+                </div>
+                {% if user_view_bool %}
                 <div class="toolbarHorizontalGroup hiddenSmallView">
                   <div class="splitToolbarButtonSeparator" style="margin: 4px;"></div>
                   {% if not request.META.HTTP_REFERER or 'pdf/view' in request.META.HTTP_REFERER or 'accountlogin' in request.META.HTTP_REFERER %}
@@ -438,10 +544,9 @@
                     </svg>
                   </button>
                 </div>
+                {% endif %}
               </div>
             </div>
-            <!-- moving secondaryToolbar to the bottom of the file will result in a scrollbar -> leave it here -->
-            <div id="secondaryToolbar" class="hidden"></div>
             <div id="loadingBar">
               <div class="progress">
                 <div class="glimmer">
@@ -467,6 +572,18 @@
             <button id="passwordSubmit" class="dialogButton" type="button"><span data-l10n-id="pdfjs-password-ok-button">OK</span></button>
           </div>
         </dialog>
+        <dialog id="printServiceDialog" style="min-width: 200px;">
+          <div class="row">
+            <span>Preparing document for printing...</span>
+          </div>
+          <div class="row">
+            <progress value="0" max="100"></progress>
+            <span data-l10n-id="pdfjs-print-progress-percent" data-l10n-args='{ "progress": 0 }' class="relative-progress">0%</span>
+          </div>
+          <div class="buttonRow">
+            <button id="printCancel" class="dialogButton" type="button"><span>Cancel</span></button>
+          </div>
+        </dialog>
       </div>  <!-- dialogContainer -->
       <div id="editorUndoBar" class="messageBar" role="status" aria-labelledby="editorUndoBarMessage" tabindex="-1" hidden>
         <div>
@@ -481,27 +598,23 @@
           </button>
         </div>
       </div> <!-- editorUndoBar -->
-
     </div> <!-- outerContainer -->
+    <div id="printContainer"></div>
   </body>
 
   {% if not user_view_bool %}
   <div id="editorFreeTextButton"></div><div id="editorFreeTextColor"></div><div id="editorFreeTextFontSize"></div>
   <div id="editorFreeHighlightThickness"></div><div id="editorHighlightButton"></div>
-  <div id="editorHighlightShowAll"></div><div id="editorInkButton"></div><div id="editorInkColor">
-  </div><div id="editorInkThickness"></div><div id="editorInkOpacity"></div>
+  <div id="editorHighlightShowAll"></div><div id="editorInkButton"></div><div id="editorInkColor"></div>
+  <div id="editorInkThickness"></div><div id="editorInkOpacity"></div>
   {% endif %}
 
   <div id="viewAttachments"></div><div id="viewLayers"></div><div id="altTextSave"></div>
   <div id="editorStampButton"></div><div id="editorStampAddImage"></div><div id="altTextDialog"></div>
-  <div id="downloadButton"></div><div id="printButton"></div><div id="secondaryToolbarToggleButton"></div>
-  <div id="secondaryOpenFile"></div><div id="secondaryPrint"></div><div id="secondaryDownload"></div>
-  <div id="presentationMode"></div><div id="viewBookmark"></div><div id="firstPage"></div>
-  <div id="lastPage"></div><div id="pageRotateCw"></div><div id="pageRotateCcw"></div>
-  <div id="cursorSelectTool"></div><div id="cursorHandTool"></div><div id="scrollPage"></div>
-  <div id="scrollVertical"></div><div id="scrollHorizontal"></div><div id="scrollWrapped"></div>
-  <div id="spreadNone"></div><div id="spreadOdd"></div><div id="spreadEven"></div><div id="imageAltTextSettings"></div>
-  <div id="documentProperties"></div><div id="documentPropertiesDialog"></div><div id="documentPropertiesClose"></div>
+  <div id="downloadButton"></div><div id="printButton"></div><div id="secondaryOpenFile"></div>
+  <div id="pageRotateCw"></div><div id="pageRotateCcw"></div><div id="documentProperties"></div>
+  <div id="documentPropertiesDialog"></div><div id="documentPropertiesClose"></div><div id="presentationMode"></div>
   <div id="descriptionButton"></div><div id="decorativeButton"></div><div id="altTextCancel"></div>
   <div id="editorSignatureAddSignature"></div><div id="editorSignatureButton"></div>
+  <div id="imageAltTextSettings"></div><div id="viewBookmark"></div>
 </html>
