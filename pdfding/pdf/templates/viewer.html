@@ -383,10 +383,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                 </div>
               </div>
               <div id="toolbarViewerRight" class="toolbarHorizontalGroup">
-                <div class="toolbarHorizontalGroup toolbarLabel hiddenSmallView hiddenMediumView">
-                  <img src="{% static 'images/logo.svg' %}" class="logo">
-                  <span style="font-size: medium;font-weight: bold; color: rgb({{ theme_color }});">PdfDing</span>
-                  <div class="toolbarButtonSpacer"></div>
+                <div class="toolbarHorizontalGroup toolbarLabel">
+                  <img src="{% static 'images/logo.svg' %}" class="logo hiddenSmallView">
+                  <span class="hiddenSmallView hiddenMediumView" style="font-size: medium;font-weight: bold; color: rgb({{ theme_color }});">PdfDing</span>
+                  <div class="toolbarButtonSpacer hiddenSmallView hiddenMediumView"></div>
                 </div>
                 <div class="toolbarHorizontalGroup" >
                   {% if user_view_bool %}
