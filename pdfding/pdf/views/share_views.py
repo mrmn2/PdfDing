@@ -3,6 +3,7 @@ from io import BytesIO
 
 import qrcode
 from base import base_views
+from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.core.files import File
 from django.db.models import Q, QuerySet
@@ -152,7 +153,7 @@ class SharedPdfMixin(BaseShareMixin):
 
 
 class EditSharedPdfMixin(SharedPdfMixin):
-    fields_requiring_extra_processing = ['expiration_date', 'deletion_date']
+    fields_requiring_extra_processing = ['expiration_date', 'deletion_date', 'name']
 
     @staticmethod
     def get_edit_form_dict():
@@ -187,15 +188,24 @@ class EditSharedPdfMixin(SharedPdfMixin):
 
         return form
 
-    @staticmethod
-    def process_field(field_name, shared_pdf, _, form_data):
+    @classmethod
+    def process_field(cls, field_name: str, shared_pdf: SharedPdf, request: HttpRequest, form_data: dict):
         """Process fields that are not covered in the base edit view."""
 
         if field_name == 'expiration_date':
             shared_pdf.expiration_date = get_future_datetime(form_data['expiration_input'])
-
-        if field_name == 'deletion_date':
+        elif field_name == 'deletion_date':
             shared_pdf.deletion_date = get_future_datetime(form_data['deletion_input'])
+        elif field_name == 'name':
+            existing_obj = cls.obj_class.objects.filter(
+                owner=request.user.profile, name__iexact=form_data.get('name')
+            ).first()
+
+            if existing_obj and str(existing_obj.id) != str(shared_pdf.id):
+                messages.warning(request, 'This name is already used by another shared PDF!')
+            else:
+                shared_pdf.name = form_data.get('name').strip()
+                shared_pdf.save()
 
         shared_pdf.save()
 

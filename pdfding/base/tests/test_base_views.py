@@ -247,35 +247,6 @@ class TestViews(TestCase):
         self.assertEqual(pdf.description, 'new')
 
     @override_settings(ROOT_URLCONF=__name__)
-    def test_edit_post_name_existing(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
-        Pdf.objects.create(owner=self.user.profile, name='pdf_2', description='something')
-
-        # follow=True is needed for getting the message
-        response = self.client.post(
-            reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'name'}),
-            data={'name': 'pdf_2'},
-            follow=True,
-        )
-
-        message = list(response.context['messages'])[0]
-        self.assertEqual(message.message, 'This name is already used by another PDF!')
-
-    @override_settings(ROOT_URLCONF=__name__)
-    def test_edit_post_name(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
-
-        self.client.post(
-            reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'name'}),
-            data={'name': 'new'},
-        )
-
-        # get pdf again with the changes
-        pdf = self.user.profile.pdf_set.get(id=pdf.id)
-
-        self.assertEqual(pdf.name, 'new')
-
-    @override_settings(ROOT_URLCONF=__name__)
     def test_edit_post_processed(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
 

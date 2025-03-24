@@ -6,6 +6,7 @@ from io import BytesIO
 from logging import getLogger
 from math import floor
 from pathlib import Path
+from shutil import copy
 from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
@@ -17,7 +18,7 @@ from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
-from pdf.models import Pdf, PdfAnnotation, PdfComment, PdfHighlight, Tag
+from pdf.models import Pdf, PdfAnnotation, PdfComment, PdfHighlight, Tag, get_file_path
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
 from ruamel.yaml import YAML
@@ -116,6 +117,37 @@ class TagServices:
                 show_conditions.append(f'tag_{current.replace('-', '_').replace('/', '___')}_show_children')
 
         return tag_info_dict
+
+    def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: str) -> str:
+        """
+        Adjust the referer url for tag views. If a tag is renamed or deleted, the query part of the tag string will be
+        adjusted accordingly. E.g. for renaming tag 'some' to 'other': 'http://127.0.0.1:5000/pdf/?q=%23some' to
+        'http://127.0.0.1:5000/pdf/?q=%23other'.
+        """
+
+        parsed_referer_url = urlparse(referer_url)
+        query_parameters = parse_qs(parsed_referer_url.query)
+
+        tag_query = []
+
+        for tag in query_parameters.get('tags', [''])[0].split(' '):
+            if tag and tag != replace:
+                tag_query.append(tag)
+            elif tag and replace_with:
+                tag_query.append(replace_with)
+
+        query_parameters['tags'] = tag_query
+
+        query_string = '&'.join(
+            f'{key}={"+".join(query)}' for key, query in query_parameters.items() if query not in [[], ['']]
+        )
+
+        overview_url = reverse('pdf_overview')
+
+        if query_string:
+            overview_url = f'{overview_url}?{query_string}'
+
+        return overview_url
 
 
 class PdfProcessingServices:
@@ -404,38 +436,6 @@ def create_unique_name_from_file(file: File, owner: Profile) -> str:
     return name
 
 
-def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: str) -> str:
-    """
-    Adjust the referer url for tag views. If a tag is renamed or deleted, the query part of the tag string will be
-    adjusted accordingly. E.g. for renaming tag 'some' to 'other': 'http://127.0.0.1:5000/pdf/?q=%23some' to
-    'http://127.0.0.1:5000/pdf/?q=%23other'.
-    """
-
-    parsed_referer_url = urlparse(referer_url)
-    query_parameters = parse_qs(parsed_referer_url.query)
-
-    tag_query = []
-
-    for tag in query_parameters.get('tags', [''])[0].split(' '):
-        if tag and tag != replace:
-            tag_query.append(tag)
-        elif tag and replace_with:
-            tag_query.append(replace_with)
-
-    query_parameters['tags'] = tag_query
-
-    query_string = '&'.join(
-        f'{key}={"+".join(query)}' for key, query in query_parameters.items() if query not in [[], ['']]
-    )
-
-    overview_url = reverse('pdf_overview')
-
-    if query_string:
-        overview_url = f'{overview_url}?{query_string}'
-
-    return overview_url
-
-
 def get_pdf_info_list(profile: Profile) -> list[tuple]:
     """
     Get the pdf info list of a profile. It contains information (name + file size) of each pdf of the profile. Each
@@ -449,3 +449,24 @@ def get_pdf_info_list(profile: Profile) -> list[tuple]:
         pdf_info_list.append((pdf.name, pdf_size))
 
     return pdf_info_list
+
+
+def rename_pdf(pdf: Pdf, new_pdf_name: str):
+    """Rename a pdf including updating its file name/path accordingly."""
+
+    pdf.name = new_pdf_name
+    current_path = MEDIA_ROOT / pdf.file.name
+    pdf_new_file_name = get_file_path(pdf, None)
+
+    new_path = MEDIA_ROOT / pdf_new_file_name
+
+    if new_path != current_path:
+        # make sure the parent dir exists
+        new_path.parent.mkdir(parents=True, exist_ok=True)
+        copy(current_path, new_path)
+        pdf.file.name = pdf_new_file_name
+
+    pdf.save()
+
+    if new_path != current_path:
+        current_path.unlink(missing_ok=True)

@@ -52,7 +52,7 @@ class TestTagViews(TestCase):
         self.assertEqual(message.tags, 'warning')
 
     @patch('pdf.views.pdf_views.EditTag.rename_tag')
-    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    @patch('pdf.service.TagServices.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_edit_tag_post_normal_mode(self, mock_adjust_referer_for_tag_view, mock_rename_tag):
         profile = self.user.profile
         profile.tag_tree_mode = False
@@ -68,7 +68,7 @@ class TestTagViews(TestCase):
         self.assertEqual(tag_2.name, 'tag_name/child')
 
     @patch('pdf.views.pdf_views.EditTag.rename_tag')
-    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    @patch('pdf.service.TagServices.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_edit_tag_post_tree_mode(self, mock_adjust_referer_for_tag_view, mock_rename_tag):
         profile = self.user.profile
         profile.tag_tree_mode = True
@@ -124,7 +124,7 @@ class TestTagViews(TestCase):
         self.assertEqual(self.user.profile.tag_set.count(), 1)
         self.assertEqual(pdf.tags.first(), tag_1)
 
-    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    @patch('pdf.service.TagServices.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_delete_tag_normal_mode(self, mock_adjust_referer_for_tag_view):
         profile = self.user.profile
         profile.tag_tree_mode = False
@@ -142,7 +142,7 @@ class TestTagViews(TestCase):
 
         mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', 'tag_name', '')
 
-    @patch('pdf.service.adjust_referer_for_tag_view', return_value='pdf_overview')
+    @patch('pdf.service.TagServices.adjust_referer_for_tag_view', return_value='pdf_overview')
     def test_delete_tag_tree_mode(self, mock_adjust_referer_for_tag_view):
         profile = self.user.profile
         profile.tag_tree_mode = True

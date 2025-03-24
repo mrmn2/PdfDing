@@ -196,17 +196,6 @@ class BaseDetailsEdit(View):
             if field_name in self.fields_requiring_extra_processing:
                 self.process_field(field_name, obj, request, form.data)
 
-            # if the name is changed we need to check that it is a unique name not used by another pdf of this user.
-            elif field_name == 'name':
-                existing_obj = self.obj_class.objects.filter(
-                    owner=request.user.profile, name__iexact=form.data.get('name')
-                ).first()
-
-                if existing_obj and str(existing_obj.id) != identifier:
-                    messages.warning(request, 'This name is already used by another PDF!')
-                else:
-                    form.save()
-
             # for any other field just save it
             else:
                 form.save()

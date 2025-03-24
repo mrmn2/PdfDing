@@ -256,7 +256,7 @@ class TagMixin:
 
 class EditPdfMixin(PdfMixin):
     obj_class = Pdf
-    fields_requiring_extra_processing = ['tags']
+    fields_requiring_extra_processing = ['name', 'tags']
 
     @staticmethod
     def get_edit_form_dict():
@@ -287,12 +287,12 @@ class EditPdfMixin(PdfMixin):
 
         return form
 
-    @staticmethod
-    def process_field(field_name, pdf, request, form_data):
+    @classmethod
+    def process_field(cls, field_name: str, pdf: Pdf, request: HttpRequest, form_data: dict):
         """Process fields that are not covered in the base edit view."""
 
         if field_name == 'tags':
-            tag_string = form_data['tag_string']
+            tag_string = form_data.get('tag_string', '')
             tag_names = Tag.parse_tag_string(tag_string)
 
             # check if tag needs to be deleted
@@ -303,6 +303,16 @@ class EditPdfMixin(PdfMixin):
             tags = service.TagServices.process_tag_names(tag_names, request.user.profile)
 
             pdf.tags.set(tags)
+
+        elif field_name == 'name':
+            existing_obj = cls.obj_class.objects.filter(
+                owner=request.user.profile, name__iexact=form_data.get('name').strip()
+            ).first()
+
+            if existing_obj and str(existing_obj.id) != str(pdf.id):
+                messages.warning(request, 'This name is already used by another PDF!')
+            else:
+                service.rename_pdf(pdf, form_data.get('name'))
 
 
 class AnnotationOverviewMixin:
@@ -701,7 +711,7 @@ class EditTag(TagMixin, View):
                 tag = self.get_tag_by_name(request, original_tag_name)
                 self.rename_tag(tag, new_name, user_profile)
 
-            redirect_url = service.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_name)
+            redirect_url = service.TagServices.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_name)
         else:
             try:
                 messages.warning(request, dict(form.errors)['name'][0])
@@ -753,7 +763,7 @@ class DeleteTag(TagMixin, View):
             for tag in tags:
                 tag.delete()
 
-            redirect_url = service.adjust_referer_for_tag_view(redirect_url, tag_name, '')
+            redirect_url = service.TagServices.adjust_referer_for_tag_view(redirect_url, tag_name, '')
 
             return HttpResponseClientRedirect(redirect_url)
 

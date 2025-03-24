@@ -4,6 +4,7 @@ from unittest import mock
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
@@ -442,7 +443,7 @@ class TestEditPdfMixin(TestCase):
                 field = 'tag_string'
             self.assertEqual(form.initial, {field: field_value})
 
-    def test_process_field(self):
+    def test_process_field_tag(self):
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
         tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
         tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
@@ -460,6 +461,30 @@ class TestEditPdfMixin(TestCase):
         self.assertEqual(sorted(tag_names), sorted(['tag_1', 'tag_3']))
         # check that tag 2 was deleted
         self.assertFalse(self.user.profile.tag_set.filter(name='tag_2').exists())
+
+    @patch('pdf.service.rename_pdf')
+    def test_process_filed_name(self, mock_rename_pdf):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        request = response.wsgi_request
+
+        pdf_views.EditPdfMixin.process_field('name', pdf, request, {'name': 'new_name'})
+        mock_rename_pdf.assert_called_once_with(pdf, 'new_name')
+
+    def test_process_filed_name_existing(self):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_2')
+        request = response.wsgi_request
+
+        pdf_views.EditPdfMixin.process_field('name', pdf, request, {'name': pdf_2.name})
+
+        messages = get_messages(request)
+
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(list(messages)[0].message, 'This name is already used by another PDF!')
 
 
 class TestViews(TestCase):

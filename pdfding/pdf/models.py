@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -7,6 +8,7 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 from django.db.models import DateTimeField
 from django.utils.safestring import mark_safe
+from django.utils.text import slugify
 from users.models import Profile
 
 
@@ -39,15 +41,27 @@ class Tag(models.Model):
 
 def get_file_path(instance, _):
     """
-    Get the file path for a PDF. File paths are user_id/file_id.pdf
-
-    User uploaded files will always be placed inside MEDIA_ROOT.
+    Get the file path for a PDF inside the media root based on the pdf name.File paths are user_id/some/dir/name.pdf.
+    This function will also replace any "/" in the pdf name and will make  sure there are no duplicate file names.
     """
 
-    file_name = f'{instance.id}.pdf'
-    file_path = '/'.join([str(instance.owner.user.id), file_name])
+    # replace any space char with _
+    file_name = re.sub(r'\s+', '_', instance.name)
+    file_name = file_name.replace('/', '_')
+    file_name = str.lower(file_name)
+    # remove non alphanumerical characters
+    file_name = slugify(file_name, allow_unicode=True)
 
-    return str(file_path)
+    file_name = f'{file_name}.pdf'
+    file_path = '/'.join([str(instance.owner.user.id), 'pdf', file_name])
+
+    existing_pdf = Pdf.objects.filter(file=file_path).first()
+
+    # make sure there each file path is unique
+    if existing_pdf and str(existing_pdf.id) != str(instance.id):
+        file_path = file_path.replace('.pdf', f'_{str(uuid4())[:8]}.pdf')
+
+    return file_path
 
 
 def get_thumbnail_path(instance, _):

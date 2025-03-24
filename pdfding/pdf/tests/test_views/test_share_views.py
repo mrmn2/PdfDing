@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
+from django.contrib.messages import get_messages
 from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import (
@@ -172,7 +173,7 @@ class TestEditSharedPdfMixin(TestCase):
             self.assertIsInstance(form, form_class)
             self.assertEqual(form.initial, {field: field_value})
 
-    def test_process_field_changed_fieldd(self):
+    def test_process_field_changed_field(self):
         shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
 
         EditSharedPdfMixin.process_field('expiration_date', shared_pdf, None, {'expiration_input': '1d0h22m'})
@@ -191,6 +192,33 @@ class TestEditSharedPdfMixin(TestCase):
         adjusted_shared_pdf = self.user.profile.sharedpdf_set.get(name='share')
 
         self.assertEqual(shared_pdf, adjusted_shared_pdf)
+
+    def test_process_field_name(self):
+        self.client.login(username=self.username, password=self.password)
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+
+        EditSharedPdfMixin.process_field('name', shared_pdf, response.wsgi_request, {'name': 'new name '})
+        adjusted_shared_pdf = self.user.profile.sharedpdf_set.get(id=shared_pdf.id)
+
+        # also make sure space was stripped
+        self.assertEqual(adjusted_shared_pdf.name, 'new name')
+
+    def test_process_field_name_existing(self):
+        self.client.login(username=self.username, password=self.password)
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf_2 = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='shared_2')
+        request = response.wsgi_request
+
+        EditSharedPdfMixin.process_field('name', shared_pdf, request, {'name': shared_pdf_2.name})
+
+        messages = get_messages(request)
+
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(list(messages)[0].message, 'This name is already used by another shared PDF!')
 
 
 class TestPdfPublicMixin(TestCase):

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 import pdf.models as models
 from django.contrib.auth.models import User
@@ -24,9 +25,29 @@ class TestPdf(TestCase):
         self.assertEqual([], generated_tags)
 
     def test_get_file_path(self):
-        generated_filepath = models.get_file_path(self.pdf, '')
+        pdf = models.Pdf(owner=self.user.profile, name='PDF_3! 寝る 12/3?  ')
 
-        self.assertEqual(generated_filepath, f'1/{self.pdf.id}.pdf')
+        generated_filepath = models.get_file_path(pdf, '')
+
+        self.assertEqual(generated_filepath, '1/pdf/pdf_3_寝る_12_3.pdf')
+
+    @patch('pdf.models.uuid4', return_value='123456789')
+    def test_get_file_path_existing_different_id(self, mock_uuid4):
+        pdf_1 = models.Pdf(owner=self.user.profile, name='existing')
+        pdf_2 = models.Pdf(owner=self.user.profile, name='exist ing')
+        pdf_1.file = '1/pdf/exist_ing.pdf'
+        pdf_1.save()
+
+        generated_filepath = models.get_file_path(pdf_2, '')
+        self.assertEqual(generated_filepath, '1/pdf/exist_ing_12345678.pdf')
+
+    def test_get_file_path_existing_same_id(self):
+        pdf = models.Pdf(owner=self.user.profile, name='exist_ing')
+        pdf.file = '1/pdf/exist_ing.pdf'
+        pdf.save()
+
+        generated_filepath = models.get_file_path(pdf, '')
+        self.assertEqual(generated_filepath, '1/pdf/exist_ing.pdf')
 
     def test_get_qrcode_file_path(self):
         generated_filepath = models.get_qrcode_file_path(self.pdf, '')

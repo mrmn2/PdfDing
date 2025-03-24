@@ -6,6 +6,7 @@ from unittest import mock
 from uuid import uuid4
 
 import pdf.service as service
+from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.db.models.functions import Lower
@@ -535,14 +536,14 @@ class TestOtherServices(TestCase):
     def test_adjust_referer_for_tag_view_no_replace(self):
         # url of searched for #other
         url = f'{reverse("pdf_overview")}?search=searching&tags=tag1+tag2'
-        adjusted_url = service.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
+        adjusted_url = service.TagServices.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
 
         self.assertEqual(url, adjusted_url)
 
     def test_adjust_referer_for_tag_view_no_query(self):
         url = reverse('pdf_overview')
 
-        adjusted_url = service.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
+        adjusted_url = service.TagServices.adjust_referer_for_tag_view(url, 'tag', 'other_tag')
 
         self.assertEqual(url, adjusted_url)
 
@@ -550,7 +551,7 @@ class TestOtherServices(TestCase):
         # url of searched for #other
         url = f'{reverse("pdf_overview")}?search=searching&tags=tag1+tag2'
 
-        adjusted_url = service.adjust_referer_for_tag_view(url, 'tag1', '')
+        adjusted_url = service.TagServices.adjust_referer_for_tag_view(url, 'tag1', '')
         expected_url = f'{reverse("pdf_overview")}?search=searching&tags=tag2'
 
         self.assertEqual(expected_url, adjusted_url)
@@ -559,7 +560,7 @@ class TestOtherServices(TestCase):
         # url of searched for #other
         url = f'{reverse("pdf_overview")}?search=searching&tags=other'
 
-        adjusted_url = service.adjust_referer_for_tag_view(url, 'other', '')
+        adjusted_url = service.TagServices.adjust_referer_for_tag_view(url, 'other', '')
         expected_url = f'{reverse("pdf_overview")}?search=searching'
 
         self.assertEqual(expected_url, adjusted_url)
@@ -568,7 +569,61 @@ class TestOtherServices(TestCase):
         # url of searched for #other
         url = f'{reverse("pdf_overview")}?tags=other'
 
-        adjusted_url = service.adjust_referer_for_tag_view(url, 'other', 'another')
+        adjusted_url = service.TagServices.adjust_referer_for_tag_view(url, 'other', 'another')
         expected_url = f'{reverse("pdf_overview")}?tags=another'
 
         self.assertEqual(expected_url, adjusted_url)
+
+    @mock.patch('pdf.service.get_file_path')
+    @mock.patch('pdf.service.copy')
+    def test_rename_pdf(self, mock_copy, mock_get_file_path):
+        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+        pdf = Pdf.objects.create(owner=user.profile, name='pdf_name')
+
+        current_file_name = f'{user.id}/pdf/pdf_name.pdf'
+        pdf.file = current_file_name
+        pdf.save()
+        new_file_name = f'{user.id}/pdf/child_dir/new_name.pdf'
+        current_path = MEDIA_ROOT / current_file_name
+        current_path.touch()
+        new_path = MEDIA_ROOT / new_file_name
+        mock_get_file_path.return_value = new_file_name
+
+        new_path_parent = new_path.parent
+        # dir should not exist, instead it should be created during the rename_pdf
+        self.assertFalse(new_path_parent.exists())
+
+        service.rename_pdf(pdf, 'new_name')
+        changed_pdf = Pdf.objects.get(id=pdf.id)
+
+        mock_get_file_path.assert_called_once_with(pdf, None)
+        self.assertTrue(new_path_parent.exists())
+        self.assertEqual(changed_pdf.file.name, new_file_name)
+        mock_copy.assert_called_once_with(current_path, new_path)
+        self.assertFalse(current_path.exists())
+
+        # cleanup
+        new_path_parent.rmdir()
+
+    @mock.patch('pdf.service.get_file_path')
+    @mock.patch('pdf.service.copy')
+    def test_rename_pdf_same_name(self, mock_copy, mock_get_file_path):
+        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+        pdf = Pdf.objects.create(owner=user.profile, name='pdf_name')
+
+        current_file_name = f'{user.id}/pdf/pdf_name.pdf'
+        pdf.file = current_file_name
+        pdf.save()
+
+        current_path = MEDIA_ROOT / current_file_name
+        current_path.touch()
+        mock_get_file_path.return_value = current_file_name
+
+        mock_copy.assert_not_called()
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertEqual(pdf.file.name, current_file_name)
+        # file should not be deleted, as no renaming was not necessary
+        self.assertTrue(current_path.exists())
+
+        # cleanup
+        current_path.unlink()
