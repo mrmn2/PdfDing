@@ -107,13 +107,13 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_label("Use File Name:").check()
             self.page.locator("#id_file").click()
             self.page.locator("#id_file").set_input_files(dummy_file_path)
-            self.page.locator("#show_notes").click()
+            self.page.locator("#show_additional").click()
             expect(self.page.locator("#notes")).to_be_visible()
             self.page.get_by_placeholder("Add Notes").click()
             self.page.get_by_placeholder("Add Notes").fill("some note")
 
             # assert collapsing notes field is working
-            self.page.locator("#show_notes").click()
+            self.page.locator("#show_additional").click()
             expect(self.page.locator("#notes")).not_to_be_visible()
 
             self.page.get_by_role("button", name="Submit").click()
@@ -121,6 +121,41 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#show-notes-1")).to_be_visible()
 
         dummy_file_path.unlink()
+
+    @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_add_file_directory(self, mock_from_buffer):
+        # just use some dummy file for uploading
+        dummy_file_path = Path(__file__).parent / 'dummy.pdf'
+        with open(dummy_file_path, 'w') as f:
+            f.write('Some text')
+
+        with sync_playwright() as p:
+            self.open(reverse('add_pdf'), p)
+
+            # assert notes field not visible at the beginning
+            expect(self.page.locator("#file_directory")).not_to_be_visible()
+
+            # add pdf and open notes field
+            self.page.get_by_placeholder("Add PDF Name").click()
+            self.page.get_by_placeholder("Add PDF Name").fill("some_random_name")
+            self.page.locator("#id_file").click()
+            self.page.locator("#id_file").set_input_files(dummy_file_path)
+            self.page.locator("#show_additional").click()
+            expect(self.page.locator("#file_directory")).to_be_visible()
+            self.page.get_by_placeholder("Add File Directory").click()
+            self.page.get_by_placeholder("Add File Directory").fill("some/dir")
+
+            # assert collapsing notes field is working
+            self.page.locator("#show_additional").click()
+            expect(self.page.locator("#file_directory")).not_to_be_visible()
+
+            self.page.get_by_role("button", name="Submit").click()
+
+        pdf = Pdf.objects.get(name='some_random_name')
+        self.assertEqual(pdf.file.name, f'{pdf.owner.user.id}/pdf/some/dir/{pdf.name}.pdf')
+
+        dummy_file_path.unlink()
+        pdf.delete()
 
     @override_settings(DEMO_MODE=True)
     def test_add_pdf_demo_mode(self):
@@ -205,13 +240,13 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_file").click()
             self.page.locator("#id_file").set_input_files([dummy_file_path])
 
-            self.page.locator("#show_notes").click()
+            self.page.locator("#show_additional").click()
             expect(self.page.locator("#notes")).to_be_visible()
             self.page.get_by_placeholder("Add Notes").click()
             self.page.get_by_placeholder("Add Notes").fill("some note")
 
             # assert collapsing notes field is working
-            self.page.locator("#show_notes").click()
+            self.page.locator("#show_additional").click()
             expect(self.page.locator("#notes")).not_to_be_visible()
 
             self.page.get_by_role("button", name="Submit").click()
@@ -219,6 +254,40 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#show-notes-1")).to_be_visible()
 
         dummy_file_path.unlink()
+
+    @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_bulk_add_file_directory(self, mock_from_buffer):
+        # just use some dummy file for uploading
+        dummy_file_path = Path(__file__).parent / 'dummy.pdf'
+        with open(dummy_file_path, 'w') as f:
+            f.write('Some text')
+
+        with sync_playwright() as p:
+            self.open(reverse('bulk_add_pdfs'), p)
+
+            # assert notes field not visible at the beginning
+            expect(self.page.locator("#file_directory")).not_to_be_visible()
+
+            # add pdf and open notes field
+            self.page.locator("#id_file").click()
+            self.page.locator("#id_file").set_input_files([dummy_file_path])
+
+            self.page.locator("#show_additional").click()
+            expect(self.page.locator("#file_directory")).to_be_visible()
+            self.page.get_by_placeholder("Add File Directory").click()
+            self.page.get_by_placeholder("Add File Directory").fill("some/dir")
+
+            # assert collapsing notes field is working
+            self.page.locator("#show_additional").click()
+            expect(self.page.locator("#file_directory")).not_to_be_visible()
+
+            self.page.get_by_role("button", name="Submit").click()
+
+        pdf = Pdf.objects.get(name='dummy')
+        self.assertEqual(pdf.file.name, f'{pdf.owner.user.id}/pdf/some/dir/{pdf.name}.pdf')
+
+        dummy_file_path.unlink()
+        pdf.delete()
 
     @override_settings(DEMO_MODE=True)
     def test_bulk_add_pdf_demo(self):

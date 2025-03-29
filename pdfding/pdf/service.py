@@ -18,7 +18,15 @@ from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
-from pdf.models import Pdf, PdfAnnotation, PdfComment, PdfHighlight, Tag, get_file_path
+from pdf.models import (
+    Pdf,
+    PdfAnnotation,
+    PdfComment,
+    PdfHighlight,
+    Tag,
+    delete_empty_dirs_after_rename_or_delete,
+    get_file_path,
+)
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
 from ruamel.yaml import YAML
@@ -153,9 +161,18 @@ class TagServices:
 class PdfProcessingServices:
     @classmethod
     def create_pdf(
-        cls, name: str, owner: Profile, pdf_file: File, description: str = '', notes: str = '', tag_string: str = ''
+        cls,
+        name: str,
+        owner: Profile,
+        pdf_file: File,
+        description: str = '',
+        notes: str = '',
+        tag_string: str = '',
+        file_directory: str = '',
     ):
-        pdf = Pdf.objects.create(name=name, description=description, notes=notes, file=pdf_file, owner=owner)
+        pdf = Pdf.objects.create(
+            name=name, description=description, notes=notes, file=pdf_file, file_directory=file_directory, owner=owner
+        )
 
         # process with pdf libraries: add number of pages, thumbnail, preview, highlights and comments
         cls.process_with_pypdfium(pdf)
@@ -245,8 +262,14 @@ class PdfProcessingServices:
         return pdf
 
     @classmethod
-    def set_highlights_and_comments(cls, pdf: Pdf):
-        """Set the highlights and comments of a pdf"""
+    def set_highlights_and_comments(cls, pdf: Pdf, pdf_highlight_class=PdfHighlight, pdf_comment_class=PdfComment):
+        """
+        Set the highlights and comments of a pdf.
+
+        We need to have pdf_highlight_class and pdf_comment_class arguments so that the migration using this function
+        can overwrite the classes with the model 'blueprints' we get via
+        apps.get_model(("pdf", "PdfHighlight/PdfComment")) results. Without this the migrations will not work.
+        """
 
         try:
             # delete old comments and highlights
@@ -271,13 +294,13 @@ class PdfProcessingServices:
 
                             if annotation_type == "/FreeText":
                                 comment_text = annotation_object["/Contents"]
-                                PdfComment.objects.create(
+                                pdf_comment_class.objects.create(
                                     text=comment_text, page=i + 1, creation_date=creation_date, pdf=pdf
                                 )
 
                             elif annotation_type == "/Highlight":
                                 highlight_text = cls.extract_pdf_highlight_text(annotation_object, pdfium_page)
-                                PdfHighlight.objects.create(
+                                pdf_highlight_class.objects.create(
                                     text=highlight_text, page=i + 1, creation_date=creation_date, pdf=pdf
                                 )
 
@@ -364,6 +387,32 @@ class PdfProcessingServices:
 
         return MEDIA_ROOT / user_id / 'annotations' / 'annotations_export.yaml'
 
+    @classmethod
+    def process_renaming_pdf(cls, pdf: Pdf):
+        """
+        Process the renaming of a pdf. This function saves the new name and updates its file name/path accordingly.
+        """
+
+        pdf_current_file_name = pdf.file.name
+        current_path = MEDIA_ROOT / pdf.file.name
+        pdf_new_file_name = get_file_path(pdf, None)
+
+        new_path = MEDIA_ROOT / pdf_new_file_name
+
+        if new_path != current_path:
+            # make sure the parent dir exists
+            new_path.parent.mkdir(parents=True, exist_ok=True)
+            copy(current_path, new_path)
+            pdf.file.name = pdf_new_file_name
+
+        # The new name and file directory are already set to the pdf object by the form but not saved yet.
+        pdf.save()
+
+        if new_path != current_path:
+            current_path.unlink(missing_ok=True)
+
+            delete_empty_dirs_after_rename_or_delete(pdf_current_file_name, pdf.owner.user.id)
+
 
 def check_object_access_allowed(get_object):
     """
@@ -449,24 +498,3 @@ def get_pdf_info_list(profile: Profile) -> list[tuple]:
         pdf_info_list.append((pdf.name, pdf_size))
 
     return pdf_info_list
-
-
-def rename_pdf(pdf: Pdf, new_pdf_name: str):
-    """Rename a pdf including updating its file name/path accordingly."""
-
-    pdf.name = new_pdf_name
-    current_path = MEDIA_ROOT / pdf.file.name
-    pdf_new_file_name = get_file_path(pdf, None)
-
-    new_path = MEDIA_ROOT / pdf_new_file_name
-
-    if new_path != current_path:
-        # make sure the parent dir exists
-        new_path.parent.mkdir(parents=True, exist_ok=True)
-        copy(current_path, new_path)
-        pdf.file.name = pdf_new_file_name
-
-    pdf.save()
-
-    if new_path != current_path:
-        current_path.unlink(missing_ok=True)

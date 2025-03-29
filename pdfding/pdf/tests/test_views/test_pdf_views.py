@@ -52,6 +52,7 @@ class TestAddPDFMixin(TestCase):
                 'tag_string': 'tag_a tag_2',
                 'description': 'some_description',
                 'notes': 'some_notes',
+                'file_directory': 'some/dir',
             },
             owner=self.user.profile,
             files={'file': file_mock},
@@ -64,6 +65,7 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.notes, 'some_notes')
         self.assertEqual(pdf.description, 'some_description')
+        self.assertEqual(pdf.file_directory, 'some/dir')
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
         mock_process_with_pypdfium.assert_called_once_with(pdf)
@@ -140,7 +142,7 @@ class TestBulkAddPDFMixin(TestCase):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
         form = forms.BulkAddForm(
-            data={'tag_string': 'tag_a tag_2', 'description': ''},
+            data={'tag_string': 'tag_a tag_2', 'description': '', 'file_directory': 'some/dir'},
             owner=self.user.profile,
             files=MultiValueDict({'file': [file_mock]}),
         )
@@ -151,6 +153,7 @@ class TestBulkAddPDFMixin(TestCase):
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.file_directory, 'some/dir')
         self.assertEqual(pdf.file.size, 0)  # mock file has size 0
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
@@ -462,17 +465,17 @@ class TestEditPdfMixin(TestCase):
         # check that tag 2 was deleted
         self.assertFalse(self.user.profile.tag_set.filter(name='tag_2').exists())
 
-    @patch('pdf.service.rename_pdf')
-    def test_process_filed_name(self, mock_rename_pdf):
+    @patch('pdf.service.PdfProcessingServices.process_renaming_pdf')
+    def test_process_field_name(self, mock_process_renaming_pdf):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
         request = response.wsgi_request
 
         pdf_views.EditPdfMixin.process_field('name', pdf, request, {'name': 'new_name'})
-        mock_rename_pdf.assert_called_once_with(pdf, 'new_name')
+        mock_process_renaming_pdf.assert_called_once_with(pdf)
 
-    def test_process_filed_name_existing(self):
+    def test_process_field_name_existing(self):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
@@ -485,6 +488,16 @@ class TestEditPdfMixin(TestCase):
 
         self.assertEqual(len(messages), 1)
         self.assertEqual(list(messages)[0].message, 'This name is already used by another PDF!')
+
+    @patch('pdf.service.PdfProcessingServices.process_renaming_pdf')
+    def test_process_field_file_directory(self, mock_process_renaming_pdf):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        request = response.wsgi_request
+
+        pdf_views.EditPdfMixin.process_field('file_directory', pdf, request, {'file_directory': 'some/dir'})
+        mock_process_renaming_pdf.assert_called_once_with(pdf)
 
 
 class TestViews(TestCase):

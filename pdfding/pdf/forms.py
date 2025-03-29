@@ -27,9 +27,10 @@ class AddFormNoFile(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Add PDF Name'}),
             'description': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Add Description'}),
             'notes': forms.Textarea(attrs={'rows': 8, 'placeholder': 'Add Notes'}),
+            'file_directory': forms.TextInput(attrs={'placeholder': 'Add File Directory'}),
         }
 
-        fields = ['name', 'description', 'notes']
+        fields = ['name', 'description', 'notes', 'file_directory']
 
     def __init__(self, *args, **kwargs):
         """
@@ -44,7 +45,6 @@ class AddFormNoFile(forms.ModelForm):
     def clean(self):
         if not self.owner:
             raise forms.ValidationError('Owner is missing!')
-
         return self.cleaned_data
 
     def clean_name(self) -> str:
@@ -65,7 +65,10 @@ class AddFormNoFile(forms.ModelForm):
         return pdf_name
 
     def clean_tag_string(self) -> str:  # pragma: no cover
-        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+        return CleanHelpers.clean_tag_string_file_directory(self.cleaned_data['tag_string'])
+
+    def clean_file_directory(self) -> str:  # pragma: no cover
+        return CleanHelpers.clean_file_directory(self.cleaned_data['file_directory'])
 
 
 class AddForm(AddFormNoFile):
@@ -125,6 +128,12 @@ class BulkAddFormNoFile(forms.Form):
         'If a tag does not exist it will be automatically created.',
     )
 
+    file_directory = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add File Directory'}),
+        help_text='Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs',
+    )
+
     def __init__(self, *args, **kwargs):
         """
         Adds the owner profile to the form. This is done, so we can check if the owner already has
@@ -146,7 +155,10 @@ class BulkAddFormNoFile(forms.Form):
             CleanHelpers.clean_file(file)
 
     def clean_tag_string(self) -> str:  # pragma: no cover
-        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+        return CleanHelpers.clean_tag_string_file_directory(self.cleaned_data['tag_string'])
+
+    def clean_file_directory(self) -> str:  # pragma: no cover
+        return CleanHelpers.clean_file_directory(self.cleaned_data['file_directory'])
 
 
 class BulkAddForm(BulkAddFormNoFile):
@@ -185,9 +197,25 @@ class NameForm(forms.ModelForm):
 
     def clean_name(self) -> str:  # pragma: no cover
         """Clean the submitted pdf name. Removes trailing and multiple whitespaces."""
+
         pdf_name = CleanHelpers.clean_name(self.cleaned_data['name'])
 
         return pdf_name
+
+
+class FileDirectoryForm(forms.ModelForm):
+    """Form for changing the directory of a PDF."""
+
+    class Meta:
+        model = Pdf
+        fields = ['file_directory']
+
+    def clean_file_directory(self) -> str:  # pragma: no cover
+        """Clean the submitted pdf file directory name."""
+
+        file_directory = self.cleaned_data['file_directory']
+
+        return CleanHelpers.clean_file_directory(file_directory)
 
 
 class PdfTagsForm(forms.ModelForm):
@@ -200,7 +228,7 @@ class PdfTagsForm(forms.ModelForm):
         fields = []
 
     def clean_tag_string(self) -> str:  # pragma: no cover
-        return CleanHelpers.clean_tag_string(self.cleaned_data['tag_string'])
+        return CleanHelpers.clean_tag_string_file_directory(self.cleaned_data['tag_string'])
 
 
 class ShareForm(forms.ModelForm):
@@ -395,10 +423,10 @@ class TagNameForm(forms.Form):
     def clean_name(self) -> str:
         new_tag_name = self.cleaned_data['name'].strip()
 
-        if ' ' in new_tag_name:
+        if re.search(r'\s', new_tag_name):
             raise ValidationError('Tag names are not allowed to contain spaces!')
 
-        new_tag_name = CleanHelpers.clean_tag_string(new_tag_name)
+        new_tag_name = CleanHelpers.clean_tag_string_file_directory(new_tag_name)
 
         return new_tag_name
 
@@ -452,25 +480,46 @@ class CleanHelpers:
 
         return time_input
 
+    @classmethod
+    def clean_file_directory(cls, file_directory: str) -> str:  # pragma: no cover
+        """
+        Clean the submitted file directory. Removes trailing, multiple whitespaces. Raises ValidationError for not
+        allowed chars. Allowed are only alphanumeric chars and those in ['/', '-', '_', space].
+        """
+
+        if file_directory:
+            file_directory = file_directory.strip()
+
+            if re.search(r'\s', file_directory):
+                raise ValidationError('Directories are not allowed to contain spaces!')
+
+            file_directory = cls.clean_tag_string_file_directory(file_directory)
+
+        return file_directory
+
     @staticmethod
-    def clean_tag_string(tag_string):
-        if tag_string:
-            for char in tag_string:
+    def clean_tag_string_file_directory(input_string: str):
+        """
+        Clean the input string. Allowed are only alphanumeric chars and those in ['/', '-', '_', space].
+        """
+
+        if input_string:
+            for char in input_string:
                 if not (char.isalnum() or char in ['/', '-', '_', ' ']):
-                    raise forms.ValidationError('Only letters, numbers, "/", "-" and "_" are valid tag characters!')
+                    raise forms.ValidationError('Only letters, numbers, "/", "-" and "_" are valid characters!')
 
-            tag_string_split = tag_string.split(' ')
+            string_split = input_string.split(' ')
 
-            for tag in tag_string_split:
-                # only process non-empty tags
-                # if a tag string has multiple spaces between tags this would cause a IndexError otherwise.
-                if tag:
-                    tag = tag.strip()
+            for string_part in string_split:
+                # only process non-empty strings
+                # if a string has multiple spaces between this would cause a IndexError otherwise.
+                if string_part:
+                    string_part = string_part.strip()
 
-                    if tag[0] == '/' or tag[-1] == '/':
-                        raise forms.ValidationError('Tags cannot begin or end with "/"!')
+                    if string_part[0] == '/' or string_part[-1] == '/':
+                        raise forms.ValidationError('Not allowed to begin or end with "/"!')
 
-                    if re.search(r'/{2,}', tag):
-                        raise forms.ValidationError('Tags are not allowed to contain consecutive "/" characters!')
+                    if re.search(r'/{2,}', string_part):
+                        raise forms.ValidationError('Not allowed to contain consecutive "/" characters!')
 
-        return tag_string
+        return input_string

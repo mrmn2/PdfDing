@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import markdown
 import nh3
+from core.settings import MEDIA_ROOT
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 from django.db.models import DateTimeField
@@ -52,8 +53,19 @@ def get_file_path(instance, _):
     # remove non alphanumerical characters
     file_name = slugify(file_name, allow_unicode=True)
 
+    sub_dir = instance.file_directory
+
+    # make sure file name is not empty
+    if not file_name:
+        file_name = 'pdf'
+
     file_name = f'{file_name}.pdf'
-    file_path = '/'.join([str(instance.owner.user.id), 'pdf', file_name])
+
+    if sub_dir:
+        sub_dir.strip()
+        file_path = '/'.join([str(instance.owner.user.id), 'pdf', sub_dir, file_name])
+    else:
+        file_path = '/'.join([str(instance.owner.user.id), 'pdf', file_name])
 
     existing_pdf = Pdf.objects.filter(file=file_path).first()
 
@@ -62,6 +74,26 @@ def get_file_path(instance, _):
         file_path = file_path.replace('.pdf', f'_{str(uuid4())[:8]}.pdf')
 
     return file_path
+
+
+def delete_empty_dirs_after_rename_or_delete(pdf_current_file_name: str, user_id: str):
+    """
+    Delete empty directories in the users media/pdf directory that appear as a result of renaming or deleting pdfs.
+    """
+
+    current_path = MEDIA_ROOT / pdf_current_file_name
+
+    pdf_current_file_name_adjusted = pdf_current_file_name.replace(f'{user_id}/pdf/', '')
+
+    for _ in pdf_current_file_name_adjusted.split('/'):
+        current_parent_path = current_path.parent
+        sub_paths = [sub_path for sub_path in current_parent_path.iterdir()]
+
+        if not sub_paths:
+            current_parent_path.rmdir()
+            current_path = current_parent_path
+        else:
+            break
 
 
 def get_thumbnail_path(instance, _):
@@ -113,6 +145,12 @@ class Pdf(models.Model):
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     current_page = models.IntegerField(default=1)
     description = models.TextField(null=True, blank=True, help_text='Optional')
+    file_directory = models.CharField(
+        max_length=120,
+        null=True,
+        blank=True,
+        help_text='Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs',
+    )
     file = models.FileField(upload_to=get_file_path, blank=False)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     last_viewed_date = models.DateTimeField(
@@ -131,6 +169,16 @@ class Pdf(models.Model):
 
     def __str__(self):
         return self.name  # pragma: no cover
+
+    def delete(self, *args, **kwargs):
+        file_directory = self.file_directory
+        file_name = self.file.name
+        user_id = self.owner.user.id
+
+        super().delete(*args, **kwargs)
+
+        if file_directory:
+            delete_empty_dirs_after_rename_or_delete(file_name, user_id)
 
     @property
     def natural_age(self) -> str:  # pragma: no cover
@@ -178,20 +226,6 @@ class Pdf(models.Model):
         # bandit will report a vulnerability because of the usage of mark_safe of XSS and cross-site scripting
         # vulnerabilities. since nh3 is used to clean the generated markdown we can ignore the warning
         return mark_safe(cleaned_notes_html)  # nosec
-
-    @property
-    def file_id(self) -> str:
-        """
-        Get the file id. This will be the name of the file without the user id. E.g.: 1/123456789 -> 123456789.
-
-        We cannot use the id of the pdf in order to be backwards compatible as in earlier versions a UUID was used
-        instead of the pdf id.
-        """
-
-        user_id_file_id = self.file.name.replace('.pdf', '')
-        file_id = user_id_file_id.replace(f'{str(self.owner.user.id)}/', '')
-
-        return file_id
 
 
 class PdfAnnotation(models.Model):

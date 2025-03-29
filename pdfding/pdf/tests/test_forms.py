@@ -143,14 +143,14 @@ class TestViewSharedPasswordForm(TestCase):
 
 
 class TestTagForms(TestCase):
-    @mock.patch('pdf.forms.CleanHelpers.clean_tag_string', return_value='some_name')
-    def test_clean_name_valid(self, mock_clean_tag_string):
+    @mock.patch('pdf.forms.CleanHelpers.clean_tag_string_file_directory', return_value='some_name')
+    def test_clean_name_valid(self, mock_clean_tag_string_file_directory):
         # we also test stripping
         for name in ['some_name', ' some_name ']:
             form = forms.TagNameForm(data={'name': name})
             self.assertTrue(form.is_valid())
 
-            mock_clean_tag_string.assert_called_with('some_name')
+            mock_clean_tag_string_file_directory.assert_called_with('some_name')
 
     def test_clean_name_invalid_spaces(self):
         form = forms.TagNameForm(data={'name': 'spa ces'})
@@ -199,29 +199,43 @@ class TestCleanHelpers(TestCase):
         with self.assertRaisesMessage(ValidationError, expected_message='Uploaded file is not a PDF!'):
             CleanHelpers.clean_file(simple_file)
 
-    def test_clean_tag_string_correct(self):
-        tag_string = 'programming/python/django ot-h_er'
+    @mock.patch('pdf.forms.CleanHelpers.clean_tag_string_file_directory')
+    def test_clean_file_directory(self, mock_clean_tag_string_file_directory):
+        CleanHelpers.clean_file_directory('  some/dir')
+        mock_clean_tag_string_file_directory.assert_called_once_with('some/dir')
 
-        self.assertEqual(tag_string, CleanHelpers.clean_tag_string(tag_string))
-
-    def test_clean_tag_string_invalid_char(self):
+    def test_clean_file_directory_spaces(self):
         with self.assertRaisesMessage(
-            ValidationError, expected_message='Only letters, numbers, "/", "-" and "_" are valid tag characters!'
+            ValidationError, expected_message='Directories are not allowed to contain spaces!'
         ):
-            CleanHelpers.clean_tag_string('inval+id')
+            CleanHelpers.clean_file_directory('so me/dir')
 
-    def test_clean_tag_string_starting_ending_slash(self):
+    def test_clean_file_directory_empty(self):
+        self.assertEqual('', CleanHelpers.clean_file_directory(''))
+
+    def test_clean_tag_string_file_directory_correct(self):
+        tag_string = 'programming/python/django ot-h上_er'
+
+        self.assertEqual(tag_string, CleanHelpers.clean_tag_string_file_directory(tag_string))
+
+    def test_clean_tag_string_file_directory_invalid_char(self):
+        with self.assertRaisesMessage(
+            ValidationError, expected_message='Only letters, numbers, "/", "-" and "_" are valid characters!'
+        ):
+            CleanHelpers.clean_tag_string_file_directory('inval+id')
+
+    def test_clean_tag_string_file_directory_starting_ending_slash(self):
         for tag_string in ['tag_1 /tag_2', 'tag/']:
-            with self.assertRaisesMessage(ValidationError, expected_message='Tags cannot begin or end with "/"!'):
-                CleanHelpers.clean_tag_string(tag_string)
+            with self.assertRaisesMessage(ValidationError, expected_message='Not allowed to begin or end with "/"!'):
+                CleanHelpers.clean_tag_string_file_directory(tag_string)
 
-    def test_clean_tag_string_consecutive_slashes(self):
+    def test_clean_tag_string_file_directory_consecutive_slashes(self):
         with self.assertRaisesMessage(
-            ValidationError, expected_message='Tags are not allowed to contain consecutive "/" characters!'
+            ValidationError, expected_message='Not allowed to contain consecutive "/" characters!'
         ):
-            CleanHelpers.clean_tag_string('inval//id')
+            CleanHelpers.clean_tag_string_file_directory('inval//id')
 
-    def test_clean_tag_string_multiple_spaces_between(self):
+    def test_clean_tag_string_file_directory_multiple_spaces_between(self):
         tag_string = 'programming/python/django   ot-h_er'
 
-        self.assertEqual(tag_string, CleanHelpers.clean_tag_string(tag_string))
+        self.assertEqual(tag_string, CleanHelpers.clean_tag_string_file_directory(tag_string))

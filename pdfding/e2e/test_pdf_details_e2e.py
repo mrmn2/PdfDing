@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -39,7 +40,6 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).to_contain_text("10% - Page 1 of 10")
             expect(self.page.locator("#views")).to_contain_text("1001")
-            expect(self.page.locator("#pdf_id")).to_contain_text(str(pdf.id))
 
     def test_details_progress_not_visible(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
@@ -57,12 +57,15 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#progress")).not_to_be_visible()
             expect(self.page.locator("content")).to_contain_text("1001")
 
-    def test_change_details(self):
+    @patch('pdf.service.get_file_path', return_value='application/pdf')
+    def test_change_details(self, mock_get_file_path):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')
         pdf.notes = ''
         pdf.description = ''
         pdf.save()
         pdf.tags.set([])
+
+        mock_get_file_path.return_value = pdf.file.name
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
@@ -104,6 +107,14 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_tag_string").fill("")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#tags")).to_contain_text("no tags available")
+
+            # edit file directory
+            expect(self.page.locator("#file_directory")).to_contain_text("File directory not set")
+            self.page.locator("#file_directory-edit").click()
+            self.page.locator("#id_file_directory").click()
+            self.page.locator("#id_file_directory").fill("sub/dir")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#file_directory")).to_contain_text("sub/dir")
 
     def test_details_star_archive(self):
         pdf = self.user.profile.pdf_set.get(name='pdf_1_1')

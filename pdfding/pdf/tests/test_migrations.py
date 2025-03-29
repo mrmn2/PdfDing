@@ -13,7 +13,7 @@ from users.service import get_demo_pdf
 add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0009_readd_number_of_pages_with_new_default')
 add_pdf_previews = importlib.import_module('pdf.migrations.0013_add_pdf_previews')
 add_comments_highlights = importlib.import_module('pdf.migrations.0015_add_comments_highlights')
-update_pdf_file_names = importlib.import_module('pdf.migrations.0016_update_pdf_file_names')
+rename_pdfs_and_add_file_directory = importlib.import_module('pdf.migrations.0016_rename_pdfs_and_add_file_directory')
 
 
 class TestMigrations(TestCase):
@@ -82,22 +82,29 @@ class TestMigrations(TestCase):
         self.assertTrue(pdf.pdfhighlight_set.count())
 
     def test_set_highlights_and_comments_exception_caught(self):
+        self.pdf.file = get_demo_pdf()
+        self.pdf.save()
+
         self.assertFalse(self.pdf.pdfcomment_set.count())
         self.assertFalse(self.pdf.pdfhighlight_set.count())
         add_comments_highlights.set_highlights_and_comments(apps, connection.schema_editor())
 
     def test_rename_pdfs(self):
         # because of the 00xx in the migration file name mocking does not work as expected
-        def new_rename_pdf(input_pdf: Pdf, new_pdf_name: str):
-            input_pdf.file = new_pdf_name
+        def new_rename_pdf(input_pdf: Pdf):
+            input_pdf.file = f'{input_pdf.name}_renamed'
             input_pdf.save()
 
-        update_pdf_file_names.rename_pdf = new_rename_pdf
+        orignal_process_renaming_pdf = rename_pdfs_and_add_file_directory.PdfProcessingServices.process_renaming_pdf
+        rename_pdfs_and_add_file_directory.PdfProcessingServices.process_renaming_pdf = new_rename_pdf
 
         for i in range(3):
             Pdf.objects.create(owner=self.user.profile, name=f'rename_{i}', file=f'old_name_{i}')
 
-        update_pdf_file_names.update_pdf_file_names(apps, connection.schema_editor())
+        rename_pdfs_and_add_file_directory.update_pdf_file_names(apps, connection.schema_editor())
 
         for pdf in Pdf.objects.filter(name__icontains='rename'):
-            self.assertEqual(pdf.name, f'{pdf.file.name}')
+            self.assertEqual(f'{pdf.name}_renamed', pdf.file.name)
+
+        # undo monkey patching
+        rename_pdfs_and_add_file_directory.PdfProcessingServices.process_renaming_pdf = orignal_process_renaming_pdf

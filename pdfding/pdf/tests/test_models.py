@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
 import pdf.models as models
+from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.test import TestCase
 from pdf.models import Pdf, SharedPdf
@@ -11,6 +12,24 @@ class TestPdf(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='12345')
         self.pdf = models.Pdf(owner=self.user.profile, name='pdf')
+
+    @patch('pdf.models.delete_empty_dirs_after_rename_or_delete')
+    def test_delete(self, mock_delete_empty_dirs_after_rename_or_delete):
+        self.pdf.delete()
+
+        self.assertFalse(Pdf.objects.filter(id=self.pdf.id))
+        mock_delete_empty_dirs_after_rename_or_delete.assert_not_called()
+
+    @patch('pdf.models.delete_empty_dirs_after_rename_or_delete')
+    def test_delete_with_file_directory(self, mock_delete_empty_dirs_after_rename_or_delete):
+        file_name = 'test.pdf'
+        pdf = models.Pdf(owner=self.user.profile, name='pdf', file_directory='some/dir')
+        pdf.file.name = file_name
+        pdf.save()
+        pdf.delete()
+
+        self.assertFalse(Pdf.objects.filter(id=pdf.id))
+        mock_delete_empty_dirs_after_rename_or_delete.assert_called_once_with(file_name, self.user.id)
 
     def test_parse_tag_string(self):
         input_tag_str = '#Tag1  ###tag2      ta&g3 ta+g4'
@@ -30,6 +49,65 @@ class TestPdf(TestCase):
         generated_filepath = models.get_file_path(pdf, '')
 
         self.assertEqual(generated_filepath, '1/pdf/pdf_3_寝る_12_3.pdf')
+
+    def test_get_file_path_with_sub_dir(self):
+        pdf = models.Pdf(owner=self.user.profile, name='PDF_3! 寝る 12/3?  ', file_directory='some/sub/dir')
+
+        generated_filepath = models.get_file_path(pdf, '')
+
+        self.assertEqual(generated_filepath, '1/pdf/some/sub/dir/pdf_3_寝る_12_3.pdf')
+
+    def test_get_file_path_empty(self):
+        pdf = models.Pdf(owner=self.user.profile, name='!?!?')
+
+        generated_filepath = models.get_file_path(pdf, '')
+
+        self.assertEqual(generated_filepath, '1/pdf/pdf.pdf')
+
+    def test_delete_empty_dirs_after_rename_or_delete_empty(self):
+        user_id = str(self.user.id)
+
+        sub_dir = 'random/sub/dir'
+        sub_dir_paths = [
+            MEDIA_ROOT / user_id / 'pdf' / directory for directory in ['random', 'random/sub', 'random/sub/dir']
+        ]
+
+        sub_dir_paths[-1].mkdir(parents=True, exist_ok=True)
+
+        current_file_name = f'{user_id}/pdf/{sub_dir}/some_file'
+
+        models.delete_empty_dirs_after_rename_or_delete(current_file_name, user_id)
+
+        for sub_dir_path in sub_dir_paths:
+            self.assertFalse(sub_dir_path.exists())
+
+    def test_delete_empty_dirs_after_rename_or_delete_not_empty(self):
+        user_id = str(self.user.id)
+
+        sub_dir = 'random/sub/dir'
+        sub_dir_paths = [
+            MEDIA_ROOT / user_id / 'pdf' / directory for directory in ['random', 'random/sub', 'random/sub/dir']
+        ]
+        dummy_file = sub_dir_paths[-2] / 'dummy.txt'
+
+        sub_dir_paths[-1].mkdir(parents=True, exist_ok=True)
+        dummy_file.touch()
+
+        current_file_name = f'{user_id}/pdf/{sub_dir}/some_file'
+
+        models.delete_empty_dirs_after_rename_or_delete(current_file_name, user_id)
+
+        # only the 'random/sub/dir' should be deleted the others should remane untouched because of the dummy file
+        self.assertFalse(sub_dir_paths[-1].exists())
+
+        for sub_dir_path in sub_dir_paths[:-1]:
+            self.assertTrue(sub_dir_path.exists())
+        self.assertTrue(dummy_file.exists())
+
+        # cleanup
+        dummy_file.unlink()
+        for sub_dir_path in sub_dir_paths[:-1:-1]:  # pragma: no cover
+            sub_dir_path.rmdir()
 
     @patch('pdf.models.uuid4', return_value='123456789')
     def test_get_file_path_existing_different_id(self, mock_uuid4):
@@ -71,10 +149,6 @@ class TestPdf(TestCase):
             self.pdf.save()
 
             self.assertEqual(self.pdf.progress, expected_progress)
-
-    def test_file_id(self):
-        self.pdf.file.name = f'{self.pdf.owner.user.id}/123456789.pdf'
-        self.assertEqual(self.pdf.file_id, '123456789')
 
     def test_current_page_for_progress(self):
         self.assertEqual(self.pdf.current_page_for_progress, 0)

@@ -41,6 +41,12 @@ Values: `TRUE`, `FALSE` | Default: `FALSE`
 
 Flag for disabling user signup. By setting this value to `TRUE` user signup will be disabled.
 
+### `ALLOW_PDF_SUB_DIRECTORIES`
+Values: `TRUE`, `FALSE` | Default: `FALSE`
+
+Flag for allowing subdirectories when saving PDFs to the media directory in the UI. This is only a UI
+setting so the two possible values can be changed without corrupting the database.
+
 ## Security Related
 By using the following environment variables different security related settings can be adjusted.
 

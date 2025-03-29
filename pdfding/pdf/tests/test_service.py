@@ -241,15 +241,22 @@ class TestPdfProcessingServices(TestCase):
         pdf_file = get_demo_pdf()
         tag_string = 'some tags'
         description = 'some description'
+        file_directory = 'some/dir'
         owner = self.user.profile
 
         pdf = service.PdfProcessingServices.create_pdf(
-            name=pdf_name, owner=owner, pdf_file=pdf_file, tag_string=tag_string, description=description
+            name=pdf_name,
+            owner=owner,
+            pdf_file=pdf_file,
+            tag_string=tag_string,
+            description=description,
+            file_directory=file_directory,
         )
 
         self.assertEqual(pdf.name, pdf_name)
         self.assertEqual(pdf.owner, owner)
         self.assertEqual(pdf.description, description)
+        self.assertEqual(pdf.file_directory, file_directory)
         self.assertEqual(pdf.notes, '')
         self.assertEqual(pdf.number_of_pages, 5)
         self.assertTrue(pdf.preview)
@@ -388,7 +395,7 @@ class TestPdfProcessingServices(TestCase):
             self.assertNotEqual(generated_highlight.id, expected_comment_highlight.id)
 
     def test_set_highlights_and_comments_exception(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations')
+        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations', file='dummy_file')
 
         # check that exception is caught and thumbnail stays unset
         service.PdfProcessingServices.set_highlights_and_comments(pdf)
@@ -454,6 +461,84 @@ class TestPdfProcessingServices(TestCase):
         self.assertTrue(filecmp.cmp(export_path, Path(__file__).parent / 'data' / 'dummy_export.yaml', shallow=False))
 
         export_path.unlink()
+
+    @mock.patch('pdf.service.delete_empty_dirs_after_rename_or_delete')
+    @mock.patch('pdf.service.get_file_path')
+    @mock.patch('pdf.service.copy')
+    def test_process_renaming_pdf(self, mock_copy, mock_get_file_path, mock_delete_empty_dirs_after_rename_or_delete):
+        current_pdf_name = 'some_pdf'
+        current_file_name = f'{self.user.id}/pdf/{current_pdf_name}.pdf'
+        current_path = MEDIA_ROOT / current_file_name
+        current_path.touch()
+
+        new_pdf_name = 'changed'
+        new_file_name = f'{self.user.id}/pdf/child_dir/{new_pdf_name}.pdf'
+        new_path = MEDIA_ROOT / new_file_name
+        mock_get_file_path.return_value = new_file_name
+
+        pdf = Pdf.objects.create(owner=self.user.profile, name=current_pdf_name)
+        pdf.file = current_file_name
+        pdf.save()
+
+        # set new name as it will be saved by process_renaming_pdf
+        pdf.name = new_pdf_name
+
+        # check that the name is still not changed, as saving it is part of process_renaming_pdf
+        unchanged_pdf = Pdf.objects.get(id=pdf.id)
+        self.assertEqual(current_pdf_name, unchanged_pdf.name)
+
+        new_path_parent = new_path.parent
+        # dir should not exist, instead it should be created during the rename_pdf
+        self.assertFalse(new_path_parent.exists())
+
+        service.PdfProcessingServices.process_renaming_pdf(pdf)
+        changed_pdf = Pdf.objects.get(id=pdf.id)
+
+        # check that the file was copied, the original file was deleted, empty dirs were deleted,
+        # name and file name were adjusted
+        mock_get_file_path.assert_called_once_with(pdf, None)
+        self.assertEqual(new_pdf_name, changed_pdf.name)
+        self.assertTrue(new_path_parent.exists())
+        self.assertEqual(changed_pdf.file.name, new_file_name)
+        mock_copy.assert_called_once_with(current_path, new_path)
+        self.assertFalse(current_path.exists())
+        mock_delete_empty_dirs_after_rename_or_delete.assert_called_once_with(current_file_name, self.user.id)
+
+        # cleanup
+        new_path_parent.rmdir()
+
+    @mock.patch('pdf.service.copy')
+    @mock.patch('pdf.service.delete_empty_dirs_after_rename_or_delete')
+    @mock.patch('pdf.service.get_file_path')
+    def test_process_renaming_pdf_unchanged_file_path(
+        self, mock_get_file_path, mock_delete_empty_dirs_after_rename_or_delete, mock_copy
+    ):
+        original_pdf_name = 'some_pdf'
+        new_pdf_name = 'changed'
+        file_name = 'subdir/some.pdf'
+        mock_get_file_path.return_value = file_name
+
+        pdf = Pdf.objects.create(owner=self.user.profile, name=original_pdf_name)
+        pdf.file = file_name
+        pdf.save()
+
+        pdf.name = new_pdf_name
+
+        # check that the name is still not changed
+        unchanged_pdf = Pdf.objects.get(id=pdf.id)
+        self.assertEqual(original_pdf_name, unchanged_pdf.name)
+
+        service.PdfProcessingServices.process_renaming_pdf(pdf)
+
+        # check that the new name was saved
+        changed_pdf = Pdf.objects.get(id=pdf.id)
+        self.assertEqual(new_pdf_name, changed_pdf.name)
+
+        mock_get_file_path.assert_called_once_with(pdf, None)
+
+        # check that blocks are not called as the file path did not change
+        mock_copy.assert_not_called()
+        mock_delete_empty_dirs_after_rename_or_delete.assert_not_called()
 
 
 class TestOtherServices(TestCase):
@@ -573,57 +658,3 @@ class TestOtherServices(TestCase):
         expected_url = f'{reverse("pdf_overview")}?tags=another'
 
         self.assertEqual(expected_url, adjusted_url)
-
-    @mock.patch('pdf.service.get_file_path')
-    @mock.patch('pdf.service.copy')
-    def test_rename_pdf(self, mock_copy, mock_get_file_path):
-        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
-        pdf = Pdf.objects.create(owner=user.profile, name='pdf_name')
-
-        current_file_name = f'{user.id}/pdf/pdf_name.pdf'
-        pdf.file = current_file_name
-        pdf.save()
-        new_file_name = f'{user.id}/pdf/child_dir/new_name.pdf'
-        current_path = MEDIA_ROOT / current_file_name
-        current_path.touch()
-        new_path = MEDIA_ROOT / new_file_name
-        mock_get_file_path.return_value = new_file_name
-
-        new_path_parent = new_path.parent
-        # dir should not exist, instead it should be created during the rename_pdf
-        self.assertFalse(new_path_parent.exists())
-
-        service.rename_pdf(pdf, 'new_name')
-        changed_pdf = Pdf.objects.get(id=pdf.id)
-
-        mock_get_file_path.assert_called_once_with(pdf, None)
-        self.assertTrue(new_path_parent.exists())
-        self.assertEqual(changed_pdf.file.name, new_file_name)
-        mock_copy.assert_called_once_with(current_path, new_path)
-        self.assertFalse(current_path.exists())
-
-        # cleanup
-        new_path_parent.rmdir()
-
-    @mock.patch('pdf.service.get_file_path')
-    @mock.patch('pdf.service.copy')
-    def test_rename_pdf_same_name(self, mock_copy, mock_get_file_path):
-        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
-        pdf = Pdf.objects.create(owner=user.profile, name='pdf_name')
-
-        current_file_name = f'{user.id}/pdf/pdf_name.pdf'
-        pdf.file = current_file_name
-        pdf.save()
-
-        current_path = MEDIA_ROOT / current_file_name
-        current_path.touch()
-        mock_get_file_path.return_value = current_file_name
-
-        mock_copy.assert_not_called()
-        pdf = Pdf.objects.get(id=pdf.id)
-        self.assertEqual(pdf.file.name, current_file_name)
-        # file should not be deleted, as no renaming was not necessary
-        self.assertTrue(current_path.exists())
-
-        # cleanup
-        current_path.unlink()

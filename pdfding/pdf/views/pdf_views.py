@@ -46,6 +46,7 @@ class AddPdfMixin(BasePdfMixin):
         description = form.data.get('description', '')
         notes = form.data.get('notes', '')
         tag_string = form.data.get('tag_string', '')
+        file_directory = form.data.get('file_directory', '')
         profile = request.user.profile
 
         if settings.DEMO_MODE:
@@ -63,6 +64,7 @@ class AddPdfMixin(BasePdfMixin):
             description=description,
             notes=notes,
             tag_string=tag_string,
+            file_directory=file_directory,
         )
 
 
@@ -89,6 +91,7 @@ class BulkAddPdfMixin(BasePdfMixin):
         description = form.data.get('description', '')
         notes = form.data.get('notes', '')
         tag_string = form.data.get('tag_string', '')
+        file_directory = form.data.get('file_directory', '')
 
         if form.data.get('skip_existing'):
             pdf_info_list = service.get_pdf_info_list(profile)
@@ -113,6 +116,7 @@ class BulkAddPdfMixin(BasePdfMixin):
                     pdf_file=file,
                     description=description,
                     notes=notes,
+                    file_directory=file_directory,
                     tag_string=tag_string,
                 )
 
@@ -256,7 +260,7 @@ class TagMixin:
 
 class EditPdfMixin(PdfMixin):
     obj_class = Pdf
-    fields_requiring_extra_processing = ['name', 'tags']
+    fields_requiring_extra_processing = ['file_directory', 'name', 'tags']
 
     @staticmethod
     def get_edit_form_dict():
@@ -267,6 +271,7 @@ class EditPdfMixin(PdfMixin):
             'name': forms.NameForm,
             'tags': forms.PdfTagsForm,
             'notes': forms.NotesForm,
+            'file_directory': forms.FileDirectoryForm,
         }
 
         return form_dict
@@ -280,6 +285,7 @@ class EditPdfMixin(PdfMixin):
             'name': {'name': pdf.name},
             'description': {'description': pdf.description},
             'notes': {'notes': pdf.notes},
+            'file_directory': {'file_directory': pdf.file_directory},
             'tags': {'tag_string': ' '.join(sorted([tag.name for tag in pdf.tags.all()]))},
         }
 
@@ -312,7 +318,10 @@ class EditPdfMixin(PdfMixin):
             if existing_obj and str(existing_obj.id) != str(pdf.id):
                 messages.warning(request, 'This name is already used by another PDF!')
             else:
-                service.rename_pdf(pdf, form_data.get('name'))
+                service.PdfProcessingServices.process_renaming_pdf(pdf)
+
+        elif field_name == 'file_directory':
+            service.PdfProcessingServices.process_renaming_pdf(pdf)
 
 
 class AnnotationOverviewMixin:

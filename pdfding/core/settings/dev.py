@@ -49,6 +49,8 @@ CONSUME_ENABLED = True
 CONSUME_TAG_STRING = 'consumed file'
 CONSUME_SKIP_EXISTING = True
 
+ALLOW_PDF_SUB_DIRECTORIES = True
+
 # check if minio access and secret keys are set in dev_secrets
 if 'BACKUP_ACCESS_KEY' not in locals():
     BACKUP_ACCESS_KEY = 'add_access_key'

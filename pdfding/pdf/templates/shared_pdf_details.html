@@ -23,7 +23,7 @@
                         <div class="flex w-full items-center justify-between">
                             <div id="name" class="w-5/6 text-sm flex flex-row">
                                 <a href="{% url 'view_pdf' shared_pdf.pdf.id %}"
-                                   class="text-3xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate">
+                                   class="text-3xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate pb-1">
                                     {% if shared_pdf.inactive %}
                                     {{ shared_pdf.name }} | inactive
                                     {% else %}
@@ -42,7 +42,7 @@
                         </div>
                     </div>
                     <div x-data="{}"
-                         class="flex flex-row items-center text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer">
+                         class="flex flex-row items-center text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer -mt-1!">
                         <a @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
                            Copy Link
                         </a>

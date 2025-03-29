@@ -40,6 +40,15 @@ if ALLOWED_HOSTS:
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
+if os.environ.get('CSRF_COOKIE_SECURE', 'TRUE') == 'TRUE':
+    CSRF_COOKIE_SECURE = True
+if os.environ.get('SESSION_COOKIE_SECURE', 'TRUE') == 'TRUE':
+    SESSION_COOKIE_SECURE = True
+if os.environ.get('SECURE_SSL_REDIRECT') == 'TRUE':
+    SECURE_SSL_REDIRECT = True
+if os.environ.get('SECURE_HSTS_SECONDS'):
+    SECURE_HSTS_SECONDS = os.environ.get('SECURE_HSTS_SECONDS')
+
 # backup settings
 if os.environ.get('BACKUP_ENABLE') == 'TRUE':
     # without a dummy value, huey will not start
@@ -78,15 +87,6 @@ if os.environ.get('CONSUME_ENABLE') == 'TRUE':
 else:
     CONSUME_ENABLED = False
     CONSUME_SKIP_EXISTING = False
-
-if os.environ.get('CSRF_COOKIE_SECURE', 'TRUE') == 'TRUE':
-    CSRF_COOKIE_SECURE = True
-if os.environ.get('SESSION_COOKIE_SECURE', 'TRUE') == 'TRUE':
-    SESSION_COOKIE_SECURE = True
-if os.environ.get('SECURE_SSL_REDIRECT') == 'TRUE':
-    SECURE_SSL_REDIRECT = True
-if os.environ.get('SECURE_HSTS_SECONDS'):
-    SECURE_HSTS_SECONDS = os.environ.get('SECURE_HSTS_SECONDS')
 
 # mail settings
 if os.environ.get('EMAIL_BACKEND') == 'SMTP':
@@ -172,6 +172,12 @@ else:
         f'Provided DEFAULT_THEME_COLOR value {os.environ.get('DEFAULT_THEME_COLOR')} is not valid. '
         f'Valid values are: {", ".join(theme_colors)}.'
     )
+
+# Allow subdirectories when saving PDFs to the media dir in the UI
+if os.environ.get('ALLOW_PDF_SUB_DIRECTORIES', 'FALSE') == 'TRUE':
+    ALLOW_PDF_SUB_DIRECTORIES = True
+else:
+    ALLOW_PDF_SUB_DIRECTORIES = False
 
 # demo mode
 if os.environ.get('DEMO_MODE', 'FALSE') == 'TRUE':

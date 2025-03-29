@@ -2,15 +2,21 @@ import uuid
 
 import django.db.models.deletion
 from django.db import migrations, models
-from pdf.models import Pdf
 from pdf.service import PdfProcessingServices
 
 
 def set_highlights_and_comments(apps, schema_editor):
     """Set highlights and comments for all pdfs."""
 
-    for pdf in Pdf.objects.all():
-        PdfProcessingServices.set_highlights_and_comments(pdf)
+    # for pdf in Pdf.objects.all():
+    pdf_model = apps.get_model('pdf', 'Pdf')
+    highlight_model = apps.get_model('pdf', 'PdfHighlight')
+    comment_model = apps.get_model('pdf', 'PdfComment')
+
+    for pdf in pdf_model.objects.all():
+        PdfProcessingServices.set_highlights_and_comments(
+            pdf, pdf_highlight_class=highlight_model, pdf_comment_class=comment_model
+        )
 
 
 def reverse_func(apps, schema_editor):  # pragma: no cover
