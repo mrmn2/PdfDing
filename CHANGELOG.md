@@ -1,5 +1,17 @@
 # Changelog
 
+##  v1.3.0 (Mar 29, 2025)
+## What's Changed
+* add right sidebar with extra functionalities to viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/130
+* add logo for medium sized devices to viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/130
+* add preview image to PDF details by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/131
+* adjust shared PDF details UI so that it matches the one of the PDF details by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/131
+* PDF file names on the filesystem now reflect the name of the PDF in the UI instead of an UUID by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/132
+* add option to save PDFs in a sub directory inside the media directory by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/132
+
+### **Update Instructions**
+This update fundamentally changes how PDF files are saved on the filesystem by not using UUIDs anymore. While problems are not expected during the upgrade, it is more than usual **RECOMMENDED** to backup the media folder and the database before performing the upgrade. 
+
 ##  v1.2.1 (Mar 18, 2025)
 ## What's Changed
 * Fix migrations introduced in v1.2.0 by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/128
