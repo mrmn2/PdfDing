@@ -19,8 +19,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pdfding}
       - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
       # In production set the following values to True
-      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE:-'FALSE'}
-      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-'FALSE'}
+      - CSRF_COOKIE_SECURE=${CSRF_COOKIE_SECURE:-FALSE}
+      - SESSION_COOKIE_SECURE=${SESSION_COOKIE_SECURE:-FALSE}
     ports:
       - "8000:8000"
 
