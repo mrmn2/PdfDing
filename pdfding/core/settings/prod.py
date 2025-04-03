@@ -148,6 +148,9 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
         }
     }
 
+    OIDC_GROUPS_CLAIM = os.environ.get('OIDC_GROUPS_CLAIM', 'groups')
+    OIDC_ADMIN_GROUP = os.environ.get('OIDC_ADMIN_GROUP', '')
+
 # themes
 theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
 themes = ['light', 'dark', 'creme']

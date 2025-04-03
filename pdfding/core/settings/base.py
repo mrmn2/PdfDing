@@ -176,7 +176,8 @@ ACCOUNT_CHANGE_EMAIL = True  # users are limited to one email address. this addr
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accountlogin/'
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
-ACCOUNT_ADAPTER = 'core.adapters.DisableSignupAccountAdapter'
+ACCOUNT_ADAPTER = 'users.adapters.DisableSignupAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'users.adapters.HandleAdminNewUserAdapter'
 
 LOGIN_REDIRECT_URL = '/pdf'
 LOGIN_URL = '/accountlogin/'
