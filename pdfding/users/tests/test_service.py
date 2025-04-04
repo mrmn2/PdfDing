@@ -14,7 +14,7 @@ class TestUserServices(TestCase):
         self.assertEqual(service.convert_rgb_to_hex(255, 179, 165), '#ffb3a5')
 
     def test_get_color_shades(self):
-        self.assertEqual(service.get_color_shades('#b5edff'), ('#91becc', '#6d8e99', '#d3f4ff'))
+        self.assertEqual(service.get_secondary_color('#b5edff'), '#91becc')
 
     def test_get_viewer_colors_profile(self):
         user = User.objects.create_user(username='user', password="password")

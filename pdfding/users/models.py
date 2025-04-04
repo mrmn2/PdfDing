@@ -70,8 +70,6 @@ class Profile(models.Model):
     theme_color = models.CharField(choices=ThemeColor.choices, max_length=6, default=ThemeColor.RED)
     custom_theme_color = models.CharField(max_length=7, default='#ffa385')
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
-    custom_theme_color_tertiary_1 = models.CharField(max_length=7, default='#99614f')
-    custom_theme_color_tertiary_2 = models.CharField(max_length=7, default='#ffc7b5')
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_sorting = models.CharField(choices=PdfSortingChoice, max_length=15, default=PdfSortingChoice.NEWEST)

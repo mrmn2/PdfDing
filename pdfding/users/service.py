@@ -38,16 +38,14 @@ def darken_color(red: int, green: int, blue: int, percentage: float) -> tuple[in
     return tuple(round(val * correction_factor) for val in (red, green, blue))
 
 
-def get_color_shades(custom_color: str) -> tuple[str, ...]:
-    """Get the color shades needed for custom theme colors."""
+def get_secondary_color(custom_color: str) -> str:
+    """Get the secondary color of a custom color."""
 
     rgb_color = convert_hex_to_rgb(str(custom_color))
 
     secondary_color = darken_color(*rgb_color, percentage=0.2)
-    tertiary_color_1 = darken_color(*rgb_color, percentage=0.4)
-    tertiary_color_2 = lighten_color(*rgb_color, percentage=0.4)
 
-    return tuple(convert_rgb_to_hex(*color) for color in (secondary_color, tertiary_color_1, tertiary_color_2))
+    return convert_rgb_to_hex(*secondary_color)
 
 
 def get_viewer_colors(user_profile: Profile = None) -> dict[str, str]:

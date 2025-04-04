@@ -6,8 +6,6 @@
 @theme {
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
-  --color-tertiary1: var(--color-tertiary1);
-  --color-tertiary2: var(--color-tertiary2);
   --color-creme: #e2dcd0;
   --color-creme-dark-light: #d9d2c9;
   --color-creme-dark: #bcb6ae;
@@ -36,50 +34,36 @@
     html[data-theme="Green"] {
       --color-primary: #4ade80;
       --color-secondary: #3bb166;
-      --color-tertiary1: #2c854c;
-      --color-tertiary2: #92ebb2;
     }
 
     html[data-theme="Blue"] {
       --color-primary: #4793cc;
       --color-secondary: #3875a3;
-      --color-tertiary1: #2a587a;
-      --color-tertiary2: #90bee0;
     }
 
     html[data-theme="Gray"] {
       --color-primary: #97aabd;
       --color-secondary: #788897;
-      --color-tertiary1: #5a6671;
-      --color-tertiary2: #c0ccd7;
     }
 
     html[data-theme="Red"] {
       --color-primary: #f87171;
       --color-secondary: #c65a5a;
-      --color-tertiary1: #944343;
-      --color-tertiary2: #faa9a9;
     }
 
     html[data-theme="Pink"] {
       --color-primary: #da7b93;
       --color-secondary: #ae6275;
-      --color-tertiary1: #824958;
-      --color-tertiary2: #e8afbe;
     }
 
     html[data-theme="Orange"] {
       --color-primary: #ffcb85;
       --color-secondary: #cca26a;
-      --color-tertiary1: #99794f;
-      --color-tertiary2: #ffdfb5;
     }
 
     html[data-theme="Brown"] {
       --color-primary: #4c2518;
       --color-secondary: #3c1d13;
-      --color-tertiary1: #2d160e;
-      --color-tertiary2: #937c74;
     }
 }
 
@@ -110,42 +94,6 @@ hr {
 }
 .button.alert:hover, button.alert:hover {
     @apply bg-red-600
-}
-.button-text {
-    @apply bg-white! dark:bg-slate-700! creme:bg-creme-light! px-0! py-0! font-normal text-gray-500! dark:text-slate-400! creme:text-stone-500! shadow-none!
-}
-.button-text:hover {
-    @apply text-primary!
-}
-.button-text-theme {
-    @apply bg-white! dark:bg-slate-700! creme:bg-creme-light! px-0! py-0! font-normal text-primary! shadow-none!
-}
-.button-text-theme:hover {
-    @apply text-secondary!
-}
-.button-text-delete {
-    @apply bg-white! dark:bg-slate-700! creme:bg-creme-light! px-0! py-0! font-medium text-red-400! shadow-none!
-}
-.button-text-delete:hover {
-    @apply text-red-500!
-}
-.button-red {
-    @apply bg-red-500! hover:bg-red-600!
-}
-.button-gray {
-    @apply bg-gray-300! hover:bg-[#c3c9d0]! dark:!bg-slate-400 dark:hover:bg-slate-500! creme:bg-stone-400! creme:hover:bg-stone-500!
-}
-.navitems>li>a {
-    @apply flex items-center h-10 hover:text-tertiary1 dark:hover:text-tertiary2 font-semibold rounded-lg;
-}
-.hoverlist>* {
-    @apply dark:text-slate-50 dark:bg-slate-700 hover:text-slate-50 hover:bg-primary rounded-md transition duration-150;
-}
-.hoverlist>*>a {
-    @apply flex items-center p-2;
-}
-.hoverlist>*>span {
-    @apply flex items-center p-2 cursor-pointer;
 }
 .highlight {
     @apply bg-indigo-100!;

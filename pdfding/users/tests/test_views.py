@@ -155,8 +155,6 @@ class TestProfileViews(TestCase):
         user = User.objects.get(username=self.username)
         self.assertEqual(user.profile.custom_theme_color, '#b5edff')
         self.assertEqual(user.profile.custom_theme_color_secondary, '#91becc')
-        self.assertEqual(user.profile.custom_theme_color_tertiary_1, '#6d8e99')
-        self.assertEqual(user.profile.custom_theme_color_tertiary_2, '#d3f4ff')
 
     def test_change_settings_dark_mode_post_correct(self):
         self.user.profile.dark_mode = 'Light'

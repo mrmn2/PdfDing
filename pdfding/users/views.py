@@ -18,7 +18,7 @@ from django.views import View
 from django_htmx.http import HttpResponseClientRefresh
 from users import forms
 from users.models import Profile
-from users.service import create_demo_user, get_color_shades
+from users.service import create_demo_user, get_secondary_color
 
 
 def account_settings(request):
@@ -106,10 +106,7 @@ class ChangeSetting(View):
 
                 # calculate shades for custom theme colors
                 profile = request.user.profile
-                color_shades = get_color_shades(request.user.profile.custom_theme_color)
-                profile.custom_theme_color_secondary = color_shades[0]
-                profile.custom_theme_color_tertiary_1 = color_shades[1]
-                profile.custom_theme_color_tertiary_2 = color_shades[2]
+                profile.custom_theme_color_secondary = get_secondary_color(request.user.profile.custom_theme_color)
                 profile.save()
             else:
                 form.save()
