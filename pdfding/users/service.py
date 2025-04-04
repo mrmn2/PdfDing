@@ -22,14 +22,6 @@ def convert_rgb_to_hex(r: int, g: int, b: int) -> str:
     return f'#{str.lower(hex_color)}'
 
 
-def lighten_color(red: int, green: int, blue: int, percentage: float) -> tuple[int, ...]:
-    """Lighting a RGB color by the specified percentage"""
-
-    correction_factor = percentage
-
-    return tuple(round((255 - val) * correction_factor + val) for val in (red, green, blue))
-
-
 def darken_color(red: int, green: int, blue: int, percentage: float) -> tuple[int, ...]:
     """Darkening a RGB color by the specified percentage"""
 
