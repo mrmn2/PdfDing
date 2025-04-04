@@ -142,6 +142,17 @@ Values: `string` | Default: `None`
 The URL to the OpenID configuration of the auth server. Example:
 `https://auth.pdfding.com/.well-known/openid-configuration`
 
+### `OIDC_GROUPS_CLAIM`
+Values: `string` | Default: `groups`
+
+Set the claim which will be used for assigning admin rights when using OIDC.
+
+### `OIDC_ADMIN_GROUP`
+Values: `string` | Default: ` `
+
+Users that are in this group (within your IdP) will be made an admin. If not set, this feature is deactivated.
+Example: `admins`
+
 ### `OIDC_ONLY`
 Values: `TRUE`, `FALSE` | Default: `TRUE`
 

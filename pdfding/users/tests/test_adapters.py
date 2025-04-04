@@ -19,7 +19,7 @@ class TestAdapters(TestCase):
         self.assertFalse(user.is_staff)
 
         adapter = HandleAdminNewUserAdapter()
-        adapter.new_user(None, social_login)
+        user = adapter.new_user(None, social_login)
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
@@ -36,7 +36,7 @@ class TestAdapters(TestCase):
         self.assertFalse(user.is_staff)
 
         adapter = HandleAdminNewUserAdapter()
-        adapter.new_user(None, social_login)
+        user = adapter.new_user(None, social_login)
 
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
