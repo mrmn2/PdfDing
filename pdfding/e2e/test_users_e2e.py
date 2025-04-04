@@ -229,23 +229,23 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
             # login and signup should be displayed if not in oidc only mode
-            expect(self.page.get_by_role('banner')).to_contain_text('Login Signup')
+            expect(self.page.get_by_role('banner')).to_contain_text('Sign in Sign up')
 
     @override_settings(SOCIALACCOUNT_ONLY=True)
     def test_login_header_oidc_only(self):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
-            expect(self.page.get_by_role('banner')).to_contain_text('Login')
+            expect(self.page.get_by_role('banner')).to_contain_text('Sign in')
             # signup should not be displayed in oidc only mode
-            expect(self.page.get_by_role('banner')).not_to_contain_text('Signup')
+            expect(self.page.get_by_role('banner')).not_to_contain_text('Sign up')
 
     @override_settings(SIGNUP_CLOSED=True)
     def test_login_header_signup_disabled(self):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
-            expect(self.page.get_by_role('banner')).to_contain_text('Login')
+            expect(self.page.get_by_role('banner')).to_contain_text('Sign in')
             # signup should not be displayed in signup_disabled mode
-            expect(self.page.get_by_role('banner')).not_to_contain_text('Signup')
+            expect(self.page.get_by_role('banner')).not_to_contain_text('Sign up')
 
     @override_settings(DEFAULT_THEME='dark', DEFAULT_THEME_COLOR='Blue')
     def test_default_theme(self):
