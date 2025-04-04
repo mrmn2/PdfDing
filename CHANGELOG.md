@@ -1,5 +1,21 @@
 # Changelog
 
+##  v1.3.1 (Apr 04, 2025)
+## What's Changed
+* Add feature to set admin rights via OIDC claims by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/139
+* minor UI improvements by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/140
+* fix: adjust truncating of too long titles by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/136
+* fix: increase PDF file field max length to 500 so long PDF names do not cause any problems by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/140
+* fix: keep star size fixed in PDF overview when PDF name is truncated by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/140
+
+
+
+    
+    
+
+
+
+
 ##  v1.3.0 (Mar 29, 2025)
 ## What's Changed
 * add right sidebar with extra functionalities to viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/130
