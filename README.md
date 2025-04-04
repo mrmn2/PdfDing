@@ -23,7 +23,7 @@ your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/link
 ## Live Demo
 Try PdfDing on the demo instance: https://demo.pdfding.com
 
-This is a temporary live demo with shared user accounts, all data will be deleted every 60 minutes.
+This is a temporary live demo with shared user accounts, all data will be deleted at least once every day.
 
 ## Features
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
@@ -74,23 +74,23 @@ To install the PdfDing helm chart with a release name `my-release` in `ns` names
 helm install -n ns --create-namespace my-release pdfding/pdfding
 ```
 
-## Guides
-Guides about various aspects of PdfDing can be found in the
-[guides](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md) section of the docs.
-
 ## Sponsor
 I hope you enjoy using PdfDing as much as I enjoy developing it. If you want to give back,
 you can support me on various platforms. This allows me to spend more time on improving PdfDing. Thanks!
 
 <a href="https://github.com/sponsors/mrmn2" target="_blank">
-  <img alt="gh sponsor" src="https://img.shields.io/badge/Sponsor-%23475569?style=flat&logo=github" height=30 style="padding:0px 5px 0 0px"/>
-</a>
+  <img alt="gh sponsor" src="https://img.shields.io/badge/Sponsor-%23475569?style=flat&logo=github" height=30/>
+</a>&nbsp;
 <a href="https://www.buymeacoffee.com/mrmn2" target="_blank">
-  <img alt="buy me a coffee" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height=30 style="padding:0px 5px 0 0px"/>
-</a>
+  <img alt="buy me a coffee" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height=30/>
+</a>&nbsp;
 <a href="https://ko-fi.com/mrmn2" target="_blank">
   <img alt="ko-fi" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" height=30/>
 </a>
+
+## Guides
+Guides about various aspects of PdfDing can be found in the
+[guides](https://github.com/mrmn2/PdfDing/blob/master/docs/guides.md) section of the docs.
 
 ## Configuration
 Information about the different configuration options can be found in the
