@@ -123,6 +123,13 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
     if os.environ.get('OIDC_ONLY') == 'TRUE':
         SOCIALACCOUNT_ONLY = True
         ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+    OIDC_GROUPS_CLAIM = os.environ.get('OIDC_GROUPS_CLAIM', 'groups')
+    OIDC_ADMIN_GROUP = os.environ.get('OIDC_ADMIN_GROUP', '')
+    OIDC_SCOPE = ['openid', 'profile', 'email']
+    if OIDC_GROUPS_CLAIM not in OIDC_SCOPE:
+        OIDC_SCOPE.append(OIDC_GROUPS_CLAIM)
+
     SOCIALACCOUNT_PROVIDERS = {
         'openid_connect': {
             'EMAIL_AUTHENTICATION': True,
@@ -145,11 +152,9 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
                     },
                 }
             ],
+            'SCOPE': OIDC_SCOPE,
         }
     }
-
-    OIDC_GROUPS_CLAIM = os.environ.get('OIDC_GROUPS_CLAIM', 'groups')
-    OIDC_ADMIN_GROUP = os.environ.get('OIDC_ADMIN_GROUP', '')
 
 # themes
 theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
