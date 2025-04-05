@@ -153,6 +153,12 @@ Values: `string` | Default: ` `
 Users that are in this group (within your IdP) will be made an admin. If not set, this feature is deactivated.
 Example: `admins`
 
+### `OIDC_EXTRA_SCOPE`
+Values: `string` | Default: ` `
+
+When granting admin rights via OIDC it might be necessary to request an extra scope from the
+identity provider. Example: `groups`
+
 ### `OIDC_ONLY`
 Values: `TRUE`, `FALSE` | Default: `TRUE`
 

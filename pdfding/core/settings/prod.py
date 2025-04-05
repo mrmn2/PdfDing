@@ -126,9 +126,10 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
 
     OIDC_GROUPS_CLAIM = os.environ.get('OIDC_GROUPS_CLAIM', 'groups')
     OIDC_ADMIN_GROUP = os.environ.get('OIDC_ADMIN_GROUP', '')
+    OIDC_EXTRA_SCOPE = os.environ.get('OIDC_EXTRA_SCOPE', '')
     OIDC_SCOPE = ['openid', 'profile', 'email']
-    if OIDC_GROUPS_CLAIM not in OIDC_SCOPE:
-        OIDC_SCOPE.append(OIDC_GROUPS_CLAIM)
+    if OIDC_EXTRA_SCOPE and OIDC_EXTRA_SCOPE not in OIDC_SCOPE:
+        OIDC_SCOPE.append(OIDC_EXTRA_SCOPE)
 
     SOCIALACCOUNT_PROVIDERS = {
         'openid_connect': {
