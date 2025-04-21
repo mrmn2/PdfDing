@@ -20,11 +20,6 @@ devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
 your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/linkding).
 
-## Live Demo
-Try PdfDing on the demo instance: https://demo.pdfding.com
-
-This is a temporary live demo with shared user accounts, all data will be deleted at least once every day.
-
 ## Features
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
 * Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
