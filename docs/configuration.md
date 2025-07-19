@@ -245,7 +245,7 @@ Flag for skipping the addition of PDF files if the user already has PDF with the
 Values: `string` | Default: `None`
 
 The tags that should be added to PDFs created via the consumption folder. The tags should be
-separated via a comma. Example: `tag1,tag2`
+separated via space. Example: `tag1 tag2`
 
 ## Backups
 PdfDing supports automated backups to S3 compatible storage. Backups are configured via the following
