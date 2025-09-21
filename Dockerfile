@@ -4,7 +4,7 @@ FROM python:3.12.11-alpine AS python-base
 FROM node:22.19.0-bookworm-slim AS npm-build
 
 # do not add the 'v' of the version, only use x.y.z instead of vx.y.z
-ARG PDFJS_VERSION=5.0.375
+ARG PDFJS_VERSION=5.4.149
 
 WORKDIR /build
 
