@@ -1,5 +1,15 @@
 # Changelog
 
+##  v1.3.2 (Sep 21, 2025)
+## What's Changed
+* Add env variable to set extra scope for OIDC by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/144
+* Add exec to gunicorn command in bootstrap.sh so SIGTERM is not being ignored. by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/166
+* Update dependencies via env variable by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/166
+
+## New Contributors
+* @Blackstareye made their first contribution in https://github.com/mrmn2/PdfDing/pull/160
+
+
 ##  v1.3.1 (Apr 04, 2025)
 ## What's Changed
 * Add feature to set admin rights via OIDC claims by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/139
