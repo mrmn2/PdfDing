@@ -7,35 +7,35 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
-django = "==5.1.7"
-django-allauth = {extras = ["socialaccount"], version = "==65.5.0"}
+django = "==5.2.6"
+django-allauth = {extras = ["socialaccount"], version = "==65.11.2"}
 django-cleanup = "==9.0.0"
-django-htmx = "==1.23.0"
+django-htmx = "==1.25.0"
 gunicorn = "==23.0.0"
-huey = "==2.5.2"
-Markdown = "==3.7"
-minio = "==7.2.15"
-nh3 = "==0.2.21"
+huey = "==2.5.3"
+Markdown = "==3.9"
+minio = "==7.2.16"
+nh3 = "==0.3.0"
 psycopg2-binary = "==2.9.10"
-pypdfium2 = "==4.30.1"
-pypdf = "==5.3.1"
+pypdfium2 = "==4.30.0"
+pypdf = "==6.0.0"
 python-magic = "==0.4.27"
-qrcode= {extras = ["pil"], version = "==8.0 "}
-RapidFuzz = "==3.12.2"
-ruamel-yaml = "==0.18.10"
-supervisor = "==4.2.5"
-whitenoise = {extras = ["brotli"], version = "==6.9.0 "}
+qrcode= {extras = ["pil"], version = "==8.2 "}
+RapidFuzz = "==3.14.1"
+ruamel-yaml = "==0.18.15"
+supervisor = "==4.3.0"
+whitenoise = {extras = ["brotli"], version = "==6.11.0 "}
 
 [tool.poetry.group.dev.dependencies]
-bandit = "==1.8.2"
-black = "==24.10.0 "
-flake8 = "==7.1.1"
-pytest = "==8.3.4"
-pytest-cov = "==6.0.0"
-pytest-django = "==4.9.0"
+bandit = "==1.8.6"
+black = "==25.9.0"
+flake8 = "==7.3.0"
+pytest = "==8.4.2"
+pytest-cov = "==7.0.0"
+pytest-django = "==4.11.1"
 
 [tool.poetry.group.e2e.dependencies]
-pytest-playwright = "==0.6.2"
+pytest-playwright = "==0.7.1"
 
 [tool.black]
 line-length = 120

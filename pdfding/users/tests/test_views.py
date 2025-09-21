@@ -136,7 +136,7 @@ class TestProfileViews(TestCase):
         self.assertEqual(message.message, 'a@b.com is already in use.')
         self.assertEqual(message.tags, 'warning')
 
-    @patch('users.views.send_email_confirmation')
+    @patch('users.views.send_verification_email_for_user')
     def test_change_settings_email_post_correct(self, mock_send):
         self.client.post(reverse('profile-setting-change', kwargs={'field_name': 'email'}), data={'email': 'a@c.com'})
 

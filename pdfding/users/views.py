@@ -1,7 +1,7 @@
 from random import randint
 from uuid import uuid4
 
-from allauth.account.utils import send_email_confirmation
+from allauth.account.internal.flows.email_verification import send_verification_email_for_user
 from allauth.account.views import LoginView, PasswordResetDoneView, PasswordResetView, SignupView
 from allauth.socialaccount.providers.openid_connect.views import callback, login
 from django.conf import settings as django_settings
@@ -100,7 +100,7 @@ class ChangeSetting(View):
                 form.save()
 
                 # Then send confirmation email
-                send_email_confirmation(request, request.user)
+                send_verification_email_for_user(request, request.user)
             elif field_name == 'custom_theme_color':
                 form.save()
 

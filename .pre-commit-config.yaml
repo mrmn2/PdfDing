@@ -1,9 +1,9 @@
 exclude: ^.vscode
 default_language_version:
-  python: python3.12
+  python: python3.13
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v6.0.0
   hooks:
   - id: end-of-file-fixer
   - id: trailing-whitespace
@@ -22,8 +22,6 @@ repos:
     args: [--allow-missing-credentials]
   - id: pretty-format-json
     args: [--no-sort-keys, --autofix]
-  - id: fix-encoding-pragma
-    args: [--remove]
   - id: fix-byte-order-marker
   - id: mixed-line-ending
   - id: no-commit-to-branch
@@ -34,24 +32,24 @@ repos:
     args: [--markdown-linebreak-ext=md]
 
 - repo: https://github.com/psf/black
-  rev: 24.10.0
+  rev: 25.9.0
   hooks:
   - id: black
     language_version: python3.12
 
 - repo: https://github.com/pycqa/flake8
-  rev: 7.1.0
+  rev: 7.3.0
   hooks:
   - id: flake8
 
 - repo: https://github.com/pycqa/bandit
-  rev: 1.8.2
+  rev: 1.8.6
   hooks:
   - id: bandit
     args: [-x, "**/tests/*,**/e2e/*", -r]
 
 - repo: https://github.com/pycqa/isort
-  rev: 5.13.2
+  rev: 6.0.1
   hooks:
   - id: isort
     args: [--filter-files]
