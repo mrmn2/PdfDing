@@ -100,10 +100,13 @@ if os.environ.get('EMAIL_BACKEND') == 'SMTP':
     if os.environ.get('SMTP_USE_SSL') == 'TRUE':
         EMAIL_USE_SSL = True
 
-try:
-    DEFAULT_FROM_EMAIL = f'info@{ALLOWED_HOSTS[0]}'
-except IndexError:
-    DEFAULT_FROM_EMAIL = 'info@pdfding'
+if os.environ.get('EMAIL_ADDRESS'):
+    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_ADDRESS')
+else:
+    try:
+        DEFAULT_FROM_EMAIL = f'info@{ALLOWED_HOSTS[0]}'
+    except IndexError:
+        DEFAULT_FROM_EMAIL = 'info@pdfding'
 
 # authentication settings
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.environ.get('ACCOUNT_DEFAULT_HTTP_PROTOCOL', 'https')

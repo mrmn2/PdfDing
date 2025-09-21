@@ -180,6 +180,11 @@ Values: `CONSOLE`, `SMTP` | Default: `CONSOLE`
 Whether to send account related emails, e.g a password reset or account verification, to the console or via an SMTP
 server.
 
+### `EMAIL_ADDRESS`
+Values: `string` | Default: `info@pdfding`
+
+The email address used for sending emails. Example: `admin@pdfding.com`
+
 ### `SMTP_HOST`
 Values: `string` | Default: `None`
 
