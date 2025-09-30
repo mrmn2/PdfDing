@@ -11,6 +11,8 @@ django = "==5.2.6"
 django-allauth = {extras = ["socialaccount"], version = "==65.11.2"}
 django-cleanup = "==9.0.0"
 django-htmx = "==1.25.0"
+django-rest-knox = "^5.0.2"
+djangorestframework = "==3.16.1"
 gunicorn = "==23.0.0"
 huey = "==2.5.3"
 Markdown = "==3.9"
@@ -20,11 +22,11 @@ psycopg2-binary = "==2.9.10"
 pypdfium2 = "==4.30.0"
 pypdf = "==6.0.0"
 python-magic = "==0.4.27"
-qrcode= {extras = ["pil"], version = "==8.2 "}
+qrcode= {extras = ["pil"], version = "==8.2"}
 RapidFuzz = "==3.14.1"
 ruamel-yaml = "==0.18.15"
 supervisor = "==4.3.0"
-whitenoise = {extras = ["brotli"], version = "==6.11.0 "}
+whitenoise = {extras = ["brotli"], version = "==6.11.0"}
 
 [tool.poetry.group.dev.dependencies]
 bandit = "==1.8.6"

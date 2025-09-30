@@ -15,9 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from rest_framework.routers import DefaultRouter
 from core.views import HealthView, SupportView
 from django.urls import include, path
 from pdf.views.pdf_views import redirect_to_overview
+from pdfding.api_auth.views import AccessTokenViewSet
 from users.views import (
     PdfDingLoginView,
     PdfDingPasswordResetDoneView,
@@ -43,4 +45,12 @@ urlpatterns = [
     path('pdf/', include('pdf.urls')),
     path('healthz', HealthView.as_view(), name='healthz'),
     path('support', SupportView.as_view(), name='support'),
+]
+
+
+router = DefaultRouter()
+router.register(prefix="tokens", viewset=AccessTokenViewSet, basename="api_tokens")
+
+urlpatterns += [
+    path("api/", include(router.urls)),
 ]
