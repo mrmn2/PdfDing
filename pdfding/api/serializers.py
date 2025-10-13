@@ -1,11 +1,11 @@
 from __future__ import annotations
+
 from datetime import timedelta
 
+from api.models import AccessToken
 from django.utils import timezone
-from rest_framework import serializers
-
 from knox.models import AuthToken
-from api_auth.models import AccessToken
+from rest_framework import serializers
 
 # Create your serializers here.
 
@@ -40,6 +40,18 @@ class BaseAccessTokenSerializer(serializers.ModelSerializer):
     expires_at = serializers.DateTimeField(required=False, allow_null=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
+    def validate_expires_at(self, value):
+        if value is None:
+            return value
+        aware = _to_aware(value)
+        now = timezone.now()
+        if aware <= now + timedelta(days=1):
+            raise serializers.ValidationError("`expires_at` must be in the future.")
+        max_expiry = now + timedelta(days=365)
+        if aware > max_expiry:
+            raise serializers.ValidationError("`expires_at` is too far in the future (max 365 days).")
+        return aware
+
     class Meta:
         model = AccessToken
         fields = ("expires_at", "user")
@@ -48,7 +60,7 @@ class BaseAccessTokenSerializer(serializers.ModelSerializer):
         return {
             "token": self._plaintext_token,
             "token_key_prefix": instance.token_key_prefix(),
-            "id": instance.id, # type: ignore
+            "id": instance.id,  # type: ignore
             "name": instance.name,
             "created": instance.knox_token.created,
             "expiry": instance.knox_token.expiry,
@@ -59,20 +71,6 @@ class AccessTokenCreateSerializer(BaseAccessTokenSerializer):
     """
     Creates a new access token (optionally with expires_at) and returns the plaintext token
     """
-
-    def validate_expires_at(self, value):
-        if value is None:
-            return value
-        aware = _to_aware(value)
-        now = timezone.now()
-        if aware <= now + timedelta(days=1):
-            raise serializers.ValidationError("`expires_at` must be in the future.")
-        max_expiry = now + timedelta(days=365)
-        if aware > max_expiry:
-            raise serializers.ValidationError(
-                "`expires_at` is too far in the future (max 365 days)."
-            )
-        return aware
 
     class Meta:
         model = AccessToken
@@ -92,17 +90,9 @@ class AccessTokenCreateSerializer(BaseAccessTokenSerializer):
 
 class AccessTokenRotateSerializer(BaseAccessTokenSerializer):
     """
-    Rotates (replaces) an existing access token with a new one.
+    Rotates an existing access token with a new one.
     The old token is deleted. The name and user are preserved.
     """
-
-    def validate_expires_at(self, value):
-        if value is None:
-            return value
-        aware = _to_aware(value)
-        if aware <= timezone.now():
-            raise serializers.ValidationError("expires_at must be in the future.")
-        return aware
 
     def update(self, instance: AccessToken, validated_data: dict) -> AccessToken:
         user = self.context["request"].user
@@ -118,11 +108,15 @@ class AccessTokenRotateSerializer(BaseAccessTokenSerializer):
         return new_meta
 
 
-def create_access_token(user, knox_token, name):
+def create_access_token(user, knox_token, name) -> AccessToken:
     return AccessToken.objects.create(user=user, knox_token=knox_token, name=name)
 
 
 def create_knox_token(user, expires_at) -> tuple[AuthToken, str]:
-    """ Creates a new Knox AuthToken for the given user with optional expiry."""
+    """Creates a new Knox AuthToken for the given user with optional expiry.
 
+    :param user: User instance
+    :param expires_at: Optional datetime for expiry
+    :return: (AuthToken, plaintext token)
+    """
     return AuthToken.objects.create(user=user, expiry=expires_at)  # type: ignore

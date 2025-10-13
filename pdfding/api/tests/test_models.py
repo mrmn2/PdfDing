@@ -1,10 +1,10 @@
 import pytest
-from django.contrib.auth import get_user_model
-from knox.models import AuthToken
-from api_auth.models import AccessToken
+
+from api.models import AccessToken
 
 # Create your tests here.
 pytestmark = pytest.mark.django_db
+
 
 class TestAccessTokenModel:
 
@@ -15,7 +15,6 @@ class TestAccessTokenModel:
         assert token.knox_token == knox_token[0]
         assert token.last_used is None
         assert str(token) == "MyToken"
-
 
     def test_token_key_prefix(self, knox_token, user):
         token = AccessToken.objects.create(user=user, name="Test Token", knox_token=knox_token[0])

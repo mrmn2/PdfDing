@@ -19,7 +19,7 @@ from rest_framework.routers import DefaultRouter
 from core.views import HealthView, SupportView
 from django.urls import include, path
 from pdf.views.pdf_views import redirect_to_overview
-from pdfding.api_auth.views import AccessTokenViewSet
+from pdfding.api.views import AccessTokenViewSet
 from users.views import (
     PdfDingLoginView,
     PdfDingPasswordResetDoneView,

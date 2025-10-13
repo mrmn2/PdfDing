@@ -11,7 +11,7 @@ django = "==5.2.6"
 django-allauth = {extras = ["socialaccount"], version = "==65.11.2"}
 django-cleanup = "==9.0.0"
 django-htmx = "==1.25.0"
-django-rest-knox = "^5.0.2"
+django-rest-knox = "==5.0.2"
 djangorestframework = "==3.16.1"
 gunicorn = "==23.0.0"
 huey = "==2.5.3"

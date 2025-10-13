@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from knox.models import AuthToken
 import pytest
 
-from api_auth.models import AccessToken
+from api.models import AccessToken
 
 
 @pytest.fixture
@@ -13,7 +13,7 @@ def user():
 
 @pytest.fixture
 def knox_token(user) -> tuple[AuthToken, str]:
-    return AuthToken.objects.create(user=user) # type: ignore
+    return AuthToken.objects.create(user=user)  # type: ignore
 
 
 @pytest.fixture

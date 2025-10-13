@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from rest_framework import status
 from rest_framework.test import APIClient
-from api_auth.models import AccessToken
+from api.models import AccessToken
 
 pytestmark = pytest.mark.django_db
 
