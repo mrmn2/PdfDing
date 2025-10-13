@@ -37,12 +37,15 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.openid_connect',
+    'rest_framework',
+    'knox',
     'django_htmx',
     'huey.contrib.djhuey',
     'admin',
     'backup',
     'pdf',
     'users',
+    'api',
     # django_cleanup needs to be placed last in INSTALLED_APPS
     'django_cleanup.apps.CleanupConfig',
 ]
@@ -239,4 +242,16 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
+
+# Django REST Knox
+KNOX_TOKEN_MODEL = 'knox.AuthToken'
+REST_KNOX = {
+    'AUTO_REFRESH': True,
 }
