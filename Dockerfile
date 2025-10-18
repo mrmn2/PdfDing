@@ -1,4 +1,4 @@
-FROM python:3.12.11-alpine AS python-base
+FROM python:3.12.12-alpine AS python-base
 
 # The frontend build image , used to create the css and js files
 FROM node:22.19.0-bookworm-slim AS npm-build
@@ -33,7 +33,7 @@ RUN rm pdfding/static/css/input.css
 # The build image, used to build the virtual python environment
 FROM python-base AS python-build
 
-RUN pip install poetry==1.8.3
+RUN pip install poetry==2.2.1
 
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \

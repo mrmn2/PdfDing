@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
-django = "==5.2.6"
+django = "==5.2.7"
 django-allauth = {extras = ["socialaccount"], version = "==65.11.2"}
 django-cleanup = "==9.0.0"
 django-htmx = "==1.25.0"
