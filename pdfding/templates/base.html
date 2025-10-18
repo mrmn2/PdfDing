@@ -11,10 +11,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PdfDing</title>
+    <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
     <script src="{% static 'js/alpine.min.js' %}" defer></script>
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
-    <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
     <style>
         [x-cloak] {
             display: none !important;
@@ -29,14 +29,16 @@
     </style>
     {% endif %}
 </head>
-<content class="flex flex-col">
+<body class="flex flex-col bg-slate-50 dark:bg-slate-900 creme:bg-creme text-slate-800 dark:text-slate-200 creme:text-stone-700">
+    {# fix FOUC for firefox #}
+    <script>0</script>
     {% include 'includes/header.html' %}
 
-    <body class="bg-slate-50 dark:bg-slate-900 creme:bg-creme text-slate-800 dark:text-slate-200 creme:text-stone-700 h-full">
+    <div class="h-full">
         {% include 'includes/messages.html' %}
 
         {% block layout %}
         {% endblock %}
-    </body>
-</content>
+    </div>
+</body>
 </html>

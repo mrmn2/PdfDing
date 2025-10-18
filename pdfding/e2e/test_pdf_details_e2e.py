@@ -33,7 +33,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
-            expect(self.page.locator("content")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("body")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#name")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
             expect(self.page.locator("#notes")).to_contain_text("some notes")
@@ -50,12 +50,12 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
-            expect(self.page.locator("content")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("body")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#name")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
             expect(self.page.locator("#tags")).to_contain_text("#tag")
             expect(self.page.locator("#progress")).not_to_be_visible()
-            expect(self.page.locator("content")).to_contain_text("1001")
+            expect(self.page.locator("body")).to_contain_text("1001")
 
     @patch('pdf.service.get_file_path', return_value='application/pdf')
     def test_change_details(self, mock_get_file_path):
@@ -75,7 +75,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_name").dblclick()
             self.page.locator("#id_name").fill("other name")
             self.page.get_by_role("button", name="Submit").click()
-            expect(self.page.locator("content")).to_contain_text("other name")
+            expect(self.page.locator("body")).to_contain_text("other name")
             expect(self.page.locator("#name")).to_contain_text("other name")
 
             # edit description

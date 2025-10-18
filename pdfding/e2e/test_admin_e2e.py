@@ -86,7 +86,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("content")).to_contain_text("New Version Available!")
+            expect(self.page.locator("body")).to_contain_text("New Version Available!")
             expect(self.page.locator("#new_version")).to_contain_text("0.0.0")
 
     @patch('admin.views.get_latest_version', return_value='DEV')
@@ -94,7 +94,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("content")).not_to_contain_text("New Version Available!")
+            expect(self.page.locator("body")).not_to_contain_text("New Version Available!")
 
     @patch('admin.views.get_latest_version', return_value='0.0.0')
     @override_settings(VERSION='UNKNOWN')
@@ -102,14 +102,14 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("content")).not_to_contain_text("New Version Available!")
+            expect(self.page.locator("body")).not_to_contain_text("New Version Available!")
 
     @patch('admin.views.get_latest_version', return_value='')
     def test_new_version_empty(self, mock_get_latest_version):
         with sync_playwright() as p:
             self.open(reverse("instance_info"), p)
 
-            expect(self.page.locator("content")).not_to_contain_text("New Version Available!")
+            expect(self.page.locator("body")).not_to_contain_text("New Version Available!")
 
     def test_search_admin(self):
         with sync_playwright() as p:

@@ -82,7 +82,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
 
             # check email address before changing
             expect(self.page.locator('#email_address')).to_contain_text('a@a.com')
-            expect(self.page.locator('content')).to_contain_text('Verified')
+            expect(self.page.locator('body')).to_contain_text('Verified')
 
             # change email address
             self.page.locator('#email_edit').click()
@@ -93,7 +93,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
 
             # check email address after changing
             expect(self.page.locator('#email_address')).to_contain_text('a@b.com')
-            expect(self.page.locator('content')).to_contain_text('Not verified')
+            expect(self.page.locator('body')).to_contain_text('Not verified')
 
     def test_settings_change_custom_color(self):
         with sync_playwright() as p:
