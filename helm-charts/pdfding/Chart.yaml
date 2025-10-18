@@ -1,7 +1,0 @@
-apiVersion: v2
-name: pdfding
-description: A Helm chart for deploying pdfding to Kubernetes
-
-type: application
-version: 0.1.10
-appVersion: v1.3.2
