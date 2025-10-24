@@ -542,6 +542,7 @@ class TestViews(TestCase):
         self.assertEqual(response.context['text_color'], mock_colors_dict['text_color'])
         self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
         self.assertEqual(response.context['user_view_bool'], True)
+        self.assertEqual(response.context['keep_screen_awake'], 'Disabled')
 
     def test_view_get_different_page(self):
         # in this test we are just interested if the current_page is set to the value specified by the query.

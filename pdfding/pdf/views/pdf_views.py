@@ -489,6 +489,7 @@ class ViewerView(PdfMixin, View):
                 'secondary_color': color_dict['secondary_color'],
                 'text_color': color_dict['text_color'],
                 'user_view_bool': True,
+                'keep_screen_awake': request.user.profile.pdf_keep_screen_awake,
             },
         )
 

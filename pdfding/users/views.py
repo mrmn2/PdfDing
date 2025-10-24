@@ -59,6 +59,7 @@ class ChangeSetting(View):
         'theme': forms.create_user_field_form(['dark_mode']),
         'theme_color': forms.create_user_field_form(['theme_color']),
         'pdf_inverted_mode': forms.create_user_field_form(['pdf_inverted_mode']),
+        'pdf_keep_screen_awake': forms.create_user_field_form(['pdf_keep_screen_awake']),
         'custom_theme_color': forms.CustomThemeColorForm,
         'show_progress_bars': forms.create_user_field_form(['show_progress_bars']),
     }
@@ -72,6 +73,7 @@ class ChangeSetting(View):
             'theme_color': {'theme_color': request.user.profile.theme_color},
             'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
+            'pdf_keep_screen_awake': {'pdf_keep_screen_awake': request.user.profile.pdf_keep_screen_awake},
             'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
         }
 

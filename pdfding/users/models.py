@@ -72,6 +72,9 @@ class Profile(models.Model):
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
+    pdf_keep_screen_awake = models.CharField(
+        choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED
+    )
     pdf_sorting = models.CharField(choices=PdfSortingChoice, max_length=15, default=PdfSortingChoice.NEWEST)
     show_progress_bars = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
     shared_pdf_sorting = models.CharField(

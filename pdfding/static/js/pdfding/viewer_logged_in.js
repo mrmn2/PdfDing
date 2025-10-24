@@ -9,8 +9,8 @@ function update_remote_page(pdf_id, update_url, csrf_token) {
 // function for settings current page
 function set_current_page(current_page, pdf_id, update_url, csrf_token) {
   var form_data = new FormData();
-  form_data.append('pdf_id', pdf_id)
-  form_data.append('current_page', current_page)
+  form_data.append('pdf_id', pdf_id);
+  form_data.append('current_page', current_page);
 
   fetch(update_url, {
     method: "POST",
@@ -58,3 +58,15 @@ async function update_pdf(pdf_id, update_url, csrf_token, tab_title) {
     PDFViewerApplication._saveInProgress = false;
   }
 }
+
+// function for requesting a wake lock
+const requestWakeLock = async () => {
+  try {
+    wakeLock = await navigator.wakeLock.request();
+    wakeLock.addEventListener('release', () => {
+      console.log('Screen Wake Lock released:', wakeLock.released);
+    });
+  } catch (err) {
+    console.error(`${err.name}, ${err.message}`);
+  }
+};
