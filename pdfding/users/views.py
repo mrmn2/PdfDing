@@ -37,6 +37,13 @@ def ui_settings(request):  # pragma: no cover
     return render(request, 'ui_settings.html')
 
 
+def viewer_settings(request):  # pragma: no cover
+    """View for the viewer settings page"""
+
+    # pragma: no cover
+    return render(request, 'viewer_settings.html')
+
+
 def danger_settings(request):  # pragma: no cover
     """View for the danger settings page"""
 

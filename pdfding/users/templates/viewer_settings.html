@@ -1,0 +1,48 @@
+{% extends 'layouts/blank.html' %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:justify-end">
+    <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
+      {% include 'includes/settings_sidebar.html' with page='viewer_settings' %}
+    </div>
+    <div class="flex w-full justify-start items-center py-2 px-3 md:px-8">
+        <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 min-[1600px]:ml-40! px-4 py-4 md:pb-8 border
+                    bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
+                    border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+            <span class="text-2xl font-bold">Viewer Settings</span>
+            <div class="pt-4">
+                <span class="text-lg font-bold">Inverted PDF Colors</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-5/6">
+                    <span id="pdf_inverted_mode">{{ user.profile.pdf_inverted_mode }}</span>
+                </div>
+                <div class="pr-0 md:pr-6">
+                    <a id="pdf_inverted_mode_edit" class="cursor-pointer text-primary hover:text-secondary"
+                        hx-get="{% url 'profile-setting-change' 'pdf_inverted_mode' %}"
+                        hx-target="#pdf_inverted_mode"
+                        hx-swap="innerHTML" >
+                        Edit
+                    </a>
+                </div>
+            </div>
+            <div class="pt-2">
+                <span class="text-lg font-bold">Show Progress Bars</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-5/6">
+                    <span id="show_progress_bars">{{ user.profile.show_progress_bars }}</span>
+                </div>
+                <div class="pr-0 md:pr-6">
+                    <a id="show_progress_bars_edit" class="cursor-pointer text-primary hover:text-secondary"
+                        hx-get="{% url 'profile-setting-change' 'show_progress_bars' %}"
+                        hx-target="#show_progress_bars"
+                        hx-swap="innerHTML" >
+                        Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
