@@ -34,34 +34,8 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
-    {# do not change ./../static as it will break the viewer in the prod container #}
-    <script src="../../static/pdfjs/build/pdf.mjs" type="module"></script>
     <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
-    <script src="../../static/pdfjs/web/viewer.mjs" type="module"></script>
-    <script src="{% static 'js/pdfding/viewer_base.js' %}" type="text/javascript"></script>
-    {% if user_view_bool %}
-    <script src="{% static 'js/pdfding/viewer_logged_in.js' %}" type="text/javascript"></script>
-    {% endif %}
-    <script>
-      // get the start page
-      var page_number = {{ current_page }};
-
-      {% if user_view_bool %}
-      var url = "{% url 'serve_pdf' pdf_id revision %}"
-      {% else %}
-      var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}"
-      {% endif %}
-      start_viewer(page_number, url, "{{ tab_title }}");
-
-      {% if user_view_bool %}
-      // check every 3 seconds if remote page needs updating
-      setInterval(update_remote_page, 3000, '{{ pdf_id }}', '{% url 'update_page'%}', '{{ csrf_token }}');
-      {% if keep_screen_awake == 'Enabled' %}
-      requestWakeLock();
-      {% endif %}
-      {% endif %}
-    </script>
     <style>
       @media all and (max-width: 900px){
         #outerContainer .hiddenMediumView{
@@ -201,6 +175,32 @@ See https://github.com/adobe-type-tools/cmap-resources
       }
       {% endif %}
     </style>
+    {# do not change ./../static as it will break the viewer in the prod container #}
+    <script src="../../static/pdfjs/build/pdf.mjs" type="module"></script>
+    <script src="../../static/pdfjs/web/viewer.mjs" type="module"></script>
+    <script src="{% static 'js/pdfding/viewer_base.js' %}" type="text/javascript"></script>
+    {% if user_view_bool %}
+    <script src="{% static 'js/pdfding/viewer_logged_in.js' %}" type="text/javascript"></script>
+    {% endif %}
+    <script>
+      {# get the start page #}
+      var page_number = {{ current_page }};
+
+      {% if user_view_bool %}
+      var url = "{% url 'serve_pdf' pdf_id revision %}"
+      {% else %}
+      var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}"
+      {% endif %}
+      start_viewer(page_number, url, "{{ tab_title }}");
+
+      {% if user_view_bool %}
+      {# check every 3 seconds if remote page needs updating #}
+      setInterval(update_remote_page, 3000, '{{ pdf_id }}', '{% url 'update_page'%}', '{{ csrf_token }}');
+      {% if keep_screen_awake == 'Enabled' %}
+      requestWakeLock();
+      {% endif %}
+      {% endif %}
+    </script>
   </head>
 
   <body>
