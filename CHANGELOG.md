@@ -1,33 +1,32 @@
 # Changelog
 
+##  v1.3.3 (Oct 24, 2025)
+### What's Changed
+* Fix white flashes (FOUC) in dark mode during page load by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/173
+* Add option to keep screen awake in viewer settings by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/175
+* Add viewer settings in profile by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/175
+* Migrate chart to separate repository by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/174
+* Update dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/175
+
 ##  v1.3.2 (Sep 21, 2025)
-## What's Changed
+### What's Changed
 * Add env variable to set extra scope for OIDC by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/144
 * Add exec to gunicorn command in bootstrap.sh so SIGTERM is not being ignored. by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/166
 * Update dependencies via env variable by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/166
 
-## New Contributors
+### New Contributors
 * @Blackstareye made their first contribution in https://github.com/mrmn2/PdfDing/pull/160
 
-
 ##  v1.3.1 (Apr 04, 2025)
-## What's Changed
+### What's Changed
 * Add feature to set admin rights via OIDC claims by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/139
 * minor UI improvements by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/140
 * fix: adjust truncating of too long titles by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/136
 * fix: increase PDF file field max length to 500 so long PDF names do not cause any problems by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/140
 * fix: keep star size fixed in PDF overview when PDF name is truncated by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/140
 
-
-
-    
-    
-
-
-
-
 ##  v1.3.0 (Mar 29, 2025)
-## What's Changed
+### What's Changed
 * add right sidebar with extra functionalities to viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/130
 * add logo for medium sized devices to viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/130
 * add preview image to PDF details by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/131
@@ -36,15 +35,14 @@
 * add option to save PDFs in a sub directory inside the media directory by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/132
 
 ### **Update Instructions**
-This update fundamentally changes how PDF files are saved on the filesystem by not using UUIDs anymore. While problems are not expected during the upgrade, it is more than usual **RECOMMENDED** to backup the media folder and the database before performing the upgrade. 
+This update fundamentally changes how PDF files are saved on the filesystem by not using UUIDs anymore. While problems are not expected during the upgrade, it is more than usual **RECOMMENDED** to backup the media folder and the database before performing the upgrade.
 
 ##  v1.2.1 (Mar 18, 2025)
-## What's Changed
+### What's Changed
 * Fix migrations introduced in v1.2.0 by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/128
 
-
 ##  v1.2.0 (Mar 18, 2025)
-## What's Changed
+### What's Changed
 
 * Add PDF comment and highlight extraction to backend by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/114
 * Add section for PDF comments and highlights by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/116
@@ -58,15 +56,14 @@ This update fundamentally changes how PDF files are saved on the filesystem by n
 * Various minor UI improvements by @mrmn2
 * fix: make whole thumbnails and ToC buttons clickable on left sidebar in viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/124
 
-
 ##  v1.1.0 (Mar 02, 2025)
-## What's Changed
+### What's Changed
 * add list and grid layouts for pdf overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/109
 * revamped settings by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/107
 * minor ui adjustments to detail pages by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/109
 
 ##  v1.0.0 (Feb 26, 2025)
-## What's Changed
+### What's Changed
 * Revamp overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/97
 * Revamp admin area and shared overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/101
 * make overview sorting settings persistant by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/102
@@ -74,18 +71,15 @@ This update fundamentally changes how PDF files are saved on the filesystem by n
 * Load additional items without changing pages in the overviews by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/104
 
 ##  v0.12.3 (Feb 15, 2025)
-## What's Changed
+### What's Changed
 * filter pdfs by fuzzy searching by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/89
 * adjust the viewer navbar so it compliments the normal one by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
 * add theme support to viewer navbar by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
 * fix: Set navbar background so the navbar does not get overwritten when scrolling by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
 * fix: handle not present user in the health endpoint by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/87
 
-
-
-
 ##  v0.12.2 (Feb 09, 2025)
-## What's Changed
+### What's Changed
 * Improve demo startup time by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/80
 * Set postgres user and db name via env variables by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
 * Make sure the pdf overview gets reloaded when closing the viewer. This why the progress bars get automatically refreshed by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/81
