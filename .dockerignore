@@ -5,10 +5,11 @@ pdfding/core/settings/dev.py
 pdfding/consume/*
 pdfding/db/db.sqlite3
 pdfding/db/tasks.sqlite3
-pdfding/media/*
+pdfding/media/
 !pdfding/media/.gitkeep
-pdfding/static/js
-pdfding/static/css/*
+pdfding/static/js/
+!pdfding/static/js/pdfding/*
+pdfding/static/css/
 !pdfding/static/css/input.css
 pdfding/static/pdfjs
 pdfding/conftest.py

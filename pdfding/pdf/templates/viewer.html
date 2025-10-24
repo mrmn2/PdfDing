@@ -39,98 +39,25 @@ See https://github.com/adobe-type-tools/cmap-resources
     <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
     <script src="../../static/pdfjs/web/viewer.mjs" type="module"></script>
+    <script src="{% static 'js/pdfding/viewer_base.js' %}" type="text/javascript"></script>
+    {% if user_view_bool %}
+    <script src="{% static 'js/pdfding/viewer_logged_in.js' %}" type="text/javascript"></script>
+    {% endif %}
     <script>
       // get the start page
       var page_number = {{ current_page }};
+      // var user_view_bool = {{ user_view_bool|yesno:"true,false" }};
 
-      // open pdf on the start page
-      window.addEventListener('load', function() {
-          PDFViewerApplication.initialBookmark = "page="+page_number;
-          {% if user_view_bool %}
-          PDFViewerApplication.open({ url: "{% url 'serve_pdf' pdf_id revision %}" });
-          {% else %}
-          PDFViewerApplication.open({ url: "{% url 'serve_shared_pdf' shared_pdf_id revision %}" });
-          {% endif %}
-          // overwrite setTitle so that PdfDing controls the tab's title
-          PDFViewerApplication.setTitle = function set_new_title(new_title) {
-            const editorIndicator = this._hasAnnotationEditors;
-            document.title = `${editorIndicator ? "* " : ""}${"{{ tab_title }}"}`;
-          }
-      });
-
-      // set properties
-      document.addEventListener("webviewerloaded", () => {
-        PDFViewerApplicationOptions.set('disablePreferences', true); // needed otherwise settings are not overwritten
-        PDFViewerApplicationOptions.set('disableHistory', true); // disable browsing history, clicking on chapters does not open new page
-        PDFViewerApplicationOptions.set('viewOnLoad', 1  ); // disable remembering page
-        PDFViewerApplicationOptions.set("workerSrc", "../../static/pdfjs/build/pdf.worker.mjs");
-      });
+      {% if user_view_bool %}
+      var url = "{% url 'serve_pdf' pdf_id revision %}"
+      {% else %}
+      var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}"
+      {% endif %}
+      start_viewer(page_number, url, "{{ tab_title }}");
 
       {% if user_view_bool %}
       // check every 3 seconds if remote page needs updating
-      setInterval(update_remote_page, 3000);
-
-      // function for updating the remote page
-      function update_remote_page() {
-        if (PDFViewerApplication.pdfViewer.currentPageNumber != page_number) {
-          page_number = PDFViewerApplication.pdfViewer.currentPageNumber;
-          set_current_page(page_number);
-        }
-      }
-      {% endif %}
-
-      function set_current_page(current_page) {
-        var form_data = new FormData();
-        form_data.append('pdf_id', '{{ pdf_id }}')
-        form_data.append('current_page', current_page)
-
-        fetch("{% url 'update_page'%}", {
-          method: "POST",
-          body: form_data,
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-          },
-        });
-      }
-
-      {% if user_view_bool %}
-      // send file via the fetch api to the backend
-      function send_pdf_file(file) {
-        var form_data = new FormData();
-        form_data.append('updated_pdf', file);
-        form_data.append('pdf_id', '{{ pdf_id }}')
-
-        fetch("{% url 'update_pdf'%}", {
-          method: "POST",
-          body: form_data,
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
-          },
-        });
-      }
-
-      // function for updating the pdf file in the backend
-      async function update_pdf() {
-        if (PDFViewerApplication._saveInProgress) {
-          return;
-        }
-        PDFViewerApplication._saveInProgress = true;
-        await PDFViewerApplication.pdfScriptingManager.dispatchWillSave();
-
-        try {
-          const data = await PDFViewerApplication.pdfDocument.saveDocument();
-          const updated_pdf = new Blob([data], {type: "application/pdf"});
-          send_pdf_file(updated_pdf);
-          PDFViewerApplication._hasAnnotationEditors = false;
-          // removes "*" from the tab title in order to signal that the file was successfully saved
-          PDFViewerApplication.setTitle("{{ tab_title }}");
-        } catch (reason) {
-          console.error(`Error when saving the document: ${reason.message}`);
-        } finally {
-          await PDFViewerApplication.pdfScriptingManager.dispatchDidSave();
-          PDFViewerApplication._saveInProgress = false;
-        }
-      }
+      setInterval(update_remote_page, 3000, '{{ pdf_id }}', '{% url 'update_page'%}', '{{ csrf_token }}');
       {% endif %}
     </script>
     <style>
@@ -391,7 +318,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 </div>
                 <div class="toolbarHorizontalGroup" >
                   {% if user_view_bool %}
-                  <button onclick="update_pdf()" class="button1" title="Save">
+                  <button onclick="update_pdf('{{ pdf_id }}', '{% url 'update_pdf'%}', '{{ csrf_token }}', '{{ tab_title }}')" class="button1" title="Save">
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
                       <!--Source: https://www.svgrepo.com/svg/502821/save-->

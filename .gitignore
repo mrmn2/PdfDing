@@ -13,7 +13,8 @@ pdfding/media/*
 !pdfding/media/.gitkeep
 pdfding/static/css/*
 !pdfding/static/css/input.css
-pdfding/static/js
+pdfding/static/js/*
+!pdfding/static/js/pdfding/
 pdfding/static/pdfjs
 
 **/htmlcov
