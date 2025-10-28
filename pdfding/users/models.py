@@ -6,6 +6,7 @@ class Profile(models.Model):
     """The user profile model of PdfDing"""
 
     class DarkMode(models.TextChoices):
+        SYSTEM = 'System'
         LIGHT = 'Light'
         DARK = 'Dark'
         CREME = 'Creme'
@@ -65,8 +66,8 @@ class Profile(models.Model):
     annotation_sorting = models.CharField(
         choices=AnnotationsSortingChoice, max_length=15, default=AnnotationsSortingChoice.NEWEST
     )
-    # set dummy default colors, will be overwritten
-    dark_mode = models.CharField(choices=DarkMode.choices, max_length=5, default=DarkMode.DARK)
+    # set dummy default colors, will be overwritten in users/signals.py
+    dark_mode = models.CharField(choices=DarkMode.choices, max_length=6, default=DarkMode.DARK)
     theme_color = models.CharField(choices=ThemeColor.choices, max_length=6, default=ThemeColor.RED)
     custom_theme_color = models.CharField(max_length=7, default='#ffa385')
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')

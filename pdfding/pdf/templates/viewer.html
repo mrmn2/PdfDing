@@ -34,7 +34,8 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
-    <link rel="stylesheet" href="{% static 'pdfjs/web/viewer.css' %}">
+    {# do not change ./../static as it will break the viewer in the prod container #}
+    <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
     <link rel="stylesheet" href="{% static 'css/pdf_viewer.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
     <style>
@@ -68,7 +69,26 @@ See https://github.com/adobe-type-tools/cmap-resources
       }
     </style>
     <script>
-      document.documentElement.classList.add('{{ theme }}');
+      (function() {
+        const theme = '{{ theme }}';
+
+        if (theme === 'system') {
+          const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+          if (isSystemDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.add('light');
+          }
+
+          // Listen for system theme changes
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+            document.documentElement.classList.toggle('dark', event.matches);
+          });
+        } else {
+          document.documentElement.classList.add(theme);
+        }
+      })();
     </script>
     {# do not change ./../static as it will break the viewer in the prod container #}
     <script src="../../static/pdfjs/build/pdf.mjs" type="module"></script>

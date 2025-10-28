@@ -1,10 +1,9 @@
 {% load static %}
 <!DOCTYPE html>
 {% if not request.user.is_authenticated %}
-<html class="{{ DEFAULT_THEME }}" data-theme="{{ DEFAULT_THEME_COLOR }}" lang="en">
+<html data-theme="{{ DEFAULT_THEME_COLOR }}" lang="en">
 {% else %}
-<html class="{{ request.user.profile.dark_mode_str }}" data-theme="{{ request.user.profile.theme_color }}" lang="en">
-<!--<html class="creme" data-theme="{{ request.user.profile.theme_color }}" lang="en">-->
+<html data-theme="{{ request.user.profile.theme_color }}" lang="en">
 {% endif %}
 <head>
     <meta charset="UTF-8">
@@ -13,6 +12,32 @@
     <title>PdfDing</title>
     <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
+    <script>
+      (function() {
+        {% if not request.user.is_authenticated %}
+        const theme = '{{ DEFAULT_THEME }}';
+        {% else %}
+        const theme = '{{ request.user.profile.dark_mode_str }}';
+        {% endif %}
+
+        if (theme === 'system') {
+          const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+          if (isSystemDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.add('light');
+          }
+
+          // Listen for system theme changes
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+            document.documentElement.classList.toggle('dark', event.matches);
+          });
+        } else {
+          document.documentElement.classList.add(theme);
+        }
+      })();
+    </script>
     <script src="{% static 'js/alpine.min.js' %}" defer></script>
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <style>

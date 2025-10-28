@@ -162,10 +162,10 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
 
 # themes
 theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
-themes = ['light', 'dark', 'creme']
+themes = ['light', 'dark', 'creme', 'system']
 
 if not os.environ.get('DEFAULT_THEME'):
-    DEFAULT_THEME = 'light'
+    DEFAULT_THEME = 'system'
 elif os.environ.get('DEFAULT_THEME') in themes:
     DEFAULT_THEME = os.environ.get('DEFAULT_THEME')
 else:
