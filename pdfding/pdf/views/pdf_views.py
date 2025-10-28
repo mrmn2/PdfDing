@@ -16,7 +16,7 @@ from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.service import PdfProcessingServices
 from rapidfuzz import fuzz, utils
 from users.models import Profile
-from users.service import get_demo_pdf, get_viewer_colors
+from users.service import get_demo_pdf, get_viewer_theme_and_color
 
 
 class BasePdfMixin:
@@ -467,7 +467,7 @@ class ViewerView(PdfMixin, View):
         pdf.last_viewed_date = datetime.now(timezone.utc)
         pdf.save()
 
-        color_dict = get_viewer_colors(request.user.profile)
+        theme, theme_color = get_viewer_theme_and_color(request.user.profile)
 
         page = request.GET.get('page')
 
@@ -484,10 +484,8 @@ class ViewerView(PdfMixin, View):
                 'pdf_id': identifier,
                 'revision': pdf.revision,
                 'tab_title': pdf.name,
-                'theme_color': color_dict['theme_color'],
-                'primary_color': color_dict['primary_color'],
-                'secondary_color': color_dict['secondary_color'],
-                'text_color': color_dict['text_color'],
+                'theme': theme,
+                'theme_color': theme_color,
                 'user_view_bool': True,
                 'keep_screen_awake': request.user.profile.pdf_keep_screen_awake,
             },

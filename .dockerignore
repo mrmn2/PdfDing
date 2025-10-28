@@ -11,6 +11,7 @@ pdfding/static/js/
 !pdfding/static/js/pdfding/*
 pdfding/static/css/
 !pdfding/static/css/input.css
+!pdfding/static/css/pdf_viewer.css
 pdfding/static/pdfjs
 pdfding/conftest.py
 

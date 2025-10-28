@@ -34,54 +34,12 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
-    <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
+    <link rel="stylesheet" href="{% static 'pdfjs/web/viewer.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pdf_viewer.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
     <style>
-      @media all and (max-width: 900px){
-        #outerContainer .hiddenMediumView{
-          display:none !important;
-        }
-        #outerContainer .visibleMediumView:not(.hidden, [hidden]){
-          display:inline-block !important;
-        }
-      }
-      @media all and (max-width: 750px){
-        .hiddenSmallView,
-        .hiddenSmallView *{
-          display:none !important;
-        }
-        #toolbarContainer #toolbarViewer .toolbarButtonSpacer{
-          width:0;
-        }
-      }
-      select:hover option:hover {
-          background-color: red !important;
-          color: white !important;
-      }
       :root{
-        /* elements using the primary color */
-        --body-bg-color:rgb({{ primary_color }}); /* background around pdf, sets also sidebar color!*/
-        --sidebar-narrow-bg-color:rgb({{ primary_color }}); /* sidebar background around pdf mobile*/
-        --treeitem-bg-color:rgb({{ primary_color }});   ;  /* table of contents bg color */
-        --treeitem-selected-bg-color:rgb({{ primary_color }});  /* table of contents selected bg color */
-        --scrollbar-bg-color:rgb({{ primary_color }});  /* scrollbar background color */
-        --toolbar-border-color:rgb({{ primary_color }});  /* toolbar border color */
-        --progressBar-bg-color:rgb({{ primary_color }});  /* progressbar background color */
-        /* elements using the secondary color */
-        --field-bg-color:rgb({{ secondary_color }});  /* input field bg color */
-        --toolbar-bg-color:rgb({{ secondary_color }});  /* toolbar color */
-        --dropdown-btn-bg-color:rgb({{ secondary_color }});  /* dropdown button color */
-        --sidebar-toolbar-bg-color:rgb({{ secondary_color }});  /* sidebar toolbar bg color */
-        /* elements using the text color */
-        --main-color:rgb({{ text_color }});   /* main text */
-        --toolbar-icon-bg-color:rgb({{ text_color }});  /* toolbar icon image color */
-        --field-color:rgb({{ text_color }});  /* input field text color */
-        --treeitem-color:rgb({{ text_color }});  /* table of contents text color */
-        --field-border-color:rgb(115 115 115);  /* input field bordercolor */
-        /* buttons hover and selected color */
-        --toolbar-icon-hover-bg-color:rgb(226 232 240);  /* toolbar icon hover image color */
-        --dropdown-btn-hover-bg-color:rgb(226 232 240);  /* dropdown button hover color */
-        --toggled-btn-color:rgb(226 232 240);  /* toolbar icon selected color */
+
         /* elements using the theme color */
         --button-hover-color: rgb({{ theme_color }});  /* button hover */
         --progressBar-color:rgb({{ theme_color }});  /* progressbar color */
@@ -96,85 +54,22 @@ See https://github.com/adobe-type-tools/cmap-resources
         --highlight-bg-color: rgb({{ theme_color }} / 0.2);  /* thumbnail hover bg color */
         --highlight-selected-bg-color: rgb({{ theme_color }} / 0.5);  /* thumbnail hover bg color */
       }
-      .button1 {
-        background-color:rgb({{ secondary_color }});
-        color:rgb({{ text_color }});
-        border-width: 0px;
-        margin: 2px 1px;
-        padding: 3px 4px 0;
-      }
       .button1:hover {
         background-color: rgb({{ theme_color }});
-        color: rgb(226 232 240);
-        border-radius: 2px
       }
       .pdfSidebarNotification::after {
         background-color: rgb({{ theme_color }});
       }
-      .doorHanger, .doorHangerRight {
-          background-color: rgb({{ secondary_color }});
-      }
-      dialog {
-          background-color: rgb({{ secondary_color }});
-      }
-      .editorParamsToolbarContainer {
-        background-color:rgb({{ secondary_color }});
-      }
-      .horizontalToolbarSeparator {
-        border-top: 1px solid rgb({{ text_color }});
-        opacity: 0.2;
-      }
-      .splitToolbarButtonSeparator{
-        border-left:1px solid rgb({{ text_color }});
-        opacity: 0.5
-      }
       .toolbarField:focus{
         border-color: rgb({{ theme_color }});
       }
-      <!-- right sidebar -->
-      .toolbarButton::before{
-        color: rgb({{ text_color }});
-      }
-      .toolbarButton.labeled:hover{
-        color: rgb({{ text_color }});
-      }
-      .toolbarButton.labeled:hover{
-        color: rgb({{ text_color }});
-      }
-      .toolbarButton.labeled::before {
-          background-color: rgb({{ text_color }});
-      }
-      .toolbarButton.toggled:hover{
-        color: rgb({{ text_color }});
-      }
-      .toolbarButton.toggled::before {
-          background-color: rgb({{ text_color }});
-      }
-      .toolbarButton.toggled {
-          color: rgb({{ text_color }});
-      }
-      .toolbarButton.toggled:hover{
-        color: rgb({{ text_color }});
-      }
       .logo {
-         width: 22px;
-         height: 22px;
          background: rgb({{ theme_color }});
-         border-radius: 50%;
-         opacity: 0.9;
-         padding: 3px;
-         margin: 0px 4px;
       }
-      .treeItemToggler::before {
-        background-color:rgb({{ text_color }});
-      }
-      {% if request.user.profile.pdf_inverted_mode == 'Enabled' %}
-      #viewerContainer > #viewer .page {
-        filter: grayscale(100%);
-        filter: invert(80%);
-      }
-      {% endif %}
     </style>
+    <script>
+      document.documentElement.classList.add('{{ theme }}');
+    </script>
     {# do not change ./../static as it will break the viewer in the prod container #}
     <script src="../../static/pdfjs/build/pdf.mjs" type="module"></script>
     <script src="../../static/pdfjs/web/viewer.mjs" type="module"></script>

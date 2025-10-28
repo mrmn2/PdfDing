@@ -23,42 +23,27 @@ class TestUserServices(TestCase):
         profile.theme_color = 'Green'
         profile.dark_mode = 'light'
 
-        generated_color_dict = service.get_viewer_colors(profile)
-        expected_color_dict = {
-            'primary_color': '255 255 255',
-            'secondary_color': '242 242 242',
-            'text_color': '15 23 42',
-            'theme_color': '74 222 128',
-        }
+        generated_theme, generated_color = service.get_viewer_theme_and_color(profile)
 
-        self.assertEqual(generated_color_dict, expected_color_dict)
+        self.assertEqual(generated_color, '74 222 128')
+        self.assertEqual(generated_theme, 'light')
 
         # also test custom color and inverted mode
         profile.theme_color = 'Custom'
         profile.pdf_inverted_mode = 'Enabled'
         profile.custom_theme_color = '#000000'
 
-        generated_color_dict = service.get_viewer_colors(profile)
-        expected_color_dict = {
-            'primary_color': '71 71 71',
-            'secondary_color': '61 61 61',
-            'text_color': '226 232 240',
-            'theme_color': '0 0 0',
-        }
+        generated_theme, generated_color = service.get_viewer_theme_and_color(profile)
 
-        self.assertEqual(generated_color_dict, expected_color_dict)
+        self.assertEqual(generated_color, '0 0 0')
+        self.assertEqual(generated_theme, 'inverted')
 
     @override_settings(DEFAULT_THEME='creme', DEFAULT_THEME_COLOR='Brown')
     def test_get_viewer_colors_no_profile(self):
-        generated_color_dict = service.get_viewer_colors()
-        expected_color_dict = {
-            'primary_color': '226 220 208',
-            'secondary_color': '196 191 181',
-            'text_color': '68 64 60',
-            'theme_color': '76 37 24',
-        }
+        generated_theme, generated_color = service.get_viewer_theme_and_color()
 
-        self.assertEqual(generated_color_dict, expected_color_dict)
+        self.assertEqual(generated_color, '76 37 24')
+        self.assertEqual(generated_theme, 'creme')
 
     def test_get_demo_pdf(self):
         demo_pdf = service.get_demo_pdf()

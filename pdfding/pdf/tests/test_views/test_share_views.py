@@ -279,15 +279,9 @@ class TestLoginNotRequiredViews(TestCase):
 
         self.assertTemplateUsed(response, 'view_shared_inactive.html')
 
-    @patch('pdf.views.share_views.get_viewer_colors')
-    def test_view_post_active_no_password(self, mock_get_viewer_colors):
-        mock_colors_dict = {
-            'primary_color': '1 1 1',
-            'secondary_color': '2 2 2',
-            'text_color': '3 3 3',
-            'theme_color': '4 4 4',
-        }
-        mock_get_viewer_colors.return_value = mock_colors_dict
+    @patch('pdf.views.share_views.get_viewer_theme_and_color')
+    def test_view_post_active_no_password(self, mock_get_viewer_theme_and_color):
+        mock_get_viewer_theme_and_color.return_value = 'creme', '4 4 4'
 
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
@@ -297,10 +291,8 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['shared_pdf_id'], self.shared_pdf.id)
         self.assertEqual(response.context['current_page'], 1)
         self.assertEqual(response.context['revision'], 2)
-        self.assertEqual(response.context['primary_color'], mock_colors_dict['primary_color'])
-        self.assertEqual(response.context['secondary_color'], mock_colors_dict['secondary_color'])
-        self.assertEqual(response.context['text_color'], mock_colors_dict['text_color'])
-        self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
+        self.assertEqual(response.context['theme_color'], '4 4 4')
+        self.assertEqual(response.context['theme'], 'creme')
         self.assertEqual(response.context['tab_title'], 'PdfDing')
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')
@@ -308,15 +300,9 @@ class TestLoginNotRequiredViews(TestCase):
         shared_pdf = SharedPdf.objects.get(pk=self.shared_pdf.id)
         self.assertEqual(shared_pdf.views, 1)
 
-    @patch('pdf.views.share_views.get_viewer_colors')
-    def test_view_post_active_correct_password(self, mock_get_viewer_colors):
-        mock_colors_dict = {
-            'primary_color': '1 1 1',
-            'secondary_color': '2 2 2',
-            'text_color': '3 3 3',
-            'theme_color': '4 4 4',
-        }
-        mock_get_viewer_colors.return_value = mock_colors_dict
+    @patch('pdf.views.share_views.get_viewer_theme_and_color')
+    def test_view_post_active_correct_password(self, mock_get_viewer_theme_and_color):
+        mock_get_viewer_theme_and_color.return_value = 'creme', '4 4 4'
 
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
@@ -331,10 +317,8 @@ class TestLoginNotRequiredViews(TestCase):
         )
 
         self.assertEqual(response.context['shared_pdf_id'], protected_shared_pdf.id)
-        self.assertEqual(response.context['primary_color'], mock_colors_dict['primary_color'])
-        self.assertEqual(response.context['secondary_color'], mock_colors_dict['secondary_color'])
-        self.assertEqual(response.context['text_color'], mock_colors_dict['text_color'])
-        self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
+        self.assertEqual(response.context['theme_color'], '4 4 4')
+        self.assertEqual(response.context['theme'], 'creme')
         self.assertEqual(response.context['revision'], 2)
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')

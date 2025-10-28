@@ -62,10 +62,10 @@ class Profile(models.Model):
         GRID = 'Grid'
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # set dummy default colors, will be overwritten
     annotation_sorting = models.CharField(
         choices=AnnotationsSortingChoice, max_length=15, default=AnnotationsSortingChoice.NEWEST
     )
+    # set dummy default colors, will be overwritten
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=5, default=DarkMode.DARK)
     theme_color = models.CharField(choices=ThemeColor.choices, max_length=6, default=ThemeColor.RED)
     custom_theme_color = models.CharField(max_length=7, default='#ffa385')

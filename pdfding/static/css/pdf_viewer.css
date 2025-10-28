@@ -1,0 +1,195 @@
+@media all and (max-width: 900px){
+  #outerContainer .hiddenMediumView{
+    display:none !important;
+  }
+  #outerContainer .visibleMediumView:not(.hidden, [hidden]){
+    display:inline-block !important;
+  }
+}
+@media all and (max-width: 750px){
+  .hiddenSmallView,
+  .hiddenSmallView *{
+    display:none !important;
+  }
+  #toolbarContainer #toolbarViewer .toolbarButtonSpacer{
+    width:0;
+  }
+}
+select:hover option:hover {
+    background-color: red !important;
+    color: white !important;
+}
+
+:root {
+  --toolbar-border-color: none;  /* needed for some reason, otherwise it will not work */
+  --field-border-color: rgb(115 115 115);  /* input field bordercolor */
+  /* buttons hover and selected color */
+  --toolbar-icon-hover-bg-color: rgb(226 232 240);  /* toolbar icon hover image color */
+  --dropdown-btn-hover-bg-color: rgb(226 232 240);  /* dropdown button hover color */
+  --toggled-btn-color: rgb(226 232 240);  /* toolbar icon selected color */
+}
+
+.light {
+  --primary-bg-color: rgb(255 255 255);
+  --secondary-bg-color: rgb(242 242 242);
+  --text-color: rgb(15 23 42);
+
+  --body-bg-color: var(--primary-bg-color); /* background around pdf, sets also sidebar color! */
+  --sidebar-narrow-bg-color: var(--primary-bg-color); /* sidebar background around pdf mobile */
+  --treeitem-bg-color: var(--primary-bg-color);  /* table of contents bg color */
+  --treeitem-selected-bg-color: var(--primary-bg-color);  /* table of contents selected bg color */
+  --scrollbar-bg-color: var(--primary-bg-color);  /* scrollbar background color */
+  --toolbar-border-color: var(--primary-bg-color);  /* toolbar border color */
+  --progressBar-bg-color: var(--primary-bg-color);  /* progressbar background color */
+
+  --field-bg-color: var(--secondary-bg-color);  /* input field bg color */
+  --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
+  --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
+  --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+
+  --main-color: var(--text-color);   /* main text */
+  --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
+  --field-color: var(--text-color); /* input field text color */
+  --treeitem-color: var(--text-color);  /* table of contents text color */
+}
+
+.dark {
+  --primary-bg-color: rgb(15 23 42);
+  --secondary-bg-color: rgb(25 34 50);
+  --text-color: rgb(226 232 240);
+
+  --body-bg-color: var(--primary-bg-color); /* background around pdf, sets also sidebar color! */
+  --sidebar-narrow-bg-color: var(--primary-bg-color); /* sidebar background around pdf mobile */
+  --treeitem-bg-color: var(--primary-bg-color);  /* table of contents bg color */
+  --treeitem-selected-bg-color: var(--primary-bg-color);  /* table of contents selected bg color */
+  --scrollbar-bg-color: var(--primary-bg-color);  /* scrollbar background color */
+  --toolbar-border-color: var(--primary-bg-color);  /* toolbar border color */
+  --progressBar-bg-color: var(--primary-bg-color);  /* progressbar background color */
+
+  --field-bg-color: var(--secondary-bg-color);  /* input field bg color */
+  --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
+  --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
+  --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+
+  --main-color: var(--text-color);   /* main text */
+  --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
+  --field-color: var(--text-color); /* input field text color */
+  --treeitem-color: var(--text-color);  /* table of contents text color */
+}
+
+.inverted {
+  --primary-bg-color: rgb(71 71 71);
+  --secondary-bg-color: rgb(61 61 61);
+  --text-color: rgb(226 232 240);
+
+  --body-bg-color: var(--primary-bg-color); /* background around pdf, sets also sidebar color!*/
+  --sidebar-narrow-bg-color: var(--primary-bg-color); /* sidebar background around pdf mobile*/
+  --treeitem-bg-color: var(--primary-bg-color);  /* table of contents bg color */
+  --treeitem-selected-bg-color: var(--primary-bg-color);  /* table of contents selected bg color */
+  --scrollbar-bg-color: var(--primary-bg-color);  /* scrollbar background color */
+  --toolbar-border-color: var(--primary-bg-color);  /* toolbar border color */
+  --progressBar-bg-color: var(--primary-bg-color);  /* progressbar background color */
+
+  --field-bg-color: var(--secondary-bg-color);  /* input field bg color */
+  --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
+  --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
+  --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+
+  --main-color: var(--text-color);   /* main text */
+  --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
+  --field-color: var(--text-color); /* input field text color */
+  --treeitem-color: var(--text-color);  /* table of contents text color */
+}
+
+.creme {
+  --primary-bg-color: rgb(226 220 208);
+  --secondary-bg-color: rgb(196 191 181);
+  --text-color: rgb(68 64 60);
+
+  --body-bg-color: var(--primary-bg-color); /* background around pdf, sets also sidebar color!*/
+  --sidebar-narrow-bg-color: var(--primary-bg-color); /* sidebar background around pdf mobile*/
+  --treeitem-bg-color: var(--primary-bg-color);  /* table of contents bg color */
+  --treeitem-selected-bg-color: var(--primary-bg-color);  /* table of contents selected bg color */
+  --scrollbar-bg-color: var(--primary-bg-color);  /* scrollbar background color */
+  --toolbar-border-color: var(--primary-bg-color);  /* toolbar border color */
+  --progressBar-bg-color: var(--primary-bg-color);  /* progressbar background color */
+
+  --field-bg-color: var(--secondary-bg-color);  /* input field bg color */
+  --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
+  --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
+  --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+
+  --main-color: var(--text-color);   /* main text */
+  --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
+  --field-color: var(--text-color); /* input field text color */
+  --treeitem-color: var(--text-color);  /* table of contents text color */
+}
+
+.button1 {
+  background-color: var(--secondary-bg-color);
+  color: var(--text-color);
+  border-width: 0px;
+  margin: 2px 1px;
+  padding: 3px 4px 0;
+}
+.button1:hover {
+  color: rgb(226 232 240);
+  border-radius: 2px
+}
+.doorHanger, .doorHangerRight {
+    background-color: var(--secondary-bg-color);
+}
+
+dialog {
+    background-color: var(--secondary-bg-color);
+}
+.editorParamsToolbarContainer {
+  background-color: var(--secondary-bg-color);
+}
+.horizontalToolbarSeparator {
+  border-top: 1px solid var(--text-color);
+  opacity: 0.2;
+}
+.toolbarButton::before{
+  color: var(--text-color);
+}
+.toolbarButton.labeled:hover{
+  color: var(--text-color);
+}
+.toolbarButton.labeled:hover{
+  color: var(--text-color);
+}
+.toolbarButton.labeled::before {
+  background-color: var(--text-color);
+}
+.toolbarButton.toggled:hover{
+  color: var(--text-color);
+}
+.toolbarButton.toggled::before {
+  background-color: var(--text-color);
+}
+.toolbarButton.toggled {
+  color: var(--text-color);
+}
+.toolbarButton.toggled:hover{
+  color: var(--text-color);
+}
+.treeItemToggler::before {
+  background-color: var(--text-color);
+}
+.splitToolbarButtonSeparator{
+  border-left:1px solid var(--text-color);
+  opacity: 0.5
+}
+.logo {
+   width: 22px;
+   height: 22px;
+   border-radius: 50%;
+   opacity: 0.9;
+   padding: 3px;
+   margin: 0px 4px;
+}
+.inverted #viewerContainer > #viewer .page {
+  filter: grayscale(100%);
+  filter: invert(80%);
+}

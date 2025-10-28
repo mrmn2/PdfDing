@@ -27,7 +27,7 @@ from pdf.models import SharedPdf
 from pdf.service import check_object_access_allowed, get_future_datetime
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg
-from users.service import get_viewer_colors
+from users.service import get_viewer_theme_and_color
 
 
 class BaseShareMixin:
@@ -325,7 +325,7 @@ class ViewShared(BaseSharedPdfPublicView):
         shared_pdf.views += 1
         shared_pdf.save()
 
-        color_dict = get_viewer_colors()
+        theme, theme_color = get_viewer_theme_and_color()
 
         return render(
             request,
@@ -335,10 +335,8 @@ class ViewShared(BaseSharedPdfPublicView):
                 'current_page': 1,
                 'shared_pdf_id': shared_pdf.id,
                 'revision': shared_pdf.pdf.revision,
-                'theme_color': color_dict['theme_color'],
-                'primary_color': color_dict['primary_color'],
-                'secondary_color': color_dict['secondary_color'],
-                'text_color': color_dict['text_color'],
+                'theme': theme,
+                'theme_color': theme_color,
                 'user_view_bool': False,
             },
         )

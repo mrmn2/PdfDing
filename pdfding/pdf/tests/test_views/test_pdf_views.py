@@ -508,15 +508,9 @@ class TestViews(TestCase):
         self.user = None
         set_up(self)
 
-    @patch('pdf.views.pdf_views.get_viewer_colors')
-    def test_view_get(self, mock_get_viewer_colors):
-        mock_colors_dict = {
-            'primary_color': '1 1 1',
-            'secondary_color': '2 2 2',
-            'text_color': '3 3 3',
-            'theme_color': '4 4 4',
-        }
-        mock_get_viewer_colors.return_value = mock_colors_dict
+    @patch('pdf.views.pdf_views.get_viewer_theme_and_color')
+    def test_view_get(self, mock_get_viewer_theme_and_color):
+        mock_get_viewer_theme_and_color.return_value = ('dark', '4 4 4')
 
         pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
         pdf.current_page = 4
@@ -537,10 +531,8 @@ class TestViews(TestCase):
         self.assertEqual(response.context['tab_title'], str(pdf.name))
         self.assertEqual(response.context['current_page'], 4)
         self.assertEqual(response.context['revision'], 3)
-        self.assertEqual(response.context['primary_color'], mock_colors_dict['primary_color'])
-        self.assertEqual(response.context['secondary_color'], mock_colors_dict['secondary_color'])
-        self.assertEqual(response.context['text_color'], mock_colors_dict['text_color'])
-        self.assertEqual(response.context['theme_color'], mock_colors_dict['theme_color'])
+        self.assertEqual(response.context['theme'], 'dark')
+        self.assertEqual(response.context['theme_color'], '4 4 4')
         self.assertEqual(response.context['user_view_bool'], True)
         self.assertEqual(response.context['keep_screen_awake'], 'Disabled')
 

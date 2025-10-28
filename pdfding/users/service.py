@@ -40,10 +40,7 @@ def get_secondary_color(custom_color: str) -> str:
     return convert_rgb_to_hex(*secondary_color)
 
 
-def get_viewer_colors(user_profile: Profile = None) -> dict[str, str]:
-    primary_color_dict = {'light': '255 255 255', 'dark': '15 23 42', 'inverted': '71 71 71', 'creme': '226 220 208'}
-    secondary_color_dict = {'light': '242 242 242', 'dark': '25 34 50', 'inverted': '61 61 61', 'creme': '196 191 181'}
-    text_color_dict = {'light': '15 23 42', 'dark': '226 232 240', 'inverted': '226 232 240', 'creme': '68 64 60'}
+def get_viewer_theme_and_color(user_profile: Profile | None = None) -> tuple[str, str]:
     theme_color_dict = {
         'Green': '74 222 128',
         'Blue': '71 147 204',
@@ -69,14 +66,7 @@ def get_viewer_colors(user_profile: Profile = None) -> dict[str, str]:
         theme_color = settings.DEFAULT_THEME_COLOR
         theme = settings.DEFAULT_THEME
 
-    color_dict = {
-        'primary_color': primary_color_dict[theme],
-        'secondary_color': secondary_color_dict[theme],
-        'text_color': text_color_dict[theme],
-        'theme_color': theme_color_dict[theme_color],
-    }
-
-    return color_dict
+    return theme, theme_color_dict[theme_color]
 
 
 def get_demo_pdf():
