@@ -15,6 +15,15 @@
     width:0;
   }
 }
+@media all and (max-width: 415px){
+  .hiddenMiniView,
+  .hiddenMiniView *{
+    display:none !important;
+  }
+  #toolbarContainer #toolbarViewer .toolbarButtonSpacer{
+    width:0;
+  }
+}
 select:hover option:hover {
     background-color: red !important;
     color: white !important;
@@ -46,6 +55,8 @@ select:hover option:hover {
   --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
   --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
   --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+  --signature-bg: var(--secondary-bg-color);  /* signature dropdown background color */
+  --doorhanger-bg-color: var(--secondary-bg-color);
 
   --main-color: var(--text-color);   /* main text */
   --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
@@ -70,6 +81,8 @@ select:hover option:hover {
   --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
   --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
   --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+  --signature-bg: var(--secondary-bg-color);
+  --doorhanger-bg-color: var(--secondary-bg-color);
 
   --main-color: var(--text-color);   /* main text */
   --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
@@ -94,6 +107,8 @@ select:hover option:hover {
   --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
   --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
   --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+  --signature-bg: var(--secondary-bg-color);
+  --doorhanger-bg-color: var(--secondary-bg-color);
 
   --main-color: var(--text-color);   /* main text */
   --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
@@ -118,6 +133,8 @@ select:hover option:hover {
   --toolbar-bg-color: var(--secondary-bg-color);  /* toolbar color */
   --dropdown-btn-bg-color: var(--secondary-bg-color);  /* dropdown button color */
   --sidebar-toolbar-bg-color: var(--secondary-bg-color);  /* sidebar toolbar bg color */
+  --signature-bg: var(--secondary-bg-color);
+  --doorhanger-bg-color: var(--secondary-bg-color);
 
   --main-color: var(--text-color);   /* main text */
   --toolbar-icon-bg-color: var(--text-color); /* toolbar icon image color */
@@ -137,11 +154,35 @@ select:hover option:hover {
   border-radius: 2px
 }
 .doorHanger, .doorHangerRight {
-    background-color: var(--secondary-bg-color);
+  background-color: var(--secondary-bg-color);
 }
-
 dialog {
-    background-color: var(--secondary-bg-color);
+  background-color: var(--secondary-bg-color);
+}
+#addSignatureDialog {
+  --input-text-bg-color: var(--primary-bg-color);
+  --dialog-bg-color: var(--secondary-bg-color);
+  --dialog-border-color: var(--secondary-bg-color);
+  --clear-signature-button-bg: var(--secondary-bg-color);
+  --clear-signature-button-bg-disabled: var(--secondary-bg-color);
+
+  --text-primary-color: var(--text-color);
+  --tab-bottom-line-inactive-color: var(--secondary-bg-color);
+  --tab-top-line-inactive-color: var(--secondary-bg-color);
+  --tab-top-line-hover-color: var(--secondary-bg-color);
+  --tab-bottom-line-active-color: var(--secondary-bg-color);
+}
+#addSignatureTypeContainer:is(:is(:is(#addSignatureDialog .mainContainer) #addSignatureActionContainer) > [role="tabpanel"]) #addSignatureTypeInput {
+  background-color: var(--primary-bg-color);
+}
+#addSignatureDrawContainer:is(:is(:is(#addSignatureDialog .mainContainer) #addSignatureActionContainer) > [role="tabpanel"]) > span {
+  background-color: var(--primary-bg-color);
+}
+:is(:is(:is(#addSignatureDialog .mainContainer) #addSignatureActionContainer) > [role="tabpanel"]) > svg {
+  background-color: var(--primary-bg-color);
+}
+#addSignatureImageContainer:is(:is(:is(#addSignatureDialog .mainContainer) #addSignatureActionContainer) > [role="tabpanel"]) #addSignatureImagePlaceholder {
+  background-color: var(--primary-bg-color);
 }
 .editorParamsToolbarContainer {
   background-color: var(--secondary-bg-color);

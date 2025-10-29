@@ -14,6 +14,7 @@ function start_viewer(page_number, pdf_url, tab_title) {
   document.addEventListener("webviewerloaded", () => {
     PDFViewerApplicationOptions.set('disablePreferences', true); // needed otherwise settings are not overwritten
     PDFViewerApplicationOptions.set('disableHistory', true); // disable browsing history, clicking on chapters does not open new page
+    PDFViewerApplicationOptions.set('enableSignatureEditor', true); // disable browsing history, clicking on chapters does not open new page
     PDFViewerApplicationOptions.set('viewOnLoad', 1  ); // disable remembering page
     PDFViewerApplicationOptions.set("workerSrc", "../../static/pdfjs/build/pdf.worker.mjs");
   });

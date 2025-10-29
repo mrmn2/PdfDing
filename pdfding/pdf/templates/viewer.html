@@ -43,13 +43,15 @@ See https://github.com/adobe-type-tools/cmap-resources
 
         /* elements using the theme color */
         --button-hover-color: rgb({{ theme_color }});  /* button hover */
-        --progressBar-color:rgb({{ theme_color }});  /* progressbar color */
-        --toggled-btn-bg-color:rgb({{ theme_color }} / 0.9);  /* dropdown toggled color */
-        --scrollbar-color:rgb({{ theme_color }});  /* scroll indicator color */
-        --treeitem-hover-color:rgb({{ theme_color }});  /* table of contents hover text color */
-        --treeitem-selected-color:rgb({{ theme_color }});  /* table of contents selected text color */
-        --thumbnail-hover-color:rgb({{ theme_color }} / 0.3);  /* thumbnail hover bg color */
-        --thumbnail-selected-color:rgb({{ theme_color }} / 0.7);  /* thumbnail selected bg color */
+        --progressBar-color: rgb({{ theme_color }});  /* progressbar color */
+        --toggled-btn-bg-color: rgb({{ theme_color }} / 0.9);  /* dropdown toggled color */
+        --scrollbar-color: rgb({{ theme_color }});  /* scroll indicator color */
+        --treeitem-hover-color: rgb({{ theme_color }});  /* table of contents hover text color */
+        --treeitem-selected-color: rgb({{ theme_color }});  /* table of contents selected text color */
+        --thumbnail-hover-color: rgb({{ theme_color }} / 0.3);  /* thumbnail hover bg color */
+        --thumbnail-selected-color: rgb({{ theme_color }} / 0.7);  /* thumbnail selected bg color */
+        --button-signature-hover-bg: rgb({{ theme_color }});
+        --signature-hover-bg: rgb({{ theme_color }});
       }
       .textLayer .highlight {
         --highlight-bg-color: rgb({{ theme_color }} / 0.2);  /* thumbnail hover bg color */
@@ -66,6 +68,16 @@ See https://github.com/adobe-type-tools/cmap-resources
       }
       .logo {
          background: rgb({{ theme_color }});
+      }
+      #addSignatureDialog {
+        --tab-text-active-color: rgb({{ theme_color }});
+        --tab-top-line-active-color: rgb({{ theme_color }});
+        --tab-top-line-active-hover-color: rgb({{ theme_color }});
+        --tab-bg-hover: rgb({{ theme_color }});
+        --tab-bg-active-hover-color: rgb({{ theme_color }});
+        --button-primary-bg-color: rgb({{ theme_color }});
+        --button-primary-hover-bg-color: rgb({{ theme_color }} / 0.9);
+        --clear-signature-button-bg-hover: rgb({{ theme_color }});
       }
     </style>
     <script>
@@ -224,7 +236,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                   <span class="loadingInput start toolbarHorizontalGroup">
                     <input type="number" id="pageNumber" class="toolbarField" value="1" min="1" autocomplete="off">
                   </span>
-                  <span id="numPages" class="toolbarLabel"></span>
+                  <span id="numPages" class="toolbarLabel hiddenMiniView"></span>
                 </div>
               </div>
               <div id="toolbarViewerRight" class="toolbarHorizontalGroup">
@@ -249,6 +261,18 @@ See https://github.com/adobe-type-tools/cmap-resources
                 </div>
                 {% if user_view_bool %}
                 <div id="editorModeButtons" class="toolbarHorizontalGroup" role="radiogroup">
+                  <div id="editorSignature" class="toolbarButtonWithContainer">
+                    <button id="editorSignatureButton" class="toolbarButton" type="button" title="Signature" tabindex="0" role="radio" aria-expanded="false" aria-haspopup="true" aria-controls="editorSignatureParamsToolbar">
+                      <span>Signature</span>
+                    </button>
+                    <div class="editorParamsToolbar hidden doorHangerRight menu" id="editorSignatureParamsToolbar">
+                      <div id="addSignatureDoorHanger" class="menuContainer" role="region" data-l10n-id="pdfjs-editor-add-signature-container">
+                        <button id="editorSignatureAddSignature" class="toolbarButton labeled" type="button" tabindex="0">
+                          <span class="editorParamsLabel">Add new signature</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   <div id="editorHighlight" class="toolbarButtonWithContainer">
                     <button id="editorHighlightButton" class="toolbarButton" type="button" title="Highlight">
                       <span>Highlight</span>
@@ -417,6 +441,96 @@ See https://github.com/adobe-type-tools/cmap-resources
             <button id="passwordSubmit" class="dialogButton" type="button"><span data-l10n-id="pdfjs-password-ok-button">OK</span></button>
           </div>
         </dialog>
+        <dialog class="dialog signatureDialog" id="addSignatureDialog" aria-labelledby="addSignatureDialogLabel">
+          <span id="addSignatureDialogLabel"></span>
+          <div id="addSignatureContainer" class="mainContainer">
+            <div class="title">
+              <span role="sectionhead" tabindex="0">Add a signature</span>
+            </div>
+            <div role="tablist" id="addSignatureOptions">
+              <button id="addSignatureTypeButton" type="button" role="tab" aria-selected="true" aria-controls="addSignatureTypeContainer" tabindex="0">Type</button>
+              <button id="addSignatureDrawButton" type="button" role="tab" aria-selected="false" aria-controls="addSignatureDrawContainer" tabindex="0">Draw</button>
+              <button id="addSignatureImageButton" type="button" role="tab" aria-selected="false" aria-controls="addSignatureImageContainer" tabindex="-1">Image</button>
+            </div>
+            <div id="addSignatureActionContainer" data-selected="type">
+              <div id="addSignatureTypeContainer" role="tabpanel" aria-labelledby="addSignatureTypeContainer">
+                <input id="addSignatureTypeInput" type="text" tabindex="0" placeholder="Type your signature"></input>
+              </div>
+              <div id="addSignatureDrawContainer" role="tabpanel" aria-labelledby="addSignatureDrawButton" tabindex="-1">
+                <svg id="addSignatureDraw" xmlns="http://www.w3.org/2000/svg" aria-labelledby="addSignatureDrawPlaceholder"></svg>
+                <span id="addSignatureDrawPlaceholder">Draw your signature</span>
+                <div id="thickness">
+                  <div>
+                    <label for="addSignatureDrawThickness">Thickness</label>
+                    <input type="range" id="addSignatureDrawThickness" min="1" max="5" step="1" value="1" data-l10n-id="pdfjs-editor-add-signature-draw-thickness-range" data-l10n-args='{ "thickness": 1 }' tabindex="0">
+                  </div>
+                </div>
+              </div>
+              <div id="addSignatureImageContainer" role="tabpanel" aria-labelledby="addSignatureImageButton" tabindex="-1">
+                <svg id="addSignatureImage" xmlns="http://www.w3.org/2000/svg" aria-labelledby="addSignatureImagePlaceholder"></svg>
+                <div id="addSignatureImagePlaceholder">
+                  <span>Drag a file here to upload</span>
+                  <label id="addSignatureImageBrowse" for="addSignatureFilePicker" tabindex="0">
+                    <a>Or browse image files</a>
+                  </label>
+                  <input id="addSignatureFilePicker" type="file"></input>
+                </div>
+              </div>
+              <div id="addSignatureControls">
+                <div id="horizontalContainer">
+                  <div id="addSignatureDescriptionContainer">
+                    <label for="addSignatureDescInput">Description (alt text)</label>
+                    <span id="addSignatureDescription" class="inputWithClearButton">
+                      <input id="addSignatureDescInput" type="text" tabindex="0"></input>
+                      <button class="clearInputButton" type="button" tabindex="0" aria-hidden="true"></button>
+                    </span>
+                  </div>
+                  <button id="clearSignatureButton" type="button" tabindex="0"><span>Clear signature</span></button>
+                </div>
+                <div id="addSignatureSaveContainer">
+                  <input type="checkbox" id="addSignatureSaveCheckbox"></input>
+                  <label for="addSignatureSaveCheckbox">Save Signature</label>
+                  <span></span>
+                  <span id="addSignatureSaveWarning" data-l10n-id="pdfjs-editor-add-signature-save-warning-message"></span>
+                </div>
+              </div>
+              <div id="addSignatureError" hidden="true" class="messageBar">
+                <div>
+                  <div>
+                    <span id="addSignatureErrorTitle" class="title" data-l10n-id="pdfjs-editor-add-signature-image-upload-error-title"></span>
+                    <span id="addSignatureErrorDescription" class="description" data-l10n-id="pdfjs-editor-add-signature-image-upload-error-description"></span>
+                  </div>
+                  <button id="addSignatureErrorCloseButton" class="closeButton" type="button" tabindex="0"><span data-l10n-id="pdfjs-editor-add-signature-error-close-button"></span></button>
+                </div>
+              </div>
+              <div class="dialogButtonsGroup">
+                <button id="addSignatureCancelButton" type="button" class="secondaryButton" tabindex="0"><span>Cancel</span></button>
+                <button id="addSignatureAddButton" type="button" class="primaryButton" disabled tabindex="0"><span>Add</span></button>
+              </div>
+            </div>
+          </div>
+        </dialog>
+        <dialog class="dialog signatureDialog" id="editSignatureDescriptionDialog" aria-labelledby="editSignatureDescriptionTitle">
+          <div id="editSignatureDescriptionContainer" class="mainContainer">
+            <div class="title">
+              <span id="editSignatureDescriptionTitle" role="sectionhead" data-l10n-id="pdfjs-editor-edit-signature-dialog-title" tabindex="0"></span>
+            </div>
+            <div id="editSignatureDescriptionAndView">
+              <div id="editSignatureDescriptionContainer">
+                <label for="editSignatureDescInput" data-l10n-id="pdfjs-editor-add-signature-description-label"></label>
+                <span id="editSignatureDescription" class="inputWithClearButton">
+                  <input id="editSignatureDescInput" type="text" data-l10n-id="pdfjs-editor-add-signature-description-input" tabindex="0"></input>
+                  <button class="clearInputButton" type="button" tabindex="0" aria-hidden="true"></button>
+                </span>
+              </div>
+              <svg id="editSignatureView" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+            <div class="dialogButtonsGroup">
+              <button id="editSignatureCancelButton" type="button" class="secondaryButton" tabindex="0"><span data-l10n-id="pdfjs-editor-add-signature-cancel-button"></span></button>
+              <button id="editSignatureUpdateButton" type="button" class="primaryButton" disabled tabindex="0"><span data-l10n-id="pdfjs-editor-edit-signature-update-button"></span></button>
+            </div>
+          </div>
+        </dialog>
         <dialog id="printServiceDialog" style="min-width: 200px;">
           <div class="row">
             <span>Preparing document for printing...</span>
@@ -452,6 +566,7 @@ See https://github.com/adobe-type-tools/cmap-resources
   <div id="editorFreeHighlightThickness"></div><div id="editorHighlightButton"></div>
   <div id="editorHighlightShowAll"></div><div id="editorInkButton"></div><div id="editorInkColor"></div>
   <div id="editorInkThickness"></div><div id="editorInkOpacity"></div>
+  <div id="editorSignatureAddSignature"></div><div id="editorSignatureButton"></div>
   {% endif %}
 
   <div id="viewAttachments"></div><div id="viewLayers"></div><div id="altTextSave"></div>
@@ -460,7 +575,6 @@ See https://github.com/adobe-type-tools/cmap-resources
   <div id="pageRotateCw"></div><div id="pageRotateCcw"></div><div id="documentProperties"></div>
   <div id="documentPropertiesDialog"></div><div id="documentPropertiesClose"></div><div id="presentationMode"></div>
   <div id="descriptionButton"></div><div id="decorativeButton"></div><div id="altTextCancel"></div>
-  <div id="editorSignatureAddSignature"></div><div id="editorSignatureButton"></div>
   <div id="imageAltTextSettings"></div><div id="viewBookmark"></div><div id="editorComment"></div>
   <div id="editorCommentButton"></div>
 </html>
