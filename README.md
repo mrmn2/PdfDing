@@ -87,9 +87,6 @@ you can support me on various platforms. This allows me to spend more time on im
 <a href="https://github.com/sponsors/mrmn2" target="_blank">
   <img alt="gh sponsor" src="https://img.shields.io/badge/Sponsor-%23475569?style=flat&logo=github" height=30/>
 </a>&nbsp;
-<a href="https://www.buymeacoffee.com/mrmn2" target="_blank">
-  <img alt="buy me a coffee" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height=30/>
-</a>&nbsp;
 <a href="https://ko-fi.com/mrmn2" target="_blank">
   <img alt="ko-fi" src="https://storage.ko-fi.com/cdn/kofi5.png?v=6" height=30/>
 </a>
