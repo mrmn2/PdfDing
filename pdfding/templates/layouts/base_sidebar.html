@@ -7,8 +7,23 @@
     {% endblock %}
     <div class="hidden md:block md:w-52! lg:w-60! py-2 absolute bottom-0 fixed
                 border-t border-slate-300 dark:border-slate-600 creme:border-stone-400
-                text-sm text-slate-400 creme:text-stone-500">
-        <a class="pl-1 hover:underline" href="https://github.com/mrmn2/PdfDing">PdfDing</a>
-        <span> {{ VERSION }}</span>
+                text-sm text-slate-400 creme:text-stone-500 [&>div]:pl-1 [&>div>a]:hover:underline">
+        <div>
+            <a href="https://github.com/mrmn2/PdfDing">PdfDing</a>
+            <span> {{ VERSION }}</span>
+        </div>
+        <div>
+            <a class="flex flex-row items-center gap-x-1" href="{% url 'support' %}">
+                Sponsor
+                <svg class="w-4 h-4" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <!-- source: https://www.svgrepo.com/svg/433519/heart-f -->
+                    <!-- license: PD License-->
+                    <g fill="none" fill-rule="evenodd">
+                        <path d="m0 0h32v32h-32z"/>
+                        <path d="m29.784768 18.838435c2.1985878-3.0737402 2.215232-4.6673224 2.215232-7.1599086 0-3.8396034-3.504074-8.6785264-8.4317228-8.6785264-3.1677228 0-5.3903301 1.19865916-6.5738832 2.05486929-.2036467.14732275-.3765311.28450698-.5181749.40370211-.6552522.46319824-.3024458.46092892-.9408107.00980343-.1425898-.1204512-.317636-.25980812-.5246323-.40976275-1.1822443-.85645517-3.4067121-2.05861208-6.57905331-2.05861208-4.92764879 0-8.43172279 4.838923-8.43172279 8.6785264 0 3.8396033 1.83194611 7.6268851 5.12706376 10.4418366 3.29511764 2.8149515 5.49751934 4.4983953 7.87293624 5.9509354.370419.2265069.6970491.4294336.984729.6106003 1.5571491.9806166 3.0300559.706874 4.0146911.0610374.3462238-.2270932.6932875-.4591057 1.0005799-.6716377 1.1812096-.8169574 2.5394341-1.7683558 2.5394341-1.7683558s6.0467462-4.3907674 8.2453339-7.4645076z" fill="#ef4444"/>
+                    </g>
+                </svg>
+            </a>
+        </div>
     </div>
 </div>
