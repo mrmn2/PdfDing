@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   pdfding:
@@ -6,13 +6,10 @@ services:
     image: mrmn/pdfding:latest
     volumes:
       - media:/home/nonroot/pdfding/media
-      # If you use selinux it might be necessary to add the :Z after the volume
-      # - media:/home/nonroot/pdfding/media:Z
     environment:
       - DEFAULT_THEME=${DEFAULT_THEME:-dark}
       - DEFAULT_THEME_COLOR=${DEFAULT_THEME_COLOR:-blue}
-      # use a long random secret
-      - SECRET_KEY=${SECRET_KEY:-some_secret}
+      - SECRET_KEY=${SECRET_KEY:-some_long_random_secret}
       # the domain where you want to access PdfDing, e.g. pdfding.com
       - HOST_NAME=${HOST_NAME:-127.0.0.1}
       - DATABASE_TYPE=${DATABASE_TYPE:-POSTGRES}
