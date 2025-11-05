@@ -32,6 +32,8 @@ INTERNAL_IPS = ['127.0.0.1']
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'some_key'  # nosec B105
 
+SUPPORTER_EDITION = True
+
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 DEFAULT_FROM_EMAIL = 'info@localhost'

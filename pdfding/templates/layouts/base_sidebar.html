@@ -12,7 +12,12 @@
             <a class="hover:underline" href="https://github.com/mrmn2/PdfDing">PdfDing</a>
             <span> {{ VERSION }}</span>
         </div>
-        <div>
+        {% if SUPPORTER_EDITION %}
+        <div id="supporter">
+            <span>Supporter Edition</span>
+        </div>
+        {% else %}
+        <div id="sponsor">
             <a class="flex flex-row items-center gap-x-2" href="https://docs.pdfding.com/sponsor">
                 <span class="hover:underline">Sponsor</span>
                 <svg class="w-4 h-4" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -25,5 +30,6 @@
                 </svg>
             </a>
         </div>
+        {% endif %}
     </div>
 </div>

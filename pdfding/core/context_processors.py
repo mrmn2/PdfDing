@@ -10,4 +10,5 @@ def pdfding_context(request: HttpRequest):  # pragma: no cover
         'DEMO_MODE': settings.DEMO_MODE,
         'VERSION': settings.VERSION,
         'ALLOW_PDF_SUB_DIRECTORIES': settings.ALLOW_PDF_SUB_DIRECTORIES,
+        'SUPPORTER_EDITION': settings.SUPPORTER_EDITION,
     }

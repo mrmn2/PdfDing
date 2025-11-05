@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-import os
+from os import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 ]
 
 # remove these apps for the e2e tests as they cause problems and are not needed
-if os.environ.get('E2E_TESTS'):
+if environ.get('E2E_TESTS'):
     INSTALLED_APPS.remove('huey.contrib.djhuey')
     INSTALLED_APPS.remove('backup')
 
@@ -96,15 +96,15 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if os.environ.get('DATABASE_TYPE') == 'POSTGRES':  # pragma: no cover
+if environ.get('DATABASE_TYPE') == 'POSTGRES':  # pragma: no cover
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('POSTGRES_NAME', 'pdfding'),
-            'USER': os.environ.get('POSTGRES_USER', 'pdfding'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
-            'HOST': os.environ.get('POSTGRES_HOST', 'postgres'),
-            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+            'NAME': environ.get('POSTGRES_NAME', 'pdfding'),
+            'USER': environ.get('POSTGRES_USER', 'pdfding'),
+            'PASSWORD': environ.get('POSTGRES_PASSWORD', 'password'),
+            'HOST': environ.get('POSTGRES_HOST', 'postgres'),
+            'PORT': environ.get('POSTGRES_PORT', '5432'),
         }
     }
 else:
@@ -120,7 +120,7 @@ else:
     }
 
     # remove entry for the e2e tests as it causes problems and is not needed
-    if os.environ.get('E2E_TESTS'):
+    if environ.get('E2E_TESTS'):
         DATABASES['default'].pop('TEST')
 
 
@@ -207,7 +207,7 @@ HUEY = {
 
 CONSUME_DIR = BASE_DIR / 'consume'
 
-log_level = os.environ.get('LOG_LEVEL', 'ERROR')
+log_level = environ.get('LOG_LEVEL', 'ERROR')
 
 LOGGING = {
     'version': 1,

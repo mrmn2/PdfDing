@@ -1,9 +1,11 @@
-import os
+from os import environ
+
+from django.contrib.auth.hashers import check_password
 
 from .base import *  # noqa: F401 F403
 
 try:
-    from .version import VERSION
+    from .version import VERSION  # pyright: ignore
 except ModuleNotFoundError:
     VERSION = 'unknown'
 
@@ -30,7 +32,7 @@ STORAGES = {
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
 # web security settings
-ALLOWED_HOSTS = os.environ.get('HOST_NAME', '').split(',')
+ALLOWED_HOSTS = environ.get('HOST_NAME', '').split(',')
 ALLOWED_HOSTS = [allowed_host.strip() for allowed_host in ALLOWED_HOSTS if allowed_host != '']
 
 if ALLOWED_HOSTS:
@@ -38,35 +40,35 @@ if ALLOWED_HOSTS:
     for allowed_host in ALLOWED_HOSTS:
         CSRF_TRUSTED_ORIGINS.extend([f'https://{allowed_host}', f'http://{allowed_host}'])
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = environ.get('SECRET_KEY')
 
-if os.environ.get('CSRF_COOKIE_SECURE', 'TRUE') == 'TRUE':
+if environ.get('CSRF_COOKIE_SECURE', 'TRUE') == 'TRUE':
     CSRF_COOKIE_SECURE = True
-if os.environ.get('SESSION_COOKIE_SECURE', 'TRUE') == 'TRUE':
+if environ.get('SESSION_COOKIE_SECURE', 'TRUE') == 'TRUE':
     SESSION_COOKIE_SECURE = True
-if os.environ.get('SECURE_SSL_REDIRECT') == 'TRUE':
+if environ.get('SECURE_SSL_REDIRECT') == 'TRUE':
     SECURE_SSL_REDIRECT = True
-if os.environ.get('SECURE_HSTS_SECONDS'):
-    SECURE_HSTS_SECONDS = os.environ.get('SECURE_HSTS_SECONDS')
+if environ.get('SECURE_HSTS_SECONDS'):
+    SECURE_HSTS_SECONDS = environ.get('SECURE_HSTS_SECONDS')
 
 # backup settings
-if os.environ.get('BACKUP_ENABLE') == 'TRUE':
+if environ.get('BACKUP_ENABLE') == 'TRUE':
     # without a dummy value, huey will not start
     BACKUP_ENABLED = True
-    BACKUP_ENDPOINT = os.environ.get('BACKUP_ENDPOINT', 'minio.pdfding.com')
-    BACKUP_ACCESS_KEY = os.environ.get('BACKUP_ACCESS_KEY')
-    BACKUP_SECRET_KEY = os.environ.get('BACKUP_SECRET_KEY')
-    BACKUP_BUCKET_NAME = os.environ.get('BACKUP_BUCKET_NAME', 'pdfding')
-    BACKUP_SCHEDULE = os.environ.get('BACKUP_SCHEDULE', '0 2 * * *')
-    if os.environ.get('BACKUP_SECURE') == 'TRUE':
+    BACKUP_ENDPOINT = environ.get('BACKUP_ENDPOINT', 'minio.pdfding.com')
+    BACKUP_ACCESS_KEY = environ.get('BACKUP_ACCESS_KEY')
+    BACKUP_SECRET_KEY = environ.get('BACKUP_SECRET_KEY')
+    BACKUP_BUCKET_NAME = environ.get('BACKUP_BUCKET_NAME', 'pdfding')
+    BACKUP_SCHEDULE = environ.get('BACKUP_SCHEDULE', '0 2 * * *')
+    if environ.get('BACKUP_SECURE') == 'TRUE':
         BACKUP_SECURE = True
     else:
         BACKUP_SECURE = False
 
-    if os.environ.get('BACKUP_ENCRYPTION_ENABLE') == 'TRUE':
+    if environ.get('BACKUP_ENCRYPTION_ENABLE') == 'TRUE':
         BACKUP_ENCRYPTION_ENABLED = True
-        BACKUP_ENCRYPTION_PASSWORD = os.environ['BACKUP_ENCRYPTION_PASSWORD']
-        BACKUP_ENCRYPTION_SALT = os.environ.get('BACKUP_ENCRYPTION_SALT', 'pdfding')
+        BACKUP_ENCRYPTION_PASSWORD = environ['BACKUP_ENCRYPTION_PASSWORD']
+        BACKUP_ENCRYPTION_SALT = environ.get('BACKUP_ENCRYPTION_SALT', 'pdfding')
     else:
         BACKUP_ENCRYPTION_ENABLED = False
         # set to none, so that backups.tasks.backup_function raises no attribute error
@@ -77,10 +79,10 @@ else:
     BACKUP_SCHEDULE = '*/1 * * * *'
 
 # consume settings
-if os.environ.get('CONSUME_ENABLE') == 'TRUE':
+if environ.get('CONSUME_ENABLE') == 'TRUE':
     CONSUME_ENABLED = True
-    CONSUME_TAG_STRING = os.environ.get('CONSUME_TAGS', '')
-    if os.environ.get('CONSUME_SKIP_EXISTING') == 'FALSE':
+    CONSUME_TAG_STRING = environ.get('CONSUME_TAGS', '')
+    if environ.get('CONSUME_SKIP_EXISTING') == 'FALSE':
         CONSUME_SKIP_EXISTING = False
     else:
         CONSUME_SKIP_EXISTING = True
@@ -89,19 +91,19 @@ else:
     CONSUME_SKIP_EXISTING = False
 
 # mail settings
-if os.environ.get('EMAIL_BACKEND') == 'SMTP':
+if environ.get('EMAIL_BACKEND') == 'SMTP':
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = os.environ.get('SMTP_HOST')
-    EMAIL_PORT = os.environ.get('SMTP_PORT', 587)
-    EMAIL_HOST_USER = os.environ.get('SMTP_USER')
-    EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD')
-    if os.environ.get('SMTP_USE_TLS') == 'TRUE':
+    EMAIL_HOST = environ.get('SMTP_HOST')
+    EMAIL_PORT = environ.get('SMTP_PORT', 587)
+    EMAIL_HOST_USER = environ.get('SMTP_USER')
+    EMAIL_HOST_PASSWORD = environ.get('SMTP_PASSWORD')
+    if environ.get('SMTP_USE_TLS') == 'TRUE':
         EMAIL_USE_TLS = True
-    if os.environ.get('SMTP_USE_SSL') == 'TRUE':
+    if environ.get('SMTP_USE_SSL') == 'TRUE':
         EMAIL_USE_SSL = True
 
-if os.environ.get('EMAIL_ADDRESS'):
-    DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_ADDRESS')
+if environ.get('EMAIL_ADDRESS'):
+    DEFAULT_FROM_EMAIL = environ.get('EMAIL_ADDRESS')
 else:
     try:
         DEFAULT_FROM_EMAIL = f'info@{ALLOWED_HOSTS[0]}'
@@ -109,27 +111,27 @@ else:
         DEFAULT_FROM_EMAIL = 'info@pdfding'
 
 # authentication settings
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = os.environ.get('ACCOUNT_DEFAULT_HTTP_PROTOCOL', 'https')
-if os.environ.get('ACCOUNT_EMAIL_VERIFICATION') == 'TRUE':
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = environ.get('ACCOUNT_DEFAULT_HTTP_PROTOCOL', 'https')
+if environ.get('ACCOUNT_EMAIL_VERIFICATION') == 'TRUE':
     ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 else:
     ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
-if os.environ.get('DISABLE_USER_SIGNUP') == 'TRUE':
+if environ.get('DISABLE_USER_SIGNUP') == 'TRUE':
     SIGNUP_CLOSED = True
 else:
     SIGNUP_CLOSED = False
 
 # configure the oidc provider
-if os.environ.get('OIDC_ENABLE') == 'TRUE':
+if environ.get('OIDC_ENABLE') == 'TRUE':
     # enable social logins only
-    if os.environ.get('OIDC_ONLY') == 'TRUE':
+    if environ.get('OIDC_ONLY') == 'TRUE':
         SOCIALACCOUNT_ONLY = True
         ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-    OIDC_GROUPS_CLAIM = os.environ.get('OIDC_GROUPS_CLAIM', 'groups')
-    OIDC_ADMIN_GROUP = os.environ.get('OIDC_ADMIN_GROUP', '')
-    OIDC_EXTRA_SCOPE = os.environ.get('OIDC_EXTRA_SCOPE', '')
+    OIDC_GROUPS_CLAIM = environ.get('OIDC_GROUPS_CLAIM', 'groups')
+    OIDC_ADMIN_GROUP = environ.get('OIDC_ADMIN_GROUP', '')
+    OIDC_EXTRA_SCOPE = environ.get('OIDC_EXTRA_SCOPE', '')
     OIDC_SCOPE = ['openid', 'profile', 'email']
     if OIDC_EXTRA_SCOPE and OIDC_EXTRA_SCOPE not in OIDC_SCOPE:
         OIDC_SCOPE.append(OIDC_EXTRA_SCOPE)
@@ -143,11 +145,11 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
             'APPS': [
                 {
                     'provider_id': 'oidc',
-                    'name': os.environ.get('OIDC_PROVIDER_NAME', 'OIDC').upper(),
-                    'client_id': os.environ['OIDC_CLIENT_ID'],
-                    'secret': os.environ['OIDC_CLIENT_SECRET'],
+                    'name': environ.get('OIDC_PROVIDER_NAME', 'OIDC').upper(),
+                    'client_id': environ['OIDC_CLIENT_ID'],
+                    'secret': environ['OIDC_CLIENT_SECRET'],
                     'settings': {
-                        'server_url': os.environ['OIDC_AUTH_URL'],
+                        'server_url': environ['OIDC_AUTH_URL'],
                         # Optional token endpoint authentication method.
                         # May be one of 'client_secret_basic', 'client_secret_post'
                         # If omitted, a method from the server's
@@ -164,37 +166,46 @@ if os.environ.get('OIDC_ENABLE') == 'TRUE':
 theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
 themes = ['light', 'dark', 'creme', 'system']
 
-if not os.environ.get('DEFAULT_THEME'):
+if not environ.get('DEFAULT_THEME'):
     DEFAULT_THEME = 'system'
-elif os.environ.get('DEFAULT_THEME') in themes:
-    DEFAULT_THEME = os.environ.get('DEFAULT_THEME')
+elif environ.get('DEFAULT_THEME') in themes:
+    DEFAULT_THEME = environ.get('DEFAULT_THEME')
 else:
     raise ValueError(
-        f'Provided DEFAULT_THEME value {os.environ.get('DEFAULT_THEME')} is not valid. '
+        f'Provided DEFAULT_THEME value {environ.get('DEFAULT_THEME')} is not valid. '
         f'Valid values are: {", ".join(themes)}.'
     )
 
-if not os.environ.get('DEFAULT_THEME_COLOR'):
+if not environ.get('DEFAULT_THEME_COLOR'):
     DEFAULT_THEME_COLOR = 'Green'
-elif os.environ.get('DEFAULT_THEME_COLOR') in theme_colors:
+elif environ.get('DEFAULT_THEME_COLOR') in theme_colors:
     # tailwind css expects a leading capitalized letter, see pdfding/static/css/tailwind.css.
-    DEFAULT_THEME_COLOR = os.environ.get('DEFAULT_THEME_COLOR').capitalize()
+    DEFAULT_THEME_COLOR = environ.get('DEFAULT_THEME_COLOR', '').capitalize()
 else:
     raise ValueError(
-        f'Provided DEFAULT_THEME_COLOR value {os.environ.get('DEFAULT_THEME_COLOR')} is not valid. '
+        f'Provided DEFAULT_THEME_COLOR value {environ.get('DEFAULT_THEME_COLOR')} is not valid. '
         f'Valid values are: {", ".join(theme_colors)}.'
     )
 
 # Allow subdirectories when saving PDFs to the media dir in the UI
-if os.environ.get('ALLOW_PDF_SUB_DIRECTORIES', 'FALSE') == 'TRUE':
+if environ.get('ALLOW_PDF_SUB_DIRECTORIES', 'FALSE') == 'TRUE':
     ALLOW_PDF_SUB_DIRECTORIES = True
 else:
     ALLOW_PDF_SUB_DIRECTORIES = False
 
+# supporter edition settings
+SUPPORTER_KEY_HASH = 'pbkdf2_sha256$1000000$supporter$ZHnPv0AcYm6ZV5Pcyw8ULh3C1Dd5EGD2XG49gWpeTns='
+SUPPORTER_KEY = environ.get('SUPPORTER_KEY', '')
+
+if check_password(SUPPORTER_KEY, SUPPORTER_KEY_HASH):
+    SUPPORTER_EDITION = True
+else:
+    SUPPORTER_EDITION = False
+
 # demo mode
-if os.environ.get('DEMO_MODE', 'FALSE') == 'TRUE':
+if environ.get('DEMO_MODE', 'FALSE') == 'TRUE':
     DEMO_MODE = True
-    DEMO_MODE_RESTART_INTERVAL = int(os.environ.get('DEMO_MODE_RESTART_INTERVAL', 60))  # in minutes
-    DEMO_MAX_USERS = int(os.environ.get('DEMO_MAX_USERS', 500))
+    DEMO_MODE_RESTART_INTERVAL = int(environ.get('DEMO_MODE_RESTART_INTERVAL', 60))  # in minutes
+    DEMO_MAX_USERS = int(environ.get('DEMO_MAX_USERS', 500))
 else:
     DEMO_MODE = False
