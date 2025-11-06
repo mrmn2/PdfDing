@@ -205,12 +205,13 @@ class OverviewMixin(BasePdfMixin):
             page = 'pdf_overview'
 
         extra_context = {
+            'layout': request.user.profile.layout,
+            'needs_nagging': request.user.profile.needs_nagging,
+            'page': page,
             'search_query': request.GET.get('search', ''),
-            'tag_query': tag_query,
             'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': service.TagServices.get_tag_info_dict(request.user.profile),
-            'page': page,
-            'layout': request.user.profile.layout,
+            'tag_query': tag_query,
         }
 
         return extra_context

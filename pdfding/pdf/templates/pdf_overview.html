@@ -1,9 +1,11 @@
 {% extends 'layouts/blank.html' %}
 
 {% block content %}
-<div class="" x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false }">
+<div class=""
+     x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false {% if needs_nagging %}, show_nagging_modal: true {% endif %}}"
+     >
     <div class="flex flex-col md:flex-row md:justify-start"
-         :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
+         :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal {% if needs_nagging %}|| show_nagging_modal {% endif %}}">
         <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
           {% include 'includes/sidebar.html' %}
         </div>
@@ -41,8 +43,9 @@
         <div id="edit_tag"></div>
     </div>
     <div x-show="show_preview_modal" x-cloak
+         {# preview_inner clears the preview, otherwise the old preview will be shortly visible when opening a new one #}
          @click.away="show_preview_modal = false; $refs.preview_inner.remove()"
-         @keyup.escape.window="show_preview_modal = false"
+         @keyup.escape.window="show_preview_modal = false; $refs.preview_inner.remove()"
          class="fixed inset-x-0 top-40 mx-auto my-auto w-80! lg:w-[28rem]! z-20">
         <div id="preview"></div>
     </div>
@@ -52,6 +55,9 @@
          class="fixed inset-x-0 top-40 mx-auto my-auto w-80! lg:w-[28rem]! z-20">
         <div id="delete_pdf_modal"></div>
     </div>
+    {% if needs_nagging %}
+    {% include 'includes/pdf_overview/nagging.html' %}
+    {% endif %}
 </div>
 
 {% endblock %}

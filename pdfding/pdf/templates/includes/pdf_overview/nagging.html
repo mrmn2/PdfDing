@@ -1,0 +1,46 @@
+<div id="nagging"
+     x-show="show_nagging_modal" x-cloak
+     @click.away="show_nagging_modal = false"
+     @keyup.escape.window="show_nagging_modal = false"
+     class="fixed inset-x-0 top-30 md:top-40 mx-auto my-auto w-9/10! md:w-[44rem]! z-20">
+    <div class="flex flex-col gap-y-6 rounded-2xl drop-shadow-2xl shadow-black w-full px-4 py-5
+            bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
+            border border-slate-400 dark:border-slate-600 creme:border-creme-dark">
+        <div class="font-bold text-3xl">Hello there</div>
+        <div>
+            I am Marcel, the developer of PdfDing. Pardon my nagging but developing software,
+            this app is no exception, requires a lot of time. Sponsoring enables me to spend
+            more time on making PdfDing even better. And you will probably make my day ...
+        </div>
+        <div class="flex flex-row items-center [&>a]:text-primary [&>a]:cursor-pointer [&>a]:hover:underline">
+            <a href="https://docs.pdfding.com/sponsor">Sponsorship Details</a>
+            <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12.1" cy="12.1" r="1"></circle>
+            </svg>
+            <a href="https://github.com/sponsors/mrmn2">Github Sponsors</a>
+            <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12.1" cy="12.1" r="1"></circle>
+            </svg>
+            <a href="https://ko-fi.com/mrmn2">KoFi</a>
+        </div>
+        <div class="flex flex-row gap-x-1">
+            <div class="text-primary">
+                <svg class="w-5 h-5" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                      viewBox="0 0 120 120" enable-background="new 0 0 120 120" xml:space="preserve">
+                    <!-- https://www.svgrepo.com/svg/343780/fire -->
+                    <!-- license: CC0 License-->
+                    <path fill="currentColor" d="M107.58,80.599c0,20.512-16.631,37.141-37.143,37.143c-20.514-0.002-37.143-16.631-37.143-37.143
+                      c0-9.746,2.203-23.92,15.156-36.873c23.698-23.697,24.809-37.3,24.809-37.3C101.736,34.903,107.58,60.084,107.58,80.599z"/>
+                    <path fill="currentColor" d="M29.833,28.5c0,0,3.461,22.667,23.558,35.616C64.549,71.306,87.667,91.438,87.667,98.5
+                      c0,14.861-35.343,19.24-50.205,19.24c-14.861,0-26.91-12.047-26.91-26.908C10.552,75.969,9.203,49.131,29.833,28.5z"/>
+                    <path fill="#FFFFFF" d="M60.919,49.177c0,0,0.602,7.371,13.443,20.212c7.018,7.018,8.211,14.697,8.211,19.979
+                      c0,11.114-9.01,20.125-20.125,20.125c-11.115,0-20.126-9.011-20.125-20.125C42.323,78.253,45.489,64.608,60.919,49.177z"/>
+                </svg>
+            </div>
+            <span>Tip: The supporter tiers hide everything Sponsorship related forever.</span>
+        </div>
+        <div @click="show_nagging_modal = false" class="py-2">
+            <button class="flex! items-center justify-center py-1! px-1">Leave me alone</button>
+        </div>
+    </div>
+</div>

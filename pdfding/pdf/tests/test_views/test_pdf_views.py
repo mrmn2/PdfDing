@@ -335,6 +335,7 @@ class TestOverviewMixin(TestCase):
         filtered_pdfs = pdf_views.OverviewMixin.fuzzy_filter_pdfs(Pdf.objects.all(), 'self hosted')
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_self_hosting, pdf_self_hosted])
 
+    @override_settings(SUPPORTER_EDITION=True)
     @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
@@ -347,10 +348,12 @@ class TestOverviewMixin(TestCase):
             'special_pdf_selection': '',
             'page': 'pdf_overview',
             'layout': 'Compact',
+            'needs_nagging': False,
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
+    @override_settings(SUPPORTER_EDITION=True)
     @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=starred')
@@ -363,10 +366,12 @@ class TestOverviewMixin(TestCase):
             'special_pdf_selection': 'starred',
             'page': 'pdf_overview_starred',
             'layout': 'Compact',
+            'needs_nagging': False,
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
+    @override_settings(SUPPORTER_EDITION=True)
     @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection_invalid(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=invalid')
@@ -379,10 +384,12 @@ class TestOverviewMixin(TestCase):
             'special_pdf_selection': '',
             'page': 'pdf_overview',
             'layout': 'Compact',
+            'needs_nagging': False,
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
 
+    @override_settings(SUPPORTER_EDITION=True)
     @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_empty_queries(self, mock_get_tag_info_dict):
         response = self.client.get(reverse('pdf_overview'))
@@ -395,6 +402,7 @@ class TestOverviewMixin(TestCase):
             'special_pdf_selection': '',
             'page': 'pdf_overview',
             'layout': 'Compact',
+            'needs_nagging': False,
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)

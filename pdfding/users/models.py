@@ -1,5 +1,12 @@
+from datetime import datetime, timedelta, timezone
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+
+
+def get_last_time_nagged_initial():  # pragma: no cover
+    return datetime.now(tz=timezone.utc) - timedelta(weeks=5)
 
 
 class Profile(models.Model):
@@ -72,6 +79,7 @@ class Profile(models.Model):
     custom_theme_color = models.CharField(max_length=7, default='#ffa385')
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
+    last_time_nagged = models.DateTimeField(default=get_last_time_nagged_initial)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_keep_screen_awake = models.CharField(
         choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED
@@ -81,15 +89,27 @@ class Profile(models.Model):
     shared_pdf_sorting = models.CharField(
         choices=SharedPdfSortingChoice, max_length=15, default=SharedPdfSortingChoice.NEWEST
     )
-    tags_open = models.BooleanField(default=False)
-    tag_tree_mode = models.BooleanField(default=True)
+    tags_open = models.BooleanField(default=False)  # type: ignore
+    tag_tree_mode = models.BooleanField(default=True)  # type: ignore
     user_sorting = models.CharField(choices=UserSortingChoice, max_length=15, default=UserSortingChoice.NEWEST)
 
     def __str__(self):  # pragma: no cover
-        return str(self.user.email)
+        return str(self.user.email)  # type: ignore
 
     @property
-    def dark_mode_str(self):  # pragma: no cover
+    def dark_mode_str(self) -> str:  # pragma: no cover
         """Return dark mode property so that it can be used in templates."""
 
         return str.lower(str(self.dark_mode))
+
+    @property
+    def needs_nagging(self):
+        """
+        Check if a user needs to be nagged to sponsor the project. Only nags once every 8 weeks. Users
+        of the Supporter Edition will never be nagged.
+        """
+
+        if not settings.SUPPORTER_EDITION and (datetime.now(tz=timezone.utc) - self.last_time_nagged).days > 7 * 8:
+            return True
+        else:
+            return False

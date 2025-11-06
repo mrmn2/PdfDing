@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta, timezone
+
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 
 class TestProfile(TestCase):
@@ -17,3 +19,27 @@ class TestProfile(TestCase):
         user.profile.save()
 
         self.assertEqual(user.profile.dark_mode_str, 'dark')
+
+    @override_settings(SUPPORTER_EDITION=True)
+    def test_needs_nagging_supporter_edition(self):
+        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+        user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
+        user.profile.save()
+
+        self.assertEqual(user.profile.needs_nagging, False)
+
+    @override_settings(SUPPORTER_EDITION=False)
+    def test_needs_nagging_needed_non_supporter(self):
+        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+        user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
+        user.profile.save()
+
+        self.assertEqual(user.profile.needs_nagging, True)
+
+    @override_settings(SUPPORTER_EDITION=False)
+    def test_needs_nagging_not_needed_non_supporter(self):
+        user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+        user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(days=40)
+        user.profile.save()
+
+        self.assertEqual(user.profile.needs_nagging, False)
