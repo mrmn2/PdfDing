@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "alpinejs": "3.15.0",
-    "htmx.org": "2.0.7",
-    "tailwindcss": "4.1.13",
-    "terser": "5.44.0"
+    "alpinejs": "3.15.1",
+    "htmx.org": "2.0.8",
+    "tailwindcss": "4.1.17",
+    "terser": "5.44.1"
   },
   "scripts": {
     "build:alpine": "cp node_modules/alpinejs/dist/cdn.min.js pdfding/static/js/alpine.min.js",
     "build:htmx": "cp node_modules/htmx.org/dist/htmx.min.js pdfding/static/js/htmx.min.js",
-    "build": "mkdir -p pdfding/static/js && npm run build:alpine && npm run build:htmx"
+    "build": "npm run build:alpine && npm run build:htmx"
   }
 }
