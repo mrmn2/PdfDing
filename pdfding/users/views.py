@@ -1,3 +1,4 @@
+import json
 from random import randint
 from uuid import uuid4
 
@@ -10,7 +11,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -194,8 +195,8 @@ class OpenCollapseTags(View):
     def post(self, request: HttpRequest):
         """Open or collapse the tags in the pdf overview"""
 
-        if request.htmx:
-            user_profile = request.user.profile
+        if request.htmx:  # type: ignore
+            user_profile = request.user.profile  # type: ignore
             user_profile.tags_open = not user_profile.tags_open
 
             user_profile.save()
@@ -203,6 +204,36 @@ class OpenCollapseTags(View):
             return HttpResponseClientRefresh()
 
         return redirect('account_settings')
+
+
+class Signatures(View):
+    """View for gettings and setting signatures"""
+
+    def get(self, request: HttpRequest):
+        user_profile = request.user.profile  # type: ignore
+
+        return JsonResponse(user_profile.signatures)
+
+    def post(self, request: HttpRequest):
+        user_profile = request.user.profile  # type: ignore
+
+        viewer_current_signatures = request.POST.get('current_signatures')
+        viewer_previous_signatures = request.POST.get('previous_signatures')
+        viewer_current_signatures = json.loads(viewer_current_signatures)  # type: ignore
+        viewer_previous_signatures = json.loads(viewer_previous_signatures)  # type: ignore
+
+        signatures_to_be_removed = [sig for sig in viewer_previous_signatures if sig not in viewer_current_signatures]
+        signatures_to_be_added = [sig for sig in viewer_current_signatures if sig not in viewer_previous_signatures]
+
+        for sig in signatures_to_be_removed:
+            user_profile.signatures.pop(sig, None)
+
+        for sig in signatures_to_be_added:
+            user_profile.signatures[sig] = viewer_current_signatures[sig]
+
+        user_profile.save()
+
+        return HttpResponse(status=201)
 
 
 class Delete(View):
@@ -216,7 +247,7 @@ class Delete(View):
     def post(self, request: HttpRequest):
         """Delete the user"""
 
-        user = request.user
+        user = request.user  # type: ignore
 
         logout(request)
         user.delete()

@@ -13,4 +13,5 @@ urlpatterns = [
     path('change_sorting/<sorting_category>/<sorting>', views.ChangeSorting.as_view(), name="change_sorting"),
     path('change_tree_mode', views.ChangeTreeMode.as_view(), name="change_tree_mode"),
     path('open_collapse_tags', views.OpenCollapseTags.as_view(), name="open_collapse_tags"),
+    path('signatures', views.Signatures.as_view(), name="signatures"),
 ]

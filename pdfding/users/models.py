@@ -89,6 +89,7 @@ class Profile(models.Model):
     shared_pdf_sorting = models.CharField(
         choices=SharedPdfSortingChoice, max_length=15, default=SharedPdfSortingChoice.NEWEST
     )
+    signatures = models.JSONField(default=dict)
     tags_open = models.BooleanField(default=False)  # type: ignore
     tag_tree_mode = models.BooleanField(default=True)  # type: ignore
     user_sorting = models.CharField(choices=UserSortingChoice, max_length=15, default=UserSortingChoice.NEWEST)

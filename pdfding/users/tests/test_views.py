@@ -55,7 +55,7 @@ class TestAuthRelated(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class TestProfileViews(TestCase):
+class BaseProfileView(TestCase):
     username = 'user'
     password = '12345'
 
@@ -64,6 +64,8 @@ class TestProfileViews(TestCase):
         self.user = User.objects.create_user(username=self.username, password=self.password, email='a@a.com')
         self.client.login(username=self.username, password=self.password)
 
+
+class TestProfileSettingsViews(BaseProfileView):
     def test_settings(self):
         # test without social account
         response = self.client.get(reverse('account_settings'))
@@ -304,6 +306,8 @@ class TestProfileViews(TestCase):
         changed_user = User.objects.get(id=self.user.id)
         self.assertEqual(changed_user.profile.annotation_sorting, Profile.AnnotationsSortingChoice.OLDEST)
 
+
+class TestProfileOtherViews(BaseProfileView):
     def test_delete_post(self):
         # in this test we test that the user is successfully deleted
         # we also test that the associated profile, pdfs, and tags are also deleted
@@ -325,6 +329,37 @@ class TestProfileViews(TestCase):
         for model_class in [Profile, Pdf, Tag]:
             # assert there is no profile, pdf and tag
             self.assertEqual(model_class.objects.all().count(), 0)
+
+    def test_get_signatures(self):
+        signatures = {'1': 'signature_1', '2': 'signature_2'}
+
+        profile = self.user.profile
+        profile.signatures = signatures
+        profile.save()
+
+        response = self.client.get(reverse('signatures'))
+
+        self.assertEqual(response.status_code, 200)  # type: ignore
+        self.assertEqual(response.json(), signatures)  # type: ignore
+
+    def test_post_signatures(self):
+        current_signatures = '{"old_2": "old2", "new": "something_new"}'
+        previous_signatures = '{"old_1": "old1", "old_2": "old2", "old_3": "old3"}'
+        server_signatures = {'old_1': 'old1', 'old_2': 'old2'}
+
+        profile = self.user.profile
+        profile.signatures = server_signatures
+        profile.save()
+
+        response = self.client.post(
+            reverse('signatures'),
+            data={'current_signatures': current_signatures, 'previous_signatures': previous_signatures},
+        )
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertEqual(response.status_code, 201)  # type: ignore
+        self.assertEqual(changed_user.profile.signatures, {'old_2': 'old2', 'new': 'something_new'})
 
 
 class TestDemoViews(TestCase):

@@ -1,3 +1,19 @@
+// function for getting the signature
+async function get_remote_signatures(signature_url) {
+  try {
+    const response = await fetch(signature_url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    localStorage.setItem("previous_pdfjs.signature", JSON.stringify(result));
+    localStorage.setItem("pdfjs.signature", JSON.stringify(result));
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
 // function for updating the remote page
 function update_remote_page(pdf_id, update_url, csrf_token) {
   if (PDFViewerApplication.pdfViewer.currentPageNumber != page_number) {
@@ -6,7 +22,7 @@ function update_remote_page(pdf_id, update_url, csrf_token) {
   }
 }
 
-// function for settings current page
+// function for setting the current page
 function set_current_page(current_page, pdf_id, update_url, csrf_token) {
   var form_data = new FormData();
   form_data.append('pdf_id', pdf_id);
@@ -19,6 +35,39 @@ function set_current_page(current_page, pdf_id, update_url, csrf_token) {
       'X-CSRFToken': csrf_token,
     },
   });
+}
+
+// function for updating the remote signatures
+async function update_remote_signatures(signature_url, csrf_token) {
+  const previous_signatures = localStorage.getItem("previous_pdfjs.signature");
+  const current_signatures = localStorage.getItem("pdfjs.signature");
+
+  // check if signatures were updated by pdfjs
+  if (current_signatures != previous_signatures) {
+    const status_code = await set_remote_signatures(current_signatures, previous_signatures, signature_url, csrf_token);
+
+    if (status_code === 201) {
+      // refresh signatures in local storage
+      get_remote_signatures(signature_url);
+    }
+  }
+}
+
+// function for setting signatures
+async function set_remote_signatures(current_signatures, previous_signatures, signature_url, csrf_token) {
+  var form_data = new FormData();
+  form_data.append('current_signatures', current_signatures);
+  form_data.append('previous_signatures', previous_signatures);
+
+  const response = await fetch(signature_url, {
+    method: "POST",
+    body: form_data,
+    headers: {
+      'X-CSRFToken': csrf_token,
+    },
+  });
+
+  return response.status
 }
 
 // send file via the fetch api to the backend
