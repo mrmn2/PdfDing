@@ -595,11 +595,21 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
         self.user.profile.save()
 
+        self.assertTrue(self.user.profile.needs_nagging)
+
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#nagging")).to_be_visible()
 
             self.page.get_by_role("button", name="Leave me alone").click()
+            expect(self.page.locator("#nagging")).not_to_be_visible()
+
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertFalse(changed_user.profile.needs_nagging)
+
+        with sync_playwright() as p:
+            # test opening again
+            self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#nagging")).not_to_be_visible()
 
     @override_settings(SUPPORTER_EDITION=True)

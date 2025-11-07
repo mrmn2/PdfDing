@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 from unittest.mock import patch
@@ -406,6 +406,35 @@ class TestOverviewMixin(TestCase):
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
+
+    @override_settings(SUPPORTER_EDITION=False)
+    def test_do_extra_action_reset(self):
+        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
+        self.user.profile.save()
+
+        self.assertTrue(self.user.profile.needs_nagging)
+
+        self.client.get(reverse('pdf_overview'))
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertFalse(changed_user.profile.needs_nagging)
+        self.assertTrue((changed_user.profile.last_time_nagged - datetime.now(tz=timezone.utc)) < timedelta(minutes=1))
+
+    @override_settings(SUPPORTER_EDITION=False)
+    def test_do_extra_action_no_reset(self):
+        current_datetime = datetime.now(tz=timezone.utc) - timedelta(weeks=6)
+        self.user.profile.last_time_nagged = current_datetime
+        self.user.profile.save()
+
+        self.assertFalse(self.user.profile.needs_nagging)
+
+        self.client.get(reverse('pdf_overview'))
+
+        changed_user = User.objects.get(id=self.user.id)
+
+        self.assertFalse(changed_user.profile.needs_nagging)
+        self.assertEqual(changed_user.profile.last_time_nagged, current_datetime)
 
 
 class TestPdfMixin(TestCase):

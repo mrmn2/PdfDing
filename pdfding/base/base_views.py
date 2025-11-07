@@ -59,6 +59,8 @@ class BaseOverview(View):
         if request.htmx:
             return render(request, f'includes/{self.overview_page_name}.html', context)
         else:
+            self.do_extra_action(request)
+
             return render(request, f'{self.obj_name}_overview.html', context)
 
     def get_page_objects(self, request: HttpRequest, sorting: str, page: int, items_per_page: int, **kwargs):
@@ -74,6 +76,11 @@ class BaseOverview(View):
         next_page_available = page_object.end_index() < objects.count()
 
         return page_object, next_page_available
+
+    def do_extra_action(self, request: HttpRequest):
+        """Do some action before rendering the overview"""
+
+        pass
 
 
 class BaseOverviewQuery(View):

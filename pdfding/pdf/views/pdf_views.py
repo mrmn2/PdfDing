@@ -562,6 +562,15 @@ class Overview(OverviewMixin, base_views.BaseOverview):
     paginating the PDFs.
     """
 
+    def do_extra_action(self, request: HttpRequest):
+        """When nagging modal is shown, set last time nagged to current datetime"""
+
+        profile = request.user.profile
+
+        if profile.needs_nagging:
+            profile.last_time_nagged = datetime.now(tz=timezone.utc)
+            profile.save()
+
 
 class OverviewQuery(BasePdfMixin, base_views.BaseOverviewQuery):
     """View for performing searches and sorting on the PDF overview page."""

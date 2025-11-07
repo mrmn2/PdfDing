@@ -78,8 +78,9 @@ class TestViews(TestCase):
         self.assertEqual(len(pdfs), 1)
         self.assertRedirects(response, reverse('pdf_overview'))
 
+    @patch('base.base_views.BaseOverview.do_extra_action')
     @override_settings(ROOT_URLCONF=__name__)
-    def test_overview_get(self):
+    def test_overview_get(self, mock_do_extra_action):
         # Also test sorting by title with capitalization taken into account
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
         self.user.profile.save()
@@ -98,9 +99,11 @@ class TestViews(TestCase):
         self.assertEqual(response.context['items_per_page'], '3')
         self.assertEqual(str(response.context['sorting']), 'OrderBy(Lower(F(name)), descending=True)')
         self.assertTemplateUsed(response, 'pdf_overview.html')
+        mock_do_extra_action.assert_called_once_with(response.wsgi_request)
 
+    @patch('base.base_views.BaseOverview.do_extra_action')
     @override_settings(ROOT_URLCONF=__name__)
-    def test_overview_get_htmx(self):
+    def test_overview_get_htmx(self, mock_do_extra_action):
         # Also test sorting by title with capitalization taken into account
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
         self.user.profile.save()
@@ -124,6 +127,7 @@ class TestViews(TestCase):
         self.assertEqual(response.context['current_page'], '2')
         self.assertEqual(str(response.context['sorting']), 'OrderBy(Lower(F(name)), descending=True)')
         self.assertTemplateUsed(response, 'includes/pdf_overview/overview_page.html')
+        mock_do_extra_action.assert_not_called()
 
     @override_settings(ROOT_URLCONF=__name__)
     @patch('base.base_views.construct_query_overview_url')
