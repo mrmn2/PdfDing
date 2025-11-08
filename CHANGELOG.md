@@ -1,7 +1,7 @@
 # Changelog
 
 ## v1.4.0 (Nov 08, 2025)
-## What's Changed
+### What's Changed
 * Add system based dark mode by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/179
 * Add signature functionality to PDF viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/180
 * Revamp support section by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/185
