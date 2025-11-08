@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.0 (Nov 08, 2025)
+## What's Changed
+* Add system based dark mode by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/179
+* Add signature functionality to PDF viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/180
+* Revamp support section by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/185
+* Persist signatures in db by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/186
+* Update dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/187
+
 ##  v1.3.3 (Oct 24, 2025)
 ### What's Changed
 * Fix white flashes (FOUC) in dark mode during page load by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/173
