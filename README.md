@@ -27,6 +27,7 @@ your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/link
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
 * Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
 * Edit PDFs by adding comments, highlighting and drawings
+* Add signatures to PDFs and access them on all devices
 * Manage and export PDF highlights and comments in dedicated sections
 * Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
 * SSO support via OIDC
@@ -66,3 +67,9 @@ project's goals or that I don't want to maintain.
 If you are interested in contributing more information can be found in the
 [Contributing](https://docs.pdfding.com/contributing/about/) pages of the docs.
 There are also ways to contribute if you are not a developer.
+
+## Website, Docs & Blog
+
+The repository, which contains the source code for the [project website](https://pdfding.com)
+and the [documentation](https://docs.pdfding.com), can be found on
+[Codeberg](https://codeberg.org/mrmn/PdfDing-website).
