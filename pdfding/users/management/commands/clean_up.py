@@ -32,8 +32,8 @@ def clean_up_deleted_shared_pdfs():
 
 
 def clean_demo_db(
-    db_path: Path = settings.BASE_DIR / 'db' / 'db.sqlite3',
-    after_migration_db_path: Path = settings.BASE_DIR / 'db' / 'migrated.sqlite3',
+    db_path: Path = settings.DATA_DIR / 'db' / 'db.sqlite3',
+    after_migration_db_path: Path = settings.DATA_DIR / 'db' / 'migrated.sqlite3',
 ):
     """Clean the database for the demo mode. In this state the db will have applied migrations but no users or pdfs."""
 

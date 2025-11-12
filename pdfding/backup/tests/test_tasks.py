@@ -135,8 +135,8 @@ class TestSqliteBackup(TestCase):
                 pdf.tags.set(tags)
 
     def test_backup_sqlite(self):
-        test_db_path = settings.BASE_DIR / 'db' / 'test.sqlite3'
-        backup_db_path = settings.BASE_DIR / 'db' / 'test_backup.sqlite3'
+        test_db_path = settings.DATA_DIR / 'db' / 'test.sqlite3'
+        backup_db_path = settings.DATA_DIR / 'db' / 'test_backup.sqlite3'
 
         tasks.backup_sqlite(test_db_path, backup_db_path)
 

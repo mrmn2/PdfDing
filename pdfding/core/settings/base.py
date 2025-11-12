@@ -15,6 +15,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = Path(environ.get("DATA_DIR", BASE_DIR))
 
 
 # Quick-start development settings - unsuitable for production
@@ -111,10 +112,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db' / 'db.sqlite3',
-            'BACKUP_NAME': BASE_DIR / 'db' / 'backup.sqlite3',
+            'NAME': DATA_DIR / 'db' / 'db.sqlite3',
+            'BACKUP_NAME': DATA_DIR / 'db' / 'backup.sqlite3',
             'TEST': {
-                'NAME': BASE_DIR / 'db' / 'test.sqlite3',
+                'NAME': DATA_DIR / 'db' / 'test.sqlite3',
             },
         }
     }
@@ -159,7 +160,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = DATA_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -187,7 +188,7 @@ SOCIALACCOUNT_OPENID_CONNECT_URL_PREFIX = ''
 # Huey task queue
 HUEY = {
     'huey_class': 'huey.SqliteHuey',
-    'filename': BASE_DIR / 'db' / 'tasks.sqlite3',
+    'filename': DATA_DIR / 'db' / 'tasks.sqlite3',
     'immediate': False,  # settings.DEBUG,  # If DEBUG=True, run synchronously.
     'results': False,  # Store return values of tasks.
     'store_none': False,  # If a task returns None, do not save to results.
@@ -205,7 +206,7 @@ HUEY = {
     },
 }
 
-CONSUME_DIR = BASE_DIR / 'consume'
+CONSUME_DIR = DATA_DIR / 'consume'
 
 log_level = environ.get('LOG_LEVEL', 'ERROR')
 
