@@ -4,6 +4,16 @@
 
 # PdfDing
 
+<p align="center">
+    <a href="https://www.pdfding.com">Website</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://demo.pdfding.com">Demo</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://docs.pdfding.com">Docs</a>
+  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <a href="https://docs.pdfding.com/getting_started/docker/">Get Started</a>
+</p>
+
 PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices.
 
 [![GitHub Repo Stars](https://img.shields.io/github/stars/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing)
@@ -22,11 +32,14 @@ devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
 your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/linkding).
 
+A live demo, powered by [PikaPods](https://www.pikapods.com/), is available at
+[demo.pdfding.com](https://demo.pdfding.com/).
+
 ## Features
 
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
 * Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
-* Edit PDFs by adding comments, highlighting and drawings
+* Edit PDFs by adding text, highlighting and drawings
 * Add signatures to PDFs and access them on all devices
 * Manage and export PDF highlights and comments in dedicated sections
 * Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
@@ -48,8 +61,8 @@ PdfDing is an open source project and its code & container images are provided f
 without any strings attached. However, developing and maintaining PdfDing requires a lot
 of time. By sponsoring you allow me to spend more time on PdfDing and make it even better.
 
-[Sponsorship Details](https://docs.pdfding.com/sponsor) -
-[GitHub Sponsors](https://github.com/sponsors/mrmn2) -
+[Sponsorship Details](https://docs.pdfding.com/sponsor) •
+[GitHub Sponsors](https://github.com/sponsors/mrmn2) •
 [KoFi](https://ko-fi.com/mrmn2)
 
 Both available sponsorship options offer the company tiers *Bronze*, *Silver* and
