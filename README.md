@@ -6,11 +6,11 @@
 
 <p align="center">
     <a href="https://www.pdfding.com">Website</a>
-  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <span>&nbsp;•&nbsp;</span>
   <a href="https://demo.pdfding.com">Demo</a>
-  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <span>&nbsp;•&nbsp;</span>
   <a href="https://docs.pdfding.com">Docs</a>
-  <span>&nbsp;&nbsp;•&nbsp;&nbsp;</span>
+  <span>&nbsp;•&nbsp;</span>
   <a href="https://docs.pdfding.com/getting_started/docker/">Get Started</a>
 </p>
 
@@ -22,7 +22,7 @@ PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user 
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mrmn2/PdfDing/tests.yaml?style=flat&logo=github&label=ci)](https://github.com/mrmn2/PdfDing/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing/commits/master/)
 
-![](https://github.com/mrmn2/PdfDing-Screenshots/blob/master/screenshots/pdf_overview_dark_green.png)
+<img src="https://www.pdfding.com/assets/images/pdfding_overview_dark.png" alt="PdfDing Demo Screenshot"/>
 
 ## Introduction
 
