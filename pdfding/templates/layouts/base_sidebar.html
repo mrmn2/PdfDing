@@ -16,6 +16,10 @@
         <div id="supporter">
             <span>Supporter Edition</span>
         </div>
+        {% elif DEMO_MODE %}
+        <div id="demo_mode">
+            <span>Demo Mode</span>
+        </div>
         {% else %}
         <div id="sponsor">
             <a class="flex flex-row items-center gap-x-2" href="https://docs.pdfding.com/sponsor">

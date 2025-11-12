@@ -300,17 +300,27 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             )
 
 
-class SupportEditionE2ETestCase(PdfDingE2ETestCase):
+class EditionE2ETestCase(PdfDingE2ETestCase):
     @override_settings(SUPPORTER_EDITION=True)
     def test_supporter_edition_sidebar(self):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
             expect(self.page.locator("#sponsor")).not_to_be_visible()
+            expect(self.page.locator("#demo_mode")).not_to_be_visible()
             expect(self.page.locator("#supporter")).to_be_visible()
 
-    @override_settings(SUPPORTER_EDITION=False)
+    @override_settings(SUPPORTER_EDITION=False, DEMO_MODE=False)
     def test_not_supporter_edition_sidebar(self):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
             expect(self.page.locator("#sponsor")).to_be_visible()
+            expect(self.page.locator("#demo_mode")).not_to_be_visible()
+            expect(self.page.locator("#supporter")).not_to_be_visible()
+
+    @override_settings(SUPPORTER_EDITION=False, DEMO_MODE=True)
+    def test_demo_mode_sidebar(self):
+        with sync_playwright() as p:
+            self.open(reverse('home'), p)
+            expect(self.page.locator("#sponsor")).not_to_be_visible()
+            expect(self.page.locator("#demo_mode")).to_be_visible()
             expect(self.page.locator("#supporter")).not_to_be_visible()
