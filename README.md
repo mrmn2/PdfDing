@@ -5,7 +5,7 @@
 # PdfDing
 
 <p align="center">
-    <a href="https://www.pdfding.com">Website</a>
+  <a href="https://www.pdfding.com">Website</a>
   <span>&nbsp;•&nbsp;</span>
   <a href="https://demo.pdfding.com">Demo</a>
   <span>&nbsp;•&nbsp;</span>
@@ -86,3 +86,14 @@ There are also ways to contribute if you are not a developer.
 The repository, which contains the source code for the [project website](https://pdfding.com)
 and the [documentation](https://docs.pdfding.com), can be found on
 [Codeberg](https://codeberg.org/mrmn/PdfDing-website).
+
+## Acknowledgements
+
+This project was funded through the [NGI0 Commons Fund](https://nlnet.nl/commonsfund), a fund established by
+[NLnet](https://nlnet.nl) with financial support from the European Commission's
+[Next Generation Internet](https://ngi.eu) programme, under the aegis of DG Communications Networks,
+Content and Technology under grant agreement No 101135429.
+
+[<img src="https://nlnet.nl/logo/banner.svg" alt="NLnet foundation logo" width="200" />](https://nlnet.nl)
+&nbsp;&nbsp;&nbsp;
+[<img src="https://nlnet.nl/image/logos/NGI0Core_tag.svg" alt="NGI Zero Logo" width="200" />](https://nlnet.nl/core)
