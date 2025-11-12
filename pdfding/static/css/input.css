@@ -10,6 +10,7 @@
   --color-creme-dark-light: #d9d2c9;
   --color-creme-dark: #bcb6ae;
   --color-creme-light: #f2eae0;
+  --default-font-family: 'Poppins', var(--font-sans);
 }
 
 /*
@@ -212,4 +213,40 @@ form[action="/accountpassword/change/"] ul.errorlist {
     & blockquote {
         @apply border-l-2 border-primary pl-4 pt-3 pb-1 mb-2 rounded-r bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
     }
+}
+
+/* poppins-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/poppins-v24-latin-regular.woff2') format('woff2');
+}
+
+/* poppins-500 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/poppins-v24-latin-500.woff2') format('woff2');
+}
+
+/* poppins-600 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../fonts/poppins-v24-latin-600.woff2') format('woff2');
+}
+
+/* poppins-700 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/poppins-v24-latin-700.woff2') format('woff2');
 }
