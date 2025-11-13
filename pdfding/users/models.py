@@ -80,18 +80,20 @@ class Profile(models.Model):
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     last_time_nagged = models.DateTimeField(default=get_last_time_nagged_initial)
+    number_of_pdfs = models.IntegerField(default=0)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_keep_screen_awake = models.CharField(
         choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED
     )
     pdf_sorting = models.CharField(choices=PdfSortingChoice, max_length=15, default=PdfSortingChoice.NEWEST)
+    pdfs_total_size = models.IntegerField(default=0)
     show_progress_bars = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.ENABLED)
     shared_pdf_sorting = models.CharField(
         choices=SharedPdfSortingChoice, max_length=15, default=SharedPdfSortingChoice.NEWEST
     )
     signatures = models.JSONField(default=dict)
-    tags_open = models.BooleanField(default=False)  # type: ignore
-    tag_tree_mode = models.BooleanField(default=True)  # type: ignore
+    tags_open = models.BooleanField(default=False)
+    tag_tree_mode = models.BooleanField(default=True)
     user_sorting = models.CharField(choices=UserSortingChoice, max_length=15, default=UserSortingChoice.NEWEST)
 
     def __str__(self):  # pragma: no cover

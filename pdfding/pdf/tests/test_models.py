@@ -6,12 +6,33 @@ from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.test import TestCase
 from pdf.models import Pdf, SharedPdf
+from users.service import get_demo_pdf
 
 
 class TestPdf(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='12345')
         self.pdf = models.Pdf(owner=self.user.profile, name='pdf')
+
+    def test_save_delete_pdf_stats(self):
+        demo_pdf = get_demo_pdf()
+        user = User.objects.create_user(username='test_user', password='12345')
+        self.assertEqual(user.profile.number_of_pdfs, 0)
+        self.assertEqual(user.profile.pdfs_total_size, 0)
+
+        pdf_2 = Pdf.objects.create(owner=user.profile, name='pdf_2', file=demo_pdf)
+        pdf_3 = Pdf.objects.create(owner=user.profile, name='pdf_3', file=demo_pdf)
+
+        self.assertEqual(user.profile.number_of_pdfs, 2)
+        self.assertEqual(user.profile.pdfs_total_size, 2 * 29451)
+
+        pdf_2.delete()
+        self.assertEqual(user.profile.number_of_pdfs, 1)
+        self.assertEqual(user.profile.pdfs_total_size, 29451)
+
+        pdf_3.delete()
+        self.assertEqual(user.profile.number_of_pdfs, 0)
+        self.assertEqual(user.profile.pdfs_total_size, 0)
 
     @patch('pdf.models.delete_empty_dirs_after_rename_or_delete')
     def test_delete(self, mock_delete_empty_dirs_after_rename_or_delete):

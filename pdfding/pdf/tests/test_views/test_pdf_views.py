@@ -14,6 +14,7 @@ from pdf import forms
 from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.service import PdfProcessingServices
 from pdf.views import pdf_views
+from users.service import get_demo_pdf
 
 DEMO_FILE_SIZE = 29451
 
@@ -44,8 +45,6 @@ class TestAddPDFMixin(TestCase):
     def test_obj_save(self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.pdf'
         form = forms.AddForm(
             data={
                 'name': 'some_pdf',
@@ -55,7 +54,7 @@ class TestAddPDFMixin(TestCase):
                 'file_directory': 'some/dir',
             },
             owner=self.user.profile,
-            files={'file': file_mock},
+            files={'file': get_demo_pdf()},
         )
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
@@ -67,7 +66,7 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(pdf.description, 'some_description')
         self.assertEqual(pdf.file_directory, 'some/dir')
         self.assertEqual(pdf.owner, self.user.profile)
-        self.assertEqual(pdf.file.size, 0)  # mock file has size 0
+        self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
@@ -79,17 +78,15 @@ class TestAddPDFMixin(TestCase):
     ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.pdf'
         form = forms.AddForm(
             data={'name': 'bla', 'tag_string': 'tag_a tag_2', 'use_file_name': True},
             owner=self.user.profile,
-            files={'file': file_mock},
+            files={'file': get_demo_pdf()},
         )
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='test1')
+        pdf = self.user.profile.pdf_set.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
@@ -139,22 +136,20 @@ class TestBulkAddPDFMixin(TestCase):
     ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        file_mock = mock.MagicMock(spec=File, name='FileMock')
-        file_mock.name = 'test1.pdf'
         form = forms.BulkAddForm(
             data={'tag_string': 'tag_a tag_2', 'description': '', 'file_directory': 'some/dir'},
             owner=self.user.profile,
-            files=MultiValueDict({'file': [file_mock]}),
+            files=MultiValueDict({'file': [get_demo_pdf()]}),
         )
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='test1')
+        pdf = self.user.profile.pdf_set.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(pdf.file_directory, 'some/dir')
-        self.assertEqual(pdf.file.size, 0)  # mock file has size 0
+        self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
@@ -166,19 +161,20 @@ class TestBulkAddPDFMixin(TestCase):
     ):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        file_mock_1 = mock.MagicMock(spec=File, name='FileMock1')
-        file_mock_1.name = 'test1.pdf'
-        file_mock_2 = mock.MagicMock(spec=File, name='FileMock2')
-        file_mock_2.name = 'test2.pdf'
+
+        file_1 = get_demo_pdf()
+        file_2 = get_demo_pdf()
+        file_2.name = 'demo_2'
+
         form = forms.BulkAddForm(
             data={'tag_string': 'tag_a tag_2', 'description': 'some_description', 'notes': 'some_notes'},
             owner=self.user.profile,
-            files=MultiValueDict({'file': [file_mock_1, file_mock_2]}),
+            files=MultiValueDict({'file': [file_1, file_2]}),
         )
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        for name in ['test1', 'test2']:
+        for name in ['demo', 'demo_2']:
             pdf = self.user.profile.pdf_set.get(name=name)
             tag_names = [tag.name for tag in pdf.tags.all()]
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})

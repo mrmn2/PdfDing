@@ -167,10 +167,37 @@ class Pdf(models.Model):
     thumbnail = models.FileField(upload_to=get_thumbnail_path, null=True, blank=False)
     views = models.IntegerField(default=0)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name  # pragma: no cover
 
-    def delete(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> None:
+        # only update profile pdf stats if pdf object is created
+        if self._state.adding:
+            profile = self.owner
+            profile.number_of_pdfs += 1
+            try:
+                profile.pdfs_total_size += self.file.size
+            except (FileNotFoundError, ValueError):
+                pass
+
+            profile.save()
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs) -> None:
+        # update profile pdf stats
+        profile = self.owner
+        profile.number_of_pdfs -= 1
+
+        if not profile.number_of_pdfs:
+            profile.pdfs_total_size = 0
+        else:
+            try:
+                profile.pdfs_total_size -= self.file.size
+            except (FileNotFoundError, ValueError):
+                pass
+
+        # clean up file directory if needed
         file_directory = self.file_directory
         file_name = self.file.name
         user_id = self.owner.user.id
@@ -179,6 +206,8 @@ class Pdf(models.Model):
 
         if file_directory:
             delete_empty_dirs_after_rename_or_delete(file_name, user_id)
+
+        profile.save()
 
     @property
     def natural_age(self) -> str:  # pragma: no cover
