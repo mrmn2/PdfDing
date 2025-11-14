@@ -51,8 +51,8 @@ class TestMigrations(TestCase):
         self.assertEqual(self.user.profile.number_of_pdfs, 0)
         self.assertEqual(self.user.profile.pdfs_total_size, 0)
 
-        changed_user = User.objects.get(id=self.user.id)
         add_pdf_stats.add_pdf_stats(apps, connection.schema_editor())
+        changed_user = User.objects.get(id=self.user.id)
 
         self.assertEqual(changed_user.profile.number_of_pdfs, 1)
         self.assertEqual(changed_user.profile.pdfs_total_size, 29451)

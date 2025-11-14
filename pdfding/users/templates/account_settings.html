@@ -10,14 +10,27 @@
                     bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
                     border-slate-300 dark:border-slate-700 creme:border-creme-dark">
             <span class="text-2xl font-bold">Account Information</span>
-            <div class="flex flex-row items-center gap-x-2 pt-2">
-                <div class="flex items-center justify-center px-2 mt-1 rounded-full aspect-square cursor-default
-                            border-4 border-primary text-primary">
-                    <span class="text-lg font-extrabold!">{{ request.user.email.capitalize|first }}</span>
+            <div class="flex flex-col lg:flex-row gap-y-2 lg:gap-x-30">
+                <div class="flex flex-row items-center gap-x-2 pt-2">
+                    <div class="flex items-center justify-center px-2 mt-1 rounded-full aspect-square cursor-default
+                                border-4 border-primary text-primary">
+                        <span class="text-lg font-extrabold!">{{ request.user.email.capitalize|first }}</span>
+                    </div>
+                    <div class="flex flex-col truncate [&>span]:text-sm">
+                        <span class="truncate">{{ request.user.email }}</span>
+                        <span>User ID: {{ user.id }}</span>
+                    </div>
                 </div>
-                <div class="flex flex-col truncate [&>span]:text-sm">
-                    <span class="truncate">{{ request.user.email }}</span>
-                    <span>User ID: {{ user.id }}</span>
+                <div class="flex flex-row text-start justify-start gap-x-4 lg:gap-x-30
+                            [&>div]:flex [&>div]:flex-row [&>div]:items-end [&>div]:gap-x-1 [&>div]:lg:gap-x-2">
+                    <div id="number_of_pdfs">
+                      <span class="lg:-mb-[2px]! text-xl lg:text-3xl font-semibold">{{ user.profile.number_of_pdfs }}</span>
+                      <span>PDFs</span>
+                    </div>
+                    <div id="pdfs_total_size">
+                      <span class="lg:-mb-[2px]! text-xl lg:text-3xl font-semibold">{{ user.profile.pdfs_total_size_with_unit }}</span>
+                      <span>Total Size</span>
+                    </div>
                 </div>
             </div>
             {% if not uses_social %}

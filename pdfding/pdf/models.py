@@ -172,17 +172,22 @@ class Pdf(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         # only update profile pdf stats if pdf object is created
+        profile = self.owner
+        profile_needs_saving = False
+
         if self._state.adding:
-            profile = self.owner
             profile.number_of_pdfs += 1
             try:
                 profile.pdfs_total_size += self.file.size
             except (FileNotFoundError, ValueError):
                 pass
 
-            profile.save()
+            profile_needs_saving = True
 
         super().save(*args, **kwargs)
+
+        if profile_needs_saving:
+            profile.save()
 
     def delete(self, *args, **kwargs) -> None:
         # update profile pdf stats

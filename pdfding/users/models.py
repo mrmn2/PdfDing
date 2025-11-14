@@ -116,3 +116,16 @@ class Profile(models.Model):
             return True
         else:
             return False
+
+    @property
+    def pdfs_total_size_with_unit(self):
+        """Return the size of all PDFs with the units KB, MB, GB depending on the size."""
+
+        pdfs_total_size = self.pdfs_total_size
+
+        if self.pdfs_total_size < 10**6:
+            return f'{round(pdfs_total_size / 1000, 2)} KB'
+        elif self.pdfs_total_size < 10**9:
+            return f'{round(pdfs_total_size / (10 ** 6), 2)} MB'
+        else:
+            return f'{round(pdfs_total_size / (10 ** 9), 2)} GB'

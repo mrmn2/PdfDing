@@ -8,6 +8,13 @@ from playwright.sync_api import expect, sync_playwright
 
 
 class UsersE2ETestCase(PdfDingE2ETestCase):
+    def test_settings_pdf_stats(self):
+        with sync_playwright() as p:
+            self.open(reverse('account_settings'), p)
+
+            expect(self.page.locator('#number_of_pdfs')).to_contain_text('0 PDFs')
+            expect(self.page.locator('#pdfs_total_size')).to_contain_text('0 KB Total Size')
+
     def test_settings_change_theme(self):
         self.user.profile.dark_mode = 'Light'
         self.user.profile.save()
