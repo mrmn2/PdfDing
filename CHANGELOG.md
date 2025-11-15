@@ -1,7 +1,7 @@
 # Changelog
 
 ## v1.4.1 (Nov 15, 2025)
-## What's Changed
+### What's Changed
 
 * Change font to poppins by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/192
 * Add pdf stats by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/193
