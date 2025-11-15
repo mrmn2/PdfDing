@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.1 (Nov 15, 2025)
+## What's Changed
+
+* Change font to poppins by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/192
+* Add pdf stats by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/193
+* Add demo mode in sidebar footer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/191
+* ci/cd: Fix header level in changelog update script by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/188
+
 ## v1.4.0 (Nov 08, 2025)
 ### What's Changed
 * Add system based dark mode by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/179
