@@ -44,7 +44,7 @@
             <span class="hidden md:block">Starred</span>
         </a>
     </div>
-    <div {% if page == 'pdf_highlight_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+    <div>
         <a href="{% url 'pdf_highlight_overview' %}">
             <svg fill=currentColor version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                 class="w-5 h-5" viewBox="0 0 92.274 92.273" xml:space="preserve">
@@ -56,25 +56,7 @@
                         L32.992,67.991L19.627,54.627L68.416,9.038z M17.126,63.923l6.604,6.604l-10.162,3.632L17.126,63.923z"/>
                     <rect x="5.583" y="85.239" width="82.3" height="7.034"/>
             </svg>
-            <span class="hidden md:block">Highlights</span>
-        </a>
-    </div>
-    <div {% if page == 'pdf_comment_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
-        <a href="{% url 'pdf_comment_overview' %}">
-            <svg fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                  class="w-5 h-5" viewBox="0 0 98.167 98.167" xml:space="preserve">
-                <!-- source: https://www.svgrepo.com/svg/158876/write-a-note -->
-                <!-- license: CC0 License-->
-                <path d="M80.708,12.67v-2.127c0-1.001-0.812-1.813-1.813-1.813H1.813C0.812,8.73,0,9.543,0,10.543v77.08
-                    c0,1.002,0.811,1.813,1.813,1.813h77.082c1.002,0,1.813-0.813,1.813-1.813V48.776v-1.009l-9.656,9.654v22.357H9.657V18.386h61.395
-                    v3.94L80.708,12.67z"/>
-                <path d="M47.654,50.303c-0.19,0.189-0.303,0.443-0.315,0.693l-1.847,12.851c-0.045,0.338,0.07,0.685,0.312,0.926
-                    c0.207,0.206,0.48,0.319,0.773,0.319c0.053,0,0.104-0.004,0.156-0.012l12.792-1.84c0.285-0.007,0.547-0.119,0.754-0.328
-                    l29.02-29.026l-12.609-12.61L47.654,50.303z"/>
-                <path d="M98.167,24.562c0-0.293-0.114-0.567-0.321-0.772L86.785,12.729c-0.395-0.399-1.15-0.399-1.547-0.001l-5.221,5.221
-                    l12.608,12.609l5.222-5.223C98.053,25.128,98.167,24.854,98.167,24.562z"/>
-            </svg>
-            <span class="hidden md:block">Comments</span>
+            <span class="hidden md:block">Annotations</span>
         </a>
     </div>
     <div {% if page == 'pdf_overview_archived' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
