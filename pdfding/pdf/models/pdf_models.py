@@ -17,7 +17,7 @@ class Tag(models.Model):
     """The model for the tags used for organizing PDF files."""
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    name = models.CharField(max_length=50, null=True, blank=False)
+    name = models.CharField(max_length=50, blank=False)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):  # pragma: no cover
@@ -135,10 +135,10 @@ class Pdf(models.Model):
     archived = models.BooleanField(default=False)
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     current_page = models.IntegerField(default=1)
-    description = models.TextField(null=True, blank=True, help_text='Optional')
+    description = models.TextField(blank=True, help_text='Optional', default='')
     file_directory = models.CharField(
         max_length=120,
-        null=True,
+        default='',
         blank=True,
         help_text='Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs',
     )
@@ -147,8 +147,8 @@ class Pdf(models.Model):
     last_viewed_date = models.DateTimeField(
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
     )
-    name = models.CharField(max_length=150, null=True, blank=False)
-    notes = models.TextField(null=True, blank=True, help_text='Optional, supports Markdown')
+    name = models.CharField(max_length=150, blank=False)
+    notes = models.TextField(default='', blank=True, help_text='Optional, supports Markdown')
     number_of_pages = models.IntegerField(default=-1)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
     preview = models.FileField(upload_to=get_preview_path, null=True, blank=False)
@@ -256,11 +256,11 @@ class Pdf(models.Model):
 class PdfAnnotation(models.Model):
     """Model for the base pdf annotation"""
 
-    creation_date = models.DateTimeField(null=True, blank=False, editable=False)
+    creation_date = models.DateTimeField(blank=False, editable=False)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    page = models.IntegerField(null=True, blank=False)
+    page = models.IntegerField(blank=False)
     pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
-    text = models.TextField(null=True, blank=False)
+    text = models.TextField(blank=False)
 
     class Meta:
         abstract = True

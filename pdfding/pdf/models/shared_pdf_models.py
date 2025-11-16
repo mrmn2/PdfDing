@@ -20,10 +20,10 @@ class SharedPdf(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
     pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
-    name = models.CharField(max_length=150, null=True, blank=False)
+    name = models.CharField(max_length=150, blank=False)
     # the qr code file
     file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
-    description = models.TextField(null=True, blank=True, help_text='Optional')
+    description = models.TextField(default='', blank=True, help_text='Optional')
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     views = models.IntegerField(default=0)
     max_views = models.IntegerField(null=True, blank=True, help_text='Optional')
