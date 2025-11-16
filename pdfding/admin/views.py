@@ -9,7 +9,7 @@ from django.http import Http404, HttpRequest
 from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRefresh
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 
 
 class BaseAdminRequiredMixin(UserPassesTestMixin):

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
-from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, Tag
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
 

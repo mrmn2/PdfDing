@@ -11,7 +11,7 @@ from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.urls import path, reverse
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf.forms import AddForm, DescriptionForm
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 from users.models import Profile
 
 test_patterns = [

@@ -24,7 +24,7 @@ class Tag(models.Model):
         return str(self.name)
 
     @staticmethod
-    def parse_tag_string(tag_string: str):
+    def parse_tag_string(tag_string: str) -> list[str]:
         if not tag_string:
             return []
 
@@ -40,7 +40,7 @@ class Tag(models.Model):
         return sorted(names)
 
 
-def get_file_path(instance, _):
+def get_file_path(instance, _) -> str:
     """
     Get the file path for a PDF inside the media root based on the pdf name.File paths are user_id/some/dir/name.pdf.
     This function will also replace any "/" in the pdf name and will make  sure there are no duplicate file names.
@@ -76,7 +76,7 @@ def get_file_path(instance, _):
     return file_path
 
 
-def delete_empty_dirs_after_rename_or_delete(pdf_current_file_name: str, user_id: str):
+def delete_empty_dirs_after_rename_or_delete(pdf_current_file_name: str, user_id: str) -> None:
     """
     Delete empty directories in the users media/pdf directory that appear as a result of renaming or deleting pdfs.
     """
@@ -96,7 +96,7 @@ def delete_empty_dirs_after_rename_or_delete(pdf_current_file_name: str, user_id
             break
 
 
-def get_thumbnail_path(instance, _):
+def get_thumbnail_path(instance, _) -> str:
     """Get the file path for the thumbnail of a PDF."""
 
     file_name = f'thumbnails/{instance.id}.png'
@@ -105,7 +105,7 @@ def get_thumbnail_path(instance, _):
     return str(file_path)
 
 
-def get_preview_path(instance, _):
+def get_preview_path(instance, _) -> str:
     """Get the file path for the preview of a PDF."""
 
     file_name = f'previews/{instance.id}.png'
@@ -114,16 +114,7 @@ def get_preview_path(instance, _):
     return str(file_path)
 
 
-def get_qrcode_file_path(instance, _):
-    """Get the file path for the qr code of a shared PDF."""
-
-    file_name = f'{instance.id}.svg'
-    file_path = '/'.join([str(instance.owner.user.id), 'qr', file_name])
-
-    return str(file_path)
-
-
-def convert_to_natural_age(creation_date: DateTimeField):
+def convert_to_natural_age(creation_date: DateTimeField) -> str:
     """Convert the creation date into a natural age, e.g: 2 minutes, 1 hour,  2 months, etc"""
 
     natural_time = naturaltime(creation_date)
@@ -274,7 +265,7 @@ class PdfAnnotation(models.Model):
     class Meta:
         abstract = True
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.text  # pragma: no cover
 
     @property
@@ -293,94 +284,6 @@ class PdfComment(PdfAnnotation):
 
 class PdfHighlight(PdfAnnotation):
     """Model for the pdf highlights."""
-
-
-class SharedPdf(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
-    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
-    name = models.CharField(max_length=150, null=True, blank=False)
-    # the qr code file
-    file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
-    description = models.TextField(null=True, blank=True, help_text='Optional')
-    creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
-    views = models.IntegerField(default=0)
-    max_views = models.IntegerField(null=True, blank=True, help_text='Optional')
-    password = models.CharField(max_length=128, null=True, blank=True, help_text='Optional')
-    expiration_date = models.DateTimeField(null=True, blank=True)
-    deletion_date = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return self.name  # pragma: no cover
-
-    @property
-    def inactive(self):
-        """The shared pdf weather is inactive. This will consider the expiration date and max views."""
-
-        return (self.max_views and self.views >= self.max_views) or (
-            self.expiration_date and datetime.now(timezone.utc) >= self.expiration_date
-        )
-
-    @property
-    def deleted(self):
-        """The shared pdf weather is deleted. This will consider the deletion date."""
-
-        return self.deletion_date and datetime.now(timezone.utc) >= self.deletion_date
-
-    @property
-    def deletes_in_string(self) -> str:  # pragma: no cover
-        """
-        Get the natural time representation of the deletion date compared to the current datetime.
-        """
-
-        return self.get_natural_time_future(self.deletion_date, 'deletes', 'deleted')
-
-    @property
-    def expires_in_string(self) -> str:  # pragma: no cover
-        """
-        Get the natural time representation of the expiration date compared to the current datetime.
-        """
-
-        return self.get_natural_time_future(self.expiration_date, 'expires', 'expired')
-
-    @staticmethod
-    def get_natural_time_future(date: models.DateTimeField, context_present: str, context_past: str) -> str:
-        """
-        Get the natural time representation of a date compared to the current datetime. Will return a string of the
-        format <context> in <natural time>, e.g deletes in 1 day.
-        """
-
-        if date:
-            natural_time = naturaltime(date)
-            if date < datetime.now(timezone.utc):
-                return_string = context_past
-
-            else:
-                if ',' in natural_time:
-                    natural_time = natural_time.split(sep=', ')[0]
-
-                natural_time = natural_time.replace(' from now', '')
-
-                return_string = f'{context_present} in {natural_time}'
-        else:
-            return_string = f'{context_present} never'
-
-        # replace weird string so test have no problems
-        return_string = return_string.replace(u'\xa0', u' ')
-
-        return return_string
-
-    @property
-    def views_string(self) -> str:
-        """
-        Get the view string for the frontend. If ax views is set returns <views>/<max_views> Views
-        else <view> Views
-        """
-
-        if self.max_views:
-            return f'{self.views}/{self.max_views} Views'
-        else:
-            return f'{self.views} Views'
 
 
 class MarkdownHelper:  # pragma: no cover

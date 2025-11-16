@@ -13,7 +13,7 @@ from django.db.models.functions import Lower
 from django.http.response import Http404
 from django.test import TestCase
 from django.urls import reverse
-from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, Tag
 from PIL import Image
 from pypdfium2 import PdfDocument
 from users.service import get_demo_pdf

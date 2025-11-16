@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.test import override_settings
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
 

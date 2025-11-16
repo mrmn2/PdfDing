@@ -17,7 +17,8 @@ from pdf.forms import (
     ShareForm,
     ViewSharedPasswordForm,
 )
-from pdf.models import Pdf, SharedPdf
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 from pdf.views.share_views import (
     AddSharedPdfMixin,
     BaseSharedPdfPublicView,

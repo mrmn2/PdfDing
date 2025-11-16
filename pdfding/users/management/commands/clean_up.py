@@ -4,7 +4,7 @@ from shutil import copy
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from pdf.models import SharedPdf
+from pdf.models.shared_pdf_models import SharedPdf
 
 logger = logging.getLogger('management')
 

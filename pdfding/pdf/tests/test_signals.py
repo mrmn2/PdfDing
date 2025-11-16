@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-
-from pdf.models import Pdf, Tag
+from pdf.models.pdf_models import Pdf, Tag
 
 
 class TestSignals(TestCase):

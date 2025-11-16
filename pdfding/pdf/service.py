@@ -18,7 +18,7 @@ from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
-from pdf.models import (
+from pdf.models.pdf_models import (
     Pdf,
     PdfAnnotation,
     PdfComment,

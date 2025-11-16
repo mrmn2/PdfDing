@@ -11,7 +11,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 from pdf import forms
-from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.service import PdfProcessingServices
 from pdf.views import pdf_views
 from users.service import get_demo_pdf

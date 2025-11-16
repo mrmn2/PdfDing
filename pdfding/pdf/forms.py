@@ -5,8 +5,8 @@ from django import forms
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.core.files import File
-
-from .models import Pdf, SharedPdf
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 
 
 class AddFormNoFile(forms.ModelForm):

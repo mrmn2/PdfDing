@@ -9,7 +9,8 @@ from django.forms import ValidationError
 from django.test import Client, TestCase
 from pdf import forms
 from pdf.forms import CleanHelpers
-from pdf.models import Pdf, SharedPdf
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 
 
 class TestPdfForms(TestCase):

@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
-from pdf.models import Pdf, Tag
+from pdf.models.pdf_models import Pdf, Tag
 from users import forms
 from users.models import Profile
 

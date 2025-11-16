@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.test import TestCase, override_settings
 from pdf import tasks
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 
 
 class TestTasks(TestCase):

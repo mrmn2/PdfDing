@@ -5,7 +5,8 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.test import TestCase, override_settings
-from pdf.models import Pdf, SharedPdf
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 from users.management.commands.clean_up import clean_demo_db, clean_up_deleted_shared_pdfs
 
 

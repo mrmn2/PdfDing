@@ -8,7 +8,8 @@ from backup import tasks
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
-from pdf.models import Pdf, SharedPdf, Tag
+from pdf.models.pdf_models import Pdf, Tag
+from pdf.models.shared_pdf_models import SharedPdf
 
 
 class TestPeriodicBackup(TestCase):

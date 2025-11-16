@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
-from pdf.models import Pdf, PdfComment, PdfHighlight
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
 

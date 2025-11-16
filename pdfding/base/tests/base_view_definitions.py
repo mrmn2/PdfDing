@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from django.http import HttpRequest
 from pdf.forms import AddForm, DescriptionForm, NameForm
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 
 
 class BaseMixin:

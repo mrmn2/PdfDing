@@ -12,7 +12,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
-from pdf.models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.service import PdfProcessingServices
 from rapidfuzz import fuzz, utils
 from users.models import Profile

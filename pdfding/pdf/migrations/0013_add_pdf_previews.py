@@ -1,5 +1,5 @@
-import pdf.models
 from django.db import migrations, models
+from pdf.models.pdf_models import get_preview_path
 from pdf.service import PdfProcessingServices
 
 
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pdf',
             name='preview',
-            field=models.FileField(null=True, upload_to=pdf.models.get_preview_path),
+            field=models.FileField(null=True, upload_to=get_preview_path),
         ),
         migrations.RunPython(fill_thumbnails_and_previews, reverse_func),
     ]

@@ -1,6 +1,6 @@
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 
 
 @receiver(pre_delete, sender=Pdf)

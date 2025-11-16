@@ -3,7 +3,8 @@ from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
-from pdf.models import Pdf, SharedPdf
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
 

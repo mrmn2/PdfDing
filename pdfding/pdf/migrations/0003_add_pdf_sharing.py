@@ -3,8 +3,8 @@
 import uuid
 
 import django.db.models.deletion
-import pdf.models
 from django.db import migrations, models
+from pdf.models.shared_pdf_models import get_qrcode_file_path
 
 
 class Migration(migrations.Migration):
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=50, null=True)),
-                ('file', models.FileField(upload_to=pdf.models.get_qrcode_file_path)),
+                ('file', models.FileField(upload_to=get_qrcode_file_path)),
                 ('description', models.TextField(blank=True, help_text='Optional', null=True)),
                 ('creation_date', models.DateTimeField(auto_now_add=True)),
                 ('views', models.IntegerField(default=0)),

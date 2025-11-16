@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.db import connection
 from django.test import TestCase
-from pdf.models import Pdf
+from pdf.models.pdf_models import Pdf
 from users.service import get_demo_pdf
 
 readd_show_progress_bars = importlib.import_module('users.migrations.0016_readd_show_progress_bars')
