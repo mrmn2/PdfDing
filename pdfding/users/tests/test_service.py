@@ -55,7 +55,7 @@ class TestUserServices(TestCase):
         email = 'demo@pdfding.com'
         user = service.create_demo_user(email, 'password')
 
-        self.assertEqual(user.profile.pdf_set.all().count(), 4)
+        self.assertEqual(user.profile.pdfs.count(), 4)
         self.assertEqual(user.profile.tag_set.all().count(), 5)
         self.assertEqual(mock_process_with_pypdfium.call_count, 4)
         self.assertEqual(user.email, email)

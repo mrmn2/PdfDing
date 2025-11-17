@@ -98,7 +98,7 @@ class TestPeriodicBackup(TestCase):
             pdf.file.name = f'{pdf.owner.id}/{pdf.name}'
             pdf.save()
         for i in range(1, 4):
-            pdf = user_1.profile.pdf_set.get(name='pdf_1.pdf')
+            pdf = user_1.profile.pdfs.get(name='pdf_1.pdf')
             shared_pdf = SharedPdf.objects.create(owner=user_1.profile, name=f'shared_pdf_{i}', pdf=pdf)
             shared_pdf.file.name = f'{pdf.owner.id}/qr/qr_{i}.svg'
 

@@ -146,7 +146,7 @@ class OverviewMixin(BasePdfMixin):
     def filter_objects(cls, request: HttpRequest) -> QuerySet:
         """Filter the PDFs when performing a search in the overview."""
 
-        pdfs = request.user.profile.pdf_set
+        pdfs = request.user.profile.pdfs
 
         search = request.GET.get('search', '')
         tags = request.GET.get('tags', [])
@@ -224,7 +224,7 @@ class PdfMixin(BasePdfMixin):
         """Get the pdf specified by the ID"""
 
         user_profile = request.user.profile
-        pdf = user_profile.pdf_set.get(id=pdf_id)
+        pdf = user_profile.pdfs.get(id=pdf_id)
 
         return pdf
 
@@ -748,7 +748,7 @@ class EditTag(TagMixin, View):
 
         # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
         if existing_tag and str(existing_tag.id) != tag.id:
-            pdfs = profile.pdf_set
+            pdfs = profile.pdfs
             pdfs_with_tag = pdfs.filter(tags__id=tag.id)
 
             for pdf_with_tag in pdfs_with_tag:

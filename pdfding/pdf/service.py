@@ -493,7 +493,7 @@ def get_pdf_info_list(profile: Profile) -> list[tuple]:
 
     pdf_info_list = []
 
-    for pdf in profile.pdf_set.all():
+    for pdf in profile.pdfs:
         pdf_size = Path(pdf.file.path).stat().st_size
         pdf_info_list.append((pdf.name, pdf_size))
 

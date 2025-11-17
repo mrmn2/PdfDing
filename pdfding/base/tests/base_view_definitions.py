@@ -68,7 +68,7 @@ class ObjectMixin(BaseMixin):
         """Get the pdf specified by the ID"""
 
         user_profile = request.user.profile
-        pdf = user_profile.pdf_set.get(id=pdf_id)
+        pdf = user_profile.pdfs.get(id=pdf_id)
 
         return pdf
 

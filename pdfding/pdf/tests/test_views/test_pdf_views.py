@@ -59,7 +59,7 @@ class TestAddPDFMixin(TestCase):
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='some_pdf')
+        pdf = self.user.profile.pdfs.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.notes, 'some_notes')
@@ -86,7 +86,7 @@ class TestAddPDFMixin(TestCase):
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='demo')
+        pdf = self.user.profile.pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
@@ -104,7 +104,7 @@ class TestAddPDFMixin(TestCase):
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='some_pdf')
+        pdf = self.user.profile.pdfs.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
@@ -144,7 +144,7 @@ class TestBulkAddPDFMixin(TestCase):
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='demo')
+        pdf = self.user.profile.pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.owner, self.user.profile)
@@ -175,7 +175,7 @@ class TestBulkAddPDFMixin(TestCase):
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         for name in ['demo', 'demo_2']:
-            pdf = self.user.profile.pdf_set.get(name=name)
+            pdf = self.user.profile.pdfs.get(name=name)
             tag_names = [tag.name for tag in pdf.tags.all()]
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
             self.assertEqual(pdf.description, 'some_description')
@@ -222,12 +222,12 @@ class TestBulkAddPDFMixin(TestCase):
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         expected_pdf_names = ['test1', 'test2', 'test2_12345678', 'test3']
-        generated_pdf_names = [pdf.name for pdf in self.user.profile.pdf_set.all()]
+        generated_pdf_names = [pdf.name for pdf in self.user.profile.pdfs.all()]
         self.assertEqual(expected_pdf_names, generated_pdf_names)
 
         # also check date the test1 and test2 are unchanged
         for i in range(2):
-            self.assertEqual(old_pdfs[i], self.user.profile.pdf_set.get(name=f'test{i + 1}'))
+            self.assertEqual(old_pdfs[i], self.user.profile.pdfs.get(name=f'test{i + 1}'))
 
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
@@ -241,7 +241,7 @@ class TestBulkAddPDFMixin(TestCase):
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdf_set.get(name='demo')
+        pdf = self.user.profile.pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual('description', 'description')
@@ -491,7 +491,7 @@ class TestEditPdfMixin(TestCase):
         pdf_views.EditPdfMixin.process_field('tags', pdf, response.wsgi_request, {'tag_string': 'tag_1 tag_3'})
 
         # get pdf again with the changes
-        pdf = self.user.profile.pdf_set.get(id=pdf.id)
+        pdf = self.user.profile.pdfs.get(id=pdf.id)
         tag_names = [tag.name for tag in pdf.tags.all()]
 
         self.assertEqual(sorted(tag_names), sorted(['tag_1', 'tag_3']))
@@ -555,7 +555,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('view_pdf', kwargs={'identifier': pdf.id}))
 
         # check that views increased by one
-        pdf = self.user.profile.pdf_set.get(name='pdf')
+        pdf = self.user.profile.pdfs.get(name='pdf')
         self.assertEqual(pdf.views, 1)
         time_diff = datetime.now(timezone.utc) - pdf.last_viewed_date
         self.assertLess(time_diff.total_seconds(), 1)
@@ -629,7 +629,7 @@ class TestViews(TestCase):
         response = self.client.post(reverse('update_page'), data={'pdf_id': pdf.id, 'current_page': 10})
 
         # get pdf again with the changes
-        pdf = self.user.profile.pdf_set.get(id=pdf.id)
+        pdf = self.user.profile.pdfs.get(id=pdf.id)
 
         self.assertEqual(pdf.current_page, 10)
         self.assertEqual(200, response.status_code)

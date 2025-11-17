@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import QuerySet
 
 
 def get_last_time_nagged_initial():  # pragma: no cover
@@ -129,3 +130,7 @@ class Profile(models.Model):
             return f'{round(pdfs_total_size / (10 ** 6), 2)} MB'
         else:
             return f'{round(pdfs_total_size / (10 ** 9), 2)} GB'
+
+    @property
+    def pdfs(self) -> QuerySet:
+        return self.pdf_set.all()

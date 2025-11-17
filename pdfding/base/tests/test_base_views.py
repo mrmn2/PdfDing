@@ -69,7 +69,7 @@ class TestViews(TestCase):
             data={'name': 'pdf', 'description': 'something', 'tag_string': 'tag_a tag_2', 'file': simple_file},
         )
 
-        pdfs = self.user.profile.pdf_set.all()
+        pdfs = self.user.profile.pdfs
 
         for pdf in pdfs:
             Path(pdf.file.path).unlink()
@@ -246,7 +246,7 @@ class TestViews(TestCase):
         )
 
         # get pdf again with the changes
-        pdf = self.user.profile.pdf_set.get(id=pdf.id)
+        pdf = self.user.profile.pdfs.get(id=pdf.id)
 
         self.assertEqual(pdf.description, 'new')
 
@@ -260,7 +260,7 @@ class TestViews(TestCase):
         )
 
         # get pdf again with the changes
-        pdf = self.user.profile.pdf_set.get(id=pdf.id)
+        pdf = self.user.profile.pdfs.get(id=pdf.id)
 
         self.assertEqual(pdf.description, 'processed_description')
 
@@ -284,7 +284,7 @@ class TestDelete(TransactionTestCase):
         headers = {'HTTP_HX-Request': 'true'}
         response = self.client.delete(reverse('test_delete', kwargs={'identifier': pdf.id}), **headers)
 
-        self.assertFalse(self.user.profile.pdf_set.filter(id=pdf.id).exists())
+        self.assertFalse(self.user.profile.pdfs.filter(id=pdf.id).exists())
         self.assertFalse(pdf_path.exists())
         self.assertEqual(type(response), HttpResponseClientRefresh)
 
@@ -300,7 +300,7 @@ class TestDelete(TransactionTestCase):
             reverse('test_delete', kwargs={'identifier': pdf.id}), HTTP_REFERER='pdfding.com/details/xx', **headers
         )
 
-        self.assertFalse(self.user.profile.pdf_set.filter(id=pdf.id).exists())
+        self.assertFalse(self.user.profile.pdfs.filter(id=pdf.id).exists())
         self.assertFalse(pdf_path.exists())
         self.assertEqual(type(response), HttpResponseClientRedirect)
 

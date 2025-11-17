@@ -494,11 +494,11 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.save()
 
         # we test if sorting works with most viewed
-        pdf = self.user.profile.pdf_set.get(name='pdf_2_12')
+        pdf = self.user.profile.pdfs.get(name='pdf_2_12')
         pdf.views = 1001
         pdf.save()
 
-        pdf = self.user.profile.pdf_set.get(name='pdf_3_13')
+        pdf = self.user.profile.pdfs.get(name='pdf_3_13')
         pdf.views = 101
         pdf.save()
 

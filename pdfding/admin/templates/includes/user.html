@@ -15,7 +15,7 @@
             <circle cx="12.1" cy="12.1" r="1"></circle>
         </svg>
         <span>
-          PDFs: {{ user.profile.pdf_set.all.count }}
+          PDFs: {{ user.profile.number_of_pdfs }}
         </span>
         <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
             class="left-0 top-5 z-50 absolute bg-primary text-slate-200 rounded-xs p-2 mt-1">
