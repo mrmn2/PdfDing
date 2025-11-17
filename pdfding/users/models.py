@@ -136,5 +136,9 @@ class Profile(models.Model):
         return self.pdf_set.all()
 
     @property
+    def shared_pdfs(self) -> QuerySet:
+        return self.sharedpdf_set.all()
+
+    @property
     def tags(self) -> QuerySet:
         return self.tag_set.all()

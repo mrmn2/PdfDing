@@ -147,7 +147,7 @@ class SharedPdfMixin(BaseShareMixin):
         """Get the shered pdf specified by the ID"""
 
         user_profile = request.user.profile
-        shared_pdf = user_profile.sharedpdf_set.get(id=identifier)
+        shared_pdf = user_profile.shared_pdfs.get(id=identifier)
 
         return shared_pdf
 

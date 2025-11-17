@@ -65,7 +65,7 @@ class TestAddSharedPdfMixin(TestCase):
         )
 
         AddSharedPdfMixin.obj_save(form, response.wsgi_request, self.pdf.id)
-        shared_pdf = self.user.profile.sharedpdf_set.get(name='some_shared_pdf')
+        shared_pdf = self.user.profile.shared_pdfs.get(name='some_shared_pdf')
 
         self.assertEqual(shared_pdf.pdf, self.pdf)
         self.assertEqual(shared_pdf.owner, self.user.profile)
@@ -89,7 +89,7 @@ class TestAddSharedPdfMixin(TestCase):
         AddSharedPdfMixin.set_access_dates(shared_pdf, '1d0h22m', '1d0h22m')
 
         # get pdf again so changes are reflected
-        shared_pdf = self.user.profile.sharedpdf_set.get(name='share')
+        shared_pdf = self.user.profile.shared_pdfs.get(name='share')
 
         for generated_result in [shared_pdf.expiration_date, shared_pdf.deletion_date]:
             expected_result = datetime.now(timezone.utc) + timedelta(days=1, hours=0, minutes=22)
@@ -179,7 +179,7 @@ class TestEditSharedPdfMixin(TestCase):
 
         EditSharedPdfMixin.process_field('expiration_date', shared_pdf, None, {'expiration_input': '1d0h22m'})
         EditSharedPdfMixin.process_field('deletion_date', shared_pdf, None, {'deletion_input': '1d0h22m'})
-        adjusted_shared_pdf = self.user.profile.sharedpdf_set.get(name='share')
+        adjusted_shared_pdf = self.user.profile.shared_pdfs.get(name='share')
 
         for generated_result in [adjusted_shared_pdf.expiration_date, adjusted_shared_pdf.deletion_date]:
             expected_result = datetime.now(timezone.utc) + timedelta(days=1, hours=0, minutes=22)
@@ -190,7 +190,7 @@ class TestEditSharedPdfMixin(TestCase):
         shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
 
         EditSharedPdfMixin.process_field('other', shared_pdf, None, {})
-        adjusted_shared_pdf = self.user.profile.sharedpdf_set.get(name='share')
+        adjusted_shared_pdf = self.user.profile.shared_pdfs.get(name='share')
 
         self.assertEqual(shared_pdf, adjusted_shared_pdf)
 
@@ -201,7 +201,7 @@ class TestEditSharedPdfMixin(TestCase):
         shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
 
         EditSharedPdfMixin.process_field('name', shared_pdf, response.wsgi_request, {'name': 'new name '})
-        adjusted_shared_pdf = self.user.profile.sharedpdf_set.get(id=shared_pdf.id)
+        adjusted_shared_pdf = self.user.profile.shared_pdfs.get(id=shared_pdf.id)
 
         # also make sure space was stripped
         self.assertEqual(adjusted_shared_pdf.name, 'new name')
