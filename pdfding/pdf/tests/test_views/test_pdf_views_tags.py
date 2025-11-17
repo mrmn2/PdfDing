@@ -96,7 +96,7 @@ class TestTagViews(TestCase):
         pdf_views.EditTag.rename_tag(tag, 'new', self.user.profile)
 
         # get pdf again with the changes
-        tag = self.user.profile.tag_set.get(id=tag.id)
+        tag = self.user.profile.tags.get(id=tag.id)
         self.assertEqual(tag.name, 'new')
 
     def test_rename_tag_existing(self):
@@ -108,7 +108,7 @@ class TestTagViews(TestCase):
         pdf_views.EditTag.rename_tag(tag_2, tag_1.name, self.user.profile)
 
         self.assertEqual(pdf.tags.count(), 1)
-        self.assertEqual(self.user.profile.tag_set.count(), 1)
+        self.assertEqual(self.user.profile.tags.count(), 1)
         self.assertEqual(pdf.tags.first(), tag_1)
 
     def test_rename_tag_existing_and_present(self):
@@ -121,7 +121,7 @@ class TestTagViews(TestCase):
         pdf_views.EditTag.rename_tag(tag_2, tag_1.name, self.user.profile)
 
         self.assertEqual(pdf.tags.count(), 1)
-        self.assertEqual(self.user.profile.tag_set.count(), 1)
+        self.assertEqual(self.user.profile.tags.count(), 1)
         self.assertEqual(pdf.tags.first(), tag_1)
 
     @patch('pdf.service.TagServices.adjust_referer_for_tag_view', return_value='pdf_overview')
@@ -136,8 +136,8 @@ class TestTagViews(TestCase):
         headers = {'HTTP_HX-Request': 'true'}
         response = self.client.post(reverse('delete_tag'), **headers, data={'tag_name': tag.name})
 
-        self.assertFalse(self.user.profile.tag_set.filter(id=tag.id).exists())
-        self.assertTrue(self.user.profile.tag_set.filter(id=tag_2.id).exists())
+        self.assertFalse(self.user.profile.tags.filter(id=tag.id).exists())
+        self.assertTrue(self.user.profile.tags.filter(id=tag_2.id).exists())
         self.assertEqual(type(response), HttpResponseClientRedirect)
 
         mock_adjust_referer_for_tag_view.assert_called_with('pdf_overview', 'tag_name', '')
@@ -157,9 +157,9 @@ class TestTagViews(TestCase):
         headers = {'HTTP_HX-Request': 'true'}
         response = self.client.post(reverse('delete_tag'), **headers, data={'tag_name': 'programming/python'})
 
-        self.assertTrue(self.user.profile.tag_set.filter(id=tags[0].id).exists())
+        self.assertTrue(self.user.profile.tags.filter(id=tags[0].id).exists())
         for i in range(1, 4):
-            self.assertFalse(self.user.profile.tag_set.filter(id=tags[i].id).exists())
+            self.assertFalse(self.user.profile.tags.filter(id=tags[i].id).exists())
 
         self.assertEqual(type(response), HttpResponseClientRedirect)
 

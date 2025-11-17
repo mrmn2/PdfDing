@@ -496,7 +496,7 @@ class TestEditPdfMixin(TestCase):
 
         self.assertEqual(sorted(tag_names), sorted(['tag_1', 'tag_3']))
         # check that tag 2 was deleted
-        self.assertFalse(self.user.profile.tag_set.filter(name='tag_2').exists())
+        self.assertFalse(self.user.profile.tags.filter(name='tag_2').exists())
 
     @patch('pdf.service.PdfProcessingServices.process_renaming_pdf')
     def test_process_field_name(self, mock_process_renaming_pdf):

@@ -236,7 +236,7 @@ class TagMixin:
         """Get the tag specified by the name"""
 
         user_profile = request.user.profile
-        tag = user_profile.tag_set.filter(name__iexact=identifier).first()
+        tag = user_profile.tags.filter(name__iexact=identifier).first()
 
         return tag
 
@@ -247,14 +247,14 @@ class TagMixin:
 
         user_profile = request.user.profile
 
-        tag_exact = user_profile.tag_set.filter(name__iexact=identifier).first()
+        tag_exact = user_profile.tags.filter(name__iexact=identifier).first()
 
         if tag_exact:
             tags = [tag_exact]
         else:
             tags = []
 
-        tags.extend(user_profile.tag_set.filter(name__istartswith=f'{identifier}/'))
+        tags.extend(user_profile.tags.filter(name__istartswith=f'{identifier}/'))
 
         return tags
 
@@ -744,7 +744,7 @@ class EditTag(TagMixin, View):
         Rename a tag. If tag name already exist merge.
         """
 
-        existing_tag = profile.tag_set.filter(name__iexact=new_tag_name).first()
+        existing_tag = profile.tags.filter(name__iexact=new_tag_name).first()
 
         # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
         if existing_tag and str(existing_tag.id) != tag.id:

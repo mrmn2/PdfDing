@@ -21,4 +21,4 @@ class TestSignals(TestCase):
         self.assertEqual(pdf_2_tag_names, ['tag_2'])
 
         # check that tag 1 was deleted
-        self.assertFalse(user.profile.tag_set.filter(name='tag_1').exists())
+        self.assertFalse(user.profile.tags.filter(name='tag_1').exists())

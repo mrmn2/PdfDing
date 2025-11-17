@@ -136,8 +136,8 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag-bla")).not_to_be_visible()
             expect(self.page.locator("body")).not_to_contain_text("#bla")
 
-        self.assertFalse(self.user.profile.tag_set.filter(id=self.tag.id).exists())
-        self.assertTrue(self.user.profile.tag_set.filter(id=tag_2.id).exists())
+        self.assertFalse(self.user.profile.tags.filter(id=self.tag.id).exists())
+        self.assertTrue(self.user.profile.tags.filter(id=tag_2.id).exists())
 
     def test_delete_tag_tree_mode(self):
         profile = self.user.profile
@@ -159,8 +159,8 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag-bla\\/child")).not_to_be_visible()
             expect(self.page.locator("body")).not_to_contain_text("#bla/child")
 
-        self.assertFalse(self.user.profile.tag_set.filter(id=self.tag.id).exists())
-        self.assertFalse(self.user.profile.tag_set.filter(id=tag_2.id).exists())
+        self.assertFalse(self.user.profile.tags.filter(id=self.tag.id).exists())
+        self.assertFalse(self.user.profile.tags.filter(id=tag_2.id).exists())
 
     def test_rename_tag_click_away(self):
         with sync_playwright() as p:
@@ -219,8 +219,8 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("#renamed")
             expect(self.page.locator("body")).not_to_contain_text("#bla")
 
-        self.assertEqual(self.user.profile.tag_set.filter(id=self.tag.id).first().name, 'renamed')
-        self.assertEqual(self.user.profile.tag_set.filter(id=tag_2.id).first().name, tag_2.name)
+        self.assertEqual(self.user.profile.tags.filter(id=self.tag.id).first().name, 'renamed')
+        self.assertEqual(self.user.profile.tags.filter(id=tag_2.id).first().name, tag_2.name)
 
     def test_rename_tag_tree_mode(self):
         profile = self.user.profile
@@ -249,8 +249,8 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("#renamed")
             expect(self.page.locator("body")).not_to_contain_text("#bla")
 
-        self.assertEqual(self.user.profile.tag_set.filter(id=self.tag.id).first().name, 'renamed')
-        self.assertEqual(self.user.profile.tag_set.filter(id=tag_2.id).first().name, 'renamed/child')
+        self.assertEqual(self.user.profile.tags.filter(id=self.tag.id).first().name, 'renamed')
+        self.assertEqual(self.user.profile.tags.filter(id=tag_2.id).first().name, 'renamed/child')
 
     def test_open_tag_mode_settings(self):
         with sync_playwright() as p:

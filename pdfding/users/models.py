@@ -134,3 +134,7 @@ class Profile(models.Model):
     @property
     def pdfs(self) -> QuerySet:
         return self.pdf_set.all()
+
+    @property
+    def tags(self) -> QuerySet:
+        return self.tag_set.all()
