@@ -133,12 +133,18 @@ class Profile(models.Model):
 
     @property
     def pdfs(self) -> QuerySet:
+        """Return all PDFs associated with the profile."""
+
         return self.pdf_set.all()
 
     @property
     def shared_pdfs(self) -> QuerySet:
+        """Return all shared PDFs associated with the profile."""
+
         return self.sharedpdf_set.all()
 
     @property
     def tags(self) -> QuerySet:
+        """Return all tags associated with the profile."""
+
         return self.tag_set.all()

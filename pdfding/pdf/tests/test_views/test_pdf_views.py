@@ -222,7 +222,7 @@ class TestBulkAddPDFMixin(TestCase):
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         expected_pdf_names = ['test1', 'test2', 'test2_12345678', 'test3']
-        generated_pdf_names = [pdf.name for pdf in self.user.profile.pdfs.all()]
+        generated_pdf_names = [pdf.name for pdf in self.user.profile.pdfs]
         self.assertEqual(expected_pdf_names, generated_pdf_names)
 
         # also check date the test1 and test2 are unchanged

@@ -76,7 +76,7 @@ class TagServices:
 
         # it is important that the tags are sorted. As parent tags need come before children,
         # e.g. "programming" before "programming/python"
-        tags = profile.tags.all().order_by(Lower('name'))
+        tags = profile.tags.order_by(Lower('name'))
         tag_info_dict = OrderedDict()
 
         for tag in tags:
@@ -94,7 +94,7 @@ class TagServices:
 
         # it is important that the tags are sorted. As parent tags need come before children,
         # e.g. "programming" before "programming/python"
-        tags = profile.tags.all().order_by(Lower('name'))
+        tags = profile.tags.order_by(Lower('name'))
         tag_info_dict = OrderedDict()
 
         for tag in tags:
