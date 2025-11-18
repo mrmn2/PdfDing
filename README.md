@@ -2,7 +2,11 @@
     <img src="./pdfding/static/images/logo_with_circle.svg" width="100" alt="" />
 </div>
 
-# PdfDing
+<h1 align="center">PdfDing</h1>
+
+<p align="center">
+  Selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices.
+</p>
 
 <p align="center">
   <a href="https://www.pdfding.com">Website</a>
@@ -13,8 +17,7 @@
   <span>&nbsp;•&nbsp;</span>
   <a href="https://docs.pdfding.com/getting_started/docker/">Get Started</a>
 </p>
-
-PdfDing is a selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices.
+<br/>
 
 [![GitHub Repo Stars](https://img.shields.io/github/stars/mrmn2/PdfDing?style=flat&logo=github)](https://github.com/mrmn2/PdfDing)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mrmn/pdfding?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/mrmn/pdfding)
