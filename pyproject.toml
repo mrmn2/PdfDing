@@ -6,6 +6,8 @@ authors = [
   { name = "mrmn2" },
 ]
 readme = "README.md"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE"]
 
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
