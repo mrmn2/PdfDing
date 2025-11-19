@@ -1,6 +1,7 @@
 {
   "name": "PdfDing",
   "version": "1.4.1",
+  "license": "AGPL-3.0-only",
   "private": true,
   "dependencies": {
     "alpinejs": "3.15.1",
