@@ -1,8 +1,10 @@
-[tool.poetry]
+[project]
 name = "pdfding"
-version = "0.1.1"
-description = ""
-authors = ["mrmn"]
+version = "1.4.1"
+description = "Selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices."
+authors = [
+  { name = "mrmn2" },
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]

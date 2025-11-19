@@ -1,4 +1,7 @@
 {
+  "name": "PdfDing",
+  "version": "1.4.1",
+  "private": true,
   "dependencies": {
     "alpinejs": "3.15.1",
     "htmx.org": "2.0.8",
