@@ -10,6 +10,8 @@ from django.db import models
 from django.db.models import DateTimeField
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
+from pdf.models.collection_models import Collection
+from pdf.models.workspace_models import Workspace
 from users.models import Profile
 
 
@@ -19,6 +21,7 @@ class Tag(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=50, blank=False)
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, blank=False, null=True)
 
     def __str__(self):  # pragma: no cover
         return str(self.name)
@@ -134,6 +137,7 @@ class Pdf(models.Model):
 
     archived = models.BooleanField(default=False)
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False, null=True)
     current_page = models.IntegerField(default=1)
     description = models.TextField(blank=True, help_text='Optional', default='')
     file_directory = models.CharField(
