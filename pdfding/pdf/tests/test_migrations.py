@@ -6,14 +6,18 @@ from django.apps import apps
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.db import connection
+from django.db.models.functions import Lower
 from django.test import TestCase
-from pdf.models.pdf_models import Pdf
+from pdf.models.pdf_models import Pdf, Tag
+from pdf.models.workspace_models import Workspace, WorkspaceRoles
+from pdf.services.workspace_services import create_workspace
 from users.service import get_demo_pdf
 
 add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0009_readd_number_of_pages_with_new_default')
 add_pdf_previews = importlib.import_module('pdf.migrations.0013_add_pdf_previews')
 add_comments_highlights = importlib.import_module('pdf.migrations.0015_add_comments_highlights')
 rename_pdfs_and_add_file_directory = importlib.import_module('pdf.migrations.0016_rename_pdfs_and_add_file_directory')
+fill_collections_workspaces = importlib.import_module('pdf.migrations.0020_fill_collections_workspaces')
 
 
 class TestMigrations(TestCase):
@@ -108,3 +112,51 @@ class TestMigrations(TestCase):
 
         # undo monkey patching
         rename_pdfs_and_add_file_directory.PdfProcessingServices.process_renaming_pdf = orignal_process_renaming_pdf
+
+    def test_fill_collections_workspaces(self):
+        # we need to delete the default user
+        self.user.delete()
+
+        user = User.objects.create_user(username='bla', password='12345')
+
+        # we need to delete the personal workspace in order to test the migration
+        personal_workspace = user.profile.workspaces[0]
+        personal_workspace.delete()
+
+        # create a workspace so we can create pdfs and see if the collection will change with the migration
+        created_workspace = create_workspace('dummy', user)
+        user.profile.current_workspace_id = created_workspace.id
+        user.profile.current_collection_id = 123456
+        user.profile.save()
+
+        changed_user = User.objects.get(id=user.id)
+
+        # assert that setup is correct
+        self.assertEqual(changed_user.profile.collections.count(), 1)
+        self.assertEqual(changed_user.profile.workspaces.count(), 1)
+        self.assertEqual(changed_user.profile.current_workspace_id, created_workspace.id)
+        self.assertEqual(changed_user.profile.current_collection_id, '123456')
+
+        collection = changed_user.profile.collections[0]
+        pdf = Pdf.objects.create(owner=changed_user.profile, name='test', collection=collection)
+        tag = Tag.objects.create(owner=changed_user.profile, name='bla', workspace=created_workspace)
+
+        fill_collections_workspaces.fill_data(apps, connection.schema_editor())
+
+        changed_user = User.objects.get(id=user.id)
+        changed_pdf = Pdf.objects.get(id=pdf.id)
+        changed_tag = Tag.objects.get(id=tag.id)
+        profile = changed_user.profile
+
+        self.assertEqual(profile.current_collection_id, str(profile.user.id))
+        self.assertEqual(profile.current_workspace_id, str(profile.user.id))
+        self.assertEqual(profile.workspaces.count(), 2)
+        self.assertEqual(profile.collections.count(), 1)
+        for ws, expected_name in zip(profile.workspaces.order_by(Lower('name')), ['dummy', 'Personal']):
+            self.assertEqual(ws.name, expected_name)
+        self.assertEqual(profile.collections[0].name, 'Default')
+        self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.count(), 1)
+        self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.all()[0].user, changed_user)
+        self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.all()[0].role, WorkspaceRoles.OWNER)
+        self.assertEqual(changed_pdf.collection, profile.collections[0])
+        self.assertEqual(changed_tag.workspace, profile.workspaces.order_by(Lower('name'))[1])
