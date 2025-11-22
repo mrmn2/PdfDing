@@ -82,6 +82,7 @@ else:
 if environ.get('CONSUME_ENABLE') == 'TRUE':
     CONSUME_ENABLED = True
     CONSUME_TAG_STRING = environ.get('CONSUME_TAGS', '')
+    CONSUME_SCHEDULE = environ.get('CONSUME_SCHEDULE', '*/5 * * * *')
     if environ.get('CONSUME_SKIP_EXISTING') == 'FALSE':
         CONSUME_SKIP_EXISTING = False
     else:
@@ -89,6 +90,7 @@ if environ.get('CONSUME_ENABLE') == 'TRUE':
 else:
     CONSUME_ENABLED = False
     CONSUME_SKIP_EXISTING = False
+    CONSUME_SCHEDULE = '*/5 * * * *'
 
 # mail settings
 if environ.get('EMAIL_BACKEND') == 'SMTP':

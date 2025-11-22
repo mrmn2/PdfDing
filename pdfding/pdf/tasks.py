@@ -9,11 +9,12 @@ from django.core.files import File
 from huey import crontab
 from huey.contrib.djhuey import periodic_task
 from pdf import service
+from backup.tasks import parse_cron_schedule
 
 logger = logging.getLogger('huey')
 
 
-@periodic_task(crontab(minute='*/5'), retries=0)
+@periodic_task(crontab(**parse_cron_schedule(settings.CONSUME_SCHEDULE)), retries=0)
 def consume_task():  # pragma: no cover
     """
     Periodic huey task for creating pdf instances from pdf files put into the consume folder.
