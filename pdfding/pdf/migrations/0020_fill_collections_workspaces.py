@@ -14,10 +14,10 @@ def fill_data(apps, schema_editor):
 
     for profile_object in profile_model.objects.all():
         personal_workspace = Workspace.objects.create(
-            id=profile_object.user.id, name='Personal', personal_workspace=True
+            id=str(profile_object.user.id), name='Personal', personal_workspace=True
         )
         default_collection = Collection.objects.create(
-            id=profile_object.user.id, name='Default', default_collection=True, workspace=personal_workspace
+            id=str(profile_object.user.id), name='Default', default_collection=True, workspace=personal_workspace
         )
         WorkspaceUser.objects.create(
             workspace=personal_workspace, user_id=profile_object.user.id, role=WorkspaceRoles.OWNER

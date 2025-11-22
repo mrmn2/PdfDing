@@ -154,7 +154,11 @@ class TestMigrations(TestCase):
         self.assertEqual(profile.collections.count(), 1)
         for ws, expected_name in zip(profile.workspaces.order_by(Lower('name')), ['dummy', 'Personal']):
             self.assertEqual(ws.name, expected_name)
+        self.assertEqual(profile.workspaces.order_by(Lower('name'))[1].personal_workspace, True)
+        self.assertEqual(profile.workspaces.order_by(Lower('name'))[1].id, str(profile.id))
+        self.assertEqual(profile.collections[0].id, str(profile.id))
         self.assertEqual(profile.collections[0].name, 'Default')
+        self.assertEqual(profile.collections[0].default_collection, True)
         self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.count(), 1)
         self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.all()[0].user, changed_user)
         self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.all()[0].role, WorkspaceRoles.OWNER)

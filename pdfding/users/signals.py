@@ -20,6 +20,8 @@ def user_postsave(sender, instance, created, **kwargs):
         profile = Profile.objects.create(user=user)
         profile.dark_mode = Profile.DarkMode[str.upper(settings.DEFAULT_THEME)]
         profile.theme_color = Profile.ThemeColor[str.upper(settings.DEFAULT_THEME_COLOR)]
+        profile.current_workspace_id = user.id
+        profile.current_collection_id = user.id
         profile.save()
 
     # user email address was changed -> set it to unverified
