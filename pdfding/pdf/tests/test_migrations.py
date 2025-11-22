@@ -9,7 +9,7 @@ from django.db import connection
 from django.db.models.functions import Lower
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf, Tag
-from pdf.models.workspace_models import Workspace, WorkspaceRoles
+from pdf.models.workspace_models import Workspace
 from pdf.services.workspace_services import create_workspace
 from users.service import get_demo_pdf
 
@@ -147,6 +147,7 @@ class TestMigrations(TestCase):
         changed_pdf = Pdf.objects.get(id=pdf.id)
         changed_tag = Tag.objects.get(id=tag.id)
         profile = changed_user.profile
+        workspace = Workspace.objects.get(id=profile.id)
 
         self.assertEqual(profile.current_collection_id, str(profile.user.id))
         self.assertEqual(profile.current_workspace_id, str(profile.user.id))
@@ -154,13 +155,12 @@ class TestMigrations(TestCase):
         self.assertEqual(profile.collections.count(), 1)
         for ws, expected_name in zip(profile.workspaces.order_by(Lower('name')), ['dummy', 'Personal']):
             self.assertEqual(ws.name, expected_name)
-        self.assertEqual(profile.workspaces.order_by(Lower('name'))[1].personal_workspace, True)
-        self.assertEqual(profile.workspaces.order_by(Lower('name'))[1].id, str(profile.id))
+        self.assertEqual(workspace.personal_workspace, True)
+        self.assertEqual(workspace.id, str(profile.id))
         self.assertEqual(profile.collections[0].id, str(profile.id))
         self.assertEqual(profile.collections[0].name, 'Default')
         self.assertEqual(profile.collections[0].default_collection, True)
-        self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.count(), 1)
-        self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.all()[0].user, changed_user)
-        self.assertEqual(Workspace.objects.get(id=profile.id).workspaceuser_set.all()[0].role, WorkspaceRoles.OWNER)
+        self.assertEqual(workspace.users.count(), 1)
+        self.assertEqual(workspace.owners[0], changed_user)
         self.assertEqual(changed_pdf.collection, profile.collections[0])
-        self.assertEqual(changed_tag.workspace, profile.workspaces.order_by(Lower('name'))[1])
+        self.assertEqual(changed_tag.workspace, workspace)

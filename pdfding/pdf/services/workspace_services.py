@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from pdf.models.collection_models import Collection
-from pdf.models.workspace_models import Workspace, WorkspaceRoles, WorkspaceUser
+from pdf.models.workspace_models import Workspace, WorkspaceError, WorkspaceRoles, WorkspaceUser
 
 
 def create_personal_workspace(creator: User) -> Workspace:
@@ -21,3 +21,12 @@ def create_workspace(name: str, creator: User) -> Workspace:
     Collection.objects.create(id=workspace.id, name='Default', workspace=workspace, default_collection=True)
 
     return workspace
+
+
+def create_collection(workspace, collection_name) -> Collection:
+    """Create a collection and add it to the workspace"""
+
+    if workspace.collections.filter(name=collection_name).count():
+        raise WorkspaceError(f'There is already a collection named {collection_name}!')
+    else:
+        return Collection.objects.create(workspace=workspace, name=collection_name, default_collection=False)

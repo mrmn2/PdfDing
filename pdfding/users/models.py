@@ -166,4 +166,4 @@ class Profile(models.Model):
 
         workspace = self.workspaces.get(id=self.current_workspace_id)
 
-        return workspace.collection_set.all()
+        return workspace.collections.all()

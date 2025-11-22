@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
-from pdf.models.workspace_models import WorkspaceRoles
+from pdf.models.workspace_models import WorkspaceError
 from pdf.services import workspace_services
 
 
@@ -12,8 +13,8 @@ class TestWorkspaceServices(TestCase):
         # personal ws with default collection already created
         self.user.profile.workspaces[0].delete()
         self.assertEqual(self.user.profile.workspaces.count(), 0)
-        with self.assertRaises(AttributeError):
-            self.user.profile.collection
+        with self.assertRaises(ObjectDoesNotExist):
+            self.user.profile.collections
 
         workspace = workspace_services.create_personal_workspace(self.user)
         changed_user = User.objects.get(id=self.user.id)
@@ -21,15 +22,13 @@ class TestWorkspaceServices(TestCase):
         self.assertEqual(changed_user.profile.workspaces.count(), 1)
         self.assertEqual(workspace.name, 'Personal')
         self.assertEqual(workspace.personal_workspace, True)
-        print(type(workspace.id))
         self.assertEqual(workspace.id, str(changed_user.id))
-        self.assertEqual(workspace.collection_set.count(), 1)
-        self.assertEqual(workspace.collection_set.all()[0].id, workspace.id)
-        self.assertEqual(workspace.collection_set.all()[0].name, 'Default')
-        self.assertEqual(workspace.collection_set.all()[0].default_collection, True)
-        self.assertEqual(workspace.workspaceuser_set.count(), 1)
-        self.assertEqual(workspace.workspaceuser_set.all()[0].user, changed_user)
-        self.assertEqual(workspace.workspaceuser_set.all()[0].role, WorkspaceRoles.OWNER)
+        self.assertEqual(workspace.collections.count(), 1)
+        self.assertEqual(workspace.collections[0].id, workspace.id)
+        self.assertEqual(workspace.collections[0].name, 'Default')
+        self.assertEqual(workspace.collections[0].default_collection, True)
+        self.assertEqual(workspace.users.count(), 1)
+        self.assertEqual(workspace.owners[0], changed_user)
 
     def test_create_workspace(self):
         # personal ws with default collection already created
@@ -42,10 +41,29 @@ class TestWorkspaceServices(TestCase):
         self.assertEqual(changed_user.profile.workspaces.count(), 2)
         self.assertEqual(workspace.name, 'created_ws')
         self.assertEqual(workspace.personal_workspace, False)
-        self.assertEqual(workspace.collection_set.count(), 1)
-        self.assertEqual(workspace.collection_set.all()[0].id, workspace.id)
-        self.assertEqual(workspace.collection_set.all()[0].name, 'Default')
-        self.assertEqual(workspace.collection_set.all()[0].default_collection, True)
-        self.assertEqual(workspace.workspaceuser_set.count(), 1)
-        self.assertEqual(workspace.workspaceuser_set.all()[0].user, changed_user)
-        self.assertEqual(workspace.workspaceuser_set.all()[0].role, WorkspaceRoles.OWNER)
+        self.assertEqual(workspace.collections.count(), 1)
+        self.assertEqual(workspace.collections[0].id, workspace.id)
+        self.assertEqual(workspace.collections[0].name, 'Default')
+        self.assertEqual(workspace.collections[0].default_collection, True)
+        self.assertEqual(workspace.users.count(), 1)
+        self.assertEqual(workspace.owners[0], changed_user)
+
+    def test_create_collection(self):
+        ws = self.user.profile.workspaces[0]
+
+        self.assertEqual(ws.collection_set.count(), 1)
+
+        collection = workspace_services.create_collection(ws, 'Some_collection')
+
+        self.assertEqual(ws.collection_set.count(), 2)
+        self.assertEqual(ws.collection_set.order_by('name')[1], collection)
+
+    def test_create_collection_existing_name(self):
+        ws = self.user.profile.workspaces[0]
+
+        workspace_services.create_collection(ws, 'Some_collection')
+
+        with self.assertRaisesMessage(
+            WorkspaceError, expected_message='There is already a collection named Some_collection!'
+        ):
+            workspace_services.create_collection(ws, 'Some_collection')
