@@ -8,6 +8,7 @@ class TestWorkspace(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='user_1', password='password')
         self.ws = create_workspace(name='ws', creator=self.user)
+        self.other_user = User.objects.create_user(username='other_user', password='password')
 
     def test_user_property(self):
         self.assertEqual(self.ws.users.count(), 1)

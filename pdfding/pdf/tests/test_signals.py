@@ -43,5 +43,5 @@ class TestSignals(TestCase):
 
         user_1.delete()
 
-        self.assertTrue(Workspace.objects.filter(id=ws_1.id).count())
-        self.assertFalse(Workspace.objects.filter(id=ws_2.id).count())
+        self.assertEqual(Workspace.objects.filter(id=ws_1.id).count(), 1)
+        self.assertEqual(Workspace.objects.filter(id=ws_2.id).count(), 0)

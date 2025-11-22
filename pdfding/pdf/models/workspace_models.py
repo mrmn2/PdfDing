@@ -14,7 +14,7 @@ class WorkspaceError(Exception):
 
 class WorkspaceRoles(models.TextChoices):
     OWNER = 'Owner'
-    ADMIN = 'List'
+    ADMIN = 'Admin'
     MEMBER = 'Member'
     GUEST = 'Guest'
 
@@ -31,7 +31,7 @@ class Workspace(models.Model):
 
     @property
     def users(self) -> models.QuerySet[User]:
-        """Get the owners of the workspace."""
+        """Get the users of the workspace."""
 
         return User.objects.filter(workspaceuser__in=self.workspaceuser_set.all())
 

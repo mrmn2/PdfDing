@@ -30,6 +30,12 @@ class TestWorkspaceServices(TestCase):
         self.assertEqual(workspace.users.count(), 1)
         self.assertEqual(workspace.owners[0], changed_user)
 
+    def test_create_personal_workspace_exists_already(self):
+        with self.assertRaisesMessage(
+            WorkspaceError, expected_message='There is already a personal workspace for user a@a.com'
+        ):
+            workspace_services.create_personal_workspace(self.user)
+
     def test_create_workspace(self):
         # personal ws with default collection already created
         self.assertEqual(self.user.profile.workspaces.count(), 1)
@@ -47,6 +53,14 @@ class TestWorkspaceServices(TestCase):
         self.assertEqual(workspace.collections[0].default_collection, True)
         self.assertEqual(workspace.users.count(), 1)
         self.assertEqual(workspace.owners[0], changed_user)
+
+    def test_create_workspace_name_exists(self):
+        workspace_services.create_workspace('created_ws', self.user)
+
+        with self.assertRaisesMessage(
+            WorkspaceError, expected_message='There is already a workspace named created_ws!'
+        ):
+            workspace_services.create_workspace('created_ws', self.user)
 
     def test_create_collection(self):
         ws = self.user.profile.workspaces[0]

@@ -7,7 +7,7 @@ from pdf.services.workspace_services import create_personal_workspace
 
 @receiver(post_save, sender=User)
 def create_workspace(sender, instance, created, **kwargs):
-    """Create the corresponding django user if a profile is created."""
+    """Create the personal workspace when a user is created."""
 
     user = instance
 

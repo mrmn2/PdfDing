@@ -16,6 +16,8 @@ class TestSignals(TestCase):
         # check that the profile exists
         profile = Profile.objects.get(user=user)
         self.assertEqual(str(profile), input_mail)
+        self.assertEqual(profile.current_workspace_id, str(user.id))
+        self.assertEqual(profile.current_collection_id, str(user.id))
         self.assertEqual(profile.dark_mode, 'Dark')
         self.assertEqual(profile.theme_color, 'Gray')
 
