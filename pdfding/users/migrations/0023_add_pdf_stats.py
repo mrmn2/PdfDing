@@ -5,7 +5,7 @@ from users.models import Profile
 def set_pdf_stats(profile: Profile) -> None:
     """Set PDF stats of a profile"""
 
-    pdfs = profile.pdfs
+    pdfs = profile.pdf_set.all()
     pdfs_total_size = 0
 
     for pdf in pdfs:
