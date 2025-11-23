@@ -78,12 +78,6 @@ class TestPeriodicBackup(TestCase):
         self.assertEqual(mock_remove_object.call_count, 1)
         mock_remove_object.assert_called_with('pdfding', 'remove.pdf')
 
-    def test_parse_cron_schedule(self):
-        expected_dict = {'minute': '3', 'hour': '*/2', 'day': '6', 'month': '7', 'day_of_week': '*'}
-        generated_dict = tasks.parse_cron_schedule('3 */2 6 7 *')
-
-        self.assertEqual(expected_dict, generated_dict)
-
     @mock.patch('backup.tasks.Minio.list_objects', return_value=mock_objects)
     def test_difference_local_minio(self, mock_list_objects):
         user_1 = User.objects.create_user(username='user_1', password='password', email='a@a.com')

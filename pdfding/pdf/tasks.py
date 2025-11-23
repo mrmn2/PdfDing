@@ -3,13 +3,13 @@ import traceback
 from pathlib import Path
 
 import magic
+from base.task_helpers import parse_cron_schedule
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 from huey import crontab
 from huey.contrib.djhuey import periodic_task
 from pdf import service
-from backup.tasks import parse_cron_schedule
 
 logger = logging.getLogger('huey')
 
