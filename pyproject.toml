@@ -1,5 +1,6 @@
 [project]
 name = "pdfding"
+# do not change the version line position as it will break the automated update after a release
 version = "1.4.1"
 description = "Selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices."
 authors = [
