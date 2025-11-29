@@ -59,7 +59,7 @@ class TestTagServices(TestCase):
         mock_get_tag_info_dict_normal_mode.assert_called_once_with(profile)
 
     def test_get_tag_info_dict_normal_mode(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
 
         tag_names = [
             'programming/python/django',
@@ -75,7 +75,9 @@ class TestTagServices(TestCase):
         tags = []
 
         for tag_name in tag_names:
-            tag = Tag.objects.create(name=tag_name, owner=pdf.owner)
+            tag = Tag.objects.create(
+                name=tag_name, owner=self.user.profile, workspace=self.user.profile.current_workspace
+            )
             tags.append(tag)
 
         pdf.tags.set(tags)
@@ -87,7 +89,7 @@ class TestTagServices(TestCase):
         self.assertEqual(expected_tag_dict, generated_tag_dict)
 
     def test_get_tag_info_dict_tree_mode(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
 
         tag_names = [
             'programming/python/django',
@@ -104,7 +106,9 @@ class TestTagServices(TestCase):
         tags = []
 
         for tag_name in tag_names:
-            tag = Tag.objects.create(name=tag_name, owner=pdf.owner)
+            tag = Tag.objects.create(
+                name=tag_name, owner=self.user.profile, workspace=self.user.profile.current_workspace
+            )
             tags.append(tag)
 
         pdf.tags.set(tags)
@@ -242,11 +246,11 @@ class TestPdfProcessingServices(TestCase):
         tag_string = 'some tags'
         description = 'some description'
         file_directory = 'some/dir'
-        owner = self.user.profile
+        collection = self.user.profile.current_collection
 
         pdf = service.PdfProcessingServices.create_pdf(
             name=pdf_name,
-            owner=owner,
+            collection=collection,
             pdf_file=pdf_file,
             tag_string=tag_string,
             description=description,
@@ -254,7 +258,7 @@ class TestPdfProcessingServices(TestCase):
         )
 
         self.assertEqual(pdf.name, pdf_name)
-        self.assertEqual(pdf.owner, owner)
+        self.assertEqual(pdf.collection, collection)
         self.assertEqual(pdf.description, description)
         self.assertEqual(pdf.file_directory, file_directory)
         self.assertEqual(pdf.notes, '')
@@ -269,7 +273,7 @@ class TestPdfProcessingServices(TestCase):
 
     @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
         self.assertEqual(pdf.number_of_pages, -1)
 
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
@@ -285,7 +289,7 @@ class TestPdfProcessingServices(TestCase):
 
     @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_with_images(self, mock_set_thumbnail_and_preview):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
         self.assertEqual(pdf.number_of_pages, -1)
 
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
@@ -302,7 +306,7 @@ class TestPdfProcessingServices(TestCase):
         mock_set_thumbnail_and_preview.assert_called_once()
 
     def test_set_process_with_pypdfium_exception(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
 
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
@@ -315,7 +319,7 @@ class TestPdfProcessingServices(TestCase):
 
     def test_set_thumbnail_and_preview(self):
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         with dummy_path.open(mode="rb") as f:
             pdf.file = File(f, name=dummy_path.name)
             pdf.save()
@@ -332,7 +336,7 @@ class TestPdfProcessingServices(TestCase):
         pdf_document.close()
 
     def test_set_thumbnail_and_preview_exception(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         # check that exception is caught and thumbnail stays unset
         pdf = service.PdfProcessingServices.set_thumbnail_and_preview(pdf, None, 120, 2, 150)
@@ -343,12 +347,12 @@ class TestPdfProcessingServices(TestCase):
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
 
         for i in range(3):
-            pdf = Pdf.objects.create(owner=self.user.profile, name=f'pdf_{i}')
+            pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name=f'pdf_{i}')
             with dummy_path.open(mode="rb") as f:
                 pdf.file = File(f, name=dummy_path.name)
                 pdf.save()
 
-        generated_info_list = service.get_pdf_info_list(self.user.profile)
+        generated_info_list = service.get_pdf_info_list(self.user.profile.current_workspace)
         expected_info_list = [(f'pdf_{i}', 8885) for i in range(3)]
 
         self.assertEqual(generated_info_list, expected_info_list)
@@ -356,7 +360,9 @@ class TestPdfProcessingServices(TestCase):
     def test_set_highlights_and_comments(self):
         creation_date = datetime.strptime('20250311081649-+00:00', '%Y%m%d%H%M%S-%z')
 
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations', file=get_demo_pdf())
+        pdf = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='pdf_with_annotations', file=get_demo_pdf()
+        )
 
         comment_1 = PdfComment.objects.create(text='demo comment page 2', page=2, creation_date=creation_date, pdf=pdf)
         comment_2 = PdfComment.objects.create(text='last page', page=5, creation_date=creation_date, pdf=pdf)
@@ -395,7 +401,9 @@ class TestPdfProcessingServices(TestCase):
             self.assertNotEqual(generated_highlight.id, expected_comment_highlight.id)
 
     def test_set_highlights_and_comments_exception(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_with_annotations', file='dummy_file')
+        pdf = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='pdf_with_annotations', file='dummy_file'
+        )
 
         # check that exception is caught and thumbnail stays unset
         service.PdfProcessingServices.set_highlights_and_comments(pdf)
@@ -405,8 +413,8 @@ class TestPdfProcessingServices(TestCase):
 
     @mock.patch('pdf.service.PdfProcessingServices.export_annotations_to_yaml')
     def test_export_annotations(self, mock_export_annotation_to_yaml):
-        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_2')
+        pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
+        pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_2')
 
         comment_1 = PdfComment.objects.create(text='c1', page=1, creation_date=pdf_1.creation_date, pdf=pdf_1)
         comment_2 = PdfComment.objects.create(text='c2', page=2, creation_date=pdf_2.creation_date, pdf=pdf_2)
@@ -448,8 +456,8 @@ class TestPdfProcessingServices(TestCase):
     def test_export_annotation_to_yaml(self, mock_get_annotation_export_path):
         creation_date = datetime.strptime('2025-03-17 20:26:48+00:00', '%Y-%m-%d %H:%M:%S%z')
 
-        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='some_pdf')
-        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='another_pdf')
+        pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
+        pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='another_pdf')
 
         PdfComment.objects.create(text='c1', page=1, creation_date=creation_date, pdf=pdf_1)
         PdfComment.objects.create(text='c2', page=2, creation_date=creation_date, pdf=pdf_2)
@@ -467,16 +475,16 @@ class TestPdfProcessingServices(TestCase):
     @mock.patch('pdf.service.copy')
     def test_process_renaming_pdf(self, mock_copy, mock_get_file_path, mock_delete_empty_dirs_after_rename_or_delete):
         current_pdf_name = 'some_pdf'
-        current_file_name = f'{self.user.id}/pdf/{current_pdf_name}.pdf'
+        current_file_name = f'{self.user.id}/default/pdf/{current_pdf_name}.pdf'
         current_path = MEDIA_ROOT / current_file_name
         current_path.touch()
 
         new_pdf_name = 'changed'
-        new_file_name = f'{self.user.id}/pdf/child_dir/{new_pdf_name}.pdf'
+        new_file_name = f'{self.user.id}/default/pdf/child_dir/{new_pdf_name}.pdf'
         new_path = MEDIA_ROOT / new_file_name
         mock_get_file_path.return_value = new_file_name
 
-        pdf = Pdf.objects.create(owner=self.user.profile, name=current_pdf_name)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name=current_pdf_name)
         pdf.file = current_file_name
         pdf.save()
 
@@ -502,7 +510,9 @@ class TestPdfProcessingServices(TestCase):
         self.assertEqual(changed_pdf.file.name, new_file_name)
         mock_copy.assert_called_once_with(current_path, new_path)
         self.assertFalse(current_path.exists())
-        mock_delete_empty_dirs_after_rename_or_delete.assert_called_once_with(current_file_name, self.user.id)
+        mock_delete_empty_dirs_after_rename_or_delete.assert_called_once_with(
+            current_file_name, changed_pdf.workspace.id, changed_pdf.collection.name
+        )
 
         # cleanup
         new_path_parent.rmdir()
@@ -518,7 +528,7 @@ class TestPdfProcessingServices(TestCase):
         file_name = 'subdir/some.pdf'
         mock_get_file_path.return_value = file_name
 
-        pdf = Pdf.objects.create(owner=self.user.profile, name=original_pdf_name)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name=original_pdf_name)
         pdf.file = file_name
         pdf.save()
 
@@ -554,7 +564,7 @@ class TestOtherServices(TestCase):
         return pdf
 
     def test_check_object_access_allowed_existing(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         self.assertEqual(pdf, self.get_object(pdf.id, self.user))
 
@@ -600,7 +610,7 @@ class TestOtherServices(TestCase):
     @mock.patch('pdf.service.uuid4', return_value='123456789')
     def test_create_unique_name_from_file_existing_name(self, mock_uuid4, mock_create_name_from_file):
         user = User.objects.create_user(username='user', password='12345', email='a@a.com')
-        Pdf.objects.create(owner=user.profile, name='existing_name')
+        Pdf.objects.create(collection=user.profile.current_collection, name='existing_name')
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'existing_name.pdf'
 

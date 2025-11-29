@@ -14,15 +14,15 @@ class BaseAddMixin(BaseMixin):
     form = AddForm
     template_name = 'add_pdf.html'
 
-    def get_context_get(self, _, __):
-        context = {'form': self.form, 'other': 1234}
+    def get_context_get(self, request: HttpRequest, __):
+        context = {'form': self.form(profile=request.user.profile), 'other': 1234}
 
         return context
 
     @staticmethod
     def obj_save(form: AddForm, request: HttpRequest, identifier: str = None):
         pdf = form.save(commit=False)
-        pdf.owner = request.user.profile
+        pdf.collection = request.user.profile.current_collection
         pdf.name = f'{pdf.name}_{identifier}'
         pdf.save()
 
@@ -47,7 +47,7 @@ class OverviewMixin(BaseMixin):
     def filter_objects(request: HttpRequest) -> QuerySet:
         """Filter the objects when performing a search in the overview."""
 
-        pdfs = Pdf.objects.filter(owner=request.user.profile).all()
+        pdfs = request.user.profile.pdfs
         pdfs = pdfs.exclude(name__icontains='fig')
         pdfs = pdfs.exclude(name__icontains='Kaki')
 

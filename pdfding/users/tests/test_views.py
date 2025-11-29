@@ -311,8 +311,8 @@ class TestProfileOtherViews(BaseProfileView):
     def test_delete_post(self):
         # in this test we test that the user is successfully deleted
         # we also test that the associated profile, pdfs, and tags are also deleted
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
-        tags = [Tag.objects.create(name='tag', owner=pdf.owner)]
+        pdf = Pdf.objects.create(name='pdf_1', collection=self.user.profile.current_collection)
+        tags = [Tag.objects.create(name='tag', owner=self.user.profile)]
         pdf.tags.set(tags)
 
         for model_class in [Profile, Pdf, Tag]:

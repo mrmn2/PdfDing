@@ -9,7 +9,7 @@ from pdf.models.shared_pdf_models import SharedPdf, get_qrcode_file_path
 class TestSharedPdf(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='username', password='password')
-        self.pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
     def test_not_inactive(self):
         expiration_date = datetime.now(timezone.utc) + timedelta(minutes=5)
@@ -78,6 +78,7 @@ class TestSharedPdf(TestCase):
         self.assertEqual(shared_pdf.views_string, '2 Views')
 
     def test_get_qrcode_file_path(self):
-        generated_filepath = get_qrcode_file_path(self.pdf, '')
+        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        generated_filepath = get_qrcode_file_path(shared_pdf, '')
 
-        self.assertEqual(generated_filepath, f'1/qr/{self.pdf.id}.svg')
+        self.assertEqual(generated_filepath, f'1/qr/{shared_pdf.id}.svg')

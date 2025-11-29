@@ -32,7 +32,7 @@ from pdf.views.share_views import (
 def set_up(self):
     self.client = Client()
     self.user = User.objects.create_user(username=self.username, password=self.password, email='a@a.com')
-    self.pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+    self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
 
 class TestAddSharedPdfMixin(TestCase):
@@ -61,7 +61,7 @@ class TestAddSharedPdfMixin(TestCase):
         response = self.client.get(reverse('pdf_overview'))
         form = ShareForm(
             data={'name': 'some_shared_pdf', 'expiration_input': '0d1h1m', 'deletion_input': '0d2h2m'},
-            owner=self.user.profile,
+            profile=self.user.profile,
         )
 
         AddSharedPdfMixin.obj_save(form, response.wsgi_request, self.pdf.id)

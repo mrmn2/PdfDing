@@ -43,6 +43,14 @@ class Tag(models.Model):
         return sorted(names)
 
 
+def get_pdf_parent_dirs(instance) -> str:
+    """Get the parent directories (worskpace_id/collection_name) of a PDF file."""
+
+    parent_dirs = f'{instance.workspace.id}/{instance.collection.name.lower()}'
+
+    return parent_dirs
+
+
 def get_file_path(instance, _) -> str:
     """
     Get the file path for a PDF inside the media root based on the pdf name.File paths are user_id/some/dir/name.pdf.
@@ -66,10 +74,11 @@ def get_file_path(instance, _) -> str:
 
     if sub_dir:
         sub_dir.strip()
-        file_path = '/'.join([str(instance.owner.user.id), 'pdf', sub_dir, file_name])
+        file_path = '/'.join(['pdf', sub_dir, file_name])
     else:
-        file_path = '/'.join([str(instance.owner.user.id), 'pdf', file_name])
+        file_path = '/'.join(['pdf', file_name])
 
+    file_path = f'{get_pdf_parent_dirs(instance)}/{file_path}'
     existing_pdf = Pdf.objects.filter(file=file_path).first()
 
     # make sure there each file path is unique
@@ -79,14 +88,16 @@ def get_file_path(instance, _) -> str:
     return file_path
 
 
-def delete_empty_dirs_after_rename_or_delete(pdf_current_file_name: str, user_id: str) -> None:
+def delete_empty_dirs_after_rename_or_delete(
+    pdf_current_file_name: str, workspace_id: str, collection_name: str
+) -> None:
     """
     Delete empty directories in the users media/pdf directory that appear as a result of renaming or deleting pdfs.
     """
 
     current_path = MEDIA_ROOT / pdf_current_file_name
 
-    pdf_current_file_name_adjusted = pdf_current_file_name.replace(f'{user_id}/pdf/', '')
+    pdf_current_file_name_adjusted = pdf_current_file_name.replace(f'{workspace_id}/{collection_name.lower()}/pdf/', '')
 
     for _ in pdf_current_file_name_adjusted.split('/'):
         current_parent_path = current_path.parent
@@ -103,18 +114,18 @@ def get_thumbnail_path(instance, _) -> str:
     """Get the file path for the thumbnail of a PDF."""
 
     file_name = f'thumbnails/{instance.id}.png'
-    file_path = '/'.join([str(instance.owner.user.id), file_name])
+    file_path = f'{get_pdf_parent_dirs(instance)}/{file_name}'
 
-    return str(file_path)
+    return file_path
 
 
 def get_preview_path(instance, _) -> str:
     """Get the file path for the preview of a PDF."""
 
     file_name = f'previews/{instance.id}.png'
-    file_path = '/'.join([str(instance.owner.user.id), file_name])
+    file_path = f'{get_pdf_parent_dirs(instance)}/{file_name}'
 
-    return str(file_path)
+    return file_path
 
 
 def convert_to_natural_age(creation_date: DateTimeField) -> str:
@@ -154,7 +165,6 @@ class Pdf(models.Model):
     name = models.CharField(max_length=150, blank=False)
     notes = models.TextField(default='', blank=True, help_text='Optional, supports Markdown')
     number_of_pages = models.IntegerField(default=-1)
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
     preview = models.FileField(upload_to=get_preview_path, null=True, blank=False)
     revision = models.IntegerField(default=0)
     starred = models.BooleanField(default=False)
@@ -165,49 +175,50 @@ class Pdf(models.Model):
     def __str__(self) -> str:
         return self.name  # pragma: no cover
 
-    def save(self, *args, **kwargs) -> None:
-        # only update profile pdf stats if pdf object is created
-        profile = self.owner
-        profile_needs_saving = False
-
-        if self._state.adding:
-            profile.number_of_pdfs += 1
-            try:
-                profile.pdfs_total_size += self.file.size
-            except (FileNotFoundError, ValueError):
-                pass
-
-            profile_needs_saving = True
-
-        super().save(*args, **kwargs)
-
-        if profile_needs_saving:
-            profile.save()
+    # def save(self, *args, **kwargs) -> None:
+    #     # only update profile pdf stats if pdf object is created
+    #     profile = self.owner
+    #     profile_needs_saving = False
+    #
+    #     if self._state.adding:
+    #         profile.number_of_pdfs += 1
+    #         try:
+    #             profile.pdfs_total_size += self.file.size
+    #         except (FileNotFoundError, ValueError):
+    #             pass
+    #
+    #         profile_needs_saving = True
+    #
+    #     super().save(*args, **kwargs)
+    #
+    #     if profile_needs_saving:
+    #         profile.save()
 
     def delete(self, *args, **kwargs) -> None:
         # update profile pdf stats
-        profile = self.owner
-        profile.number_of_pdfs -= 1
-
-        if not profile.number_of_pdfs:
-            profile.pdfs_total_size = 0
-        else:
-            try:
-                profile.pdfs_total_size -= self.file.size
-            except (FileNotFoundError, ValueError):
-                pass
+        # profile = self.owner
+        # profile.number_of_pdfs -= 1
+        #
+        # if not profile.number_of_pdfs:
+        #     profile.pdfs_total_size = 0
+        # else:
+        #     try:
+        #         profile.pdfs_total_size -= self.file.size
+        #     except (FileNotFoundError, ValueError):
+        #         pass
 
         # clean up file directory if needed
         file_directory = self.file_directory
         file_name = self.file.name
-        user_id = self.owner.user.id
+        collection_name = self.collection.name
+        workspace_id = self.workspace.id
 
         super().delete(*args, **kwargs)
 
         if file_directory:
-            delete_empty_dirs_after_rename_or_delete(file_name, user_id)
+            delete_empty_dirs_after_rename_or_delete(file_name, workspace_id, collection_name)
 
-        profile.save()
+        # profile.save()
 
     @property
     def natural_age(self) -> str:  # pragma: no cover
@@ -219,8 +230,14 @@ class Pdf(models.Model):
         return convert_to_natural_age(self.creation_date)
 
     @property
+    def workspace(self) -> Workspace:
+        """Get the workspace the PDF belongs to."""
+
+        return self.collection.workspace
+
+    @property
     def progress(self) -> int:
-        """Get read progress of the pdf in percent"""
+        """Get read progress of the pdf in percent."""
 
         progress = round(100 * self.current_page_for_progress / self.number_of_pages)
 

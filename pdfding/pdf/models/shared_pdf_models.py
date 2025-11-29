@@ -11,7 +11,7 @@ def get_qrcode_file_path(instance, _) -> str:
     """Get the file path for the qr code of a shared PDF."""
 
     file_name = f'{instance.id}.svg'
-    file_path = '/'.join([str(instance.owner.user.id), 'qr', file_name])
+    file_path = '/'.join([str(instance.pdf.collection.id), 'qr', file_name])
 
     return str(file_path)
 

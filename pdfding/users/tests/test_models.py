@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from pdf.models.collection_models import Collection
-from pdf.services.workspace_services import create_workspace
+from pdf.services.workspace_services import create_collection, create_workspace
 
 
 class TestProfile(TestCase):
@@ -69,24 +69,44 @@ class TestProfile(TestCase):
         self.assertEqual(profile.pdfs_total_size_with_unit, '0.0 KB')
 
     def test_workspace_property(self):
-        user = User.objects.create_user(username='bla', password='12345', email='bla@a.com')
-        create_workspace('some_workspace', user)
+        create_workspace('some_workspace', self.user)
 
-        self.assertEqual(user.profile.workspaces.count(), 2)
+        self.assertEqual(self.user.profile.workspaces.count(), 2)
 
-        for workspace, expected_name in zip(user.profile.workspaces.order_by('name'), ['Personal', 'some_workspace']):
+        for workspace, expected_name in zip(
+            self.user.profile.workspaces.order_by('name'), ['Personal', 'some_workspace']
+        ):
             self.assertEqual(workspace.name, expected_name)
 
     def test_collection_property(self):
-        user = User.objects.create_user(username='bla', password='12345', email='bla@a.com')
-        self.assertEqual(user.profile.collections.count(), 1)
+        self.assertEqual(self.user.profile.collections.count(), 1)
 
-        workspace = create_workspace('some_workspace', user)
+        workspace = create_workspace('some_workspace', self.user)
         Collection.objects.create(workspace=workspace, name='some_collection', default_collection=False)
-        user.profile.current_workspace_id = workspace.id
-        user.profile.save()
+        self.user.profile.current_workspace_id = workspace.id
+        self.user.profile.save()
 
-        self.assertEqual(user.profile.collections.count(), 2)
+        self.assertEqual(self.user.profile.collections.count(), 2)
 
-        for collection, expected_name in zip(user.profile.collections.order_by('name'), ['Default', 'some_collection']):
+        for collection, expected_name in zip(
+            self.user.profile.collections.order_by('name'), ['Default', 'some_collection']
+        ):
             self.assertEqual(collection.name, expected_name)
+
+    def test_current_workspace_property(self):
+        self.assertEqual(self.user.profile.current_workspace.id, str(self.user.id))
+
+        other_workspace = create_workspace('other_workspace', self.user)
+        self.user.profile.current_workspace_id = other_workspace.id
+        self.user.profile.save()
+
+        self.assertEqual(self.user.profile.current_workspace, other_workspace)
+
+    def test_current_collection_property(self):
+        self.assertEqual(self.user.profile.current_collection.id, str(self.user.id))
+
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+        self.user.profile.current_collection_id = other_collection.id
+        self.user.profile.save()
+
+        self.assertEqual(other_collection, self.user.profile.current_collection)

@@ -17,12 +17,18 @@
 {% endblock %}
 
 {% block content %}
-<h1>Bulk Add PDF Files</h1>
-<h2 class="mb-6 truncate">{{ pdf_name }}</h2>
+<h1 class="mb-6">Bulk Add PDF Files</h1>
 
 <div x-data="{ in_progress: false, show_additional: false }">
     <form x-on:submit="in_progress = true" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="flex flex-row items-center gap-x-4 pb-3!">
+          <span>Collection</span>
+          <div class="w-28 bg-slate-100 dark:bg-slate-700 creme:bg-creme-dark-light p-2 rounded-lg [&>select]:hover:cursor-pointer">
+            {{ form.collection.errors }}
+            {{ form.collection }}
+          </div>
+        </div>
         <p>
             {{ form.tag_string.errors }}
             {{ form.tag_string }}

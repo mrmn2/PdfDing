@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from base.tests import base_view_definitions
 from core.settings import MEDIA_ROOT
@@ -45,10 +45,12 @@ class TestViews(TestCase):
         set_up(self)
 
     @override_settings(ROOT_URLCONF=__name__)
-    def test_base_add_get(self):
+    @patch('base.tests.base_view_definitions.BaseAddMixin.form')
+    def test_base_add_get(self, mock_add_form):
         response = self.client.get(reverse('test_add', kwargs={'identifier': 'some_id'}))
 
-        self.assertEqual(response.context['form'], AddForm)
+        mock_add_form.assert_called_once_with(profile=response.wsgi_request.user.profile)
+        self.assertIsInstance(response.context['form'], MagicMock)
         self.assertEqual(response.context['other'], 1234)
         self.assertTemplateUsed(response, 'add_pdf.html')
 
@@ -66,7 +68,13 @@ class TestViews(TestCase):
 
         response = self.client.post(
             reverse('test_add', kwargs={'identifier': 'some_id'}),
-            data={'name': 'pdf', 'description': 'something', 'tag_string': 'tag_a tag_2', 'file': simple_file},
+            data={
+                'name': 'pdf',
+                'description': 'something',
+                'tag_string': 'tag_a tag_2',
+                'file': simple_file,
+                'collection': self.user.profile.current_collection.id,
+            },
         )
 
         pdfs = self.user.profile.pdfs
@@ -74,6 +82,7 @@ class TestViews(TestCase):
         for pdf in pdfs:
             Path(pdf.file.path).unlink()
             self.assertEqual(pdf.name, 'pdf_some_id')
+            self.assertEqual(pdf.collection, self.user.profile.current_collection)
 
         self.assertEqual(len(pdfs), 1)
         self.assertRedirects(response, reverse('pdf_overview'))
@@ -88,7 +97,7 @@ class TestViews(TestCase):
         # create some pdfs
         # Kaki and fig need be removed by the filter function
         for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
-            Pdf.objects.create(owner=self.user.profile, name=pdf_name)
+            Pdf.objects.create(name=pdf_name, collection=self.user.profile.current_collection)
 
         response = self.client.get(f'{reverse('test_overview', kwargs={'items_per_page': 3})}')
         pdf_names = [pdf.name for pdf in response.context['page_obj']]
@@ -112,7 +121,7 @@ class TestViews(TestCase):
         # create some pdfs
         # Kaki and fig need be removed by the filter function
         for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
-            Pdf.objects.create(owner=self.user.profile, name=pdf_name)
+            Pdf.objects.create(name=pdf_name, collection=self.user.profile.current_collection)
 
         response = self.client.get(
             f'{reverse('test_get_next_page', kwargs={'items_per_page': 3, 'page': 2})}', **headers
@@ -156,7 +165,7 @@ class TestViews(TestCase):
     @override_settings(ROOT_URLCONF=__name__)
     @patch('base.base_views.serve')
     def test_serve_get(self, mock_serve):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection)
         pdf.file.name = f'{self.user}/pdf_name'
         pdf.save()
         mock_serve.return_value = HttpResponse('some response')
@@ -168,7 +177,7 @@ class TestViews(TestCase):
     @override_settings(ROOT_URLCONF=__name__)
     def test_download_get(self):
         simple_file = SimpleUploadedFile("simple.pdf", b"these are the file contents!")
-        pdf = Pdf.objects.create(owner=self.user.profile, name='name', file=simple_file)
+        pdf = Pdf.objects.create(name='name', collection=self.user.profile.current_collection, file=simple_file)
         pdf_path = Path(pdf.file.path)
 
         response = self.client.get(reverse('test_download', kwargs={'identifier': pdf.id}))
@@ -180,7 +189,7 @@ class TestViews(TestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_details_get(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection)
 
         # test without http referer
         response = self.client.get(reverse('test_details', kwargs={'identifier': pdf.id}))
@@ -197,14 +206,14 @@ class TestViews(TestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_get_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection)
 
         response = self.client.get(reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'description'}))
         self.assertRedirects(response, reverse('pdf_details', kwargs={'identifier': pdf.id}), status_code=302)
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_get_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection)
         headers = {'HTTP_HX-Request': 'true'}
 
         response = self.client.get(
@@ -223,7 +232,7 @@ class TestViews(TestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_post_invalid_form(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection, description='something')
 
         # post is invalid because data is missing
         # follow=True is needed for getting the message
@@ -238,7 +247,7 @@ class TestViews(TestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_post_not_name_not_processed(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection, description='something')
 
         self.client.post(
             reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'description'}),
@@ -252,7 +261,7 @@ class TestViews(TestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_post_processed(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection, description='something')
 
         self.client.post(
             reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'process_description'}),
@@ -278,7 +287,7 @@ class TestDelete(TransactionTestCase):
     def test_delete_htmx_not_from_details(self):
         # create a file for the test, so we can check that it was deleted by django_cleanup
         simple_file = SimpleUploadedFile("simple.pdf", b"these are the file contents!")
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', file=simple_file)
+        pdf = Pdf.objects.create(name='pdf', file=simple_file, collection=self.user.profile.current_collection)
         pdf_path = Path(pdf.file.path)
 
         headers = {'HTTP_HX-Request': 'true'}
@@ -292,7 +301,7 @@ class TestDelete(TransactionTestCase):
     def test_delete_htmx_from_details(self):
         # create a file for the test, so we can check that it was deleted by django_cleanup
         simple_file = SimpleUploadedFile("simple.pdf", b"these are the file contents!")
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', file=simple_file)
+        pdf = Pdf.objects.create(name='pdf', file=simple_file, collection=self.user.profile.current_collection)
         pdf_path = Path(pdf.file.path)
 
         headers = {'HTTP_HX-Request': 'true'}
@@ -306,7 +315,7 @@ class TestDelete(TransactionTestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_delete_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection)
 
         response = self.client.delete(reverse('test_delete', kwargs={'identifier': pdf.id}))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)

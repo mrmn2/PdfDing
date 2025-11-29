@@ -23,7 +23,7 @@ fill_collections_workspaces = importlib.import_module('pdf.migrations.0020_fill_
 class TestMigrations(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', password='12345')
-        self.pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1')
+        self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
 
     @patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
     def test_fill_number_of_pages(self, mock_set_thumbnail_and_preview):
@@ -103,7 +103,9 @@ class TestMigrations(TestCase):
         rename_pdfs_and_add_file_directory.PdfProcessingServices.process_renaming_pdf = new_rename_pdf
 
         for i in range(3):
-            Pdf.objects.create(owner=self.user.profile, name=f'rename_{i}', file=f'old_name_{i}')
+            Pdf.objects.create(
+                collection=self.user.profile.current_collection, name=f'rename_{i}', file=f'old_name_{i}'
+            )
 
         rename_pdfs_and_add_file_directory.update_pdf_file_names(apps, connection.schema_editor())
 
@@ -125,8 +127,9 @@ class TestMigrations(TestCase):
 
         # create a workspace so we can create pdfs and see if the collection will change with the migration
         created_workspace = create_workspace('dummy', user)
+        collection = created_workspace.collections[0]
         user.profile.current_workspace_id = created_workspace.id
-        user.profile.current_collection_id = 123456
+        user.profile.current_collection_id = collection.id
         user.profile.save()
 
         changed_user = User.objects.get(id=user.id)
@@ -135,13 +138,13 @@ class TestMigrations(TestCase):
         self.assertEqual(changed_user.profile.collections.count(), 1)
         self.assertEqual(changed_user.profile.workspaces.count(), 1)
         self.assertEqual(changed_user.profile.current_workspace_id, created_workspace.id)
-        self.assertEqual(changed_user.profile.current_collection_id, '123456')
+        self.assertEqual(changed_user.profile.current_collection_id, collection.id)
 
-        collection = changed_user.profile.collections[0]
-        pdf = Pdf.objects.create(owner=changed_user.profile, name='test', collection=collection)
+        # need to set the descripton to the profile id so we can filter by it
+        pdf = Pdf.objects.create(name='test', collection=collection, description=user.profile.id)
         tag = Tag.objects.create(owner=changed_user.profile, name='bla', workspace=created_workspace)
 
-        fill_collections_workspaces.fill_data(apps, connection.schema_editor())
+        fill_collections_workspaces.fill_data(apps, connection.schema_editor(), filter_pdfs_by='description')
 
         changed_user = User.objects.get(id=user.id)
         changed_pdf = Pdf.objects.get(id=pdf.id)

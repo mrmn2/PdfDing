@@ -22,37 +22,53 @@ class TestPdfForms(TestCase):
     def test_add_form_valid(self, mock_from_buffer):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = forms.AddForm(data={'name': 'PDF Name'}, owner=self.user.profile, files={'file': file_mock})
+        form = forms.AddForm(
+            data={'name': 'PDF Name', 'collection': self.user.profile.current_collection.id},
+            profile=self.user.profile,
+            files={'file': file_mock},
+        )
+
+        choices = form.fields['collection'].choices
+        id, name = choices[0]
 
         self.assertTrue(form.is_valid())
+        self.assertEqual(len(choices), 1)
+        self.assertEqual(id, self.user.profile.current_collection.id)
+        self.assertEqual(name, self.user.profile.current_collection.name)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_bulk_add_form_valid(self, mock_from_buffer):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = forms.BulkAddForm(owner=self.user.profile, files={'file': [file_mock]})
+        form = forms.BulkAddForm(
+            data={'collection': self.user.profile.current_collection.id},
+            profile=self.user.profile,
+            files={'file': [file_mock]},
+        )
+
+        choices = form.fields['collection'].choices
+        id, name = choices[0]
 
         self.assertTrue(form.is_valid())
+        self.assertEqual(len(choices), 1)
+        self.assertEqual(id, self.user.profile.current_collection.id)
+        self.assertEqual(name, self.user.profile.current_collection.name)
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_add_clean_missing_owner(self, mock_from_buffer):
+    def test_add_missing_profile(self, mock_from_buffer):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = forms.AddForm(data={'name': 'PDF Name'}, files={'file': file_mock})
 
-        self.assertFalse(form.is_valid())
-        # need to test it like this, as owner is not a key of form.errors
-        self.assertIn('Owner is missing!', str(form.errors))
+        with self.assertRaisesMessage(KeyError, 'profile'):
+            forms.AddForm(data={'name': 'PDF Name'}, files={'file': file_mock})
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_bulk_add_clean_missing_owner(self, mock_from_buffer):
+    def test_bulk_add_missing_profile(self, mock_from_buffer):
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
-        form = forms.BulkAddForm(files={'file': file_mock})
 
-        self.assertFalse(form.is_valid())
-        # need to test it like this, as owner is not a key of form.errors
-        self.assertIn('Owner is missing!', str(form.errors))
+        with self.assertRaisesMessage(KeyError, 'profile'):
+            forms.BulkAddForm(files={'file': file_mock})
 
     @mock.patch('pdf.forms.CleanHelpers.clean_file')
     def test_bulk_add_clean_file(self, mock_clean_file):
@@ -60,32 +76,47 @@ class TestPdfForms(TestCase):
         file_mock_1.name = 'test1.pdf'
         file_mock_2 = mock.MagicMock(spec=File, name='FileMock_2')
         file_mock_2.name = 'test2.pdf'
-        form = forms.BulkAddForm(files={'file': [file_mock_1, file_mock_2]})
+        form = forms.BulkAddForm(
+            data={'collection': self.user.profile.current_collection.id},
+            files={'file': [file_mock_1, file_mock_2]},
+            profile=self.user.profile,
+        )
 
-        self.assertFalse(form.is_valid())
+        self.assertTrue(form.is_valid())
         mock_clean_file.assert_has_calls([mock.call(file_mock_1), mock.call(file_mock_2)])
 
+    @mock.patch('pdf.forms.CleanHelpers.clean_name', return_value='existing name')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_pdf_clean_name_existing(self, mock_from_buffer):
+    def test_pdf_clean_name_existing(self, mock_from_buffer, mock_clean_name):
         # create pdf for user
-        Pdf.objects.create(owner=self.user.profile, name='existing name')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='existing name')
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
         # create the form with the already existing pdf name
-        form = forms.AddForm(data={'name': 'existing name'}, owner=self.user.profile, files={'file': file_mock})
+        form = forms.AddForm(
+            data={'name': 'existing name', 'collection': self.user.profile.current_collection.id},
+            profile=self.user.profile,
+            files={'file': file_mock},
+        )
 
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['name'], ['A PDF with this name already exists!'])
+        mock_clean_name.assert_called_once_with('existing name')
 
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_pdf_clean_name_existing_placeholder(self, mock_from_buffer):
         # create pdf for user
-        Pdf.objects.create(owner=self.user.profile, name='bb36974a-3792-47c5-96cc-c79adb87cf82')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='bb36974a-3792-47c5-96cc-c79adb87cf82')
         file_mock = mock.MagicMock(spec=File, name='FileMock')
         file_mock.name = 'test1.pdf'
         # create the form with the placeholder name
         form = forms.AddForm(
-            data={'name': 'bb36974a-3792-47c5-96cc-c79adb87cf82'}, owner=self.user.profile, files={'file': file_mock}
+            data={
+                'name': 'bb36974a-3792-47c5-96cc-c79adb87cf82',
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
+            files={'file': file_mock},
         )
 
         self.assertTrue(form.is_valid())
@@ -96,7 +127,7 @@ class TestShareForms(TestCase):
         self.user = User.objects.create_user(username='user', password='12345', email='a@a.com')
 
     def test_add_form_valid(self):
-        form = forms.ShareForm(data={'name': 'Share Name'}, owner=self.user.profile)
+        form = forms.ShareForm(data={'name': 'Share Name'}, profile=self.user.profile)
 
         self.assertTrue(form.is_valid())
 
@@ -107,23 +138,25 @@ class TestShareForms(TestCase):
         # need to test it like this, as owner is not a key of form.errors
         self.assertIn('Owner is missing!', str(form.errors))
 
-    def test_pdf_clean_name_existing(self):
+    @mock.patch('pdf.forms.CleanHelpers.clean_name', return_value='existing name')
+    def test_pdf_clean_name_existing(self, mock_clean_name):
         # create pdf for user
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_name')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_name')
         SharedPdf.objects.create(owner=self.user.profile, pdf=pdf, name='existing name')
         # create the form with the already existing pdf name
-        form = forms.ShareForm(data={'name': 'existing name'}, owner=self.user.profile)
+        form = forms.ShareForm(data={'name': 'existing name'}, profile=self.user.profile)
 
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['name'], ['A Share with this name already exists!'])
+        mock_clean_name.assert_called_once_with('existing name')
 
     def test_pdf_clean_name_existing_but_deleted(self):
         deletion_date = datetime.now(timezone.utc) - timedelta(minutes=5)
 
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_name')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_name')
         SharedPdf.objects.create(owner=self.user.profile, pdf=pdf, name='existing name', deletion_date=deletion_date)
         # create the form with the already existing pdf name
-        form = forms.ShareForm(data={'name': 'existing name'}, owner=self.user.profile)
+        form = forms.ShareForm(data={'name': 'existing name'}, profile=self.user.profile)
 
         self.assertTrue(form.is_valid())
 
@@ -131,7 +164,7 @@ class TestShareForms(TestCase):
 class TestViewSharedPasswordForm(TestCase):
     def test_clean_password_input_valid(self):
         user = User.objects.create_user(username='user', password='12345', email='a@a.com')
-        pdf = Pdf.objects.create(owner=user.profile, name='pdf_name')
+        pdf = Pdf.objects.create(collection=user.profile.current_collection, name='pdf_name')
         hashed_password = make_password('password')
         shared_pdf = SharedPdf.objects.create(
             owner=user.profile, pdf=pdf, name='existing name', password=hashed_password

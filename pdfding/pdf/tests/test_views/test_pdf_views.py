@@ -33,11 +33,16 @@ class TestAddPDFMixin(TestCase):
         self.user = None
         set_up(self)
 
-    def test_get_context_get(self):
-        add_pdf_mixin = pdf_views.AddPdfMixin()
-        generated_context = add_pdf_mixin.get_context_get(None, None)
+    @patch('pdf.views.pdf_views.forms.AddForm')
+    def test_get_context_get(self, mock_add_form):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
 
-        self.assertEqual({'form': forms.AddForm}, generated_context)
+        add_pdf_mixin = pdf_views.AddPdfMixin()
+        generated_context = add_pdf_mixin.get_context_get(response.wsgi_request, None)
+
+        mock_add_form.assert_called_once_with(profile=self.user.profile)
+        self.assertIsInstance(generated_context['form'], mock.MagicMock)
 
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
@@ -52,8 +57,9 @@ class TestAddPDFMixin(TestCase):
                 'description': 'some_description',
                 'notes': 'some_notes',
                 'file_directory': 'some/dir',
+                'collection': self.user.profile.current_collection.id,
             },
-            owner=self.user.profile,
+            profile=self.user.profile,
             files={'file': get_demo_pdf()},
         )
 
@@ -65,7 +71,7 @@ class TestAddPDFMixin(TestCase):
         self.assertEqual(pdf.notes, 'some_notes')
         self.assertEqual(pdf.description, 'some_description')
         self.assertEqual(pdf.file_directory, 'some/dir')
-        self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.collection, self.user.profile.current_collection)
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
@@ -79,8 +85,13 @@ class TestAddPDFMixin(TestCase):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = forms.AddForm(
-            data={'name': 'bla', 'tag_string': 'tag_a tag_2', 'use_file_name': True},
-            owner=self.user.profile,
+            data={
+                'name': 'bla',
+                'tag_string': 'tag_a tag_2',
+                'use_file_name': True,
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
             files={'file': get_demo_pdf()},
         )
 
@@ -89,7 +100,7 @@ class TestAddPDFMixin(TestCase):
         pdf = self.user.profile.pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
-        self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.collection, self.user.profile.current_collection)
 
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
@@ -100,15 +111,22 @@ class TestAddPDFMixin(TestCase):
     def test_obj_save_demo_mode(self, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        form = forms.AddFormNoFile(data={'name': 'some_pdf', 'tag_string': 'tag_a tag_2'}, owner=self.user.profile)
+        form = forms.AddFormNoFile(
+            data={
+                'name': 'some_pdf',
+                'tag_string': 'tag_a tag_2',
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
+        )
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdfs.get(name='some_pdf')
+        pdf = self.user.profile.current_collection.pdfs.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
-        self.assertEqual(pdf.owner, self.user.profile)
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
+        self.assertEqual(pdf.collection, self.user.profile.current_collection)
 
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
@@ -122,11 +140,16 @@ class TestBulkAddPDFMixin(TestCase):
         self.user = None
         set_up(self)
 
-    def test_get_context_get(self):
-        add_pdf_mixin = pdf_views.BulkAddPdfMixin()
-        generated_context = add_pdf_mixin.get_context_get(None, None)
+    @patch('pdf.views.pdf_views.forms.BulkAddForm')
+    def test_get_context_get(self, mock_add_form):
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
 
-        self.assertEqual({'form': forms.BulkAddForm}, generated_context)
+        add_pdf_mixin = pdf_views.BulkAddPdfMixin()
+        generated_context = add_pdf_mixin.get_context_get(response.wsgi_request, None)
+
+        mock_add_form.assert_called_once_with(profile=self.user.profile)
+        self.assertIsInstance(generated_context['form'], mock.MagicMock)
 
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
@@ -137,17 +160,22 @@ class TestBulkAddPDFMixin(TestCase):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = forms.BulkAddForm(
-            data={'tag_string': 'tag_a tag_2', 'description': '', 'file_directory': 'some/dir'},
-            owner=self.user.profile,
+            data={
+                'tag_string': 'tag_a tag_2',
+                'description': '',
+                'file_directory': 'some/dir',
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
             files=MultiValueDict({'file': [get_demo_pdf()]}),
         )
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdfs.get(name='demo')
+        pdf = self.user.profile.current_collection.pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
-        self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.collection, self.user.profile.current_collection)
         self.assertEqual(pdf.file_directory, 'some/dir')
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
         mock_process_with_pypdfium.assert_called_once_with(pdf)
@@ -167,8 +195,13 @@ class TestBulkAddPDFMixin(TestCase):
         file_2.name = 'demo_2'
 
         form = forms.BulkAddForm(
-            data={'tag_string': 'tag_a tag_2', 'description': 'some_description', 'notes': 'some_notes'},
-            owner=self.user.profile,
+            data={
+                'tag_string': 'tag_a tag_2',
+                'description': 'some_description',
+                'notes': 'some_notes',
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
             files=MultiValueDict({'file': [file_1, file_2]}),
         )
 
@@ -180,7 +213,7 @@ class TestBulkAddPDFMixin(TestCase):
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
             self.assertEqual(pdf.description, 'some_description')
             self.assertEqual(pdf.notes, 'some_notes')
-            self.assertEqual(pdf.owner, self.user.profile)
+            self.assertEqual(pdf.collection, self.user.profile.current_collection)
             # check that pdf pages are set to -1 in case of exception.
             # in this test there should be an exception as a mock file is used.
             self.assertEqual(pdf.number_of_pages, -1)
@@ -200,7 +233,9 @@ class TestBulkAddPDFMixin(TestCase):
         for i in range(1, 3):
             file_contents = bytes('contents' * i, encoding='utf-8')
             simple_file = SimpleUploadedFile(f'test{i}.pdf', file_contents)
-            old_pdf = Pdf.objects.create(owner=self.user.profile, name=f'test{i}', file=simple_file)
+            old_pdf = Pdf.objects.create(
+                collection=self.user.profile.current_collection, name=f'test{i}', file=simple_file
+            )
             old_pdfs.append(old_pdf)
 
         files = []
@@ -214,8 +249,13 @@ class TestBulkAddPDFMixin(TestCase):
             files.append(simple_file)
 
         form = forms.BulkAddForm(
-            data={'tag_string': 'tag_a tag_2', 'description': 'description', 'skip_existing': 'on'},
-            owner=self.user.profile,
+            data={
+                'tag_string': 'tag_a tag_2',
+                'description': 'description',
+                'skip_existing': 'on',
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
             files=MultiValueDict({'file': files}),
         )
 
@@ -236,7 +276,12 @@ class TestBulkAddPDFMixin(TestCase):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = forms.BulkAddFormNoFile(
-            data={'tag_string': 'tag_a tag_2', 'description': 'description'}, owner=self.user.profile
+            data={
+                'tag_string': 'tag_a tag_2',
+                'description': 'description',
+                'collection': self.user.profile.current_collection.id,
+            },
+            profile=self.user.profile,
         )
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
@@ -245,7 +290,7 @@ class TestBulkAddPDFMixin(TestCase):
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual('description', 'description')
-        self.assertEqual(pdf.owner, self.user.profile)
+        self.assertEqual(pdf.collection, self.user.profile.current_collection)
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
 
         mock_process_with_pypdfium.assert_called_once_with(pdf)
@@ -263,16 +308,16 @@ class TestOverviewMixin(TestCase):
     def test_filter_objects(self):
         # create some pdfs
         for i in range(1, 15):
-            pdf = Pdf.objects.create(owner=self.user.profile, name=f'pdf_{i % 5}_{i}')
+            pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name=f'pdf_{i % 5}_{i}')
 
             # add a tag to pdf 2, 7
             if i % 5 == 2 and i < 10:
                 tag = Tag.objects.create(name=f'tag_{i}', owner=self.user.profile)
                 pdf.tags.set([tag])
 
-        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1')
-        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
-        pdf_3 = Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
+        pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_1')
+        pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_2')
+        pdf_3 = Pdf.objects.create(collection=self.user.profile.current_collection, name='not_to_be_found')
         tags = []
 
         for name in ['programming', 'programming/python', 'programming/python/django', 'programming/python/flask']:
@@ -290,9 +335,13 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_starred(self):
-        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1', starred=True)
-        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2', starred=True)
-        Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
+        pdf_1 = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='pdf_to_be_found_1', starred=True
+        )
+        pdf_2 = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='pdf_to_be_found_2', starred=True
+        )
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='not_to_be_found')
 
         response = self.client.get(f'{reverse('pdf_overview')}?selection=starred')
 
@@ -301,9 +350,9 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_ignore_archived(self):
-        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1')
-        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
-        Pdf.objects.create(owner=self.user.profile, name='not_to_be_found', archived=True)
+        pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_1')
+        pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_2')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='not_to_be_found', archived=True)
 
         response = self.client.get(f'{reverse('pdf_overview')}')
 
@@ -312,9 +361,11 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_archived(self):
-        pdf_1 = Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_1', archived=True)
-        Pdf.objects.create(owner=self.user.profile, name='pdf_to_be_found_2')
-        Pdf.objects.create(owner=self.user.profile, name='not_to_be_found')
+        pdf_1 = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='pdf_to_be_found_1', archived=True
+        )
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_2')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='not_to_be_found')
 
         response = self.client.get(f'{reverse('pdf_overview')}?selection=archived')
 
@@ -323,10 +374,14 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(list(filtered_pdfs), [pdf_1])
 
     def test_fuzzy_filter_pdfs(self):
-        Pdf.objects.create(owner=self.user.profile, name='pdf_not_to_be_found')
-        pdf_self_hosted = Pdf.objects.create(owner=self.user.profile, name='The best self-hosted applications ')
-        pdf_self_hosting = Pdf.objects.create(owner=self.user.profile, name='Self-hosting Guide')
-        Pdf.objects.create(owner=self.user.profile, name='self sufficiency')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_not_to_be_found')
+        pdf_self_hosted = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='The best self-hosted applications '
+        )
+        pdf_self_hosting = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='Self-hosting Guide'
+        )
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='self sufficiency')
 
         filtered_pdfs = pdf_views.OverviewMixin.fuzzy_filter_pdfs(Pdf.objects.all(), 'self hosted')
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_self_hosting, pdf_self_hosted])
@@ -442,7 +497,7 @@ class TestPdfMixin(TestCase):
         set_up(self)
 
     def test_get_object(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -461,7 +516,10 @@ class TestEditPdfMixin(TestCase):
 
     def test_get_edit_form_get(self):
         pdf = Pdf.objects.create(
-            owner=self.user.profile, name='pdf_name', description='some_description', notes='some_note'
+            collection=self.user.profile.current_collection,
+            name='pdf_name',
+            description='some_description',
+            notes='some_note',
         )
         tags = [Tag.objects.create(name=f'tag_{i}', owner=self.user.profile) for i in range(2)]
         pdf.tags.set(tags)
@@ -480,7 +538,7 @@ class TestEditPdfMixin(TestCase):
             self.assertEqual(form.initial, {field: field_value})
 
     def test_process_field_tag(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', description='something')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', description='something')
         tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
         tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
 
@@ -502,7 +560,7 @@ class TestEditPdfMixin(TestCase):
     def test_process_field_name(self, mock_process_renaming_pdf):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         request = response.wsgi_request
 
         pdf_views.EditPdfMixin.process_field('name', pdf, request, {'name': 'new_name'})
@@ -511,8 +569,8 @@ class TestEditPdfMixin(TestCase):
     def test_process_field_name_existing(self):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
-        pdf_2 = Pdf.objects.create(owner=self.user.profile, name='pdf_2')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_2')
         request = response.wsgi_request
 
         pdf_views.EditPdfMixin.process_field('name', pdf, request, {'name': pdf_2.name})
@@ -526,7 +584,7 @@ class TestEditPdfMixin(TestCase):
     def test_process_field_file_directory(self, mock_process_renaming_pdf):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         request = response.wsgi_request
 
         pdf_views.EditPdfMixin.process_field('file_directory', pdf, request, {'file_directory': 'some/dir'})
@@ -545,7 +603,7 @@ class TestViews(TestCase):
     def test_view_get(self, mock_get_viewer_theme_and_color):
         mock_get_viewer_theme_and_color.return_value = ('dark', '4 4 4')
 
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         pdf.current_page = 4
         pdf.revision = 3
         pdf.save()
@@ -555,7 +613,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('view_pdf', kwargs={'identifier': pdf.id}))
 
         # check that views increased by one
-        pdf = self.user.profile.pdfs.get(name='pdf')
+        pdf = self.user.profile.current_collection.pdfs.get(name='pdf')
         self.assertEqual(pdf.views, 1)
         time_diff = datetime.now(timezone.utc) - pdf.last_viewed_date
         self.assertLess(time_diff.total_seconds(), 1)
@@ -571,7 +629,7 @@ class TestViews(TestCase):
 
     def test_view_get_different_page(self):
         # in this test we are just interested if the current_page is set to the value specified by the query.
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         self.assertEqual(pdf.current_page, 1)
 
@@ -580,13 +638,13 @@ class TestViews(TestCase):
         self.assertEqual(response.context['current_page'], '20')
 
     def test_get_notes_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         response = self.client.get(reverse('get_notes', kwargs={'identifier': pdf.id}))
 
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_get_notes_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', notes='PdfDing')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', notes='PdfDing')
         headers = {'HTTP_HX-Request': 'true'}
 
         response = self.client.get(reverse('get_notes', kwargs={'identifier': pdf.id}), **headers)
@@ -595,13 +653,13 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'partials/notes.html')
 
     def test_show_preview_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         response = self.client.get(reverse('show_preview', kwargs={'identifier': pdf.id}))
 
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_show_preview_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', notes='PdfDing')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', notes='PdfDing')
         headers = {'HTTP_HX-Request': 'true'}
 
         response = self.client.get(reverse('show_preview', kwargs={'identifier': pdf.id}), **headers)
@@ -624,7 +682,7 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'partials/preview.html')
 
     def test_update_page_post(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         response = self.client.post(reverse('update_page'), data={'pdf_id': pdf.id, 'current_page': 10})
 
@@ -635,7 +693,7 @@ class TestViews(TestCase):
         self.assertEqual(200, response.status_code)
 
     def test_update_pdf_post_wrong_file_type(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         file_path = Path(__file__)
         with file_path.open(mode="rb") as f:
@@ -646,7 +704,7 @@ class TestViews(TestCase):
 
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
     def test_update_pdf_post_correct(self, mock_set_highlights_and_comments):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         # assign empty file and check size
         init_file_path = Path(__file__).parents[1] / '__init__.py'
@@ -674,7 +732,7 @@ class TestViews(TestCase):
     @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
     @override_settings(DEMO_MODE=True)
     def test_update_pdf_post_demo_mode(self, mock_set_highlights_and_comments):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         # assign empty file and check size
         init_file_path = Path(__file__).parents[1] / '__init__.py'
@@ -695,7 +753,7 @@ class TestViews(TestCase):
 
     def test_star(self):
         headers = {'HTTP_HX-Request': 'true'}
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', starred=False)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', starred=False)
 
         # star the pdf
         response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}), **headers)
@@ -711,7 +769,7 @@ class TestViews(TestCase):
 
     def test_star_unarchive(self):
         headers = {'HTTP_HX-Request': 'true'}
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', archived=True)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', archived=True)
 
         # star the pdf
         response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}), **headers)
@@ -721,14 +779,14 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_star_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         response = self.client.post(reverse('star', kwargs={'identifier': pdf.id}))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_archive(self):
         headers = {'HTTP_HX-Request': 'true'}
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', archived=False)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', archived=False)
 
         # archive the pdf
         response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}), **headers)
@@ -744,7 +802,7 @@ class TestViews(TestCase):
 
     def test_archive_unstar(self):
         headers = {'HTTP_HX-Request': 'true'}
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', starred=True)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', starred=True)
 
         # archive the pdf
         response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}), **headers)
@@ -754,20 +812,20 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_archive_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_delete_get_no_htmx(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         response = self.client.get(reverse('delete_pdf', kwargs={'identifier': pdf.id}))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_delete_get(self):
         headers = {'HTTP_HX-Request': 'true'}
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf', starred=True)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', starred=True)
 
         # archive the pdf
         response = self.client.get(reverse('delete_pdf', kwargs={'identifier': pdf.id}), **headers)
@@ -778,7 +836,7 @@ class TestViews(TestCase):
 
     @mock.patch('pdf.service.PdfProcessingServices.export_annotations')
     def test_export_annotations_with_identifier(self, mock_export_annotations):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         export_path = PdfProcessingServices.get_annotation_export_path(str(self.user.id))
         export_path.parent.mkdir(exist_ok=True)
@@ -793,7 +851,7 @@ class TestViews(TestCase):
 
     @mock.patch('pdf.service.PdfProcessingServices.export_annotations')
     def test_export_annotations_without_identifier(self, mock_export_annotations):
-        Pdf.objects.create(owner=self.user.profile, name='pdf')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         export_path = PdfProcessingServices.get_annotation_export_path(str(self.user.id))
         export_path.parent.mkdir(exist_ok=True)
@@ -816,7 +874,7 @@ class TestAnnotationMixin(TestCase):
         set_up(self)
 
     def test_filter_highlights(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         highlight_1 = PdfHighlight.objects.create(text='highlight_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
         highlight_2 = PdfHighlight.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
@@ -829,7 +887,7 @@ class TestAnnotationMixin(TestCase):
         self.assertEqual(sorted(list(filtered_highlights), key=lambda a: a.text), [highlight_1, highlight_2])
 
     def test_filter_comments(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         comment_1 = PdfComment.objects.create(text='comment_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
         comment_2 = PdfComment.objects.create(text='comment_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
@@ -842,12 +900,12 @@ class TestAnnotationMixin(TestCase):
         self.assertEqual(sorted(list(filtered_comments), key=lambda a: a.text), [comment_1, comment_2])
 
     def test_filter_details_highlights(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         highlight_1 = PdfHighlight.objects.create(text='highlight_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
         highlight_2 = PdfHighlight.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
 
         # we create a second pdf to verify only the highlights of correct pdf will be returned
-        other_pdf = Pdf.objects.create(owner=self.user.profile, name='other_pdf')
+        other_pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='other_pdf')
         PdfHighlight.objects.create(text='other_highlight', page=1, creation_date=pdf.creation_date, pdf=other_pdf)
 
         # dummy request
@@ -858,13 +916,13 @@ class TestAnnotationMixin(TestCase):
         self.assertEqual(sorted(list(filtered_highlights), key=lambda a: a.text), [highlight_1, highlight_2])
 
     def test_filter_details_comments(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         comment_1 = PdfComment.objects.create(text='comment_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
         comment_2 = PdfComment.objects.create(text='comment_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
 
         # we create a second pdf to verify only the highlights of correct pdf will be returned
-        other_pdf = Pdf.objects.create(owner=self.user.profile, name='other_pdf')
+        other_pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='other_pdf')
         PdfComment.objects.create(text='other_comment', page=1, creation_date=pdf.creation_date, pdf=other_pdf)
 
         # dummy request
@@ -875,7 +933,7 @@ class TestAnnotationMixin(TestCase):
         self.assertEqual(sorted(list(filtered_comments), key=lambda a: a.text), [comment_1, comment_2])
 
     def test_details_highlights_get_extra_context(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         # dummy request
         response = self.client.get(reverse('pdf_overview'))
@@ -893,7 +951,7 @@ class TestAnnotationMixin(TestCase):
         self.assertEqual(generated_extra_context, expected_extra_context)
 
     def test_details_comments_get_extra_context(self):
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         # dummy request
         response = self.client.get(reverse('pdf_overview'))

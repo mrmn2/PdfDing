@@ -21,7 +21,7 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             user = User.objects.create_user(username=i, password="password", email=f"{i}@a.com")
 
             for j in range(1, i + 1):
-                Pdf.objects.create(owner=user.profile, name=f"pdf_{j}")
+                Pdf.objects.create(collection=user.profile.current_collection, name=f"pdf_{j}")
 
     def test_instance_info(self):
         with sync_playwright() as p:

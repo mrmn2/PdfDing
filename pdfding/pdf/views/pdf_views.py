@@ -12,8 +12,10 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
+from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, Tag
 from pdf.service import PdfProcessingServices
+from pdf.services.workspace_services import get_pdfs_of_workspace
 from rapidfuzz import fuzz, utils
 from users.models import Profile
 from users.service import get_demo_pdf, get_viewer_theme_and_color
@@ -31,10 +33,10 @@ class AddPdfMixin(BasePdfMixin):
         else:
             self.form = forms.AddForm
 
-    def get_context_get(self, _, __):
+    def get_context_get(self, request: HttpRequest, _):
         """Get the context needed to be passed to the template containing the form for adding a PDF."""
 
-        context = {'form': self.form}
+        context = {'form': self.form(profile=request.user.profile)}
 
         return context
 
@@ -47,7 +49,8 @@ class AddPdfMixin(BasePdfMixin):
         notes = form.data.get('notes', '')
         tag_string = form.data.get('tag_string', '')
         file_directory = form.data.get('file_directory', '')
-        profile = request.user.profile
+        collection_id = form.data.get('collection')
+        collection = Collection.objects.get(id=collection_id)
 
         if settings.DEMO_MODE:
             pdf_file = get_demo_pdf()
@@ -55,11 +58,11 @@ class AddPdfMixin(BasePdfMixin):
             pdf_file = form.files['file']
 
         if form.data.get('use_file_name'):
-            name = service.create_unique_name_from_file(pdf_file, request.user.profile)
+            name = service.create_unique_name_from_file(pdf_file, collection.workspace)
 
         service.PdfProcessingServices.create_pdf(
             name=name,
-            owner=profile,
+            collection=collection,
             pdf_file=pdf_file,
             description=description,
             notes=notes,
@@ -76,10 +79,11 @@ class BulkAddPdfMixin(BasePdfMixin):
         else:
             self.form = forms.BulkAddForm
 
-    def get_context_get(self, _, __):
+    def get_context_get(self, request: HttpRequest, _):
         """Get the context needed to be passed to the template containing the form for bulk adding PDFs."""
 
         context = {'form': self.form}
+        context = {'form': self.form(profile=request.user.profile)}
 
         return context
 
@@ -87,14 +91,16 @@ class BulkAddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.BulkAddForm | forms.BulkAddFormNoFile, request: HttpRequest, __):
         """Save the multiple PDFs based on the submitted form."""
 
-        profile = request.user.profile
         description = form.data.get('description', '')
         notes = form.data.get('notes', '')
         tag_string = form.data.get('tag_string', '')
         file_directory = form.data.get('file_directory', '')
+        collection_id = form.data.get('collection')
+        collection = Collection.objects.get(id=collection_id)
+        workspace = collection.workspace
 
         if form.data.get('skip_existing'):
-            pdf_info_list = service.get_pdf_info_list(profile)
+            pdf_info_list = service.get_pdf_info_list(workspace)
         else:
             pdf_info_list = []
 
@@ -108,11 +114,11 @@ class BulkAddPdfMixin(BasePdfMixin):
             if not (
                 form.data.get('skip_existing') and (service.create_name_from_file(file), file.size) in pdf_info_list
             ):
-                pdf_name = service.create_unique_name_from_file(file, profile)
+                pdf_name = service.create_unique_name_from_file(file, workspace)
 
                 service.PdfProcessingServices.create_pdf(
                     name=pdf_name,
-                    owner=profile,
+                    collection=collection,
                     pdf_file=file,
                     description=description,
                     notes=notes,
@@ -312,9 +318,9 @@ class EditPdfMixin(PdfMixin):
             pdf.tags.set(tags)
 
         elif field_name == 'name':
-            existing_obj = cls.obj_class.objects.filter(
-                owner=request.user.profile, name__iexact=form_data.get('name').strip()
-            ).first()
+            existing_obj = (
+                get_pdfs_of_workspace(pdf.workspace).filter(name__iexact=form_data.get('name').strip()).first()
+            )
 
             if existing_obj and str(existing_obj.id) != str(pdf.id):
                 messages.warning(request, 'This name is already used by another PDF!')
@@ -350,7 +356,8 @@ class HighlightOverviewMixin(AnnotationOverviewMixin):
         Filter the PDF highlights in the overview. As there is no filtering needed this is just a dummy function.
         """
 
-        highlights = PdfHighlight.objects.filter(pdf__owner=request.user.profile)
+        pdfs = request.user.profile.pdfs
+        highlights = PdfHighlight.objects.filter(pdf__in=pdfs)
 
         return highlights
 
@@ -372,7 +379,8 @@ class CommentOverviewMixin(AnnotationOverviewMixin):
         Filter the PDF comments in the overview. As there is no filtering needed this is just a dummy function.
         """
 
-        comments = PdfComment.objects.filter(pdf__owner=request.user.profile)
+        pdfs = request.user.profile.pdfs
+        comments = PdfComment.objects.filter(pdf__in=pdfs)
 
         return comments
 
