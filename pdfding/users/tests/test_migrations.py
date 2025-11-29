@@ -16,7 +16,9 @@ add_pdf_stats = importlib.import_module('users.migrations.0023_add_pdf_stats')
 class TestMigrations(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', password='12345')
-        self.pdf = Pdf.objects.create(owner=self.user.profile, name='pdf_1', file=get_demo_pdf())
+        self.pdf = Pdf.objects.create(
+            name='pdf_1', file=get_demo_pdf(), collection=self.user.profile.current_collection
+        )
 
     def test_fill_adjust_thumbnails_0016(self):
         # as I cannot mock the migration file since it has an illegal name and applying the migration
@@ -62,8 +64,8 @@ class TestMigrationServices(TestCase):
     def test_set_pdf_stats(self):
         user = User.objects.create_user(username='user', password="password")
         demo_pdf = get_demo_pdf()
-        Pdf.objects.create(owner=user.profile, name='pdf_1', file=demo_pdf)
-        Pdf.objects.create(owner=user.profile, name='pdf_2', file=demo_pdf)
+        Pdf.objects.create(name='pdf_1', file=demo_pdf, collection=user.profile.current_collection)
+        Pdf.objects.create(name='pdf_2', file=demo_pdf, collection=user.profile.current_collection)
 
         # set everything to zero
         profile = user.profile
@@ -95,7 +97,7 @@ class TestMigrationServices(TestCase):
 
     def test_set_pdf_stats_no_file(self):
         user = User.objects.create_user(username='user', password="password")
-        Pdf.objects.create(owner=user.profile, name='pdf_1')
+        Pdf.objects.create(name='pdf_1', collection=user.profile.current_collection)
 
         # check that exception is caught as no file is present
         add_pdf_stats.set_pdf_stats(user.profile)

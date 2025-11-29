@@ -25,13 +25,17 @@ class TestTagViews(TestCase):
         set_up(self)
 
     def test_edit_tag_get(self):
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
 
         response = self.client.get(f"{reverse('edit_tag')}?tag_name={tag.name}")
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
     def test_edit_tag_get_htmx(self):
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
         headers = {'HTTP_HX-Request': 'true'}
 
         response = self.client.get(f"{reverse('edit_tag')}?tag_name={tag.name}", **headers)
@@ -41,7 +45,7 @@ class TestTagViews(TestCase):
         self.assertTemplateUsed(response, 'partials/tag_name_form.html')
 
     def test_edit_tag_name_post_invalid_form(self):
-        Tag.objects.create(name='tag_name', owner=self.user.profile)
+        Tag.objects.create(name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace)
 
         # post is invalid because data is missing
         # follow=True is needed for getting the message
@@ -58,9 +62,13 @@ class TestTagViews(TestCase):
         profile.tag_tree_mode = False
         profile.save()
 
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
         # should not be changed
-        tag_2 = Tag.objects.create(name='tag_name/child', owner=self.user.profile)
+        tag_2 = Tag.objects.create(
+            name='tag_name/child', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
         self.client.post(reverse('edit_tag'), data={'name': 'new', 'current_name': 'tag_name'})
 
         mock_adjust_referer_for_tag_view.assert_called_once_with('pdf_overview', 'tag_name', 'new')
@@ -77,7 +85,7 @@ class TestTagViews(TestCase):
         tags = []
 
         for name in ['programming', 'programming/python', 'programming/python/django', 'programming/python/flask']:
-            tag = Tag.objects.create(name=name, owner=self.user.profile)
+            tag = Tag.objects.create(name=name, owner=self.user.profile, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         self.client.post(reverse('edit_tag'), data={'name': 'new', 'current_name': 'programming/python'})
@@ -92,7 +100,9 @@ class TestTagViews(TestCase):
         )
 
     def test_rename_tag_normal(self):
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
         pdf_views.EditTag.rename_tag(tag, 'new', self.user.profile)
 
         # get pdf again with the changes
@@ -100,9 +110,9 @@ class TestTagViews(TestCase):
         self.assertEqual(tag.name, 'new')
 
     def test_rename_tag_existing(self):
-        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
-        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile, workspace=self.user.profile.current_workspace)
+        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile, workspace=self.user.profile.current_workspace)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         pdf.tags.set([tag_2])
 
         pdf_views.EditTag.rename_tag(tag_2, tag_1.name, self.user.profile)
@@ -113,9 +123,9 @@ class TestTagViews(TestCase):
 
     def test_rename_tag_existing_and_present(self):
         # if the pdf has both tags after one to the other only one should remain
-        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
-        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
-        pdf = Pdf.objects.create(owner=self.user.profile, name='pdf')
+        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile, workspace=self.user.profile.current_workspace)
+        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile, workspace=self.user.profile.current_workspace)
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         pdf.tags.set([tag_1, tag_2])
 
         pdf_views.EditTag.rename_tag(tag_2, tag_1.name, self.user.profile)
@@ -130,8 +140,12 @@ class TestTagViews(TestCase):
         profile.tag_tree_mode = False
         profile.save()
 
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
-        tag_2 = Tag.objects.create(name='tag_name/child', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
+        tag_2 = Tag.objects.create(
+            name='tag_name/child', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
 
         headers = {'HTTP_HX-Request': 'true'}
         response = self.client.post(reverse('delete_tag'), **headers, data={'tag_name': tag.name})
@@ -151,7 +165,7 @@ class TestTagViews(TestCase):
         tags = []
 
         for name in ['programming', 'programming/python', 'programming/python/django', 'programming/python/flask']:
-            tag = Tag.objects.create(name=name, owner=self.user.profile)
+            tag = Tag.objects.create(name=name, owner=self.user.profile, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         headers = {'HTTP_HX-Request': 'true'}
@@ -181,7 +195,9 @@ class TestTagMixin(TestCase):
         set_up(self)
 
     def test_get_tag_by_name(self):
-        tag = Tag.objects.create(name='tag_name', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='tag_name', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -190,7 +206,9 @@ class TestTagMixin(TestCase):
         self.assertEqual(tag, tag_retrieved)
 
     def test_get_tags_by_name_single(self):
-        tag = Tag.objects.create(name='programming/python', owner=self.user.profile)
+        tag = Tag.objects.create(
+            name='programming/python', owner=self.user.profile, workspace=self.user.profile.current_workspace
+        )
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -202,7 +220,7 @@ class TestTagMixin(TestCase):
         tags = []
 
         for name in ['programming', 'programming/python/django', 'programming/python/flask']:
-            tag = Tag.objects.create(name=name, owner=self.user.profile)
+            tag = Tag.objects.create(name=name, owner=self.user.profile, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         # do a dummy request so we can get a request object

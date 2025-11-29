@@ -12,8 +12,8 @@ class HighlightOverviewE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
 
-        self.pdf_1 = Pdf.objects.create(owner=self.user.profile, name='some_pdf')
-        self.pdf_2 = Pdf.objects.create(owner=self.user.profile, name='some_other_pdf')
+        self.pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
+        self.pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_other_pdf')
 
     def test_highlight_overview(self):
         PdfHighlight.objects.create(
@@ -93,8 +93,8 @@ class CommentOverviewE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
 
-        self.pdf_1 = Pdf.objects.create(owner=self.user.profile, name='some_pdf')
-        self.pdf_2 = Pdf.objects.create(owner=self.user.profile, name='some_other_pdf')
+        self.pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
+        self.pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_other_pdf')
 
     def test_highlight_overview(self):
         PdfComment.objects.create(text='comment_old', page=1, creation_date=self.pdf_1.creation_date, pdf=self.pdf_1)

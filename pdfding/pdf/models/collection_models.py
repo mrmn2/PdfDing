@@ -18,3 +18,9 @@ class Collection(models.Model):
 
     def __str__(self):  # pragma: no cover
         return str(self.name)
+
+    @property
+    def pdfs(self) -> models.QuerySet:
+        """Get the pdfs of the collection"""
+
+        return self.pdf_set.all()

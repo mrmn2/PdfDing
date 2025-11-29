@@ -39,7 +39,7 @@ class TestManagement(TestCase):
 
     def test_clean_up_shared_pdfs(self):
         user = User.objects.create_user(username='user', password='password', email='a@a.com')
-        pdf = Pdf.objects.create(owner=user.profile, name='1.pdf')
+        pdf = Pdf.objects.create(name='1.pdf', collection=user.profile.current_collection)
 
         shared_pdf_1 = SharedPdf.objects.create(
             owner=user.profile,

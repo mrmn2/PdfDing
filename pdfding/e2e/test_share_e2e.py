@@ -16,7 +16,7 @@ class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("You have not shared any PDFs yet")
 
     def test_share_pdf(self):
-        Pdf.objects.create(owner=self.user.profile, name='some_pdf', description='description')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf', description='description')
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
@@ -49,7 +49,9 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
 
-        self.pdf = Pdf.objects.create(owner=self.user.profile, name='some_pdf', description='some_description')
+        self.pdf = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='some_pdf', description='some_description'
+        )
 
     def test_sort(self):
         self.user.profile.shared_pdf_sorting = Profile.SharedPdfSortingChoice.NAME_DESC

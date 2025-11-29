@@ -19,7 +19,7 @@ class TestTasks(TestCase):
     def test_consume_function(self, mock_uuid4, mock_set_highlights_and_comments):
         # prepare data
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
-        pdf = Pdf.objects.create(owner=self.user.profile, name='dummy_1')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='dummy_1')
         with dummy_path.open(mode="rb") as f:
             pdf.file = File(f, name=dummy_path.name)
             pdf.save()
@@ -41,7 +41,7 @@ class TestTasks(TestCase):
         for target_path in [pdf_path_1, pdf_path_2, wrong_pdf_path]:
             copy(dummy_path, target_path)
 
-        pdfs = Pdf.objects.filter(owner=self.user.profile).all()
+        pdfs = Pdf.objects.filter(collection=self.user.profile.current_collection).all()
         self.assertEqual(pdfs.count(), 1)
 
         # test with skip existing set to false
@@ -49,7 +49,7 @@ class TestTasks(TestCase):
         # as there is already a pdf with the name dummy_1, we expect dummy_1_12345678 as pdf name
         tasks.consume_function(False)
 
-        pdfs = Pdf.objects.filter(owner=self.user.profile).all()
+        pdfs = Pdf.objects.filter(collection=self.user.profile.current_collection).all()
         self.assertEqual(pdfs.count(), 3)
         self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2'], sorted(pdf.name for pdf in pdfs))
         self.assertEqual(len(list(user_consume_path.iterdir())), 0)
@@ -60,7 +60,7 @@ class TestTasks(TestCase):
             copy(dummy_path, target_path)
 
         tasks.consume_function(True)
-        pdfs = Pdf.objects.filter(owner=self.user.profile).all()
+        pdfs = Pdf.objects.filter(collection=self.user.profile.current_collection).all()
         self.assertEqual(pdfs.count(), 4)
         self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2', 'dummy_3'], sorted(pdf.name for pdf in pdfs))
         self.assertEqual(len(list(user_consume_path.iterdir())), 0)

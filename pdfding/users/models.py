@@ -135,10 +135,22 @@ class Profile(models.Model):
             return f'{round(pdfs_total_size / (10 ** 9), 2)} GB'
 
     @property
+    def current_workspace(self):
+        """Return the current workspace associated of the profile."""
+
+        return self.workspaces.get(id=self.current_workspace_id)
+
+    @property
+    def current_collection(self):
+        """Return the current collection associated of the profile."""
+
+        return self.collections.get(id=self.current_collection_id)
+
+    @property
     def pdfs(self) -> QuerySet:
         """Return all PDFs associated with the profile."""
 
-        return self.pdf_set.all()
+        return self.current_collection.pdf_set.all()
 
     @property
     def shared_pdfs(self) -> QuerySet:
@@ -150,7 +162,8 @@ class Profile(models.Model):
     def tags(self) -> QuerySet:
         """Return all tags associated with the profile."""
 
-        return self.tag_set.all()
+        # return self.current_workspace.tag_set.all()
+        return self.current_workspace.tag_set.all()
 
     @property
     def workspaces(self) -> QuerySet:

@@ -16,16 +16,16 @@ class TestPeriodicBackup(TestCase):
     mock_objects = []
     for i in range(4, 9):
         mock_object = mock.Mock()
-        mock_object.object_name = f'1/pdf_{i}.pdf'
+        mock_object.object_name = f'1/default/pdf_{i}.pdf'
         mock_objects.append(mock_object)
     for i in range(3):
         mock_object = mock.Mock()
-        mock_object.object_name = f'2/pdf_{i}{i}.pdf'
+        mock_object.object_name = f'2/default/pdf_{i}{i}.pdf'
         mock_objects.append(mock_object)
 
     for i in range(1, 3):
         mock_object = mock.Mock()
-        mock_object.object_name = f'{i}/qr/qr_{i}.svg'
+        mock_object.object_name = f'{i}/default/qr/qr_{i}.svg'
         mock_objects.append(mock_object)
 
     mock_object = mock.Mock()
@@ -41,7 +41,7 @@ class TestPeriodicBackup(TestCase):
 
     def test_check_backup_requirements_true(self):
         user = User.objects.create_user(username='user_1', password='password', email='a@a.com')
-        Pdf.objects.create(owner=user.profile, name='pdf.pdf')
+        Pdf.objects.create(name='pdf.pdf', collection=user.profile.current_collection)
 
         self.assertTrue(tasks.check_backup_requirements())
 
@@ -84,17 +84,17 @@ class TestPeriodicBackup(TestCase):
         user_2 = User.objects.create_user(username='user_2', password='password', email='b@a.com')
 
         for i in range(1, 7):
-            pdf = Pdf.objects.create(owner=user_1.profile, name=f'pdf_{i}.pdf')
-            pdf.file.name = f'{pdf.owner.id}/{pdf.name}'
+            pdf = Pdf.objects.create(name=f'pdf_{i}.pdf', collection=user_1.profile.current_collection)
+            pdf.file.name = f'{pdf.collection.workspace.id}/{pdf.collection.name.lower()}/{pdf.name}'
             pdf.save()
         for i in range(2, 4):
-            pdf = Pdf.objects.create(owner=user_2.profile, name=f'pdf_{i}{i}.pdf')
-            pdf.file.name = f'{pdf.owner.id}/{pdf.name}'
+            pdf = Pdf.objects.create(name=f'pdf_{i}{i}.pdf', collection=user_2.profile.current_collection)
+            pdf.file.name = f'{pdf.collection.workspace.id}/{pdf.collection.name.lower()}/{pdf.name}'
             pdf.save()
         for i in range(1, 4):
             pdf = user_1.profile.pdfs.get(name='pdf_1.pdf')
             shared_pdf = SharedPdf.objects.create(owner=user_1.profile, name=f'shared_pdf_{i}', pdf=pdf)
-            shared_pdf.file.name = f'{pdf.owner.id}/qr/qr_{i}.svg'
+            shared_pdf.file.name = f'{pdf.collection.workspace.id}/{pdf.collection.name.lower()}/qr/qr_{i}.svg'
 
             # also add shared pdf with deletion date in the past
             # the qr code of this shared pdf should not be added
@@ -104,8 +104,20 @@ class TestPeriodicBackup(TestCase):
             shared_pdf.save()
 
         generated_to_be_added, generated_to_be_deleted = tasks.difference_local_minio()
-        expected_to_be_added = {'1/pdf_1.pdf', '1/pdf_2.pdf', '1/pdf_3.pdf', '2/pdf_33.pdf', '1/qr/qr_2.svg'}
-        expected_to_be_deleted = {'1/pdf_7.pdf', '1/pdf_8.pdf', '2/pdf_00.pdf', '2/pdf_11.pdf', '2/qr/qr_2.svg'}
+        expected_to_be_added = {
+            '1/default/pdf_1.pdf',
+            '1/default/pdf_2.pdf',
+            '1/default/pdf_3.pdf',
+            '2/default/pdf_33.pdf',
+            '1/default/qr/qr_2.svg',
+        }
+        expected_to_be_deleted = {
+            '1/default/pdf_7.pdf',
+            '1/default/pdf_8.pdf',
+            '2/default/pdf_00.pdf',
+            '2/default/pdf_11.pdf',
+            '2/default/qr/qr_2.svg',
+        }
 
         self.assertEqual(expected_to_be_added, generated_to_be_added)
         self.assertEqual(expected_to_be_deleted, generated_to_be_deleted)
@@ -124,8 +136,8 @@ class TestSqliteBackup(TestCase):
             user.save()
 
             for j in range(1, i + 1):
-                pdf = Pdf.objects.create(owner=user.profile, name=f'pdf_{j}')
-                tags = [Tag.objects.create(name=f'pdf_{j}_tag_{k}', owner=pdf.owner) for k in range(2)]
+                pdf = Pdf.objects.create(name=f'pdf_{j}', collection=user.profile.current_collection)
+                tags = [Tag.objects.create(name=f'pdf_{j}_tag_{k}', owner=user.profile) for k in range(2)]
                 pdf.tags.set(tags)
 
     def test_backup_sqlite(self):

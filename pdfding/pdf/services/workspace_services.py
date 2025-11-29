@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from pdf.models.collection_models import Collection
+from pdf.models.pdf_models import Pdf
 from pdf.models.workspace_models import Workspace, WorkspaceError, WorkspaceRoles, WorkspaceUser
 from users.models import Profile
 
@@ -35,10 +37,25 @@ def create_workspace(name: str, creator: User) -> Workspace:
     return workspace
 
 
-def create_collection(workspace, collection_name) -> Collection:
+def create_collection(workspace: Workspace, collection_name: str) -> Collection:
     """Create a collection and add it to the workspace"""
 
     if workspace.collections.filter(name=collection_name).count():
         raise WorkspaceError(f'There is already a collection named {collection_name}!')
     else:
         return Collection.objects.create(workspace=workspace, name=collection_name, default_collection=False)
+
+
+def get_pdfs_of_workspace(workspace: Workspace) -> QuerySet[Pdf]:
+    """Get all PDFs of the workspace."""
+
+    return Pdf.objects.filter(collection__in=workspace.collections)
+
+
+def check_if_pdf_with_name_exists(name: str, workspace: Workspace) -> bool:
+    """Check if a PDF with the specified name exists in the workspace."""
+
+    if get_pdfs_of_workspace(workspace).filter(name=name).first():
+        return True
+    else:
+        return False

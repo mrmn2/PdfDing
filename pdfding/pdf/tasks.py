@@ -50,7 +50,10 @@ def consume_function(skip_existing: bool):
                         pdf_file = File(f, name=file_path.name)
 
                         service.PdfProcessingServices.create_pdf(
-                            name=pdf_name, owner=user.profile, pdf_file=pdf_file, tag_string=settings.CONSUME_TAG_STRING
+                            name=pdf_name,
+                            collection=user.profile.current_collection,
+                            pdf_file=pdf_file,
+                            tag_string=settings.CONSUME_TAG_STRING,
                         )
 
             except Exception as e:  # pragma: no cover # nosec # noqa

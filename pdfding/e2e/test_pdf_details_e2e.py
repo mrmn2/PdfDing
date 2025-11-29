@@ -16,7 +16,10 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
 
         # create some pdfs
         pdf = Pdf.objects.create(
-            owner=self.user.profile, name='pdf_1_1', description='this is number 1', notes='some notes'
+            collection=self.user.profile.current_collection,
+            name='pdf_1_1',
+            description='this is number 1',
+            notes='some notes',
         )
 
         tag = Tag.objects.create(name='tag', owner=self.user.profile)
@@ -182,7 +185,7 @@ class PdfDetailsHighlightsE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
 
-        self.pdf = Pdf.objects.create(owner=self.user.profile, name='some_pdf')
+        self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
 
     def test_overview(self):
         PdfHighlight.objects.create(text='highlight_old', page=1, creation_date=self.pdf.creation_date, pdf=self.pdf)
@@ -258,7 +261,7 @@ class PdfDetailsCommentsE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
 
-        self.pdf = Pdf.objects.create(owner=self.user.profile, name='some_pdf')
+        self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
 
     def test_overview(self):
         PdfComment.objects.create(text='comment_old', page=1, creation_date=self.pdf.creation_date, pdf=self.pdf)

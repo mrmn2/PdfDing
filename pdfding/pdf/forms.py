@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
+from pdf.services.workspace_services import check_if_pdf_with_name_exists
 
 
 class AddFormNoFile(forms.ModelForm):
@@ -38,14 +39,16 @@ class AddFormNoFile(forms.ModelForm):
         a PDF with the provided name in clean_name.
         """
 
-        self.owner = kwargs.pop('owner', None)
+        self.profile = kwargs.pop('profile', None)
+        if not self.profile:
+            raise KeyError('profile')
+
+        collections = self.profile.collections
 
         super(AddFormNoFile, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        if not self.owner:
-            raise forms.ValidationError('Owner is missing!')
-        return self.cleaned_data
+        self.fields['collection'] = forms.ChoiceField(
+            choices=[(collection.id, collection.name) for collection in collections],
+        )
 
     def clean_name(self) -> str:
         """
@@ -55,7 +58,8 @@ class AddFormNoFile(forms.ModelForm):
 
         pdf_name = CleanHelpers.clean_name(self.cleaned_data['name'])
 
-        existing_pdf = Pdf.objects.filter(owner=self.owner, name=pdf_name).first()
+        current_workspace = self.profile.current_workspace
+        existing_pdf = check_if_pdf_with_name_exists(pdf_name, current_workspace)
 
         # only raise validation error if name is not the dummy placeholder from the frontend
         # otherwise it will be replaced by the filename in "clean".
@@ -140,15 +144,16 @@ class BulkAddFormNoFile(forms.Form):
         a PDF with the provided name in clean_name.
         """
 
-        self.owner = kwargs.pop('owner', None)
+        self.profile = kwargs.pop('profile', None)
+        if not self.profile:
+            raise KeyError('profile')
+
+        collections = self.profile.collections
 
         super(BulkAddFormNoFile, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        if not self.owner:
-            raise forms.ValidationError('Owner is missing!')
-
-        return self.cleaned_data
+        self.fields['collection'] = forms.ChoiceField(
+            choices=[(collection.id, collection.name) for collection in collections],
+        )
 
     def clean_file(self):
         for file in self.cleaned_data['file']:
@@ -263,7 +268,7 @@ class ShareForm(forms.ModelForm):
         a PDF with the provided name in clean_name.
         """
 
-        self.owner = kwargs.pop('owner', None)
+        self.owner = kwargs.pop('profile', None)
 
         super(ShareForm, self).__init__(*args, **kwargs)
 

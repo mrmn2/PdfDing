@@ -18,6 +18,7 @@ from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from django.urls import reverse
+from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import (
     Pdf,
     PdfAnnotation,
@@ -27,6 +28,8 @@ from pdf.models.pdf_models import (
     delete_empty_dirs_after_rename_or_delete,
     get_file_path,
 )
+from pdf.models.workspace_models import Workspace
+from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_pdfs_of_workspace
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
 from ruamel.yaml import YAML
@@ -163,7 +166,7 @@ class PdfProcessingServices:
     def create_pdf(
         cls,
         name: str,
-        owner: Profile,
+        collection: Collection,
         pdf_file: File,
         description: str = '',
         notes: str = '',
@@ -171,7 +174,12 @@ class PdfProcessingServices:
         file_directory: str = '',
     ):
         pdf = Pdf.objects.create(
-            name=name, description=description, notes=notes, file=pdf_file, file_directory=file_directory, owner=owner
+            name=name,
+            description=description,
+            notes=notes,
+            file=pdf_file,
+            file_directory=file_directory,
+            collection=collection,
         )
 
         # process with pdf libraries: add number of pages, thumbnail, preview, highlights and comments
@@ -180,9 +188,13 @@ class PdfProcessingServices:
 
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
-        tags = TagServices.process_tag_names(tag_names, pdf.owner)
+        tag_owner = Profile.objects.get(user_id=pdf.collection.id)
+        tags = TagServices.process_tag_names(tag_names, tag_owner)
 
         pdf.tags.set(tags)
+        workspace = pdf.collection.workspace
+        for tag in tags:
+            workspace.tag_set.add(tag)
 
         return pdf
 
@@ -208,7 +220,7 @@ class PdfProcessingServices:
             pdf_document.close()
             pdf.save()
         except Exception as e:  # nosec # noqa
-            logger.info(f'Could not process "{pdf.name}" of user "{pdf.owner.user.email}" with Pypdfium')
+            logger.info(f'Could not process "{pdf.name}" of workspace "{pdf.collection.workspace.id}" with Pypdfium')
             logger.info(traceback.format_exc())
 
     @staticmethod
@@ -256,7 +268,7 @@ class PdfProcessingServices:
             pdf.preview = File(file=image_files['preview'], name='preview')
 
         except Exception as e:  # nosec # noqa
-            logger.info(f'Could not extract thumbnail for "{pdf.name}" of user "{pdf.owner.user.email}"')
+            logger.info(f'Could not extract thumbnail for "{pdf.name}" of workspace "{pdf.collection.workspace.id}"')
             logger.info(traceback.format_exc())
 
         return pdf
@@ -307,7 +319,9 @@ class PdfProcessingServices:
             pyreadium_pdf.close()
 
         except Exception as e:  # nosec # noqa
-            logger.info(f'Could not extract highlights and comments for "{pdf.name}" of user "{pdf.owner.user.email}"')
+            workspace_id = pdf.collection.workspace.id
+
+            logger.info(f'Could not extract highlights and comments for "{pdf.name}" of workspace "{workspace_id}"')
             logger.info(traceback.format_exc())
 
     @staticmethod
@@ -348,10 +362,11 @@ class PdfProcessingServices:
             else:
                 pdf_annotations = pdf.pdfhighlight_set.all()
         else:
+            current_workspace_pdfs = get_pdfs_of_workspace(profile.current_workspace)
             if kind == 'comments':
-                pdf_annotations = PdfComment.objects.filter(pdf__owner=profile).all()
+                pdf_annotations = PdfComment.objects.filter(pdf__in=current_workspace_pdfs).all()
             else:
-                pdf_annotations = PdfHighlight.objects.filter(pdf__owner=profile).all()
+                pdf_annotations = PdfHighlight.objects.filter(pdf__in=current_workspace_pdfs).all()
 
         cls.export_annotations_to_yaml(pdf_annotations, str(profile.user.id))
 
@@ -411,7 +426,7 @@ class PdfProcessingServices:
         if new_path != current_path:
             current_path.unlink(missing_ok=True)
 
-            delete_empty_dirs_after_rename_or_delete(pdf_current_file_name, pdf.owner.user.id)
+            delete_empty_dirs_after_rename_or_delete(pdf_current_file_name, pdf.workspace.id, pdf.collection.name)
 
 
 def check_object_access_allowed(get_object):
@@ -468,7 +483,7 @@ def create_name_from_file(file: File | Path) -> str:
     return name
 
 
-def create_unique_name_from_file(file: File, owner: Profile) -> str:
+def create_unique_name_from_file(file: File, workspace: Workspace) -> str:
     """
     Get the file name from the file name. Will remove the '.pdf' from the file name. If there is already
     a pdf with the same name then it will add a random 8 characters long suffix.
@@ -476,24 +491,22 @@ def create_unique_name_from_file(file: File, owner: Profile) -> str:
 
     name = create_name_from_file(file)
 
-    existing_pdf = Pdf.objects.filter(owner=owner, name=name).first()
-
     # if pdf name is already existing add a random 8 characters long string
-    if existing_pdf:
+    if check_if_pdf_with_name_exists(name, workspace):
         name += f'_{str(uuid4())[:8]}'
 
     return name
 
 
-def get_pdf_info_list(profile: Profile) -> list[tuple]:
+def get_pdf_info_list(workspace: Workspace) -> list[tuple]:
     """
-    Get the pdf info list of a profile. It contains information (name + file size) of each pdf of the profile. Each
+    Get the pdf info list of a workspace. It contains information (name + file size) of each pdf of the profile. Each
     element is a tuple with (pdf name, pdf size).
     """
 
     pdf_info_list = []
 
-    for pdf in profile.pdfs:
+    for pdf in get_pdfs_of_workspace(workspace):
         pdf_size = Path(pdf.file.path).stat().st_size
         pdf_info_list.append((pdf.name, pdf_size))
 

@@ -11,10 +11,10 @@ class TestSignals(TestCase):
     def test_delete_orphan_tag(self):
         # create pdfs and tags
         user = User.objects.create_user(username='test_user', password='12345')
-        pdf_1 = Pdf.objects.create(owner=user.profile, name='pdf_1')
-        pdf_2 = Pdf.objects.create(owner=user.profile, name='pdf_2')
-        tag_1 = Tag.objects.create(name='tag_1', owner=pdf_1.owner)
-        tag_2 = Tag.objects.create(name='tag_2', owner=pdf_2.owner)
+        pdf_1 = Pdf.objects.create(collection=user.profile.current_collection, name='pdf_1')
+        pdf_2 = Pdf.objects.create(collection=user.profile.current_collection, name='pdf_2')
+        tag_1 = Tag.objects.create(name='tag_1', owner=user.profile)
+        tag_2 = Tag.objects.create(name='tag_2', owner=user.profile)
         pdf_1.tags.set([tag_1, tag_2])
         pdf_2.tags.set([tag_2])
 

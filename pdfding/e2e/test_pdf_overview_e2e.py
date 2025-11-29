@@ -153,7 +153,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_role("button", name="Submit").click()
 
         pdf = Pdf.objects.get(name='some_random_name')
-        self.assertEqual(pdf.file.name, f'{pdf.owner.user.id}/pdf/some/dir/{pdf.name}.pdf')
+        self.assertEqual(pdf.file.name, f'{self.user.profile.current_workspace.id}/default/pdf/some/dir/{pdf.name}.pdf')
 
         dummy_file_path.unlink()
         pdf.delete()
@@ -285,7 +285,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_role("button", name="Submit").click()
 
         pdf = Pdf.objects.get(name='dummy')
-        self.assertEqual(pdf.file.name, f'{pdf.owner.user.id}/pdf/some/dir/{pdf.name}.pdf')
+        self.assertEqual(pdf.file.name, f'{self.user.profile.current_workspace.id}/default/pdf/some/dir/{pdf.name}.pdf')
 
         dummy_file_path.unlink()
         pdf.delete()
@@ -331,7 +331,9 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         # create some pdfs
         for i in range(1, 15):
             pdf = Pdf.objects.create(
-                owner=self.user.profile, name=f'pdf_{i % 5}_{i}', description=f'this is number {i}'
+                collection=self.user.profile.current_collection,
+                name=f'pdf_{i % 5}_{i}',
+                description=f'this is number {i}',
             )
 
             # add a tag to pdf 1, 6
@@ -344,8 +346,8 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
 
         # in set up 14 pdfs were already created
         # other should not be shown as we'll search for pdf
-        Pdf.objects.create(owner=self.user.profile, name='other')
-        Pdf.objects.create(owner=self.user.profile, name='pdf_page_2')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='other')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_page_2')
 
         with sync_playwright() as p:
             self.open(f"{reverse('pdf_overview')}?search=pdf", p)

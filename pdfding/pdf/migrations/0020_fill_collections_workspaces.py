@@ -5,7 +5,7 @@ from pdf.models.collection_models import Collection
 from pdf.models.workspace_models import Workspace, WorkspaceRoles, WorkspaceUser
 
 
-def fill_data(apps, schema_editor):
+def fill_data(apps, schema_editor, filter_pdfs_by='owner__id', filter_tags_by='owner__id'):
     """Fill the collection and workspace data for existing users"""
 
     profile_model = apps.get_model("users", "Profile")
@@ -27,11 +27,11 @@ def fill_data(apps, schema_editor):
         profile_object.current_collection_id = default_collection.id
         profile_object.save()
 
-        for pdf_object in pdf_model.objects.filter(owner__id=profile_object.id):
+        for pdf_object in pdf_model.objects.filter(**{filter_pdfs_by: profile_object.id}):
             pdf_object.collection_id = default_collection.id
             pdf_object.save()
 
-        for tag_object in tag_model.objects.filter(owner__id=profile_object.id):
+        for tag_object in tag_model.objects.filter(**{filter_tags_by: profile_object.id}):
             tag_object.workspace_id = personal_workspace.id
             tag_object.save()
 

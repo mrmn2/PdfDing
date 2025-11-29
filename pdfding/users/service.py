@@ -116,7 +116,7 @@ def create_demo_user(email: str, password: str):
 
         PdfProcessingServices.create_pdf(
             name=pdf_name,
-            owner=user.profile,
+            collection=user.profile.current_collection,
             pdf_file=pdf_file,
             description=description,
             tag_string=tag_string,

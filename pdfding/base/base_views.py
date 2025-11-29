@@ -23,7 +23,7 @@ class BaseAdd(View):
     def post(self, request: HttpRequest, identifier: str = None):
         """Create the new object."""
 
-        form = self.form(request.POST, request.FILES, owner=request.user.profile)
+        form = self.form(request.POST, request.FILES, profile=request.user.profile)
 
         if form.is_valid():
             self.obj_save(form, request, identifier)
