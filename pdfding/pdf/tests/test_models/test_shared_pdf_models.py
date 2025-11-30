@@ -81,4 +81,4 @@ class TestSharedPdf(TestCase):
         shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
         generated_filepath = get_qrcode_file_path(shared_pdf, '')
 
-        self.assertEqual(generated_filepath, f'1/qr/{shared_pdf.id}.svg')
+        self.assertEqual(generated_filepath, f'{self.user.id}/default/qr/{shared_pdf.id}.svg')

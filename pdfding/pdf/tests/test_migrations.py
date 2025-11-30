@@ -9,15 +9,20 @@ from django.db import connection
 from django.db.models.functions import Lower
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf, Tag
+from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
+from pdf.service import PdfProcessingServices
 from pdf.services.workspace_services import create_workspace
 from users.service import get_demo_pdf
+
+from pdfding.core.settings.base import MEDIA_ROOT
 
 add_number_of_pdf_pages = importlib.import_module('pdf.migrations.0009_readd_number_of_pages_with_new_default')
 add_pdf_previews = importlib.import_module('pdf.migrations.0013_add_pdf_previews')
 add_comments_highlights = importlib.import_module('pdf.migrations.0015_add_comments_highlights')
 rename_pdfs_and_add_file_directory = importlib.import_module('pdf.migrations.0016_rename_pdfs_and_add_file_directory')
 fill_collections_workspaces = importlib.import_module('pdf.migrations.0020_fill_collections_workspaces')
+adjust_file_paths_to_ws_collection = importlib.import_module('pdf.migrations.0022_adjust_pdf_paths_to_ws_collection')
 
 
 class TestMigrations(TestCase):
@@ -167,3 +172,64 @@ class TestMigrations(TestCase):
         self.assertEqual(workspace.owners[0], changed_user)
         self.assertEqual(changed_pdf.collection, profile.collections[0])
         self.assertEqual(changed_tag.workspace, workspace)
+
+    @patch('pdf.models.shared_pdf_models.get_pdf_parent_dirs')
+    @patch('pdf.models.pdf_models.get_pdf_parent_dirs')
+    def test_adjust_file_paths_to_ws_collection(self, mock_get_parent_dirs, mock_shared_get_parent_dirs):
+        self.pdf.delete()  # we need to delete the pdf created by setUp
+        user = User.objects.create_user(username='user', password='12345')
+        mock_get_parent_dirs.return_value = str(user.id)
+        mock_shared_get_parent_dirs.return_value = str(user.id)
+
+        pdf = PdfProcessingServices.create_pdf(
+            name='banana', collection=user.profile.current_collection, pdf_file=get_demo_pdf()
+        )
+        # we need some dummy file for the qr code
+        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, name='shared', pdf=pdf, file=get_demo_pdf())
+
+        pdf_relative_path = f'{user.id}/pdf/{pdf.name}.pdf'
+        preview_relative_path = f'{user.id}/previews/{pdf.id}.png'
+        thumbnail_relative_path = f'{user.id}/thumbnails/{pdf.id}.png'
+        shared_pdf_relative_path = f'{user.id}/qr/{shared_pdf.id}.svg'
+        relative_paths_old = [
+            pdf_relative_path,
+            preview_relative_path,
+            thumbnail_relative_path,
+            shared_pdf_relative_path,
+        ]
+
+        moved_pdf_relative_path = f'{user.id}/default/pdf/{pdf.name}.pdf'
+        moved_preview_relative_path = f'{user.id}/default/previews/{pdf.id}.png'
+        moved_thumbnail_relative_path = f'{user.id}/default/thumbnails/{pdf.id}.png'
+        moved_shared_pdf_relative_path = f'{user.id}/default/qr/{shared_pdf.id}.svg'
+        relative_paths_moved = [
+            moved_pdf_relative_path,
+            moved_preview_relative_path,
+            moved_thumbnail_relative_path,
+            moved_shared_pdf_relative_path,
+        ]
+
+        self.assertEqual(pdf.file.name, pdf_relative_path)
+        self.assertEqual(pdf.preview.name, preview_relative_path)
+        self.assertEqual(pdf.thumbnail.name, thumbnail_relative_path)
+        self.assertEqual(shared_pdf.file.name, shared_pdf_relative_path)
+
+        for relative_path_old, relative_path_moved in zip(relative_paths_old, relative_paths_moved):
+            self.assertTrue((MEDIA_ROOT / relative_path_old).exists())
+            self.assertFalse((MEDIA_ROOT / relative_path_moved).exists())
+
+        adjust_file_paths_to_ws_collection.adjust_file_paths(apps, connection.schema_editor())
+
+        # refresh the objects so we do have the changes
+        pdf = Pdf.objects.get(id=pdf.id)
+        shared_pdf = SharedPdf.objects.get(id=shared_pdf.id)
+
+        self.assertEqual(pdf.file.name, moved_pdf_relative_path)
+        self.assertEqual(pdf.preview.name, moved_preview_relative_path)
+        self.assertEqual(pdf.thumbnail.name, moved_thumbnail_relative_path)
+        self.assertEqual(shared_pdf.file.name, moved_shared_pdf_relative_path)
+
+        for relative_path_old, relative_path_moved in zip(relative_paths_old, relative_paths_moved):
+            self.assertFalse((MEDIA_ROOT / relative_path_old).exists())
+            self.assertTrue((MEDIA_ROOT / relative_path_moved).exists())
+            (MEDIA_ROOT / relative_path_moved).unlink()
