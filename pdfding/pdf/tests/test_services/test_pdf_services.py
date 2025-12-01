@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest import mock
 from uuid import uuid4
 
-import pdf.service as service
+import pdf.services.pdf_services as service
 from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -53,12 +53,12 @@ class TestPdfProcessingServices(TestCase):
         for tag, expected_tag_name in zip(pdf.tags.all().order_by('name'), tag_string.split(' ')):
             self.assertEqual(tag.name, expected_tag_name)
 
-    @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
+    @mock.patch('pdf.services.pdf_services.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
         self.assertEqual(pdf.number_of_pages, -1)
 
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
         with dummy_path.open(mode="rb") as f:
             pdf.file = File(f, name=dummy_path.name)
             pdf.save()
@@ -69,12 +69,12 @@ class TestPdfProcessingServices(TestCase):
         self.assertEqual(pdf.number_of_pages, 2)
         mock_set_thumbnail_and_preview.assert_not_called()
 
-    @mock.patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
+    @mock.patch('pdf.services.pdf_services.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_with_images(self, mock_set_thumbnail_and_preview):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
         self.assertEqual(pdf.number_of_pages, -1)
 
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
         with dummy_path.open(mode="rb") as f:
             pdf.file = File(f, name=dummy_path.name)
             pdf.save()
@@ -100,7 +100,7 @@ class TestPdfProcessingServices(TestCase):
         self.assertEqual(pdf.number_of_pages, -1)
 
     def test_set_thumbnail_and_preview(self):
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
         with dummy_path.open(mode="rb") as f:
             pdf.file = File(f, name=dummy_path.name)
@@ -126,7 +126,7 @@ class TestPdfProcessingServices(TestCase):
         self.assertFalse(pdf.thumbnail)
 
     def test_get_pdf_info_list(self):
-        dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
+        dummy_path = Path(__file__).parents[1] / 'data' / 'dummy.pdf'
 
         for i in range(3):
             pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name=f'pdf_{i}')
@@ -193,7 +193,7 @@ class TestPdfProcessingServices(TestCase):
         self.assertFalse(pdf.pdfcomment_set.count())
         self.assertFalse(pdf.pdfhighlight_set.count())
 
-    @mock.patch('pdf.service.PdfProcessingServices.export_annotations_to_yaml')
+    @mock.patch('pdf.services.pdf_services.PdfProcessingServices.export_annotations_to_yaml')
     def test_export_annotations(self, mock_export_annotation_to_yaml):
         pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
         pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_2')
@@ -232,8 +232,8 @@ class TestPdfProcessingServices(TestCase):
             self.assertEqual(actual_highlight, expected_highlight)
 
     @mock.patch(
-        'pdf.service.PdfProcessingServices.get_annotation_export_path',
-        return_value=Path(__file__).parent / 'data' / 'tmp_export.yaml',
+        'pdf.services.pdf_services.PdfProcessingServices.get_annotation_export_path',
+        return_value=Path(__file__).parents[1] / 'data' / 'tmp_export.yaml',
     )
     def test_export_annotation_to_yaml(self, mock_get_annotation_export_path):
         creation_date = datetime.strptime('2025-03-17 20:26:48+00:00', '%Y-%m-%d %H:%M:%S%z')
@@ -248,13 +248,15 @@ class TestPdfProcessingServices(TestCase):
         export_path = service.PdfProcessingServices.get_annotation_export_path(str(self.user.id))
         service.PdfProcessingServices.export_annotations_to_yaml(PdfComment.objects.all(), str(self.user.id))
 
-        self.assertTrue(filecmp.cmp(export_path, Path(__file__).parent / 'data' / 'dummy_export.yaml', shallow=False))
+        self.assertTrue(
+            filecmp.cmp(export_path, Path(__file__).parents[1] / 'data' / 'dummy_export.yaml', shallow=False)
+        )
 
         export_path.unlink()
 
-    @mock.patch('pdf.service.delete_empty_dirs_after_rename_or_delete')
-    @mock.patch('pdf.service.get_file_path')
-    @mock.patch('pdf.service.copy')
+    @mock.patch('pdf.services.pdf_services.delete_empty_dirs_after_rename_or_delete')
+    @mock.patch('pdf.services.pdf_services.get_file_path')
+    @mock.patch('pdf.services.pdf_services.copy')
     def test_process_renaming_pdf(self, mock_copy, mock_get_file_path, mock_delete_empty_dirs_after_rename_or_delete):
         current_pdf_name = 'some_pdf'
         current_file_name = f'{self.user.id}/default/pdf/{current_pdf_name}.pdf'
@@ -299,9 +301,9 @@ class TestPdfProcessingServices(TestCase):
         # cleanup
         new_path_parent.rmdir()
 
-    @mock.patch('pdf.service.copy')
-    @mock.patch('pdf.service.delete_empty_dirs_after_rename_or_delete')
-    @mock.patch('pdf.service.get_file_path')
+    @mock.patch('pdf.services.pdf_services.copy')
+    @mock.patch('pdf.services.pdf_services.delete_empty_dirs_after_rename_or_delete')
+    @mock.patch('pdf.services.pdf_services.get_file_path')
     def test_process_renaming_pdf_unchanged_file_path(
         self, mock_get_file_path, mock_delete_empty_dirs_after_rename_or_delete, mock_copy
     ):
@@ -379,8 +381,8 @@ class TestOtherServices(TestCase):
         generated_name = service.create_name_from_file(file_mock)
         self.assertEqual(generated_name, 'some.name')
 
-    @mock.patch('pdf.service.create_name_from_file', return_value='existing_name')
-    @mock.patch('pdf.service.uuid4', return_value='123456789')
+    @mock.patch('pdf.services.pdf_services.create_name_from_file', return_value='existing_name')
+    @mock.patch('pdf.services.pdf_services.uuid4', return_value='123456789')
     def test_create_unique_name_from_file_existing_name(self, mock_uuid4, mock_create_name_from_file):
         user = User.objects.create_user(username='user', password='12345', email='a@a.com')
         Pdf.objects.create(collection=user.profile.current_collection, name='existing_name')
@@ -391,7 +393,7 @@ class TestOtherServices(TestCase):
         self.assertEqual(generated_name, 'existing_name_12345678')
         mock_create_name_from_file.assert_called_once_with(file_mock)
 
-    @mock.patch('pdf.service.create_name_from_file', return_value='not_existing_name')
+    @mock.patch('pdf.services.pdf_services.create_name_from_file', return_value='not_existing_name')
     def test_create_unique_name_from_file_not_existing_name(self, mock_create_name_from_file):
         user = User.objects.create_user(username='user', password='12345', email='a@a.com')
         file_mock = mock.MagicMock(spec=File, name='FileMock')

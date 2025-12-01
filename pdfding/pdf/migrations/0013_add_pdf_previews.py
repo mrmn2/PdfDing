@@ -1,6 +1,6 @@
 from django.db import migrations, models
 from pdf.models.pdf_models import get_preview_path
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 
 
 def fill_thumbnails_and_previews(apps, schema_editor):

@@ -2,7 +2,7 @@ import uuid
 
 import django.db.models.deletion
 from django.db import migrations, models
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 
 
 def set_highlights_and_comments(apps, schema_editor):

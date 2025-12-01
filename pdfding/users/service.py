@@ -2,7 +2,7 @@ from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 from users.models import Profile
 
 

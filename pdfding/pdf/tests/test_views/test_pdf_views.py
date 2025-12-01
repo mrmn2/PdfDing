@@ -13,7 +13,7 @@ from django.utils.datastructures import MultiValueDict
 from pdf import forms
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 from pdf.views import pdf_views
 from users.service import get_demo_pdf
 
@@ -45,8 +45,8 @@ class TestAddPDFMixin(TestCase):
         mock_add_form.assert_called_once_with(profile=self.user.profile)
         self.assertIsInstance(generated_context['form'], mock.MagicMock)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save(self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
@@ -77,8 +77,8 @@ class TestAddPDFMixin(TestCase):
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_use_file_name(
         self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
@@ -106,8 +106,8 @@ class TestAddPDFMixin(TestCase):
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')
     @override_settings(DEMO_MODE=True)
     def test_obj_save_demo_mode(self, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
@@ -152,8 +152,8 @@ class TestBulkAddPDFMixin(TestCase):
         mock_add_form.assert_called_once_with(profile=self.user.profile)
         self.assertIsInstance(generated_context['form'], mock.MagicMock)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_single_file_no_skipping(
         self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
@@ -182,8 +182,8 @@ class TestBulkAddPDFMixin(TestCase):
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_multiple_files_no_skipping(
         self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
@@ -219,9 +219,9 @@ class TestBulkAddPDFMixin(TestCase):
             # in this test there should be an exception as a mock file is used.
             self.assertEqual(pdf.number_of_pages, -1)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
-    @mock.patch('pdf.service.uuid4', return_value='123456789')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.services.pdf_services.uuid4', return_value='123456789')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
     def test_obj_save_multiple_files_skipping(
         self, mock_from_buffer, mock_uuid4, mock_process_with_pypdfium, mock_set_highlights_and_comments
@@ -270,8 +270,8 @@ class TestBulkAddPDFMixin(TestCase):
         for i in range(2):
             self.assertEqual(old_pdfs[i], self.user.profile.pdfs.get(name=f'test{i + 1}'))
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.process_with_pypdfium')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')
     @override_settings(DEMO_MODE=True)
     def test_obj_save_demo_mode(self, mock_process_with_pypdfium, mock_set_highlights_and_comments):
         # do a dummy request so we can get a request object
@@ -388,7 +388,7 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_self_hosting, pdf_self_hosted])
 
     @override_settings(SUPPORTER_EDITION=True)
-    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
 
@@ -406,7 +406,7 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(generated_extra_context, expected_extra_context)
 
     @override_settings(SUPPORTER_EDITION=True)
-    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=starred')
 
@@ -424,7 +424,7 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(generated_extra_context, expected_extra_context)
 
     @override_settings(SUPPORTER_EDITION=True)
-    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection_invalid(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=invalid')
 
@@ -442,7 +442,7 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(generated_extra_context, expected_extra_context)
 
     @override_settings(SUPPORTER_EDITION=True)
-    @patch('pdf.service.TagServices.get_tag_info_dict', return_value='tag_info_dict')
+    @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_empty_queries(self, mock_get_tag_info_dict):
         response = self.client.get(reverse('pdf_overview'))
 
@@ -557,7 +557,7 @@ class TestEditPdfMixin(TestCase):
         # check that tag 2 was deleted
         self.assertFalse(self.user.profile.tags.filter(name='tag_2').exists())
 
-    @patch('pdf.service.PdfProcessingServices.process_renaming_pdf')
+    @patch('pdf.views.pdf_views.PdfProcessingServices.process_renaming_pdf')
     def test_process_field_name(self, mock_process_renaming_pdf):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -581,7 +581,7 @@ class TestEditPdfMixin(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(list(messages)[0].message, 'This name is already used by another PDF!')
 
-    @patch('pdf.service.PdfProcessingServices.process_renaming_pdf')
+    @patch('pdf.views.pdf_views.PdfProcessingServices.process_renaming_pdf')
     def test_process_field_file_directory(self, mock_process_renaming_pdf):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -703,7 +703,7 @@ class TestViews(TestCase):
 
         self.assertEqual(response.status_code, 422)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
     def test_update_pdf_post_correct(self, mock_set_highlights_and_comments):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
@@ -730,7 +730,7 @@ class TestViews(TestCase):
         self.assertEqual(pdf.revision, 1)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
-    @mock.patch('pdf.views.pdf_views.service.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
     @override_settings(DEMO_MODE=True)
     def test_update_pdf_post_demo_mode(self, mock_set_highlights_and_comments):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
@@ -835,7 +835,7 @@ class TestViews(TestCase):
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
         self.assertTemplateUsed(response, 'partials/delete_pdf.html')
 
-    @mock.patch('pdf.service.PdfProcessingServices.export_annotations')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.export_annotations')
     def test_export_annotations_with_identifier(self, mock_export_annotations):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
@@ -850,7 +850,7 @@ class TestViews(TestCase):
 
         export_path.parent.rmdir()
 
-    @mock.patch('pdf.service.PdfProcessingServices.export_annotations')
+    @mock.patch('pdf.views.pdf_views.PdfProcessingServices.export_annotations')
     def test_export_annotations_without_identifier(self, mock_export_annotations):
         Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 

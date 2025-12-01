@@ -11,11 +11,12 @@ from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
-from pdf import forms, service
+from pdf import forms
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
-from pdf.service import PdfProcessingServices
+from pdf.services import pdf_services
+from pdf.services.pdf_services import PdfProcessingServices
 from pdf.services.tag_services import TagServices
 from pdf.services.workspace_services import get_pdfs_of_workspace
 from rapidfuzz import fuzz, utils
@@ -60,9 +61,9 @@ class AddPdfMixin(BasePdfMixin):
             pdf_file = form.files['file']
 
         if form.data.get('use_file_name'):
-            name = service.create_unique_name_from_file(pdf_file, collection.workspace)
+            name = pdf_services.create_unique_name_from_file(pdf_file, collection.workspace)
 
-        service.PdfProcessingServices.create_pdf(
+        PdfProcessingServices.create_pdf(
             name=name,
             collection=collection,
             pdf_file=pdf_file,
@@ -102,7 +103,7 @@ class BulkAddPdfMixin(BasePdfMixin):
         workspace = collection.workspace
 
         if form.data.get('skip_existing'):
-            pdf_info_list = service.get_pdf_info_list(workspace)
+            pdf_info_list = pdf_services.get_pdf_info_list(workspace)
         else:
             pdf_info_list = []
 
@@ -114,11 +115,12 @@ class BulkAddPdfMixin(BasePdfMixin):
         for file in files:
             # add file unless skipping existing is set and a PDF with the same name and file size already exists
             if not (
-                form.data.get('skip_existing') and (service.create_name_from_file(file), file.size) in pdf_info_list
+                form.data.get('skip_existing')
+                and (pdf_services.create_name_from_file(file), file.size) in pdf_info_list
             ):
-                pdf_name = service.create_unique_name_from_file(file, workspace)
+                pdf_name = pdf_services.create_unique_name_from_file(file, workspace)
 
-                service.PdfProcessingServices.create_pdf(
+                PdfProcessingServices.create_pdf(
                     name=pdf_name,
                     collection=collection,
                     pdf_file=file,
@@ -227,7 +229,7 @@ class OverviewMixin(BasePdfMixin):
 
 class PdfMixin(BasePdfMixin):
     @staticmethod
-    @service.check_object_access_allowed
+    @pdf_services.check_object_access_allowed
     def get_object(request: HttpRequest, pdf_id: str):
         """Get the pdf specified by the ID"""
 
@@ -239,7 +241,7 @@ class PdfMixin(BasePdfMixin):
 
 class TagMixin:
     @staticmethod
-    @service.check_object_access_allowed
+    @pdf_services.check_object_access_allowed
     def get_tag_by_name(request: HttpRequest, identifier: str):
         """Get the tag specified by the name"""
 
@@ -249,7 +251,7 @@ class TagMixin:
         return tag
 
     @staticmethod
-    @service.check_object_access_allowed
+    @pdf_services.check_object_access_allowed
     def get_tags_by_name(request: HttpRequest, identifier: str):
         """Get the pdf specified by the name and its children"""
 
@@ -327,10 +329,10 @@ class EditPdfMixin(PdfMixin):
             if existing_obj and str(existing_obj.id) != str(pdf.id):
                 messages.warning(request, 'This name is already used by another PDF!')
             else:
-                service.PdfProcessingServices.process_renaming_pdf(pdf)
+                PdfProcessingServices.process_renaming_pdf(pdf)
 
         elif field_name == 'file_directory':
-            service.PdfProcessingServices.process_renaming_pdf(pdf)
+            PdfProcessingServices.process_renaming_pdf(pdf)
 
 
 class AnnotationOverviewMixin:
