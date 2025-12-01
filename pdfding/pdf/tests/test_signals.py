@@ -2,7 +2,8 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.test import TestCase
-from pdf.models.pdf_models import Pdf, Tag
+from pdf.models.pdf_models import Pdf
+from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace, WorkspaceRoles
 from pdf.services import workspace_services
 

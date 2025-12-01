@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from pdf.models.pdf_models import (
     Pdf,
-    Tag,
     convert_to_natural_age,
     delete_empty_dirs_after_rename_or_delete,
     get_file_path,
@@ -63,18 +62,6 @@ class TestPdf(TestCase):
         mock_delete_empty_dirs_after_rename_or_delete.assert_called_once_with(
             file_name, collection.workspace.id, collection.name
         )
-
-    def test_parse_tag_string(self):
-        input_tag_str = '#Tag1  ###tag2      ta&g3 ta+g4'
-        expected_tags = ['tag1', 'tag2', 'tag3', 'tag4']
-        generated_tags = Tag.parse_tag_string(input_tag_str)
-
-        self.assertEqual(expected_tags, generated_tags)
-
-    def test_parse_tag_string_empty(self):
-        generated_tags = Tag.parse_tag_string('')
-
-        self.assertEqual([], generated_tags)
 
     def test_get_pdf_parent_dirs(self):
         ws = create_workspace('bla', self.user)
