@@ -1,23 +1,20 @@
 import re
 import traceback
-from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from collections import defaultdict
+from datetime import datetime
 from io import BytesIO
 from logging import getLogger
 from math import floor
 from pathlib import Path
 from shutil import copy
-from urllib.parse import parse_qs, urlparse
 from uuid import uuid4
 
 from core.settings import MEDIA_ROOT
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.db.models import QuerySet
-from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import Http404, HttpRequest
-from django.urls import reverse
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import (
     Pdf,
@@ -29,6 +26,7 @@ from pdf.models.pdf_models import (
 )
 from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace
+from pdf.services.tag_services import TagServices
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_pdfs_of_workspace
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
@@ -36,129 +34,6 @@ from ruamel.yaml import YAML
 from users.models import Profile
 
 logger = getLogger(__file__)
-
-
-class TagServices:
-    @staticmethod
-    def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]:
-        """
-        Process the specified tags. If the tag is existing it will simply be added to the return list. If it does not
-        exist it, it will be created and then be added to the return list.
-        """
-
-        tags = []
-        for tag_name in tag_names:
-            try:
-                tag = Tag.objects.get(owner=owner_profile, name=tag_name)
-            except Tag.DoesNotExist:
-                tag = Tag.objects.create(name=tag_name, owner=owner_profile)
-
-            tags.append(tag)
-
-        return tags
-
-    @classmethod
-    def get_tag_info_dict(cls, profile: Profile) -> dict[str, dict]:
-        """
-        Get the tag info dict used for displaying the tags in the pdf overview.
-        """
-
-        if profile.tag_tree_mode:
-            tag_info_dict = cls.get_tag_info_dict_tree_mode(profile)
-        else:
-            tag_info_dict = cls.get_tag_info_dict_normal_mode(profile)
-
-        return tag_info_dict
-
-    @staticmethod
-    def get_tag_info_dict_normal_mode(profile: Profile) -> dict[str, dict]:
-        """
-        Get the tag info dict used for displaying the tags in the pdf overview when normal mode is activated.
-        Key: name of the tag. Value: display name of the tag
-        """
-
-        # it is important that the tags are sorted. As parent tags need come before children,
-        # e.g. "programming" before "programming/python"
-        tags = profile.tags.order_by(Lower('name'))
-        tag_info_dict = OrderedDict()
-
-        for tag in tags:
-            tag_info_dict[tag.name] = {'display_name': tag.name}
-
-        return tag_info_dict
-
-    @staticmethod
-    def get_tag_info_dict_tree_mode(profile: Profile) -> dict[str, dict]:
-        """
-        Get the tag info dict used for displaying the tags in the pdf overview when tree mode is activated.
-        Key: name of the tag. Value: Information about the tag necessary for displaying it in tree mode, e.g. display
-        name, indent level, has_children, slug and the condition for showing it via alpine js.
-        """
-
-        # it is important that the tags are sorted. As parent tags need come before children,
-        # e.g. "programming" before "programming/python"
-        tags = profile.tags.order_by(Lower('name'))
-        tag_info_dict = OrderedDict()
-
-        for tag in tags:
-            tag_split = tag.name.split('/', maxsplit=2)
-            current = ''
-            words = []
-            show_conditions = []
-
-            for level, word in enumerate(tag_split):
-                prev = current
-                words.append(word)
-                current = '/'.join(words)
-
-                if level:
-                    tag_info_dict[prev]['has_children'] = True
-
-                if current not in tag_info_dict:
-                    tag_info_dict[current] = {
-                        'display_name': current.split('/', level)[-1],
-                        'level': level,
-                        'has_children': False,
-                        'show_cond': ' && '.join(show_conditions),
-                        'slug': current.replace('-', '_').replace('/', '___'),
-                    }
-
-                # alpine js will not work if the tag starts with a number. therefore, we have "tag_" in front so it
-                # will still work.
-                show_conditions.append(f'tag_{current.replace('-', '_').replace('/', '___')}_show_children')
-
-        return tag_info_dict
-
-    def adjust_referer_for_tag_view(referer_url: str, replace: str, replace_with: str) -> str:
-        """
-        Adjust the referer url for tag views. If a tag is renamed or deleted, the query part of the tag string will be
-        adjusted accordingly. E.g. for renaming tag 'some' to 'other': 'http://127.0.0.1:5000/pdf/?q=%23some' to
-        'http://127.0.0.1:5000/pdf/?q=%23other'.
-        """
-
-        parsed_referer_url = urlparse(referer_url)
-        query_parameters = parse_qs(parsed_referer_url.query)
-
-        tag_query = []
-
-        for tag in query_parameters.get('tags', [''])[0].split(' '):
-            if tag and tag != replace:
-                tag_query.append(tag)
-            elif tag and replace_with:
-                tag_query.append(replace_with)
-
-        query_parameters['tags'] = tag_query
-
-        query_string = '&'.join(
-            f'{key}={"+".join(query)}' for key, query in query_parameters.items() if query not in [[], ['']]
-        )
-
-        overview_url = reverse('pdf_overview')
-
-        if query_string:
-            overview_url = f'{overview_url}?{query_string}'
-
-        return overview_url
 
 
 class PdfProcessingServices:
@@ -444,29 +319,6 @@ def check_object_access_allowed(get_object):
             raise Http404("Given query not found...")
 
     return inner
-
-
-def get_future_datetime(time_input: str) -> datetime | None:
-    """
-    Gets a datetime in the future from now based on the input. Input is in the format _d_h_m, e.g. 1d0h22m.
-    If input is an empty string returns None
-    """
-
-    if not time_input:
-        return None
-
-    split_by_d = time_input.split('d')
-    split_by_d_and_h = split_by_d[1].split('h')
-    split_by_d_and_h_and_m = split_by_d_and_h[1].split('m')
-
-    days = int(split_by_d[0])
-    hours = int(split_by_d_and_h[0])
-    minutes = int(split_by_d_and_h_and_m[0])
-
-    now = datetime.now(timezone.utc)
-    future_date = now + timedelta(days=days, hours=hours, minutes=minutes)
-
-    return future_date
 
 
 def create_name_from_file(file: File | Path) -> str:
