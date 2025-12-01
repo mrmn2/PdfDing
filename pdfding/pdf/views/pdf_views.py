@@ -16,6 +16,7 @@ from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.service import PdfProcessingServices
+from pdf.services.tag_services import TagServices
 from pdf.services.workspace_services import get_pdfs_of_workspace
 from rapidfuzz import fuzz, utils
 from users.models import Profile
@@ -217,7 +218,7 @@ class OverviewMixin(BasePdfMixin):
             'page': page,
             'search_query': request.GET.get('search', ''),
             'special_pdf_selection': special_pdf_selection,
-            'tag_info_dict': service.TagServices.get_tag_info_dict(request.user.profile),
+            'tag_info_dict': TagServices.get_tag_info_dict(request.user.profile),
             'tag_query': tag_query,
         }
 
@@ -314,7 +315,7 @@ class EditPdfMixin(PdfMixin):
                 if tag.name not in tag_names and tag.pdf_set.count() == 1:
                     tag.delete()
 
-            tags = service.TagServices.process_tag_names(tag_names, request.user.profile)
+            tags = TagServices.process_tag_names(tag_names, request.user.profile)
 
             pdf.tags.set(tags)
 
@@ -738,7 +739,7 @@ class EditTag(TagMixin, View):
                 tag = self.get_tag_by_name(request, original_tag_name)
                 self.rename_tag(tag, new_name, user_profile)
 
-            redirect_url = service.TagServices.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_name)
+            redirect_url = TagServices.adjust_referer_for_tag_view(redirect_url, original_tag_name, new_name)
         else:
             try:
                 messages.warning(request, dict(form.errors)['name'][0])
@@ -790,7 +791,7 @@ class DeleteTag(TagMixin, View):
             for tag in tags:
                 tag.delete()
 
-            redirect_url = service.TagServices.adjust_referer_for_tag_view(redirect_url, tag_name, '')
+            redirect_url = TagServices.adjust_referer_for_tag_view(redirect_url, tag_name, '')
 
             return HttpResponseClientRedirect(redirect_url)
 
