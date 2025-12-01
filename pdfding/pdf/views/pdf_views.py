@@ -13,7 +13,8 @@ from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms, service
 from pdf.models.collection_models import Collection
-from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, Tag
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
+from pdf.models.tag_models import Tag
 from pdf.service import PdfProcessingServices
 from pdf.services.workspace_services import get_pdfs_of_workspace
 from rapidfuzz import fuzz, utils

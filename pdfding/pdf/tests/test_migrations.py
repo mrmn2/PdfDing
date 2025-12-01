@@ -8,8 +8,9 @@ from django.core.files import File
 from django.db import connection
 from django.db.models.functions import Lower
 from django.test import TestCase
-from pdf.models.pdf_models import Pdf, Tag
+from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace
 from pdf.service import PdfProcessingServices
 from pdf.services.workspace_services import create_workspace

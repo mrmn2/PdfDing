@@ -6,7 +6,8 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from django_htmx.http import HttpResponseClientRedirect
 from pdf import forms
-from pdf.models.pdf_models import Pdf, Tag
+from pdf.models.pdf_models import Pdf
+from pdf.models.tag_models import Tag
 from pdf.views import pdf_views
 
 

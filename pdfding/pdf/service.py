@@ -24,10 +24,10 @@ from pdf.models.pdf_models import (
     PdfAnnotation,
     PdfComment,
     PdfHighlight,
-    Tag,
     delete_empty_dirs_after_rename_or_delete,
     get_file_path,
 )
+from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_pdfs_of_workspace
 from pypdf import PdfReader
