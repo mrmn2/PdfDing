@@ -3,7 +3,7 @@
 # Therefore, we delete the migration, so these users get the same behaviour.
 
 from django.db import migrations, models
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 
 
 def fill_number_of_pages(apps, schema_editor):

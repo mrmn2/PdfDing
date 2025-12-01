@@ -12,7 +12,7 @@ from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 from pdf.services.workspace_services import create_workspace
 from users.service import get_demo_pdf
 
@@ -31,7 +31,7 @@ class TestMigrations(TestCase):
         self.user = User.objects.create_user(username='test_user', password='12345')
         self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
 
-    @patch('pdf.service.PdfProcessingServices.set_thumbnail_and_preview')
+    @patch('pdf.services.pdf_services.PdfProcessingServices.set_thumbnail_and_preview')
     def test_fill_number_of_pages(self, mock_set_thumbnail_and_preview):
         # as I cannot mock the migration file since it has an illegal name and applying the migration
         # in the test did not work either I am using a dummy pdf file -.-. The dummy file has two pages.

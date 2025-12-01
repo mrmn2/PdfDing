@@ -1,11 +1,11 @@
 from collections import OrderedDict
 from unittest import mock
 
-import pdf.service as service
 from django.contrib.auth.models import User
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
 from pdf.models.tag_models import Tag
+from pdf.services.tag_services import TagServices
 
 
 class TestTagServices(TestCase):
@@ -16,7 +16,7 @@ class TestTagServices(TestCase):
         Tag.objects.create(name='existing', owner=self.user.profile)
 
         tag_names = ['existing', 'generated']
-        tags = service.TagServices.process_tag_names(tag_names, self.user.profile)
+        tags = TagServices.process_tag_names(tag_names, self.user.profile)
 
         for tag, tag_name in zip(tags, tag_names):
             self.assertEqual(tag.name, tag_name)
@@ -25,26 +25,26 @@ class TestTagServices(TestCase):
         self.assertEqual(tags[1].owner, self.user.profile)
 
     def test_process_tag_names_empty(self):
-        tags = service.TagServices.process_tag_names([], self.user.profile)
+        tags = TagServices.process_tag_names([], self.user.profile)
 
         self.assertEqual(tags, [])
 
-    @mock.patch('pdf.service.TagServices.get_tag_info_dict_tree_mode')
+    @mock.patch('pdf.services.tag_services.TagServices.get_tag_info_dict_tree_mode')
     def test_get_tag_info_dict_tree_mode_enabled(self, mock_get_tag_info_dict_tree_mode):
         profile = self.user.profile
         profile.tag_tree_mode = True
         profile.save()
 
-        service.TagServices.get_tag_info_dict(profile)
+        TagServices.get_tag_info_dict(profile)
         mock_get_tag_info_dict_tree_mode.assert_called_once_with(profile)
 
-    @mock.patch('pdf.service.TagServices.get_tag_info_dict_normal_mode')
+    @mock.patch('pdf.services.tag_services.TagServices.get_tag_info_dict_normal_mode')
     def test_get_tag_info_dict_tree_mode_disabled(self, mock_get_tag_info_dict_normal_mode):
         profile = self.user.profile
         profile.tag_tree_mode = False
         profile.save()
 
-        service.TagServices.get_tag_info_dict(profile)
+        TagServices.get_tag_info_dict(profile)
         mock_get_tag_info_dict_normal_mode.assert_called_once_with(profile)
 
     def test_get_tag_info_dict_normal_mode(self):
@@ -71,7 +71,7 @@ class TestTagServices(TestCase):
 
         pdf.tags.set(tags)
 
-        generated_tag_dict = service.TagServices.get_tag_info_dict_normal_mode(self.user.profile)
+        generated_tag_dict = TagServices.get_tag_info_dict_normal_mode(self.user.profile)
         create_list = [(tag_name, {'display_name': tag_name}) for tag_name in sorted(tag_names, key=str.casefold)]
         expected_tag_dict = OrderedDict(create_list)
 
@@ -102,7 +102,7 @@ class TestTagServices(TestCase):
 
         pdf.tags.set(tags)
 
-        generated_tag_dict = service.TagServices.get_tag_info_dict_tree_mode(self.user.profile)
+        generated_tag_dict = TagServices.get_tag_info_dict_tree_mode(self.user.profile)
         expected_tag_dict = OrderedDict(
             [
                 (

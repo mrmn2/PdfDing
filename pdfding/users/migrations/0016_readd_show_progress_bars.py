@@ -1,5 +1,5 @@
 from django.db import migrations, models
-from pdf.service import PdfProcessingServices
+from pdf.services.pdf_services import PdfProcessingServices
 
 
 def adjust_thumbnails(apps, schema_editor):

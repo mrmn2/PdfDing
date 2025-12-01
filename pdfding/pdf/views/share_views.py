@@ -24,7 +24,7 @@ from pdf.forms import (
     ViewSharedPasswordForm,
 )
 from pdf.models.shared_pdf_models import SharedPdf
-from pdf.service import check_object_access_allowed
+from pdf.services.pdf_services import check_object_access_allowed
 from pdf.services.shared_pdf_services import get_future_datetime
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg

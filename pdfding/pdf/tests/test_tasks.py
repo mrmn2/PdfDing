@@ -14,8 +14,8 @@ class TestTasks(TestCase):
         self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
 
     @override_settings(CONSUME_DIR=Path(__file__).parent / 'data' / 'consume')
-    @mock.patch('pdf.service.PdfProcessingServices.set_highlights_and_comments')
-    @mock.patch('pdf.service.uuid4', return_value='12345678')
+    @mock.patch('pdf.services.pdf_services.PdfProcessingServices.set_highlights_and_comments')
+    @mock.patch('pdf.services.pdf_services.uuid4', return_value='12345678')
     def test_consume_function(self, mock_uuid4, mock_set_highlights_and_comments):
         # prepare data
         dummy_path = Path(__file__).parent / 'data' / 'dummy.pdf'
