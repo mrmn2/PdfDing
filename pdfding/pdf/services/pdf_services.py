@@ -242,13 +242,13 @@ class PdfProcessingServices:
             else:
                 pdf_annotations = PdfHighlight.objects.filter(pdf__in=current_workspace_pdfs).all()
 
-        cls.export_annotations_to_yaml(pdf_annotations, str(profile.user.id))
+        cls.export_annotations_to_yaml(pdf_annotations, profile.current_workspace.id)
 
     @classmethod
-    def export_annotations_to_yaml(cls, annotations: QuerySet[PdfAnnotation], user_id: str):
+    def export_annotations_to_yaml(cls, annotations: QuerySet[PdfAnnotation], workspace_id: str):
         """Export the provided annotations to yaml."""
 
-        export_path = cls.get_annotation_export_path(user_id)
+        export_path = cls.get_annotation_export_path(workspace_id)
         export_path.parent.mkdir(exist_ok=True)
 
         serialized_annotations = defaultdict(list)
@@ -271,10 +271,10 @@ class PdfProcessingServices:
             yaml.dump(dict(serialized_annotations), f)
 
     @staticmethod
-    def get_annotation_export_path(user_id: str):  # pragma: no cover
-        """Get the annotation export path uf the specified user."""
+    def get_annotation_export_path(workspace_id: str) -> Path:  # pragma: no cover
+        """Get the annotation export path of the specified workspace."""
 
-        return MEDIA_ROOT / user_id / 'annotations' / 'annotations_export.yaml'
+        return MEDIA_ROOT / workspace_id / 'annotations' / 'annotations_export.yaml'
 
     @classmethod
     def process_renaming_pdf(cls, pdf: Pdf):
