@@ -25,8 +25,9 @@ def get_pdf_parent_dirs(instance) -> str:
 
 def get_file_path(instance, _) -> str:
     """
-    Get the file path for a PDF inside the media root based on the pdf name.File paths are user_id/some/dir/name.pdf.
-    This function will also replace any "/" in the pdf name and will make  sure there are no duplicate file names.
+    Get the file path for a PDF inside the media root based on the pdf name. File paths are
+    workspace_id/collection_name/some/dir/name.pdf. This function will also replace any "/" in the
+    pdf name and will make  sure there are no duplicate file names.
     """
 
     # replace any space char with _

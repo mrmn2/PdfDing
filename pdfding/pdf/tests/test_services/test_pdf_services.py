@@ -246,7 +246,9 @@ class TestPdfProcessingServices(TestCase):
         PdfComment.objects.create(text='another c', page=0, creation_date=creation_date, pdf=pdf_2)
 
         export_path = service.PdfProcessingServices.get_annotation_export_path(str(self.user.id))
-        service.PdfProcessingServices.export_annotations_to_yaml(PdfComment.objects.all(), str(self.user.id))
+        service.PdfProcessingServices.export_annotations_to_yaml(
+            PdfComment.objects.all(), self.user.profile.current_workspace.id
+        )
 
         self.assertTrue(
             filecmp.cmp(export_path, Path(__file__).parents[1] / 'data' / 'dummy_export.yaml', shallow=False)
