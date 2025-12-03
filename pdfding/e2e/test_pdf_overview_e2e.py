@@ -327,7 +327,7 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
 
-        tag = Tag.objects.create(name='tag', owner=self.user.profile)
+        tag = Tag.objects.create(name='tag', workspace=self.user.profile.current_workspace)
 
         # create some pdfs
         for i in range(1, 15):

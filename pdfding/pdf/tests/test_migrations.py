@@ -147,10 +147,13 @@ class TestMigrations(TestCase):
         self.assertEqual(changed_user.profile.current_collection_id, collection.id)
 
         # need to set the descripton to the profile id so we can filter by it
+        # same for tag
         pdf = Pdf.objects.create(name='test', collection=collection, description=user.profile.id)
-        tag = Tag.objects.create(owner=changed_user.profile, name='bla', workspace=created_workspace)
+        tag = Tag.objects.create(name=user.profile.id, workspace=created_workspace)
 
-        fill_collections_workspaces.fill_data(apps, connection.schema_editor(), filter_pdfs_by='description')
+        fill_collections_workspaces.fill_data(
+            apps, connection.schema_editor(), filter_pdfs_by='description', filter_tags_by='name'
+        )
 
         changed_user = User.objects.get(id=user.id)
         changed_pdf = Pdf.objects.get(id=pdf.id)
@@ -179,6 +182,10 @@ class TestMigrations(TestCase):
     def test_adjust_file_paths_to_ws_collection(self, mock_get_parent_dirs, mock_shared_get_parent_dirs):
         self.pdf.delete()  # we need to delete the pdf created by setUp
         user = User.objects.create_user(username='user', password='12345')
+        # create an other user without PDFs to verify that non existing user media directories do not
+        # cause any problems
+        User.objects.create_user(username='user_without_pdfs', password='12345')
+
         mock_get_parent_dirs.return_value = str(user.id)
         mock_shared_get_parent_dirs.return_value = str(user.id)
 
@@ -186,7 +193,7 @@ class TestMigrations(TestCase):
             name='banana', collection=user.profile.current_collection, pdf_file=get_demo_pdf()
         )
         # we need some dummy file for the qr code
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, name='shared', pdf=pdf, file=get_demo_pdf())
+        shared_pdf = SharedPdf.objects.create(name='shared', pdf=pdf, file=get_demo_pdf())
 
         pdf_relative_path = f'{user.id}/pdf/{pdf.name}.pdf'
         preview_relative_path = f'{user.id}/previews/{pdf.id}.png'

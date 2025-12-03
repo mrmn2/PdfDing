@@ -4,6 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
 
 
@@ -142,21 +144,25 @@ class Profile(models.Model):
 
     @property
     def current_collection(self):
-        """Return the current collection associated of the profile."""
+        """Return the current collection of the profile."""
 
         return self.collections.get(id=self.current_collection_id)
 
     @property
     def pdfs(self) -> QuerySet:
-        """Return all PDFs associated with the profile."""
+        """Return all PDFs of the current profile workspace."""
 
-        return self.current_collection.pdf_set.all()
+        pdfs = Pdf.objects.filter(collection__in=self.current_workspace.collections)
+
+        return pdfs
 
     @property
     def shared_pdfs(self) -> QuerySet:
         """Return all shared PDFs associated with the profile."""
 
-        return self.sharedpdf_set.all()
+        shared_pdfs = SharedPdf.objects.filter(pdf__in=self.pdfs)
+
+        return shared_pdfs
 
     @property
     def tags(self) -> QuerySet:

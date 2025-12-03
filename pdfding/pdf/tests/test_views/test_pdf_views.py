@@ -313,7 +313,7 @@ class TestOverviewMixin(TestCase):
 
             # add a tag to pdf 2, 7
             if i % 5 == 2 and i < 10:
-                tag = Tag.objects.create(name=f'tag_{i}', owner=self.user.profile)
+                tag = Tag.objects.create(name=f'tag_{i}', workspace=self.user.profile.current_workspace)
                 pdf.tags.set([tag])
 
         pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_1')
@@ -322,7 +322,7 @@ class TestOverviewMixin(TestCase):
         tags = []
 
         for name in ['programming', 'programming/python', 'programming/python/django', 'programming/python/flask']:
-            tag = Tag.objects.create(name=name, owner=self.user.profile)
+            tag = Tag.objects.create(name=name, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         pdf_1.tags.set(tags)
@@ -522,7 +522,7 @@ class TestEditPdfMixin(TestCase):
             description='some_description',
             notes='some_note',
         )
-        tags = [Tag.objects.create(name=f'tag_{i}', owner=self.user.profile) for i in range(2)]
+        tags = [Tag.objects.create(name=f'tag_{i}', workspace=self.user.profile.current_workspace) for i in range(2)]
         pdf.tags.set(tags)
 
         edit_pdf_mixin_object = pdf_views.EditPdfMixin()
@@ -540,8 +540,8 @@ class TestEditPdfMixin(TestCase):
 
     def test_process_field_tag(self):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', description='something')
-        tag_1 = Tag.objects.create(name='tag_1', owner=self.user.profile)
-        tag_2 = Tag.objects.create(name='tag_2', owner=self.user.profile)
+        tag_1 = Tag.objects.create(name='tag_1', workspace=self.user.profile.current_workspace)
+        tag_2 = Tag.objects.create(name='tag_2', workspace=self.user.profile.current_workspace)
 
         pdf.tags.set([tag_1, tag_2])
 

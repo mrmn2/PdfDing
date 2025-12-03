@@ -317,7 +317,7 @@ class EditPdfMixin(PdfMixin):
                 if tag.name not in tag_names and tag.pdf_set.count() == 1:
                     tag.delete()
 
-            tags = TagServices.process_tag_names(tag_names, request.user.profile)
+            tags = TagServices.process_tag_names(tag_names, pdf.collection.workspace)
 
             pdf.tags.set(tags)
 

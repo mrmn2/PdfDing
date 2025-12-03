@@ -63,8 +63,7 @@ class PdfProcessingServices:
 
         # get unique tag names
         tag_names = Tag.parse_tag_string(tag_string)
-        tag_owner = Profile.objects.get(user_id=pdf.collection.id)
-        tags = TagServices.process_tag_names(tag_names, tag_owner)
+        tags = TagServices.process_tag_names(tag_names, collection.workspace)
 
         pdf.tags.set(tags)
         workspace = pdf.collection.workspace
@@ -237,7 +236,7 @@ class PdfProcessingServices:
             else:
                 pdf_annotations = pdf.pdfhighlight_set.all()
         else:
-            current_workspace_pdfs = get_pdfs_of_workspace(profile.current_workspace)
+            current_workspace_pdfs = profile.pdfs
             if kind == 'comments':
                 pdf_annotations = PdfComment.objects.filter(pdf__in=current_workspace_pdfs).all()
             else:

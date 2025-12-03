@@ -59,7 +59,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
 
         # create some shared pdfs
         for name in ['Some_share', 'another_share', 'this is a share', 'PDF is shared']:
-            SharedPdf.objects.create(owner=self.user.profile, name=name, pdf=self.pdf)
+            SharedPdf.objects.create(name=name, pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_overview'), p)
@@ -87,7 +87,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.save()
 
         for i in range(14):
-            SharedPdf.objects.create(owner=self.user.profile, name=f'shared_{i}', pdf=self.pdf)
+            SharedPdf.objects.create(name=f'shared_{i}', pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_overview'), p)
@@ -100,7 +100,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
 
     def test_delete(self):
-        SharedPdf.objects.create(owner=self.user.profile, name='some_shared_pdf', pdf=self.pdf)
+        SharedPdf.objects.create(name='some_shared_pdf', pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(f"{reverse('shared_pdf_overview')}", p)
@@ -112,7 +112,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("You have not shared any PDFs yet")
 
     def test_cancel_delete(self):
-        SharedPdf.objects.create(owner=self.user.profile, name='some_shared_pdf', pdf=self.pdf)
+        SharedPdf.objects.create(name='some_shared_pdf', pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(f"{reverse('shared_pdf_overview')}", p)
@@ -128,7 +128,6 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
 
     def test_details(self):
         shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile,
             name='some_shared_pdf',
             description="some_description",
             pdf=self.pdf,
@@ -155,7 +154,6 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
 
     def test_change_details(self):
         shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile,
             name='some_shared_pdf',
             description="some_description",
             pdf=self.pdf,
@@ -200,9 +198,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#deletion_date")).to_contain_text("deletes in 4 minutes")
 
     def test_cancel_change_details(self):
-        shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile, name='some_shared_pdf', description="some_description", pdf=self.pdf
-        )
+        shared_pdf = SharedPdf.objects.create(name='some_shared_pdf', description="some_description", pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_details', kwargs={'identifier': shared_pdf.id}), p)
@@ -215,7 +211,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
                 expect(self.page.locator(edit_name)).to_contain_text("Edit")
 
     def test_details_delete(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, name='some_shared_pdf', pdf=self.pdf)
+        shared_pdf = SharedPdf.objects.create(name='some_shared_pdf', pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_details', kwargs={'identifier': shared_pdf.id}), p)
@@ -226,7 +222,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("You have not shared any PDFs yet")
 
     def test_details_cancel_delete(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, name='some_shared_pdf', pdf=self.pdf)
+        shared_pdf = SharedPdf.objects.create(name='some_shared_pdf', pdf=self.pdf)
 
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_details', kwargs={'identifier': shared_pdf.id}), p)

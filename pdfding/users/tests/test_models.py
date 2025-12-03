@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from pdf.models.collection_models import Collection
+from pdf.models.pdf_models import Pdf
+from pdf.models.shared_pdf_models import SharedPdf
 from pdf.services.workspace_services import create_collection, create_workspace
 
 
@@ -92,6 +94,36 @@ class TestProfile(TestCase):
             self.user.profile.collections.order_by('name'), ['Default', 'some_collection']
         ):
             self.assertEqual(collection.name, expected_name)
+
+    def test_pdfs_property(self):
+        collection = self.user.profile.current_collection
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+
+        pdf_1 = Pdf.objects.create(name='pdf_1', collection=collection)
+        pdf_2 = Pdf.objects.create(name='pdf_2', collection=collection)
+        pdf_3 = Pdf.objects.create(name='pdf_3', collection=other_collection)
+
+        self.assertEqual(self.user.profile.pdfs.count(), 3)
+
+        for pdf_a, pdf_b in zip(self.user.profile.pdfs.order_by('name'), [pdf_1, pdf_2, pdf_3]):
+            self.assertEqual(pdf_a, pdf_b)
+
+    def test_shared_pdfs_property(self):
+        collection = self.user.profile.current_collection
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+
+        pdf_1 = Pdf.objects.create(name='pdf_1', collection=collection)
+        pdf_2 = Pdf.objects.create(name='pdf_2', collection=other_collection)
+
+        shared_pdf_1 = SharedPdf.objects.create(pdf=pdf_1, name='shared_pdf_1')
+        shared_pdf_2 = SharedPdf.objects.create(pdf=pdf_2, name='shared_pdf_2')
+
+        self.assertEqual(self.user.profile.shared_pdfs.count(), 2)
+
+        for shared_pdf_a, shared_pdf_b in zip(
+            self.user.profile.shared_pdfs.order_by('name'), [shared_pdf_1, shared_pdf_2]
+        ):
+            self.assertEqual(shared_pdf_a, shared_pdf_b)
 
     def test_current_workspace_property(self):
         self.assertEqual(self.user.profile.current_workspace.id, str(self.user.id))
