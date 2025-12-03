@@ -4,7 +4,6 @@ from uuid import uuid4
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 from pdf.models.pdf_models import Pdf, get_pdf_parent_dirs
-from users.models import Profile
 
 
 def get_qrcode_file_path(instance, _) -> str:
@@ -18,7 +17,6 @@ def get_qrcode_file_path(instance, _) -> str:
 
 class SharedPdf(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
     pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
     name = models.CharField(max_length=150, blank=False)
     # the qr code file

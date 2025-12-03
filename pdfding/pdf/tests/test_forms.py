@@ -131,18 +131,15 @@ class TestShareForms(TestCase):
 
         self.assertTrue(form.is_valid())
 
-    def test_clean_missing_owner(self):
-        form = forms.ShareForm(data={'name': 'Share Name'})
-
-        self.assertFalse(form.is_valid())
-        # need to test it like this, as owner is not a key of form.errors
-        self.assertIn('Owner is missing!', str(form.errors))
+    def test_clean_missing_profile(self):
+        with self.assertRaisesMessage(KeyError, 'profile'):
+            forms.ShareForm(data={'name': 'Share Name'})
 
     @mock.patch('pdf.forms.CleanHelpers.clean_name', return_value='existing name')
     def test_pdf_clean_name_existing(self, mock_clean_name):
         # create pdf for user
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_name')
-        SharedPdf.objects.create(owner=self.user.profile, pdf=pdf, name='existing name')
+        SharedPdf.objects.create(pdf=pdf, name='existing name')
         # create the form with the already existing pdf name
         form = forms.ShareForm(data={'name': 'existing name'}, profile=self.user.profile)
 
@@ -154,7 +151,7 @@ class TestShareForms(TestCase):
         deletion_date = datetime.now(timezone.utc) - timedelta(minutes=5)
 
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_name')
-        SharedPdf.objects.create(owner=self.user.profile, pdf=pdf, name='existing name', deletion_date=deletion_date)
+        SharedPdf.objects.create(pdf=pdf, name='existing name', deletion_date=deletion_date)
         # create the form with the already existing pdf name
         form = forms.ShareForm(data={'name': 'existing name'}, profile=self.user.profile)
 
@@ -166,9 +163,7 @@ class TestViewSharedPasswordForm(TestCase):
         user = User.objects.create_user(username='user', password='12345', email='a@a.com')
         pdf = Pdf.objects.create(collection=user.profile.current_collection, name='pdf_name')
         hashed_password = make_password('password')
-        shared_pdf = SharedPdf.objects.create(
-            owner=user.profile, pdf=pdf, name='existing name', password=hashed_password
-        )
+        shared_pdf = SharedPdf.objects.create(pdf=pdf, name='existing name', password=hashed_password)
 
         for password, expected_result in [('password', True), ('wrong_password', False)]:
             form = forms.ViewSharedPasswordForm(data={'password_input': password}, shared_pdf=shared_pdf)

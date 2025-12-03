@@ -62,7 +62,7 @@ class AddSharedPdfMixin(BaseShareMixin):
         pdf = PdfMixin.get_object(request, pdf_id)
         form = self.form
 
-        context = {'form': form, 'pdf_name': pdf.name}
+        context = {'form': form(profile=request.user.profile), 'pdf_name': pdf.name}
 
         return context
 
@@ -71,7 +71,6 @@ class AddSharedPdfMixin(BaseShareMixin):
         """Save the shared PDF based on the submitted form."""
 
         shared_pdf = form.save(commit=False)
-        shared_pdf.owner = request.user.profile
         shared_pdf.pdf = PdfMixin.get_object(request, identifier)
 
         cls.add_qr_code(shared_pdf, request)
@@ -125,7 +124,7 @@ class OverviewMixin(BaseShareMixin):
         just a dummy function
         """
 
-        shared_pdfs = SharedPdf.objects.filter(owner=request.user.profile).all()
+        shared_pdfs = request.user.profile.shared_pdfs
         shared_pdfs = shared_pdfs.filter(
             Q(deletion_date__isnull=True) | Q(deletion_date__gt=datetime.now(timezone.utc))
         )
@@ -195,20 +194,19 @@ class EditSharedPdfMixin(SharedPdfMixin):
 
         if field_name == 'expiration_date':
             shared_pdf.expiration_date = get_future_datetime(form_data['expiration_input'])
+            shared_pdf.save()
         elif field_name == 'deletion_date':
             shared_pdf.deletion_date = get_future_datetime(form_data['deletion_input'])
+            shared_pdf.save()
         elif field_name == 'name':
-            existing_obj = cls.obj_class.objects.filter(
-                owner=request.user.profile, name__iexact=form_data.get('name')
-            ).first()
+            shared_pdfs = request.user.profile.shared_pdfs
+            existing_obj = shared_pdfs.filter(name__iexact=form_data.get('name')).first()
 
             if existing_obj and str(existing_obj.id) != str(shared_pdf.id):
                 messages.warning(request, 'This name is already used by another shared PDF!')
             else:
                 shared_pdf.name = form_data.get('name').strip()
                 shared_pdf.save()
-
-        shared_pdf.save()
 
 
 class PdfPublicMixin:

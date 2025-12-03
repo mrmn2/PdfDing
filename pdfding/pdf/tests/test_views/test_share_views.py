@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from io import BytesIO
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
@@ -45,14 +45,17 @@ class TestAddSharedPdfMixin(TestCase):
         set_up(self)
         self.client.login(username=self.username, password=self.password)
 
-    def test_get_context_get(self):
+    @patch('pdf.views.share_views.AddSharedPdfMixin.form')
+    def test_get_context_get(self, mock_share_form):
         # we need to create a request so get_pdf can access the user profile
         response = self.client.get(reverse('pdf_overview'))
 
-        add_pdf_mixin = AddSharedPdfMixin()
-        generated_context = add_pdf_mixin.get_context_get(response.wsgi_request, self.pdf.id)
+        shared_pdf_mixin = AddSharedPdfMixin()
+        generated_context = shared_pdf_mixin.get_context_get(response.wsgi_request, self.pdf.id)
 
-        self.assertEqual({'form': ShareForm, 'pdf_name': self.pdf.name}, generated_context)
+        self.assertEqual(generated_context['pdf_name'], self.pdf.name)
+        mock_share_form.assert_called_once_with(profile=self.user.profile)
+        self.assertIsInstance(generated_context['form'], MagicMock)
 
     @patch('pdf.views.share_views.get_future_datetime', return_value=datetime.now(timezone.utc))
     @patch('pdf.views.share_views.AddSharedPdfMixin.add_qr_code')
@@ -68,14 +71,13 @@ class TestAddSharedPdfMixin(TestCase):
         shared_pdf = self.user.profile.shared_pdfs.get(name='some_shared_pdf')
 
         self.assertEqual(shared_pdf.pdf, self.pdf)
-        self.assertEqual(shared_pdf.owner, self.user.profile)
         mock_get_future_datetime.assert_any_call('0d1h1m')
         mock_get_future_datetime.assert_any_call('0d2h2m')
         mock_add_qr_code.assert_called_with(shared_pdf, response.wsgi_request)
 
     @patch('pdf.views.share_views.AddSharedPdfMixin.generate_qr_code', return_value=BytesIO())
     def test_add_qr_code(self, mock_generate_qr_code):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
         # we need to create a request so get_pdf can access the user profile
         response = self.client.get(reverse('pdf_overview'))
 
@@ -84,7 +86,7 @@ class TestAddSharedPdfMixin(TestCase):
         mock_generate_qr_code.assert_called_with(f'http://testserver/pdf/shared/{shared_pdf.id}')
 
     def test_set_access_dates(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
         AddSharedPdfMixin.set_access_dates(shared_pdf, '1d0h22m', '1d0h22m')
 
@@ -108,12 +110,10 @@ class TestOverviewMixin(TestCase):
 
         # create some pdfs
         for i in range(1, 4):
-            SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name=f'shared_{i}')
+            SharedPdf.objects.create(pdf=self.pdf, name=f'shared_{i}')
 
         deletion_date = datetime.now(timezone.utc) - timedelta(minutes=5)
-        SharedPdf.objects.create(
-            owner=self.user.profile, pdf=self.pdf, name='shared_deleted', deletion_date=deletion_date
-        )
+        SharedPdf.objects.create(pdf=self.pdf, name='shared_deleted', deletion_date=deletion_date)
 
     def test_filter_objects(self):
         self.client.login(username=self.username, password=self.password)
@@ -135,7 +135,7 @@ class TestSharedPdfMixin(TestCase):
 
     def test_get_object(self):
         self.client.login(username=self.username, password=self.password)
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
         # we need to create a request so get_pdf can access the user profile
         response = self.client.get(reverse('pdf_overview'))
 
@@ -152,9 +152,7 @@ class TestEditSharedPdfMixin(TestCase):
         set_up(self)
 
     def test_get_edit_form_get(self):
-        shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile, pdf=self.pdf, name='share', description='some_description', max_views=4
-        )
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', description='some_description', max_views=4)
 
         edit_pdf_mixin_object = EditSharedPdfMixin()
 
@@ -175,7 +173,7 @@ class TestEditSharedPdfMixin(TestCase):
             self.assertEqual(form.initial, {field: field_value})
 
     def test_process_field_changed_field(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
         EditSharedPdfMixin.process_field('expiration_date', shared_pdf, None, {'expiration_input': '1d0h22m'})
         EditSharedPdfMixin.process_field('deletion_date', shared_pdf, None, {'deletion_input': '1d0h22m'})
@@ -187,7 +185,7 @@ class TestEditSharedPdfMixin(TestCase):
             self.assertTrue((generated_result - expected_result).total_seconds() < 0.1)
 
     def test_process_field_unchanged_field(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
         EditSharedPdfMixin.process_field('other', shared_pdf, None, {})
         adjusted_shared_pdf = self.user.profile.shared_pdfs.get(name='share')
@@ -198,7 +196,7 @@ class TestEditSharedPdfMixin(TestCase):
         self.client.login(username=self.username, password=self.password)
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
         EditSharedPdfMixin.process_field('name', shared_pdf, response.wsgi_request, {'name': 'new name '})
         adjusted_shared_pdf = self.user.profile.shared_pdfs.get(id=shared_pdf.id)
@@ -210,8 +208,8 @@ class TestEditSharedPdfMixin(TestCase):
         self.client.login(username=self.username, password=self.password)
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
-        shared_pdf_2 = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='shared_2')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
+        shared_pdf_2 = SharedPdf.objects.create(pdf=self.pdf, name='shared_2')
         request = response.wsgi_request
 
         EditSharedPdfMixin.process_field('name', shared_pdf, request, {'name': shared_pdf_2.name})
@@ -220,6 +218,8 @@ class TestEditSharedPdfMixin(TestCase):
 
         self.assertEqual(len(messages), 1)
         self.assertEqual(list(messages)[0].message, 'This name is already used by another shared PDF!')
+        changed_shared_pdf = SharedPdf.objects.get(id=shared_pdf.id)
+        self.assertEqual(changed_shared_pdf.name, 'share')
 
 
 class TestPdfPublicMixin(TestCase):
@@ -232,7 +232,7 @@ class TestPdfPublicMixin(TestCase):
         set_up(self)
 
     def test_get_object(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
         self.assertEqual(shared_pdf.pdf, PdfPublicMixin.get_object(None, shared_pdf.id))
 
@@ -247,7 +247,7 @@ class TestBaseSharedPdfPublicView(TestCase):
         set_up(self)
 
     def test_get_object(self):
-        shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='share')
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
         self.assertEqual(shared_pdf, BaseSharedPdfPublicView.get_shared_pdf_public(None, shared_pdf.id))
 
@@ -260,7 +260,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.user = None
         self.pdf = None
         set_up(self)
-        self.shared_pdf = SharedPdf.objects.create(owner=self.user.profile, pdf=self.pdf, name='shared_pdf')
+        self.shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='shared_pdf')
 
     def test_view_get_active(self):
         # test without http referer
@@ -272,9 +272,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['form'], ViewSharedPasswordForm)
 
     def test_view_get_inactive(self):
-        inactive_shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile, pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1
-        )
+        inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)
         # test without http referer
         response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': inactive_shared_pdf.id}))
 
@@ -309,7 +307,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.shared_pdf.pdf.save()
 
         protected_shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile, pdf=self.pdf, name='protected_shared_pdf', password=make_password('some_pw')
+            pdf=self.pdf, name='protected_shared_pdf', password=make_password('some_pw')
         )
 
         response = self.client.post(
@@ -328,9 +326,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(protected_shared_pdf.views, 1)
 
     def test_view_post_active_wrong_password(self):
-        protected_shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile, pdf=self.pdf, name='protected_shared_pdf', password='some_pw'
-        )
+        protected_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='protected_shared_pdf', password='some_pw')
 
         response = self.client.post(
             reverse('view_shared_pdf', kwargs={'identifier': protected_shared_pdf.id}), data={'password_input': 'wrong'}
@@ -340,9 +336,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertTemplateUsed(response, 'view_shared_info.html')
 
     def test_view_post_inactive(self):
-        inactive_shared_pdf = SharedPdf.objects.create(
-            owner=self.user.profile, pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1
-        )
+        inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)
         # test without http referer
         response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': inactive_shared_pdf.id}))
 

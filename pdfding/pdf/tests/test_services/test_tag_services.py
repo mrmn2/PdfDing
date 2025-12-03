@@ -13,19 +13,19 @@ class TestTagServices(TestCase):
         self.user = User.objects.create_user(username='username', password='password', email='a@a.com')
 
     def test_process_tag_names(self):
-        Tag.objects.create(name='existing', owner=self.user.profile)
+        Tag.objects.create(name='existing', workspace=self.user.profile.current_workspace)
 
         tag_names = ['existing', 'generated']
-        tags = TagServices.process_tag_names(tag_names, self.user.profile)
+        tags = TagServices.process_tag_names(tag_names, self.user.profile.current_workspace)
 
         for tag, tag_name in zip(tags, tag_names):
             self.assertEqual(tag.name, tag_name)
 
         # check if new tag was generated with correct owner
-        self.assertEqual(tags[1].owner, self.user.profile)
+        self.assertEqual(tags[1].workspace, self.user.profile.current_workspace)
 
     def test_process_tag_names_empty(self):
-        tags = TagServices.process_tag_names([], self.user.profile)
+        tags = TagServices.process_tag_names([], self.user.profile.current_workspace)
 
         self.assertEqual(tags, [])
 
@@ -64,9 +64,7 @@ class TestTagServices(TestCase):
         tags = []
 
         for tag_name in tag_names:
-            tag = Tag.objects.create(
-                name=tag_name, owner=self.user.profile, workspace=self.user.profile.current_workspace
-            )
+            tag = Tag.objects.create(name=tag_name, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         pdf.tags.set(tags)
@@ -95,9 +93,7 @@ class TestTagServices(TestCase):
         tags = []
 
         for tag_name in tag_names:
-            tag = Tag.objects.create(
-                name=tag_name, owner=self.user.profile, workspace=self.user.profile.current_workspace
-            )
+            tag = Tag.objects.create(name=tag_name, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         pdf.tags.set(tags)

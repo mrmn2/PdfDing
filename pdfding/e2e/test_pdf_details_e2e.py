@@ -23,7 +23,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             notes='some notes',
         )
 
-        tag = Tag.objects.create(name='tag', owner=self.user.profile)
+        tag = Tag.objects.create(name='tag', workspace=self.user.profile.current_workspace)
         pdf.tags.set([tag])
 
     def test_details(self):
@@ -61,7 +61,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#progress")).not_to_be_visible()
             expect(self.page.locator("body")).to_contain_text("1001")
 
-    @patch('pdf.service.get_file_path', return_value='application/pdf')
+    @patch('pdf.services.pdf_services.get_file_path', return_value='application/pdf')
     def test_change_details(self, mock_get_file_path):
         pdf = self.user.profile.pdfs.get(name='pdf_1_1')
         pdf.notes = ''

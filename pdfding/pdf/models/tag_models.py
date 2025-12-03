@@ -2,7 +2,6 @@ from uuid import uuid4
 
 from django.db import models
 from pdf.models.workspace_models import Workspace
-from users.models import Profile
 
 
 class Tag(models.Model):
@@ -10,7 +9,6 @@ class Tag(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=50, blank=False)
-    owner = models.ForeignKey(Profile, on_delete=models.CASCADE)
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, blank=False, null=True)
 
     def __str__(self):  # pragma: no cover

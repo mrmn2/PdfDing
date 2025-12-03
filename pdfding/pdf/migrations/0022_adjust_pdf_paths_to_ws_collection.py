@@ -48,9 +48,10 @@ def adjust_file_paths(apps, schema_editor):  # pragma: no cover
             tmp_path = MEDIA_ROOT / 'tmp' / str(user_object.id)
             new_path = MEDIA_ROOT / str(user_object.id) / 'default'
 
-            # move all files to tmp dir first because moving into a subdir of itself will not work
-            move(old_path, tmp_path)
-            move(tmp_path, new_path)
+            if old_path.exists() and old_path.is_dir():
+                # move all files to tmp dir first because moving into a subdir of itself will not work
+                move(old_path, tmp_path)
+                move(tmp_path, new_path)
         except FileNotFoundError:  # pragma: no cover
             pass
 

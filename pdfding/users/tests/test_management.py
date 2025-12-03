@@ -42,18 +42,16 @@ class TestManagement(TestCase):
         pdf = Pdf.objects.create(name='1.pdf', collection=user.profile.current_collection)
 
         shared_pdf_1 = SharedPdf.objects.create(
-            owner=user.profile,
             name='shared_pdf_1',
             pdf=pdf,
             deletion_date=datetime.now(timezone.utc) - timedelta(minutes=5),
         )
         shared_pdf_2 = SharedPdf.objects.create(
-            owner=user.profile,
             name='shared_pdf_2',
             pdf=pdf,
             deletion_date=datetime.now(timezone.utc) + timedelta(minutes=5),
         )
-        shared_pdf_3 = SharedPdf.objects.create(owner=user.profile, name='shared_pdf_3', pdf=pdf)
+        shared_pdf_3 = SharedPdf.objects.create(name='shared_pdf_3', pdf=pdf)
 
         shared_pdfs_set_before = {shared_pdf for shared_pdf in SharedPdf.objects.all()}
         self.assertEqual(shared_pdfs_set_before, {shared_pdf_1, shared_pdf_2, shared_pdf_3})

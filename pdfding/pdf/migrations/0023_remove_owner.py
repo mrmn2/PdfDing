@@ -14,4 +14,12 @@ class Migration(migrations.Migration):
             model_name='pdf',
             name='owner',
         ),
+        migrations.RemoveField(
+            model_name='sharedpdf',
+            name='owner',
+        ),
+        migrations.RemoveField(
+            model_name='tag',
+            name='owner',
+        ),
     ]

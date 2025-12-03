@@ -11,9 +11,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         super().setUp()
 
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
-        self.tag = Tag.objects.create(
-            name='bla', owner=self.user.profile, workspace=self.user.profile.current_workspace
-        )
+        self.tag = Tag.objects.create(name='bla', workspace=self.user.profile.current_workspace)
         pdf.tags.set([self.tag])
 
     def test_sidebar_tags_normal_mode(self):
@@ -25,9 +23,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         tag_names = ['hobbies/sports', 'programming/python/django', 'other']
 
         for tag_name in tag_names:
-            tag = Tag.objects.create(
-                name=tag_name, owner=self.user.profile, workspace=self.user.profile.current_workspace
-            )
+            tag = Tag.objects.create(name=tag_name, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
@@ -57,9 +53,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         tag_names = ['1_programming/python/django', 'other']
 
         for tag_name in tag_names:
-            tag = Tag.objects.create(
-                name=tag_name, owner=self.user.profile, workspace=self.user.profile.current_workspace
-            )
+            tag = Tag.objects.create(name=tag_name, workspace=self.user.profile.current_workspace)
             tags.append(tag)
 
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
@@ -130,9 +124,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         profile.tag_tree_mode = False
         profile.save()
 
-        tag_2 = Tag.objects.create(
-            name=f'{self.tag.name}/child', owner=self.user.profile, workspace=self.user.profile.current_workspace
-        )
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', workspace=self.user.profile.current_workspace)
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
@@ -153,9 +145,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         profile.tag_tree_mode = True
         profile.save()
 
-        tag_2 = Tag.objects.create(
-            name=f'{self.tag.name}/child', owner=self.user.profile, workspace=self.user.profile.current_workspace
-        )
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', workspace=self.user.profile.current_workspace)
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
@@ -208,9 +198,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         profile.tag_tree_mode = False
         profile.save()
 
-        tag_2 = Tag.objects.create(
-            name=f'{self.tag.name}/child', owner=self.user.profile, workspace=self.user.profile.current_workspace
-        )
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', workspace=self.user.profile.current_workspace)
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
@@ -240,9 +228,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
         profile.tag_tree_mode = True
         profile.save()
 
-        tag_2 = Tag.objects.create(
-            name=f'{self.tag.name}/child', owner=self.user.profile, workspace=self.user.profile.current_workspace
-        )
+        tag_2 = Tag.objects.create(name=f'{self.tag.name}/child', workspace=self.user.profile.current_workspace)
 
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)

@@ -94,7 +94,7 @@ class TestPeriodicBackup(TestCase):
             pdf.save()
         for i in range(1, 4):
             pdf = user_1.profile.pdfs.get(name='pdf_1.pdf')
-            shared_pdf = SharedPdf.objects.create(owner=user_1.profile, name=f'shared_pdf_{i}', pdf=pdf)
+            shared_pdf = SharedPdf.objects.create(name=f'shared_pdf_{i}', pdf=pdf)
             shared_pdf.file.name = f'{pdf.collection.workspace.id}/{pdf.collection.name.lower()}/qr/qr_{i}.svg'
 
             # also add shared pdf with deletion date in the past
@@ -138,7 +138,10 @@ class TestSqliteBackup(TestCase):
 
             for j in range(1, i + 1):
                 pdf = Pdf.objects.create(name=f'pdf_{j}', collection=user.profile.current_collection)
-                tags = [Tag.objects.create(name=f'pdf_{j}_tag_{k}', owner=user.profile) for k in range(2)]
+                tags = [
+                    Tag.objects.create(name=f'pdf_{j}_tag_{k}', workspace=user.profile.current_workspace)
+                    for k in range(2)
+                ]
                 pdf.tags.set(tags)
 
     def test_backup_sqlite(self):

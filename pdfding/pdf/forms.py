@@ -35,8 +35,8 @@ class AddFormNoFile(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """
-        Adds the owner profile to the form. This is done, so we can check if the owner already has
-        a PDF with the provided name in clean_name.
+        Adds the profile to the form. This is done, so we can access information about the profile
+        when creating a new pdf.
         """
 
         self.profile = kwargs.pop('profile', None)
@@ -140,8 +140,8 @@ class BulkAddFormNoFile(forms.Form):
 
     def __init__(self, *args, **kwargs):
         """
-        Adds the owner profile to the form. This is done, so we can check if the owner already has
-        a PDF with the provided name in clean_name.
+        Adds the profile to the form. This is done, so we can access information about the profile
+        when creating a new pdf.
         """
 
         self.profile = kwargs.pop('profile', None)
@@ -264,19 +264,15 @@ class ShareForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         """
-        Adds the owner profile to the form. This is done, so we can check if the owner already has
-        a PDF with the provided name in clean_name.
+        Adds the profile to the form. This is done, so we can access information about the profile
+        when creating a new shared pdf.
         """
 
-        self.owner = kwargs.pop('profile', None)
+        self.profile = kwargs.pop('profile', None)
+        if not self.profile:
+            raise KeyError('profile')
 
         super(ShareForm, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        if not self.owner:
-            raise forms.ValidationError('Owner is missing!')
-
-        return self.cleaned_data
 
     def clean_name(self) -> str:
         """
@@ -286,7 +282,8 @@ class ShareForm(forms.ModelForm):
 
         share_name = CleanHelpers.clean_name(self.cleaned_data['name'])
 
-        existing_share = SharedPdf.objects.filter(owner=self.owner, name=share_name).first()
+        shared_pdfs = self.profile.shared_pdfs
+        existing_share = shared_pdfs.filter(name__iexact=share_name).first()
 
         if existing_share and not existing_share.deleted:
             raise forms.ValidationError('A Share with this name already exists!')
@@ -399,10 +396,7 @@ class ViewSharedPasswordForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        """
-        Adds the owner profile to the form. This is done, so we can check if the owner already has
-        a PDF with the provided name in clean_name.
-        """
+        """Adds the shared pdf to the form."""
 
         self.shared_pdf = kwargs.pop('shared_pdf', None)
 

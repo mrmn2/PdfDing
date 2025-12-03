@@ -4,12 +4,13 @@ from urllib.parse import parse_qs, urlparse
 from django.db.models.functions import Lower
 from django.urls import reverse
 from pdf.models.tag_models import Tag
+from pdf.models.workspace_models import Workspace
 from users.models import Profile
 
 
 class TagServices:
     @staticmethod
-    def process_tag_names(tag_names: list[str], owner_profile: Profile) -> list[Tag]:
+    def process_tag_names(tag_names: list[str], workspace: Workspace) -> list[Tag]:
         """
         Process the specified tags. If the tag is existing it will simply be added to the return list. If it does not
         exist it, it will be created and then be added to the return list.
@@ -18,9 +19,9 @@ class TagServices:
         tags = []
         for tag_name in tag_names:
             try:
-                tag = Tag.objects.get(owner=owner_profile, name=tag_name)
+                tag = Tag.objects.get(name=tag_name, workspace=workspace)
             except Tag.DoesNotExist:
-                tag = Tag.objects.create(name=tag_name, owner=owner_profile)
+                tag = Tag.objects.create(name=tag_name, workspace=workspace)
 
             tags.append(tag)
 
