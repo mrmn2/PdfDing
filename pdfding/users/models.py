@@ -76,8 +76,8 @@ class Profile(models.Model):
     annotation_sorting = models.CharField(
         choices=AnnotationsSortingChoice, max_length=15, default=AnnotationsSortingChoice.NEWEST
     )
-    current_collection_id = models.CharField(max_length=36, editable=False, blank=False, null=True)
-    current_workspace_id = models.CharField(max_length=36, editable=False, blank=False, null=True)
+    current_collection_id = models.CharField(max_length=36, editable=False, blank=False)
+    current_workspace_id = models.CharField(max_length=36, editable=False, blank=False)
     # set dummy default colors, will be overwritten in users/signals.py
     custom_theme_color = models.CharField(max_length=7, default='#ffa385')
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')

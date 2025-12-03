@@ -120,7 +120,7 @@ class Pdf(models.Model):
 
     archived = models.BooleanField(default=False)
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
-    collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False, null=True)
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False)
     current_page = models.IntegerField(default=1)
     description = models.TextField(blank=True, help_text='Optional', default='')
     file_directory = models.CharField(

@@ -9,7 +9,7 @@ class Tag(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=50, blank=False)
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, blank=False, null=True)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, blank=False)
 
     def __str__(self):  # pragma: no cover
         return str(self.name)
