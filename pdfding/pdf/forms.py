@@ -430,6 +430,49 @@ class TagNameForm(forms.Form):
         return new_tag_name
 
 
+class WorkspaceForm(forms.Form):
+    """Class for creating the form for creating workspaces."""
+
+    name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Workspace Name'}),
+    )
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add a workspace description'}),
+        help_text='Optional',
+    )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Adds the profile to the form. This is done, so we can access information about the profile
+        when creating a new workspace.
+        """
+
+        self.profile = kwargs.pop('profile', None)
+        if not self.profile:
+            raise KeyError('profile')
+
+        super(WorkspaceForm, self).__init__(*args, **kwargs)
+
+    def clean_name(self) -> str:
+        """
+        Clean the submitted workspace name. Removes trailing and multiple whitespaces. Checks that only
+        numbers, letters, '_' and '-' are used.
+        """
+
+        ws_name = CleanHelpers.clean_name(self.cleaned_data['name'])
+
+        if ws_name in ['_', '-']:
+            raise forms.ValidationError('"_" or "-" are not valid workspace names!')
+        elif ws_name and not re.match(r'^[A-Za-z0-9-_]*$', ws_name):
+            raise forms.ValidationError('Only "-", "_", numbers or letters are allowed!')
+        if len(ws_name) > 50:
+            raise forms.ValidationError('Maximum number of characters for a workspace name is 50!')
+
+        return ws_name
+
+
 class CleanHelpers:
     @staticmethod
     def clean_file(file: File) -> File:
@@ -444,13 +487,13 @@ class CleanHelpers:
         return file
 
     @staticmethod
-    def clean_name(pdf_name: str) -> str:
-        """Clean the submitted pdf name. Removes trailing and multiple whitespaces."""
+    def clean_name(name: str) -> str:
+        """Clean the submitted name. Removes trailing and multiple whitespaces."""
 
-        pdf_name.strip()
-        pdf_name = ' '.join(pdf_name.split())
+        name.strip()
+        name = ' '.join(name.split())
 
-        return pdf_name
+        return name
 
     @staticmethod
     def clean_password(password: str) -> str:
