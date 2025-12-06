@@ -188,6 +188,50 @@ class TestTagForms(TestCase):
         self.assertEqual(form.errors['name'], ['Tag names are not allowed to contain spaces!'])
 
 
+class TestWorkspaceForms(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+
+    def test_add_form_valid(self):
+        form = forms.WorkspaceForm(data={'name': 'ws_name'}, profile=self.user.profile)
+
+        self.assertTrue(form.is_valid())
+
+    def test_clean_missing_profile(self):
+        with self.assertRaisesMessage(KeyError, 'profile'):
+            forms.WorkspaceForm(data={'name': 'ws_name'})
+
+    @mock.patch('pdf.forms.CleanHelpers.clean_name', return_value='valid_Name-2')
+    def test_pdf_clean_name_valid(self, mock_clean_name):
+        form = forms.WorkspaceForm(data={'name': 'valid_Name-2'}, profile=self.user.profile)
+
+        self.assertTrue(form.is_valid())
+        mock_clean_name.assert_called_once_with('valid_Name-2')
+
+    def test_pdf_clean_name_invalid_wrong_char(self):
+        form = forms.WorkspaceForm(data={'name': 'ab/c'}, profile=self.user.profile)
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], ['Only "-", "_", numbers or letters are allowed!'])
+
+    def test_pdf_clean_name_invalid_too_long(self):
+        form = forms.WorkspaceForm(data={'name': 'a' * 51}, profile=self.user.profile)
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], ['Maximum number of characters for a workspace name is 50!'])
+
+    def test_pdf_clean_name_invalid_underscore_dash(self):
+        form = forms.WorkspaceForm(data={'name': '_'}, profile=self.user.profile)
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], ['"_" or "-" are not valid workspace names!'])
+
+        form = forms.WorkspaceForm(data={'name': '-'}, profile=self.user.profile)
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], ['"_" or "-" are not valid workspace names!'])
+
+
 class TestCleanHelpers(TestCase):
     def test_clean_name(self):
         inputs = ['  this is some    name with whitespaces ', 'simple']

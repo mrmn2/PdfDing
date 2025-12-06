@@ -1,5 +1,6 @@
 import pdf.views.pdf_views as pdf_views
 import pdf.views.share_views as share_views
+import pdf.views.workspace_views as workspace_views
 from django.urls import path
 
 urlpatterns = [
@@ -79,4 +80,7 @@ urlpatterns = [
     # tag related views
     path('delete_tag/', pdf_views.DeleteTag.as_view(), name='delete_tag'),
     path('edit_tag/', pdf_views.EditTag.as_view(), name='edit_tag'),
+    # workspace related views
+    path('workspace/create', workspace_views.Create.as_view(), name='create_workspace'),
+    path('', pdf_views.Overview.as_view(), name='workspace_overview'),
 ]

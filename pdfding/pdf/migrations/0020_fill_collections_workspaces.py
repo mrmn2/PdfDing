@@ -14,10 +14,14 @@ def fill_data(apps, schema_editor, filter_pdfs_by='owner__id', filter_tags_by='o
 
     for profile_object in profile_model.objects.all():
         personal_workspace = Workspace.objects.create(
-            id=str(profile_object.user.id), name='Personal', personal_workspace=True
+            id=str(profile_object.user.id), name='Personal', personal_workspace=True, description='Personal Workspace'
         )
         default_collection = Collection.objects.create(
-            id=str(profile_object.user.id), name='Default', default_collection=True, workspace=personal_workspace
+            id=str(profile_object.user.id),
+            name='Default',
+            default_collection=True,
+            workspace=personal_workspace,
+            description='Default Collection',
         )
         WorkspaceUser.objects.create(
             workspace=personal_workspace, user_id=profile_object.user.id, role=WorkspaceRoles.OWNER
