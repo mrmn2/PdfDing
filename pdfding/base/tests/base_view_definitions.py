@@ -47,7 +47,7 @@ class OverviewMixin(BaseMixin):
     def filter_objects(request: HttpRequest) -> QuerySet:
         """Filter the objects when performing a search in the overview."""
 
-        pdfs = request.user.profile.pdfs
+        pdfs = request.user.profile.all_pdfs
         pdfs = pdfs.exclude(name__icontains='fig')
         pdfs = pdfs.exclude(name__icontains='Kaki')
 
@@ -68,7 +68,7 @@ class ObjectMixin(BaseMixin):
         """Get the pdf specified by the ID"""
 
         user_profile = request.user.profile
-        pdf = user_profile.pdfs.get(id=pdf_id)
+        pdf = user_profile.all_pdfs.get(id=pdf_id)
 
         return pdf
 

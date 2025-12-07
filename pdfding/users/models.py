@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
+from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
@@ -149,18 +150,35 @@ class Profile(models.Model):
         return self.collections.get(id=self.current_collection_id)
 
     @property
-    def pdfs(self) -> QuerySet:
-        """Return all PDFs of the current profile workspace."""
+    def all_pdfs(self) -> QuerySet:
+        """Return all PDFs of all workspaces the user has access to."""
+
+        collections = Collection.objects.filter(workspace__in=self.workspaces)
+        pdfs = Pdf.objects.filter(collection__in=collections)
+
+        return pdfs
+
+    @property
+    def current_pdfs(self) -> QuerySet:
+        """Return all PDFs of the current collections (all or single)."""
 
         pdfs = Pdf.objects.filter(collection__in=self.current_workspace.collections)
 
         return pdfs
 
     @property
-    def shared_pdfs(self) -> QuerySet:
-        """Return all shared PDFs associated with the profile."""
+    def all_shared_pdfs(self) -> QuerySet:
+        """Return all shared PDFs of all workspaces the profile has access to."""
 
-        shared_pdfs = SharedPdf.objects.filter(pdf__in=self.pdfs)
+        shared_pdfs = SharedPdf.objects.filter(pdf__in=self.all_pdfs)
+
+        return shared_pdfs
+
+    @property
+    def current_shared_pdfs(self) -> QuerySet:
+        """Return all shared PDFs of the current collection (all or single)."""
+
+        shared_pdfs = SharedPdf.objects.filter(pdf__in=self.current_pdfs)
 
         return shared_pdfs
 
