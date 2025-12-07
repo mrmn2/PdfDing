@@ -27,7 +27,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         pdf.tags.set([tag])
 
     def test_details(self):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
         dummy_file = SimpleUploadedFile("simple.pdf", b"these are the file contents!")
         pdf.views = 1001
         pdf.number_of_pages = 10
@@ -46,7 +46,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#views")).to_contain_text("1001")
 
     def test_details_progress_not_visible(self):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
         pdf.views = 1001
         pdf.number_of_pages = -1
         pdf.save()
@@ -63,7 +63,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
 
     @patch('pdf.services.pdf_services.get_file_path', return_value='application/pdf')
     def test_change_details(self, mock_get_file_path):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
         pdf.notes = ''
         pdf.description = ''
         pdf.save()
@@ -121,7 +121,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#file_directory")).to_contain_text("sub/dir")
 
     def test_details_star_archive(self):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
@@ -139,7 +139,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#archived_icon")).not_to_be_visible()
 
     def test_cancel_change_details(self):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
@@ -152,7 +152,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
                 expect(self.page.locator(edit_name)).to_contain_text("Edit")
 
     def test_details_delete(self):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
@@ -164,7 +164,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).not_to_have_text("pdf_1_1")
 
     def test_details_cancel_delete(self):
-        pdf = self.user.profile.pdfs.get(name='pdf_1_1')
+        pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)

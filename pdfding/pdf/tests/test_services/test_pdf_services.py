@@ -65,7 +65,7 @@ class TestPdfProcessingServices(TestCase):
 
         service.PdfProcessingServices.process_with_pypdfium(pdf, False)
 
-        pdf = self.user.profile.pdfs.get(name=pdf.name)
+        pdf = self.user.profile.current_pdfs.get(name=pdf.name)
         self.assertEqual(pdf.number_of_pages, 2)
         mock_set_thumbnail_and_preview.assert_not_called()
 
@@ -83,7 +83,7 @@ class TestPdfProcessingServices(TestCase):
 
         service.PdfProcessingServices.process_with_pypdfium(pdf)
 
-        pdf = self.user.profile.pdfs.get(name=pdf.name)
+        pdf = self.user.profile.current_pdfs.get(name=pdf.name)
         self.assertEqual(pdf.number_of_pages, 2)
         mock_set_thumbnail_and_preview.assert_called_once()
 
@@ -96,7 +96,7 @@ class TestPdfProcessingServices(TestCase):
         pdf.save()
 
         service.PdfProcessingServices.process_with_pypdfium(pdf, False)
-        pdf = self.user.profile.pdfs.get(name=pdf.name)
+        pdf = self.user.profile.current_pdfs.get(name=pdf.name)
         self.assertEqual(pdf.number_of_pages, -1)
 
     def test_set_thumbnail_and_preview(self):
@@ -345,7 +345,7 @@ class TestOtherServices(TestCase):
     @service.check_object_access_allowed
     def get_object(pdf_id: str, user: User):
         user_profile = user.profile
-        pdf = user_profile.pdfs.get(id=pdf_id)
+        pdf = user_profile.current_pdfs.get(id=pdf_id)
 
         return pdf
 

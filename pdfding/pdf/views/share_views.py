@@ -26,6 +26,7 @@ from pdf.forms import (
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.services.pdf_services import check_object_access_allowed
 from pdf.services.shared_pdf_services import get_future_datetime
+from pdf.services.workspace_services import get_shared_pdfs_of_workspace
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg
 from users.service import get_viewer_theme_and_color
@@ -124,7 +125,7 @@ class OverviewMixin(BaseShareMixin):
         just a dummy function
         """
 
-        shared_pdfs = request.user.profile.shared_pdfs
+        shared_pdfs = request.user.profile.current_shared_pdfs
         shared_pdfs = shared_pdfs.filter(
             Q(deletion_date__isnull=True) | Q(deletion_date__gt=datetime.now(timezone.utc))
         )
@@ -147,7 +148,7 @@ class SharedPdfMixin(BaseShareMixin):
         """Get the shered pdf specified by the ID"""
 
         user_profile = request.user.profile
-        shared_pdf = user_profile.shared_pdfs.get(id=identifier)
+        shared_pdf = user_profile.all_shared_pdfs.get(id=identifier)
 
         return shared_pdf
 
@@ -199,7 +200,7 @@ class EditSharedPdfMixin(SharedPdfMixin):
             shared_pdf.deletion_date = get_future_datetime(form_data['deletion_input'])
             shared_pdf.save()
         elif field_name == 'name':
-            shared_pdfs = request.user.profile.shared_pdfs
+            shared_pdfs = get_shared_pdfs_of_workspace(request.user.profile.current_workspace)
             existing_obj = shared_pdfs.filter(name__iexact=form_data.get('name')).first()
 
             if existing_obj and str(existing_obj.id) != str(shared_pdf.id):

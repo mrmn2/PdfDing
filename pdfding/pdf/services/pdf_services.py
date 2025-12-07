@@ -236,7 +236,7 @@ class PdfProcessingServices:
             else:
                 pdf_annotations = pdf.pdfhighlight_set.all()
         else:
-            current_workspace_pdfs = profile.pdfs
+            current_workspace_pdfs = get_pdfs_of_workspace(profile.current_workspace)
             if kind == 'comments':
                 pdf_annotations = PdfComment.objects.filter(pdf__in=current_workspace_pdfs).all()
             else:

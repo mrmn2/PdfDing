@@ -156,7 +156,7 @@ class OverviewMixin(BasePdfMixin):
     def filter_objects(cls, request: HttpRequest) -> QuerySet:
         """Filter the PDFs when performing a search in the overview."""
 
-        pdfs = request.user.profile.pdfs
+        pdfs = request.user.profile.current_pdfs
 
         search = request.GET.get('search', '')
         tags = request.GET.get('tags', [])
@@ -234,7 +234,7 @@ class PdfMixin(BasePdfMixin):
         """Get the pdf specified by the ID"""
 
         user_profile = request.user.profile
-        pdf = user_profile.pdfs.get(id=pdf_id)
+        pdf = user_profile.all_pdfs.get(id=pdf_id)
 
         return pdf
 
@@ -360,7 +360,7 @@ class HighlightOverviewMixin(AnnotationOverviewMixin):
         Filter the PDF highlights in the overview. As there is no filtering needed this is just a dummy function.
         """
 
-        pdfs = request.user.profile.pdfs
+        pdfs = request.user.profile.current_pdfs
         highlights = PdfHighlight.objects.filter(pdf__in=pdfs)
 
         return highlights
@@ -383,7 +383,7 @@ class CommentOverviewMixin(AnnotationOverviewMixin):
         Filter the PDF comments in the overview. As there is no filtering needed this is just a dummy function.
         """
 
-        pdfs = request.user.profile.pdfs
+        pdfs = request.user.profile.current_pdfs
         comments = PdfComment.objects.filter(pdf__in=pdfs)
 
         return comments
@@ -760,7 +760,7 @@ class EditTag(TagMixin, View):
 
         # if there is already a tag with the same name, delete the tag and add the existing tag to the pdfs
         if existing_tag and str(existing_tag.id) != tag.id:
-            pdfs = profile.pdfs
+            pdfs = get_pdfs_of_workspace(profile.current_workspace)
             pdfs_with_tag = pdfs.filter(tags__id=tag.id)
 
             for pdf_with_tag in pdfs_with_tag:

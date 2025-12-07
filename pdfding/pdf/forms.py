@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
-from pdf.services.workspace_services import check_if_pdf_with_name_exists
+from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_shared_pdfs_of_workspace
 
 
 class AddFormNoFile(forms.ModelForm):
@@ -282,7 +282,7 @@ class ShareForm(forms.ModelForm):
 
         share_name = CleanHelpers.clean_name(self.cleaned_data['name'])
 
-        shared_pdfs = self.profile.shared_pdfs
+        shared_pdfs = get_shared_pdfs_of_workspace(self.profile.current_workspace)
         existing_share = shared_pdfs.filter(name__iexact=share_name).first()
 
         if existing_share and not existing_share.deleted:

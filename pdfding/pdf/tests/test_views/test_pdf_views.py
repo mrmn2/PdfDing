@@ -14,6 +14,7 @@ from pdf import forms
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services.pdf_services import PdfProcessingServices
+from pdf.services.workspace_services import create_workspace
 from pdf.views import pdf_views
 from users.service import get_demo_pdf
 
@@ -66,7 +67,7 @@ class TestAddPDFMixin(TestCase):
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdfs.get(name='some_pdf')
+        pdf = self.user.profile.current_pdfs.get(name='some_pdf')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.notes, 'some_notes')
@@ -98,7 +99,7 @@ class TestAddPDFMixin(TestCase):
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdfs.get(name='demo')
+        pdf = self.user.profile.current_pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual(pdf.collection, self.user.profile.current_collection)
@@ -209,7 +210,7 @@ class TestBulkAddPDFMixin(TestCase):
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         for name in ['demo', 'demo_2']:
-            pdf = self.user.profile.pdfs.get(name=name)
+            pdf = self.user.profile.current_pdfs.get(name=name)
             tag_names = [tag.name for tag in pdf.tags.all()]
             self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
             self.assertEqual(pdf.description, 'some_description')
@@ -263,12 +264,12 @@ class TestBulkAddPDFMixin(TestCase):
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         expected_pdf_names = ['test1', 'test2', 'test2_12345678', 'test3']
-        generated_pdf_names = [pdf.name for pdf in self.user.profile.pdfs]
+        generated_pdf_names = [pdf.name for pdf in self.user.profile.current_pdfs]
         self.assertEqual(expected_pdf_names, generated_pdf_names)
 
         # also check date the test1 and test2 are unchanged
         for i in range(2):
-            self.assertEqual(old_pdfs[i], self.user.profile.pdfs.get(name=f'test{i + 1}'))
+            self.assertEqual(old_pdfs[i], self.user.profile.current_pdfs.get(name=f'test{i + 1}'))
 
     @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')
@@ -287,7 +288,7 @@ class TestBulkAddPDFMixin(TestCase):
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
-        pdf = self.user.profile.pdfs.get(name='demo')
+        pdf = self.user.profile.current_pdfs.get(name='demo')
         tag_names = [tag.name for tag in pdf.tags.all()]
         self.assertEqual(set(tag_names), {'tag_2', 'tag_a'})
         self.assertEqual('description', 'description')
@@ -348,6 +349,20 @@ class TestOverviewMixin(TestCase):
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
+        self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
+
+    def test_filter_objects_ignore_not_current(self):
+        pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_1')
+        pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_2')
+
+        other_ws = create_workspace('other_ws', creator=self.user)
+        Pdf.objects.create(collection=other_ws.collections[0], name='pdf_not_to_be_found')
+
+        response = self.client.get(reverse('pdf_overview'))
+
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(filtered_pdfs.count(), 2)
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
 
     def test_filter_objects_ignore_archived(self):
@@ -498,7 +513,11 @@ class TestPdfMixin(TestCase):
         set_up(self)
 
     def test_get_object(self):
-        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        # make sure we can access pdf of not active ws
+        other_ws = create_workspace('other_ws', creator=self.user)
+        pdf = Pdf.objects.create(collection=other_ws.collections[0], name='pdf')
+
+        self.assertNotEqual(other_ws, self.user.profile.current_workspace)
 
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -550,7 +569,7 @@ class TestEditPdfMixin(TestCase):
         pdf_views.EditPdfMixin.process_field('tags', pdf, response.wsgi_request, {'tag_string': 'tag_1 tag_3'})
 
         # get pdf again with the changes
-        pdf = self.user.profile.pdfs.get(id=pdf.id)
+        pdf = self.user.profile.current_pdfs.get(id=pdf.id)
         tag_names = [tag.name for tag in pdf.tags.all()]
 
         self.assertEqual(sorted(tag_names), sorted(['tag_1', 'tag_3']))
@@ -688,7 +707,7 @@ class TestViews(TestCase):
         response = self.client.post(reverse('update_page'), data={'pdf_id': pdf.id, 'current_page': 10})
 
         # get pdf again with the changes
-        pdf = self.user.profile.pdfs.get(id=pdf.id)
+        pdf = self.user.profile.current_pdfs.get(id=pdf.id)
 
         self.assertEqual(pdf.current_page, 10)
         self.assertEqual(200, response.status_code)
@@ -880,6 +899,10 @@ class TestAnnotationMixin(TestCase):
         highlight_1 = PdfHighlight.objects.create(text='highlight_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
         highlight_2 = PdfHighlight.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
 
+        other_ws = create_workspace('other_ws', creator=self.user)
+        other_ws_pdf = Pdf.objects.create(collection=other_ws.collections[0], name='other_ws_pdf')
+        PdfHighlight.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=other_ws_pdf)
+
         # dummy request
         response = self.client.get(reverse('pdf_overview'))
 
@@ -892,6 +915,10 @@ class TestAnnotationMixin(TestCase):
 
         comment_1 = PdfComment.objects.create(text='comment_1', page=1, creation_date=pdf.creation_date, pdf=pdf)
         comment_2 = PdfComment.objects.create(text='comment_2', page=2, creation_date=pdf.creation_date, pdf=pdf)
+
+        other_ws = create_workspace('other_ws', creator=self.user)
+        other_ws_pdf = Pdf.objects.create(collection=other_ws.collections[0], name='other_ws_pdf')
+        PdfComment.objects.create(text='highlight_2', page=2, creation_date=pdf.creation_date, pdf=other_ws_pdf)
 
         # dummy request
         response = self.client.get(reverse('pdf_overview'))
