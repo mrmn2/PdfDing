@@ -3,6 +3,7 @@ from django.urls import reverse
 from helpers import PdfDingE2ETestCase
 from pdf.models.pdf_models import Pdf
 from pdf.models.tag_models import Tag
+from pdf.services.workspace_services import create_workspace
 from playwright.sync_api import expect, sync_playwright
 
 
@@ -291,3 +292,45 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
         changed_user = User.objects.get(id=self.user.id)
         self.assertTrue(changed_user.profile.tags_open)
+
+
+class WorkspaceE2ETestCase(PdfDingE2ETestCase):
+    def setUp(self, login: bool = True) -> None:
+        super().setUp()
+
+    def test_change_workspace(self):
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='personal_ws_pdf')
+        personal_ws_name = self.user.profile.current_workspace.name
+
+        other_ws = create_workspace('other_ws', creator=self.user)
+        Pdf.objects.create(collection=other_ws.collections[0], name="other_ws_pdf")
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("body")).to_contain_text("personal_ws_pdf")
+            expect(self.page.locator("body")).not_to_contain_text("other_ws_pdf")
+            expect(self.page.locator("#current_ws_name")).to_contain_text(personal_ws_name)
+
+            # change workspace
+            self.page.locator("#current_ws_name").click()
+            self.page.get_by_text("other_ws").click()
+
+            # check that that workspace was changed
+            expect(self.page.locator("body")).not_to_contain_text("personal_ws_pdf")
+            expect(self.page.locator("body")).to_contain_text("other_ws_pdf")
+            expect(self.page.locator("#current_ws_name")).to_contain_text("other_ws")
+
+    def test_change_workspace_close_modal(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#workspace_modal")).not_to_be_visible()
+            self.page.locator("#current_ws_name").click()
+            expect(self.page.locator("#workspace_modal")).to_be_visible()
+            self.page.locator(".flex.w-full.justify-center").click()
+            expect(self.page.locator("#workspace_modal")).not_to_be_visible()
+
+            self.page.locator("#current_ws_name").click()
+            expect(self.page.locator("#workspace_modal")).to_be_visible()
+            self.page.locator("#current_ws_name").click()
+            expect(self.page.locator("#workspace_modal")).not_to_be_visible()

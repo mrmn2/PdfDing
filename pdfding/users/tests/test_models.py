@@ -142,3 +142,11 @@ class TestProfile(TestCase):
         self.user.profile.save()
 
         self.assertEqual(other_collection, self.user.profile.current_collection)
+
+    def test_has_access_to_workspace(self):
+        profile = self.user.profile
+        other_workspace = create_workspace('other_workspace', self.user)
+        other_user = User.objects.create_user(username='other_user', password='12345', email='a@aa.com')
+
+        self.assertTrue(profile.has_access_to_workspace(other_workspace.id))
+        self.assertFalse(profile.has_access_to_workspace(other_user.profile.current_workspace_id))

@@ -16,7 +16,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
     def test_pdf_overview_no_pdfs(self):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("body")).to_contain_text("You have no PDFs yet")
+            expect(self.page.locator("body")).to_contain_text("Workspace has no PDFs yet")
             expect(self.page.locator("body")).to_contain_text("Get started by adding PDFs.")
 
     @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
