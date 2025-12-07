@@ -186,3 +186,11 @@ class Profile(models.Model):
         workspace = self.workspaces.get(id=self.current_workspace_id)
 
         return workspace.collections
+
+    def has_access_to_workspace(self, workspace_id: str) -> bool:
+        """Check if the profile has access to the specified workspace"""
+
+        if self.workspaces.filter(id=workspace_id).count():
+            return True
+        else:
+            return False

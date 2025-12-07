@@ -12,6 +12,7 @@ urlpatterns = [
     path('change_layout/<layout>', views.ChangeLayout.as_view(), name="change_layout"),
     path('change_sorting/<sorting_category>/<sorting>', views.ChangeSorting.as_view(), name="change_sorting"),
     path('change_tree_mode', views.ChangeTreeMode.as_view(), name="change_tree_mode"),
+    path('change_workspace/<workspace_id>', views.ChangeWorkspace.as_view(), name="change_workspace"),
     path('open_collapse_tags', views.OpenCollapseTags.as_view(), name="open_collapse_tags"),
     path('signatures', views.Signatures.as_view(), name="signatures"),
 ]

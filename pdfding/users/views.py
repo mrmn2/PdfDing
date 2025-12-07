@@ -11,7 +11,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -187,6 +187,26 @@ class ChangeTreeMode(View):
             return HttpResponseClientRefresh()
 
         return redirect('account_settings')
+
+
+class ChangeWorkspace(View):
+    """View for changing the current workspace."""
+
+    def post(self, request: HttpRequest, workspace_id: str):
+        """Change the current workspace."""
+
+        if request.htmx:
+            user_profile = request.user.profile
+
+            if user_profile.has_access_to_workspace(workspace_id):
+                user_profile.current_workspace_id = workspace_id
+                user_profile.save()
+
+                return HttpResponseClientRefresh()
+            else:
+                raise Http404('Workspace not found for user!')
+
+        return redirect('pdf_overview')
 
 
 class OpenCollapseTags(View):

@@ -1,0 +1,76 @@
+<div id="workspace_open_collapse_toggle"
+     x-data="{ show_workspaces: false }"
+     class="w-5/10 md:w-full mb-4 cursor-pointer">
+  <div @click="show_workspaces = !show_workspaces"
+       class="flex flex-row justify-between w-full items-center p-2 relative
+              border border-slate-400 dark:border-slate-600 creme:border-stone-400 rounded-sm font-semibold
+              bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
+              hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark">
+    <div class="flex flex-row items-center gap-x-2 w-[85%]">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+        <!-- source: https://www.svgrepo.com/svg/489230/work-alt -->
+        <!-- license: PD -->
+        <path d="M9 7H5C3.89543 7 3 7.89543 3 9V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V9C21 7.89543 20.1046 7 19 7H15M9 7V5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7M9 7H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div id="current_ws_name" class="truncate w-[85%]">
+        <span>{{ request.user.profile.current_workspace.name }}</span>
+      </div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+         class="w-6! h-6! cursor-pointer text-slate-500! dark:text-slate-300  creme:text-stone-400! rotate-90">
+      <path d="m9 18 6-6-6-6"></path>
+    </svg>
+  </div>
+  <div id="workspace_modal" x-show="show_workspaces" x-cloak
+        @click.away="show_workspaces = false"
+        @keyup.escape.window="show_workspaces = false"
+        {# leave background as otherwise popup will be transparent #}
+        class="absolute z-20 mt-2 left-0 w-[92%] md:w-full mx-4 md:mx-0 rounded-sm p-1 border
+              bg-slate-50 dark:bg-slate-900 creme:bg-creme-dark-light
+              border-slate-400 dark:border-slate-600 creme:border-stone-400">
+    <div class="flex flex-col gap-y-1 p-1 [&>.ws-modal-child]:py-1 [&>.ws-modal-child]:px-2
+                [&>.ws-modal-child]:rounded-sm [&>.ws-modal-child]:flex [&>.ws-modal-child]:flex-row
+                [&>.ws-modal-child]:hover:bg-slate-200 [&>.ws-modal-child]:dark:hover:bg-slate-700 [&>.ws-modal-child]:creme:hover:bg-creme-dark">
+      {% for workspace in request.user.profile.workspaces %}
+      <div hx-post="{% url 'change_workspace' workspace.id %}"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+          class="ws-modal-child justify-between items-center rounded-sm
+                  {% if workspace.id == request.user.profile.current_workspace_id %}
+                  bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark
+                  {% endif %}">
+        <div class="truncate w-9/10">{{ workspace.name }}</div>
+        {% if workspace.id == request.user.profile.current_workspace_id %}
+        <div>✓</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <span class="my-1 border-t border-slate-400 dark:border-slate-600 creme:border-stone-400"></span>
+      <a href="{% url 'create_workspace' %}" class="ws-modal-child items-center gap-x-2">
+        <svg class="-ml-1! h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- source: https://www.svgrepo.com/svg/471793/plus -->
+          <!-- license: CC0 License-->
+          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="">Create Workspace</span>
+      </a>
+      <a class="ws-modal-child items-center gap-x-2">
+        <svg class="-ml-1! w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <!-- source: https://www.svgrepo.com/svg/304474/settings -->
+          <!-- license: PD License-->
+          <rect id="view-box" width="24" height="24" fill="currentColor" opacity="0"/>
+          <path id="Shape"
+            d="M6.995,19.461a10.065,10.065,0,0,1-2.171-.9.756.756,0,0,1-.382-.7l.132-2.067a.151.151,0,0,0-.044-.116l-.707-.708a.149.149,0,0,0-.106-.043h-.01l-2.075.129-.047,0a.75.75,0,0,1-.654-.384,10.071,10.071,0,0,1-.9-2.176.755.755,0,0,1,.226-.766l1.559-1.376a.149.149,0,0,0,.05-.113V9.25a.151.151,0,0,0-.05-.113L.254,7.761a.754.754,0,0,1-.226-.766,10.115,10.115,
+            0,0,1,.9-2.177.75.75,0,0,1,.654-.382h.047l2.075.129h.01a.153.153,0,0,0,.106-.044l.7-.7a.15.15,0,0,0,.043-.116L4.436,1.632a.754.754,0,0,1,.382-.7,10.115,10.115,0,0,1,2.177-.9.751.751,0,0,1,.766.226L9.137,1.813a.151.151,0,0,0,.113.05h.988a.149.149,0,0,0,.113-.05L11.728.254a.751.751,0,0,1,.766-.226,10.071,10.071,0,0,1,2.176.9.753.753,0,0,1,.383.7l-.129,
+            2.075a.151.151,0,0,0,.043.116l.7.7a.155.155,0,0,0,.107.044h.009l2.075-.129H17.9a.752.752,0,0,1,.654.382,10.07,10.07,0,0,1,.9,2.177.753.753,0,0,1-.226.766L17.676,9.137a.152.152,0,0,0-.051.113v.988a.152.152,0,0,0,.051.113l1.559,1.376a.753.753,0,0,1,.226.766,10.026,10.026,0,0,1-.9,2.176.751.751,0,0,1-.654.384l-.047,0-2.075-.129h-.01a.149.149,
+            0,0,0-.106.043l-.7.7a.154.154,0,0,0-.043.116l.129,2.075a.744.744,0,0,1-.383.7,10.011,10.011,0,0,1-2.171.9.746.746,0,0,1-.767-.226l-1.371-1.557a.149.149,0,0,0-.113-.051h-1a.152.152,0,0,0-.113.051L7.761,19.235a.751.751,0,0,1-.766.226ZM4.883,13.907l.708.707a1.649,1.649,0,0,1,.48,1.273l-.1,1.582a8.373,8.373,0,0,0,.988.409l1.055-1.194a1.652,1.652,0,0,1,
+            1.238-.558h1a1.649,1.649,0,0,1,1.238.56l1.049,1.191a8.413,8.413,0,0,0,.989-.41l-.1-1.59a1.653,1.653,0,0,1,.481-1.27l.7-.7a1.664,1.664,0,0,1,1.167-.483l.1,0,1.59.1a8.376,8.376,0,0,0,.412-.994l-1.194-1.055a1.652,1.652,0,0,1-.558-1.238V9.25a1.652,1.652,0,0,1,.558-1.238l1.194-1.055a8.274,8.274,0,0,0-.412-.994l-1.59.1c-.033,0-.068,0-.1,0a1.642,1.642,0,0,
+            1-1.169-.484l-.7-.7a1.65,1.65,0,0,1-.481-1.269l.1-1.59a8.748,8.748,0,0,0-.994-.413l-1.055,1.2a1.652,1.652,0,0,1-1.238.558H9.25a1.652,1.652,0,0,1-1.238-.558L6.958,1.61a8.8,8.8,0,0,0-.994.413l.1,1.59a1.65,1.65,0,0,1-.481,1.269l-.7.7a1.638,1.638,0,0,1-1.168.484c-.033,0-.067,0-.1,0l-1.59-.1a8.748,8.748,0,0,0-.413.994l1.2,1.055A1.652,1.652,0,0,1,3.363,
+            9.25v.988a1.652,1.652,0,0,1-.558,1.238l-1.2,1.055a8.666,8.666,0,0,0,.413.994l1.59-.1.1,0A1.638,1.638,0,0,1,4.883,13.907Zm.106-4.168a4.75,4.75,0,1,1,4.75,4.75A4.756,4.756,0,0,1,4.989,9.739Zm1.5,0a3.25,3.25,0,1,0,3.25-3.25A3.254,3.254,0,0,0,6.489,9.739Z" transform="translate(2.261 2.261)" fill="currentColor"/>
+        </svg>
+        <span class="">Workspace Settings</span>
+      </a>
+    </div>
+  </div>
+</div>

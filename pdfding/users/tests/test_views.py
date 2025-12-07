@@ -10,6 +10,8 @@ from pdf.models.tag_models import Tag
 from users import forms
 from users.models import Profile
 
+from pdfding.pdf.services.workspace_services import create_workspace
+
 
 class TestAuthRelated(TestCase):
     def test_login_required(self):
@@ -306,6 +308,28 @@ class TestProfileSettingsViews(BaseProfileView):
         )
         changed_user = User.objects.get(id=self.user.id)
         self.assertEqual(changed_user.profile.annotation_sorting, Profile.AnnotationsSortingChoice.OLDEST)
+
+    def test_change_workspace_no_htmx(self):
+        response = self.client.post(reverse('change_workspace', kwargs={'workspace_id': '1'}))
+
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    @patch('users.models.Profile.has_access_to_workspace', return_value=True)
+    def test_change_workspace_post_access(self, mock_has_access_to_workspace):
+        self.assertEqual(self.user.profile.current_workspace_id, str(self.user.id))
+
+        other_ws = create_workspace('other_ws', self.user)
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(reverse('change_workspace', kwargs={'workspace_id': other_ws.id}), **headers)
+
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertEqual(changed_user.profile.current_workspace_id, other_ws.id)
+
+    @patch('users.models.Profile.has_access_to_workspace', return_value=False)
+    def test_change_workspace_post_no_access(self, mock_has_access_to_workspace):
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.post(reverse('change_workspace', kwargs={'workspace_id': '4'}), **headers)
+        self.assertEqual(response.status_code, 404)
 
 
 class TestProfileOtherViews(BaseProfileView):
