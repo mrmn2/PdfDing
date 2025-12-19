@@ -47,18 +47,17 @@ class AddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.AddForm | forms.AddFormNoFile, request: HttpRequest, __):
         """Save the PDF based on the submitted form."""
 
-        name = form.data['name']
-        description = form.data.get('description', '')
-        notes = form.data.get('notes', '')
-        tag_string = form.data.get('tag_string', '')
-        file_directory = form.data.get('file_directory', '')
-        collection_id = form.data.get('collection')
+        name = form.cleaned_data['name']
+        description = form.cleaned_data.get('description', '')
+        notes = form.cleaned_data.get('notes', '')
+        tag_string = form.cleaned_data.get('tag_string', '')
+        file_directory = form.cleaned_data.get('file_directory', '')
+        collection_id = form.cleaned_data.get('collection')
         collection = Collection.objects.get(id=collection_id)
-
         if settings.DEMO_MODE:
             pdf_file = get_demo_pdf()
         else:
-            pdf_file = form.files['file']
+            pdf_file = form.cleaned_data['file']
 
         if form.data.get('use_file_name'):
             name = pdf_services.create_unique_name_from_file(pdf_file, collection.workspace)
