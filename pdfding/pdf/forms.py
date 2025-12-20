@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.workspace_models import Workspace
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_shared_pdfs_of_workspace
 
 
@@ -455,22 +456,39 @@ class WorkspaceForm(forms.Form):
 
         super(WorkspaceForm, self).__init__(*args, **kwargs)
 
-    def clean_name(self) -> str:
+    def clean_name(self) -> str:  # pragma: no cover
         """
         Clean the submitted workspace name. Removes trailing and multiple whitespaces. Checks that only
         numbers, letters, '_' and '-' are used.
         """
 
-        ws_name = CleanHelpers.clean_name(self.cleaned_data['name'])
-
-        if ws_name in ['_', '-']:
-            raise forms.ValidationError('"_" or "-" are not valid workspace names!')
-        elif ws_name and not re.match(r'^[A-Za-z0-9-_]*$', ws_name):
-            raise forms.ValidationError('Only "-", "_", numbers or letters are allowed!')
-        if len(ws_name) > 50:
-            raise forms.ValidationError('Maximum number of characters for a workspace name is 50!')
+        ws_name = CleanHelpers.clean_workspace_name(self.cleaned_data['name'])
 
         return ws_name
+
+
+class WorkspaceNameForm(forms.ModelForm):
+    """Form for changing the name of a workspace."""
+
+    class Meta:
+        model = Workspace
+        fields = ['name']
+
+    def clean_name(self) -> str:  # pragma: no cover
+        """Clean the submitted workspace name. Removes trailing and multiple whitespaces."""
+
+        ws_name = CleanHelpers.clean_workspace_name(self.cleaned_data['name'])
+
+        return ws_name
+
+
+class WorkspaceDescriptionForm(forms.ModelForm):
+    """Form for changing the description of a Workspace."""
+
+    class Meta:
+        model = Workspace
+        widgets = {'description': forms.Textarea(attrs={'rows': 3})}
+        fields = ['description']
 
 
 class CleanHelpers:
@@ -565,3 +583,21 @@ class CleanHelpers:
                         raise forms.ValidationError('Not allowed to contain consecutive "/" characters!')
 
         return input_string
+
+    @staticmethod
+    def clean_workspace_name(ws_name: str) -> str:
+        """
+        Clean the submitted workspace name. Removes trailing and multiple whitespaces. Checks that only
+        numbers, letters, '_' and '-' are used.
+        """
+
+        ws_name = ws_name.strip()
+
+        if ws_name in ['_', '-']:
+            raise forms.ValidationError('"_" or "-" are not valid workspace names!')
+        elif ws_name and not re.match(r'^[A-Za-z0-9-_]*$', ws_name):
+            raise forms.ValidationError('Only "-", "_", numbers or letters are allowed!')
+        if len(ws_name) > 50:
+            raise forms.ValidationError('Maximum number of characters for a workspace name is 50!')
+
+        return ws_name

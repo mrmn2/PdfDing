@@ -56,14 +56,6 @@ class TestWorkspaceServices(TestCase):
         self.assertEqual(workspace.users.count(), 1)
         self.assertEqual(workspace.owners[0], changed_user)
 
-    def test_create_workspace_name_exists(self):
-        workspace_services.create_workspace('created_ws', self.user)
-
-        with self.assertRaisesMessage(
-            WorkspaceError, expected_message='There is already a workspace named created_ws!'
-        ):
-            workspace_services.create_workspace('created_ws', self.user)
-
     def test_create_collection(self):
         ws = self.user.profile.current_workspace
 

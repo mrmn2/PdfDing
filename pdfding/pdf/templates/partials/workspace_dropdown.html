@@ -55,7 +55,7 @@
         </svg>
         <span class="">Create Workspace</span>
       </a>
-      <a class="ws-modal-child items-center gap-x-2">
+      <a href="{% url 'workspace_details' request.user.profile.current_workspace_id %}" class="ws-modal-child items-center gap-x-2">
         <svg class="-ml-1! w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <!-- source: https://www.svgrepo.com/svg/304474/settings -->
           <!-- license: PD License-->

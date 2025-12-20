@@ -1,0 +1,82 @@
+{% extends 'layouts/blank.html' %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:justify-end">
+    <div class="w-full! md:w-72! lg:w-72! px-4 pt-2">
+      {% include 'includes/workspace_sidebar.html' with page='workspace_details' %}
+    </div>
+    <div class="flex w-full justify-start items-center py-2 px-3 md:px-8">
+        <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 min-[1600px]:ml-40! px-4 py-4 md:pb-4 border
+                    bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
+                    border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+          <div>
+            <div class="text-2xl font-bold">
+              Workspace Details
+            </div>
+            <div class="pt-4">
+                <span class="text-lg font-bold">Name</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-[86%] truncate">
+                    <span id="name">
+                        {{ workspace.name }}
+                    </span>
+                </div>
+                <div class="pr-0 md:pr-4">
+                    <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
+                        hx-get="{% url 'edit_workspace' identifier=workspace.id field_name='name' %}"
+                        hx-target="#name"
+                        hx-swap="innerHTML">
+                        Edit
+                    </a>
+                </div>
+            </div>
+            <div class="pt-2">
+                <span class="text-lg font-bold">Personal Workspace</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-[86%]">
+                    <span id="personal_workspace">
+                        {% if workspace.personal_workspace %}
+                        Yes
+                        {% else %}
+                        No
+                        {% endif%}
+                    </span>
+                </div>
+            </div>
+            <div class="pt-2">
+                <span class="text-lg font-bold">Description</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-[86%] text-sm">
+                    <span id="description">
+                        {% if workspace.description %}
+                        {{ workspace.description }}
+                        {% else %}
+                        no description available
+                        {% endif%}
+                    </span>
+                </div>
+                <div class="pr-0 md:pr-4">
+                    <a id="description-edit" class="cursor-pointer text-primary hover:text-secondary"
+                        hx-get="{% url 'edit_workspace' identifier=workspace.id field_name='description' %}"
+                        hx-target="#description"
+                        hx-swap="innerHTML">
+                        Edit
+                    </a>
+                </div>
+            </div>
+            <div class="pt-2">
+                <span class="text-lg font-bold">Date added</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div class="w-[86%] text-sm">
+                    <span id="creation_date">{{ workspace.creation_date }}</span>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
