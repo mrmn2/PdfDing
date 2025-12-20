@@ -23,6 +23,7 @@ class Workspace(models.Model):
     """The workspace model. Workspaces are the top level hierarchy."""
 
     id = models.CharField(primary_key=True, default=get_uuid4_str, max_length=36, editable=False, blank=False)
+    creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     description = models.TextField(default='', blank=True)
     name = models.CharField(max_length=50, blank=False)
     personal_workspace = models.BooleanField(blank=False, editable=False)
