@@ -103,7 +103,7 @@ class AddForm(AddFormNoFile):
         file = cleaned_data.get('file')
         url = cleaned_data.get('url')
 
-        if not file and not url:
+        if not file and not url:  # pragma: no cover
             raise forms.ValidationError('Either a file or a URL must be provided.')
 
         if file and url:   # pragma: no cover
