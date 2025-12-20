@@ -1,10 +1,12 @@
 import re
 
 import magic
+import requests
 from django import forms
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.core.files.base import ContentFile
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_shared_pdfs_of_workspace
@@ -78,6 +80,12 @@ class AddFormNoFile(forms.ModelForm):
 class AddForm(AddFormNoFile):
     """Class for creating the form for adding PDFs."""
 
+    url = forms.URLField(
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Add URL'}),
+        help_text='Optional, enter a URL to a PDF file.',
+    )
+
     class Meta(AddFormNoFile.Meta):
         model = Pdf
         widgets = AddFormNoFile.Meta.widgets
@@ -86,10 +94,35 @@ class AddForm(AddFormNoFile):
         fields = AddFormNoFile.Meta.fields
         fields.append('file')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['file'].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        file = cleaned_data.get('file')
+        url = cleaned_data.get('url')
+
+        if not file and not url:  # pragma: no cover
+            raise forms.ValidationError('Either a file or a URL must be provided.')
+
+        if file and url:   # pragma: no cover
+            raise forms.ValidationError('Provide either a file or a URL, not both.')
+
+        if url:   # pragma: no cover
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                cleaned_data['file'] = ContentFile(response.content, name=cleaned_data.get('name'))
+            except requests.exceptions.RequestException as e:
+                raise forms.ValidationError(f'Error downloading PDF: {e}')
+
+        return cleaned_data
+
     def clean_file(self) -> File:  # pragma: no cover
         """Clean the submitted pdf file. Checks if the file is a pdf."""
-
-        return CleanHelpers.clean_file(self.cleaned_data['file'])
+        if self.cleaned_data.get('file'):
+            return CleanHelpers.clean_file(self.cleaned_data['file'])
 
 
 class MultipleFileInput(forms.ClearableFileInput):  # pragma: no cover

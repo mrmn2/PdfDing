@@ -57,6 +57,13 @@
             {{ form.file.errors }}
             {{ form.file }}
         </p>
+        <p>
+            {{ form.url.errors }}
+            {{ form.url }}
+            <span class="helptext" id="{{ form.url.auto_id }}_helptext">
+                {{ form.url.help_text|safe }}
+            </span>
+        </p>
         {% include 'includes/add_pdf_optionals.html' %}
     </form>
 </div>

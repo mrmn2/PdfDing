@@ -64,7 +64,7 @@ class TestAddPDFMixin(TestCase):
             profile=self.user.profile,
             files={'file': get_demo_pdf()},
         )
-
+        form.is_valid()
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.current_pdfs.get(name='some_pdf')
@@ -96,7 +96,7 @@ class TestAddPDFMixin(TestCase):
             profile=self.user.profile,
             files={'file': get_demo_pdf()},
         )
-
+        form.is_valid()
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.current_pdfs.get(name='demo')
@@ -121,7 +121,7 @@ class TestAddPDFMixin(TestCase):
             },
             profile=self.user.profile,
         )
-
+        form.is_valid()
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.current_collection.pdfs.get(name='some_pdf')
