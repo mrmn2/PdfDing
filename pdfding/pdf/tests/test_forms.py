@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from unittest import mock
 
+import pytest
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -201,36 +202,6 @@ class TestWorkspaceForms(TestCase):
         with self.assertRaisesMessage(KeyError, 'profile'):
             forms.WorkspaceForm(data={'name': 'ws_name'})
 
-    @mock.patch('pdf.forms.CleanHelpers.clean_name', return_value='valid_Name-2')
-    def test_pdf_clean_name_valid(self, mock_clean_name):
-        form = forms.WorkspaceForm(data={'name': 'valid_Name-2'}, profile=self.user.profile)
-
-        self.assertTrue(form.is_valid())
-        mock_clean_name.assert_called_once_with('valid_Name-2')
-
-    def test_pdf_clean_name_invalid_wrong_char(self):
-        form = forms.WorkspaceForm(data={'name': 'ab/c'}, profile=self.user.profile)
-
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], ['Only "-", "_", numbers or letters are allowed!'])
-
-    def test_pdf_clean_name_invalid_too_long(self):
-        form = forms.WorkspaceForm(data={'name': 'a' * 51}, profile=self.user.profile)
-
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], ['Maximum number of characters for a workspace name is 50!'])
-
-    def test_pdf_clean_name_invalid_underscore_dash(self):
-        form = forms.WorkspaceForm(data={'name': '_'}, profile=self.user.profile)
-
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], ['"_" or "-" are not valid workspace names!'])
-
-        form = forms.WorkspaceForm(data={'name': '-'}, profile=self.user.profile)
-
-        self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors['name'], ['"_" or "-" are not valid workspace names!'])
-
 
 class TestCleanHelpers(TestCase):
     def test_clean_name(self):
@@ -312,3 +283,21 @@ class TestCleanHelpers(TestCase):
         tag_string = 'programming/python/django   ot-h_er'
 
         self.assertEqual(tag_string, CleanHelpers.clean_tag_string_file_directory(tag_string))
+
+    def test_clean_workspace_name_valid(self):
+        assert 'valid_name' == CleanHelpers.clean_workspace_name(' valid_name  ')
+
+    def test_clean_workspace_name_invalid_wrong_char(self):
+        with pytest.raises(ValidationError, match='Only "-", "_", numbers or letters are allowed!'):
+            CleanHelpers.clean_workspace_name('ab/c')
+
+    def test_clean_workspace_name_invalid_too_long(self):
+        with pytest.raises(ValidationError, match='Maximum number of characters for a workspace name is 50!'):
+            CleanHelpers.clean_workspace_name('a' * 51)
+
+    def test_clean_workspace_name_invalid_underscore_dash(self):
+        with pytest.raises(ValidationError, match='"_" or "-" are not valid workspace names!'):
+            CleanHelpers.clean_workspace_name('-')
+
+        with pytest.raises(ValidationError, match='"_" or "-" are not valid workspace names!'):
+            CleanHelpers.clean_workspace_name('_')

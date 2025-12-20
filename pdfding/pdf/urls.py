@@ -82,5 +82,7 @@ urlpatterns = [
     path('edit_tag/', pdf_views.EditTag.as_view(), name='edit_tag'),
     # workspace related views
     path('workspace/create', workspace_views.Create.as_view(), name='create_workspace'),
+    path('workspace/details/<identifier>', workspace_views.Details.as_view(), name='workspace_details'),
+    path('workspace/edit/<identifier>/<field_name>', workspace_views.Edit.as_view(), name='edit_workspace'),
     path('', pdf_views.Overview.as_view(), name='workspace_overview'),
 ]

@@ -34,18 +34,15 @@ def create_personal_workspace(creator: User) -> Workspace:
 def create_workspace(name: str, creator: User, description: str = '') -> Workspace:
     """Create a non personal workspace for a user including the workspace user and the default collection"""
 
-    if creator.profile.workspaces.filter(name=name).count():
-        raise WorkspaceError(f'There is already a workspace named {name}!')
-    else:
-        workspace = Workspace.objects.create(name=name, personal_workspace=False, description=description)
-        WorkspaceUser.objects.create(workspace=workspace, user=creator, role=WorkspaceRoles.OWNER)
-        Collection.objects.create(
-            id=workspace.id,
-            name='Default',
-            workspace=workspace,
-            default_collection=True,
-            description='Default Collection',
-        )
+    workspace = Workspace.objects.create(name=name, personal_workspace=False, description=description)
+    WorkspaceUser.objects.create(workspace=workspace, user=creator, role=WorkspaceRoles.OWNER)
+    Collection.objects.create(
+        id=workspace.id,
+        name='Default',
+        workspace=workspace,
+        default_collection=True,
+        description='Default Collection',
+    )
 
     return workspace
 
