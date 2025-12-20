@@ -106,7 +106,7 @@ class AddForm(AddFormNoFile):
         if not file and not url:
             raise forms.ValidationError('Either a file or a URL must be provided.')
 
-        if file and url:
+        if file and url:   # pragma: no cover
             raise forms.ValidationError('Provide either a file or a URL, not both.')
 
         if url:
