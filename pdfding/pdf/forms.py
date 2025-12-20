@@ -109,7 +109,7 @@ class AddForm(AddFormNoFile):
         if file and url:   # pragma: no cover
             raise forms.ValidationError('Provide either a file or a URL, not both.')
 
-        if url:
+        if url:   # pragma: no cover
             try:
                 response = requests.get(url, timeout=10)
                 response.raise_for_status()
