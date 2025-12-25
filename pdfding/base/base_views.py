@@ -226,7 +226,10 @@ class BaseDelete(View):
 
         if request.htmx:
             obj = self.get_object(request, identifier)
+
+            self.pre_delete(obj, request)
             obj.delete()
+            self.post_delete(identifier, request)
 
             # try to redirect to current page
             if 'details' not in request.META.get('HTTP_REFERER', ''):
@@ -236,3 +239,9 @@ class BaseDelete(View):
                 return HttpResponseClientRedirect(reverse(redirect_target))
 
         return redirect(redirect_target)
+
+    def pre_delete(self, obj, request: HttpRequest):
+        """Execute before deleting object."""
+
+    def post_delete(self, identifier: str, request: HttpRequest):
+        """Execute after deleting object."""

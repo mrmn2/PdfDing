@@ -1,7 +1,8 @@
 from base import base_views
 from django.http import HttpRequest
+from django.shortcuts import redirect, render
 from pdf.forms import WorkspaceDescriptionForm, WorkspaceForm, WorkspaceNameForm
-from pdf.models.workspace_models import Workspace
+from pdf.models.workspace_models import Workspace, WorkspaceError
 from pdf.services.workspace_services import create_workspace
 
 
@@ -73,6 +74,38 @@ class EditWorkspaceMixin(WorkspaceMixin):
         form = form_dict[field_name](initial=initial_dict[field_name])
 
         return form
+
+
+class Delete(WorkspaceMixin, base_views.BaseDelete):
+    """View for deleting the workspace specified by its ID."""
+
+    def get(self, request: HttpRequest, identifier: str):
+        """Triggered by htmx. Display an inline form for deleting the workspace."""
+
+        if request.htmx:
+            workspace = self.get_object(request, identifier)
+
+            return render(
+                request,
+                'partials/delete_workspace.html',
+                {'workspace_id': identifier, 'workspace_name': workspace.name},
+            )
+
+        return redirect('pdf_overview')
+
+    def pre_delete(self, obj: Workspace, request: HttpRequest):
+        """Execute before deleting object."""
+
+        if obj.personal_workspace:
+            raise WorkspaceError('Personal workspaces cannot be deleted!')
+
+    def post_delete(self, identifier: str, request: HttpRequest):
+        """Execute after deleting object."""
+
+        if identifier == request.user.profile.current_workspace_id:
+            profile = request.user.profile
+            profile.current_workspace_id = str(request.user.id)
+            profile.save()
 
 
 class Create(CreateWorkspaceMixin, base_views.BaseAdd):
