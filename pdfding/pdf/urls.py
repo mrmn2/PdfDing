@@ -84,5 +84,6 @@ urlpatterns = [
     path('workspace/create', workspace_views.Create.as_view(), name='create_workspace'),
     path('workspace/details/<identifier>', workspace_views.Details.as_view(), name='workspace_details'),
     path('workspace/edit/<identifier>/<field_name>', workspace_views.Edit.as_view(), name='edit_workspace'),
-    path('', pdf_views.Overview.as_view(), name='workspace_overview'),
+    path('workspace/delete/<identifier>', workspace_views.Delete.as_view(), name='delete_workspace'),
+    path('', pdf_views.Overview.as_view(), name='workspace_overview'),  # needed for base views working
 ]

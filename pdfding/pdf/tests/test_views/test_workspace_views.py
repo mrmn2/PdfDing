@@ -1,9 +1,12 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import WorkspaceDescriptionForm, WorkspaceForm, WorkspaceNameForm
+from pdf.models.workspace_models import WorkspaceError
+from pdf.services.workspace_services import create_workspace
 from pdf.views import workspace_views
 
 
@@ -75,3 +78,46 @@ class TestEditWorkspaceMixin(WorkspaceTestCase):
             form = edit_workspace_mixin_object.get_edit_form_get(field, ws)
             self.assertIsInstance(form, form_class)
             self.assertEqual(form.initial, {field: field_value})
+
+
+class TestDelete(WorkspaceTestCase):
+    def test_delete_get_no_htmx(self):
+        created_ws = create_workspace('created_ws', self.user)
+
+        response = self.client.get(reverse('delete_workspace', kwargs={'identifier': created_ws.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_delete_get(self):
+        created_ws = create_workspace('created_ws', self.user)
+        headers = {'HTTP_HX-Request': 'true'}
+
+        # archive the pdf
+        response = self.client.get(reverse('delete_workspace', kwargs={'identifier': created_ws.id}), **headers)
+
+        self.assertEqual(response.context['workspace_name'], 'created_ws')
+        self.assertEqual(response.context['workspace_id'], str(created_ws.id))
+        self.assertTemplateUsed(response, 'partials/delete_workspace.html')
+
+    def test_pre_delete(self):
+        headers = {'HTTP_HX-Request': 'true'}
+
+        with pytest.raises(WorkspaceError, match='Personal workspaces cannot be deleted!'):
+            self.client.delete(
+                reverse('delete_workspace', kwargs={'identifier': self.user.profile.current_workspace.id}), **headers
+            )
+
+    def test_post_delete_current_ws_adjusted(self):
+        created_ws = create_workspace('created_ws', self.user)
+        headers = {'HTTP_HX-Request': 'true'}
+
+        profile = self.user.profile
+        profile.current_workspace_id = created_ws.id
+        profile.save()
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.current_workspace_id == created_ws.id
+
+        self.client.delete(reverse('delete_workspace', kwargs={'identifier': created_ws.id}), **headers)
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.current_workspace_id == str(changed_user.id)

@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
+from pdf.models.workspace_models import Workspace
+from pdf.services.workspace_services import create_workspace
 from playwright.sync_api import expect, sync_playwright
 
 
@@ -48,15 +50,35 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#description")).to_contain_text("other description")
 
-    def test_cancel_change_details(self):
-        ws = self.user.profile.current_workspace
+    def test_cancel_delete(self):
+        other_ws = create_workspace('other_ws', self.user)
 
         with sync_playwright() as p:
-            self.open(reverse('workspace_details', kwargs={'identifier': ws.id}), p)
+            # only display one pdf
+            self.open(reverse('workspace_details', kwargs={'identifier': other_ws.id}), p)
 
-            for edit_name in ['#name-edit', '#description-edit']:
-                expect(self.page.locator(edit_name)).to_contain_text("Edit")
-                self.page.locator(edit_name).click()
-                expect(self.page.locator(edit_name)).to_contain_text("Cancel")
-                self.page.locator(edit_name).click()
-                expect(self.page.locator(edit_name)).to_contain_text("Edit")
+            expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
+            self.page.locator("#delete-workspace").click()
+            expect(self.page.locator("#delete_workspace_modal").first).to_be_visible()
+            self.page.locator("#cancel_delete").get_by_text("Cancel").click()
+            expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
+
+    def test_delete(self):
+        other_ws = create_workspace('other_ws', self.user)
+        self.user.profile.current_workspace_id = other_ws.id
+        self.user.profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('workspace_details', kwargs={'identifier': other_ws.id}), p)
+
+            self.page.locator("#delete-workspace").click()
+            self.page.locator("#confirm_delete").get_by_text("Submit").click()
+            expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
+
+        assert not Workspace.objects.filter(id=other_ws.id).count()
+
+    def test_delete_not_visible_personal(self):
+        with sync_playwright() as p:
+            self.open(reverse('workspace_details', kwargs={'identifier': self.user.id}), p)
+
+            expect(self.page.locator("#delete-workspace").first).not_to_be_visible()
