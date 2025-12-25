@@ -52,6 +52,8 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
 
     def test_cancel_delete(self):
         other_ws = create_workspace('other_ws', self.user)
+        self.user.profile.current_workspace_id = other_ws.id
+        self.user.profile.save()
 
         with sync_playwright() as p:
             # only display one pdf

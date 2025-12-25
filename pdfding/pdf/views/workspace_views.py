@@ -115,6 +115,15 @@ class Create(CreateWorkspaceMixin, base_views.BaseAdd):
 class Details(WorkspaceMixin, base_views.BaseDetails):
     """View for displaying the details page of a workspace."""
 
+    # returns the current workspace, needs to be adjusted in the future
+    def get(self, request: HttpRequest, identifier: str):  # pragma: no cover
+        """Display the details page."""
+
+        obj = request.user.profile.current_workspace
+        context = {'workspace': obj}
+
+        return render(request, 'workspace_details.html', context)
+
 
 class Edit(EditWorkspaceMixin, base_views.BaseDetailsEdit):
     """

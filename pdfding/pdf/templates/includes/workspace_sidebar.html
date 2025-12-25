@@ -1,5 +1,8 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% block sidebar_content %}
+<div>
+  {% include 'partials/workspace_dropdown.html' with page='workspace_details' %}
+</div>
 <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
             [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
             [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2

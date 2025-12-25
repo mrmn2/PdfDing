@@ -1,6 +1,10 @@
 <div id="workspace_open_collapse_toggle"
      x-data="{ show_workspaces: false }"
-     class="w-5/10 md:w-full mb-4 cursor-pointer">
+     class="
+       {% if page == 'pdf_overview' %}
+       w-5/10 md:w-full
+       {% endif %}
+       mb-4 cursor-pointer">
   <div @click="show_workspaces = !show_workspaces"
        class="flex flex-row justify-between w-full items-center p-2 relative
               border border-slate-400 dark:border-slate-600 creme:border-stone-400 rounded-sm font-semibold
@@ -55,6 +59,7 @@
         </svg>
         <span class="">Create Workspace</span>
       </a>
+      {% if page == 'pdf_overview' %}
       <a href="{% url 'workspace_details' request.user.profile.current_workspace_id %}" class="ws-modal-child items-center gap-x-2">
         <svg class="-ml-1! w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <!-- source: https://www.svgrepo.com/svg/304474/settings -->
@@ -71,6 +76,7 @@
         </svg>
         <span class="">Workspace Settings</span>
       </a>
+      {% endif %}
     </div>
   </div>
 </div>
