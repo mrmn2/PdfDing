@@ -203,6 +203,39 @@ class TestWorkspaceForms(TestCase):
             forms.WorkspaceForm(data={'name': 'ws_name'})
 
 
+class TestCollectionForms(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+
+    def test_add_form_valid(self):
+        form = forms.CollectionForm(data={'name': 'collection_name'}, profile=self.user.profile)
+
+        self.assertTrue(form.is_valid())
+
+    def test_clean_missing_profile(self):
+        with self.assertRaisesMessage(KeyError, 'profile'):
+            forms.CollectionForm(data={'name': 'collection_name'})
+
+    @mock.patch('pdf.forms.CleanHelpers.clean_workspace_name', return_value='c_name')
+    def test_clean_name_valid(self, mock_clean_workspace_name):
+        form = forms.CollectionForm(data={'name': 'collection_name'}, profile=self.user.profile)
+        self.assertTrue(form.is_valid())
+
+        mock_clean_workspace_name.assert_called_with('collection_name')
+
+    def test_clean_name_invalid_all(self):
+        form = forms.CollectionForm(data={'name': 'all'}, profile=self.user.profile)
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], ['"All" is not a valid collection name!'])
+
+    def test_clean_name_invalid_existing_name(self):
+        form = forms.CollectionForm(data={'name': 'DEFAULT'}, profile=self.user.profile)
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['name'], ['There is already a collection named DEFAULT in the current workspace!'])
+
+
 class TestCleanHelpers(TestCase):
     def test_clean_name(self):
         inputs = ['  this is some    name with whitespaces ', 'simple']

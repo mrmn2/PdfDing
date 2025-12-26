@@ -200,6 +200,7 @@ class ChangeWorkspace(View):
 
             if user_profile.has_access_to_workspace(workspace_id):
                 user_profile.current_workspace_id = workspace_id
+                user_profile.current_collection_id = workspace_id
                 user_profile.save()
 
                 return HttpResponseClientRefresh()
