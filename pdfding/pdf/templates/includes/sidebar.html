@@ -1,6 +1,6 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% block sidebar_content %}
-<form class="flex pb-4 hidden md:block" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form">
+<form class="flex pb-3 hidden md:block" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form">
     <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
                   bg-slate-100 dark:bg-slate-800! creme:bg-creme-light-dark!
                   border-slate-400 dark:border-slate-600 creme:border-stone-400"
@@ -10,11 +10,11 @@
             @keyup.enter="document.getElementById('search_form').submit()"
     />
 </form>
-<div class="pt-5 mt-1 border-t border-slate-300 dark:border-slate-600 creme:border-stone-400">
-  <div class="flex flex-row md:flex-col w-full gap-x-2">
-    {% include 'partials/workspace_dropdown.html' with page='pdf_overview' %}
-    {% include 'partials/collection_dropdown.html' %}
-  </div>
+<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 md:border-y border-slate-300 dark:border-slate-600 creme:border-stone-400">
+  {% include 'partials/workspace_dropdown.html' with page='pdf_overview' %}
+  {% include 'partials/collection_dropdown.html' %}
+</div>
+<div class="pt-2 mt-1 ">
   <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
               [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
               [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2
@@ -80,7 +80,7 @@
 
 {% block sidebar_extra_content %}
 {% if page == 'pdf_overview' or page == 'pdf_overview_starred' or page == 'pdf_overview_archived' %}
-<div class="hidden md:block md:flex md:flex-row items-center pt-6 mt-6
+<div class="hidden md:block md:flex md:flex-row items-center pt-4 mt-3
             border-t border-slate-300 dark:border-slate-600 creme:border-stone-400 gap-x-2 pb-2 pl-2 font-semibold">
     <div class="flex flex-row items-center justify-between! w-full">
         <div class="flex flex-row items-center gap-x-1">

@@ -4,18 +4,28 @@
        {% if page == 'pdf_overview' %}
        w-5/10 md:w-full
        {% endif %}
-       mb-4 cursor-pointer">
+       cursor-pointer">
   <div @click="show_workspaces = !show_workspaces"
-       class="flex flex-row justify-between w-full items-center p-2 relative
+       class="flex flex-row justify-between w-full items-center px-2 py-1 relative
               border border-slate-400 dark:border-slate-600 creme:border-stone-400 rounded-sm font-semibold
               bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
               hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark">
     <div class="flex flex-row items-center gap-x-2 w-[85%]">
-      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg fill="currentColor" class="w-5 h-5" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+        viewBox="0 0 512 512" xml:space="preserve">
         <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-        <!-- source: https://www.svgrepo.com/svg/489230/work-alt -->
-        <!-- license: PD -->
-        <path d="M9 7H5C3.89543 7 3 7.89543 3 9V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V9C21 7.89543 20.1046 7 19 7H15M9 7V5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7M9 7H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- source: https://www.svgrepo.com/svg/291072/desk -->
+        <!-- license: cc0 -->
+        <g>
+          <g>
+            <path d="M490.667,234.667H277.333V192H384c11.782,0,21.333-9.551,21.333-21.333V21.333C405.333,9.551,395.782,0,384,0H128
+              c-11.782,0-21.333,9.551-21.333,21.333v149.333c0,11.782,9.551,21.333,21.333,21.333h106.667v42.667H21.333
+              C9.551,234.667,0,244.218,0,256v85.333c0,11.782,9.551,21.333,21.333,21.333h21.333v128C42.667,502.449,52.218,512,64,512
+              c11.782,0,21.333-9.551,21.333-21.333v-128h341.333v128c0,11.782,9.551,21.333,21.333,21.333c11.782,0,21.333-9.551,21.333-21.333
+              v-128h21.333c11.782,0,21.333-9.551,21.333-21.333V256C512,244.218,502.449,234.667,490.667,234.667z M149.333,42.667h213.333
+              v106.667H149.333V42.667z M469.333,320H42.667v-42.667h426.667V320z"/>
+          </g>
+        </g>
       </svg>
       <div id="current_ws_name" class="truncate w-[85%]">
         <span>{{ request.user.profile.current_workspace.name }}</span>
@@ -31,7 +41,7 @@
         @click.away="show_workspaces = false"
         @keyup.escape.window="show_workspaces = false"
         {# leave background as otherwise popup will be transparent #}
-        class="absolute z-20 mt-2 left-0 w-[92%] md:w-full mx-4 md:mx-0 rounded-sm p-1 border
+        class="absolute z-20 mt-2 left-0 w-[96%] md:w-full mx-2 md:mx-0 rounded-sm p-1 border
               bg-slate-50 dark:bg-slate-900 creme:bg-creme-dark-light
               border-slate-400 dark:border-slate-600 creme:border-stone-400">
     <div class="flex flex-col gap-y-1 p-1 [&>.ws-modal-child]:py-1 [&>.ws-modal-child]:px-2
