@@ -11,9 +11,9 @@
     />
 </form>
 <div class="pt-5 mt-1 border-t border-slate-300 dark:border-slate-600 creme:border-stone-400">
-  <div class="flex flex-row md:flex-col w-full gap-x-1">
+  <div class="flex flex-row md:flex-col w-full gap-x-2">
     {% include 'partials/workspace_dropdown.html' with page='pdf_overview' %}
-    {# {% include 'partials/collection_modal.html' %} #}
+    {% include 'partials/collection_dropdown.html' %}
   </div>
   <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
               [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
