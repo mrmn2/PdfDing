@@ -1,3 +1,4 @@
+import pdf.views.collection_views as collection_views
 import pdf.views.pdf_views as pdf_views
 import pdf.views.share_views as share_views
 import pdf.views.workspace_views as workspace_views
@@ -86,4 +87,6 @@ urlpatterns = [
     path('workspace/edit/<identifier>/<field_name>', workspace_views.Edit.as_view(), name='edit_workspace'),
     path('workspace/delete/<identifier>', workspace_views.Delete.as_view(), name='delete_workspace'),
     path('', pdf_views.Overview.as_view(), name='workspace_overview'),  # needed for base views working
+    path('collection/create', collection_views.Create.as_view(), name='create_collection'),
+    path('', pdf_views.Overview.as_view(), name='collection_overview'),  # needed for base views working
 ]

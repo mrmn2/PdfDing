@@ -491,6 +491,50 @@ class WorkspaceDescriptionForm(forms.ModelForm):
         fields = ['description']
 
 
+class CollectionForm(forms.Form):
+    """Class for creating the form for creating collections."""
+
+    name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Collection Name'}),
+    )
+    description = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add a collection description'}),
+        help_text='Optional',
+    )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Adds the profile to the form. This is done, so we can access information about the profile
+        when creating a new collection.
+        """
+
+        self.profile = kwargs.pop('profile', None)
+        if not self.profile:
+            raise KeyError('profile')
+
+        super(CollectionForm, self).__init__(*args, **kwargs)
+
+    def clean_name(self) -> str:
+        """
+        Clean the submitted collection name. Removes trailing and multiple whitespaces. Checks that only
+        numbers, letters, '_' and '-' are used. Also checks if a collection with the same name already
+        exists in the workspace.
+        """
+
+        workspace = self.profile.current_workspace
+        collection_name = CleanHelpers.clean_workspace_name(self.cleaned_data['name'])
+
+        if collection_name.lower() == 'all':
+            raise ValidationError('"All" is not a valid collection name!')
+
+        if workspace.collections.filter(name__iexact=collection_name).count():
+            raise ValidationError(f'There is already a collection named {collection_name} in the current workspace!')
+
+        return collection_name
+
+
 class CleanHelpers:
     @staticmethod
     def clean_file(file: File) -> File:
