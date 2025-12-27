@@ -17,6 +17,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django_htmx.http import HttpResponseClientRefresh
+from pdf.services.workspace_services import check_if_collection_part_of_workspace
 from users import forms
 from users.models import Profile
 from users.service import create_demo_user, get_secondary_color
@@ -200,12 +201,34 @@ class ChangeWorkspace(View):
 
             if user_profile.has_access_to_workspace(workspace_id):
                 user_profile.current_workspace_id = workspace_id
-                user_profile.current_collection_id = workspace_id
+                user_profile.current_collection_id = 'all'
                 user_profile.save()
 
                 return HttpResponseClientRefresh()
             else:
                 raise Http404('Workspace not found for user!')
+
+        return redirect('pdf_overview')
+
+
+class ChangeCollection(View):
+    """View for changing the current collection."""
+
+    def post(self, request: HttpRequest, collection_id: str):
+        """Change the current workspace."""
+
+        if request.htmx:
+            user_profile = request.user.profile
+
+            if collection_id == 'all' or check_if_collection_part_of_workspace(
+                user_profile.current_workspace, collection_id
+            ):
+                user_profile.current_collection_id = collection_id
+                user_profile.save()
+
+                return HttpResponseClientRefresh()
+            else:
+                raise Http404('Collection not part of the current workspace!')
 
         return redirect('pdf_overview')
 

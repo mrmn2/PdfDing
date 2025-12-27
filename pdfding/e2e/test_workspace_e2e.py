@@ -22,6 +22,21 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
         self.assertEqual(created_ws.description, '')
         self.assertFalse(created_ws.personal_workspace)
 
+    def test_change_workspace(self):
+        # make sure collection shown is not all
+        create_workspace('other_ws', self.user)
+        self.user.profile.current_collection_id = self.user.profile.current_workspace_id
+        self.user.profile.save()
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+            expect(self.page.locator("#current_ws_name")).to_contain_text("Personal")
+            expect(self.page.locator("#current_collection_name")).to_contain_text("Default")
+            self.page.locator("#current_ws_name").click()
+            self.page.locator("#workspace_modal").get_by_text("other_ws").click()
+            expect(self.page.locator("#current_ws_name")).to_contain_text("other_ws")
+            expect(self.page.locator("#current_collection_name")).to_contain_text("All")
+
     def test_details(self):
         ws = self.user.profile.current_workspace
 

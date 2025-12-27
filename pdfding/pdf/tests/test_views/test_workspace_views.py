@@ -52,6 +52,7 @@ class TestCreateWorkspaceMixing(WorkspaceTestCase):
         self.assertNotEqual(str(self.user.id), changed_user.profile.current_workspace_id)
         self.assertEqual(created_ws.name, 'some_workspace')
         self.assertEqual(created_ws.description, 'some_description')
+        self.assertEqual('all', changed_user.profile.current_collection_id)
         self.assertFalse(created_ws.personal_workspace)
 
 
@@ -112,12 +113,15 @@ class TestDelete(WorkspaceTestCase):
 
         profile = self.user.profile
         profile.current_workspace_id = created_ws.id
+        profile.current_collection_id = created_ws.id
         profile.save()
 
         changed_user = User.objects.get(id=self.user.id)
         assert changed_user.profile.current_workspace_id == created_ws.id
+        assert changed_user.profile.current_collection_id != 'all'
 
         self.client.delete(reverse('delete_workspace', kwargs={'identifier': created_ws.id}), **headers)
 
         changed_user = User.objects.get(id=self.user.id)
         assert changed_user.profile.current_workspace_id == str(changed_user.id)
+        assert changed_user.profile.current_collection_id == 'all'
