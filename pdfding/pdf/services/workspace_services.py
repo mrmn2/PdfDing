@@ -58,6 +58,15 @@ def create_collection(workspace: Workspace, collection_name: str, description: s
         )
 
 
+def check_if_collection_part_of_workspace(workspace: Workspace, collection_id: str):
+    """Check if a collection is part of a workspace."""
+
+    if workspace.collections.filter(id=collection_id).count():
+        return True
+    else:
+        return False
+
+
 def get_pdfs_of_workspace(workspace: Workspace) -> QuerySet[Pdf]:
     """Get all PDFs of the workspace."""
 

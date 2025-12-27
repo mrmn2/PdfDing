@@ -110,13 +110,35 @@ class TestProfile(TestCase):
             self.assertEqual(pdf_a, pdf_b)
 
     def test_current_pdfs_property(self):
+        ws = self.user.profile.current_workspace
         collection = self.user.profile.current_collection
         other_workspace = create_workspace('other_ws', self.user)
-        other_collection = create_collection(other_workspace, 'other')
+        other_collection = create_collection(ws, 'other')
+        other_collection_other_ws = create_collection(other_workspace, 'other')
 
         pdf_1 = Pdf.objects.create(name='pdf_1', collection=collection)
         pdf_2 = Pdf.objects.create(name='pdf_2', collection=collection)
         Pdf.objects.create(name='pdf_3', collection=other_collection)
+        Pdf.objects.create(name='pdf_4', collection=other_collection_other_ws)
+
+        self.assertEqual(self.user.profile.current_pdfs.count(), 2)
+
+        for pdf_a, pdf_b in zip(self.user.profile.current_pdfs.order_by('name'), [pdf_1, pdf_2]):
+            self.assertEqual(pdf_a, pdf_b)
+
+    def test_current_pdfs_property_all(self):
+        ws = self.user.profile.current_workspace
+        collection = self.user.profile.current_collection
+        other_workspace = create_workspace('other_ws', self.user)
+        other_collection = create_collection(ws, 'other')
+        other_collection_other_ws = create_collection(other_workspace, 'other')
+
+        self.user.profile.current_collection_id = 'all'
+        self.user.profile.save()
+
+        pdf_1 = Pdf.objects.create(name='pdf_1', collection=collection)
+        pdf_2 = Pdf.objects.create(name='pdf_2', collection=other_collection)
+        Pdf.objects.create(name='pdf_3', collection=other_collection_other_ws)
 
         self.assertEqual(self.user.profile.current_pdfs.count(), 2)
 

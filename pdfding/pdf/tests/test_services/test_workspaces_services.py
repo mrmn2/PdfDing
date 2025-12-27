@@ -76,6 +76,19 @@ class TestWorkspaceServices(TestCase):
         ):
             workspace_services.create_collection(ws, 'Some_collection')
 
+    def test_check_if_collection_part_of_workspace_true(self):
+        ws = self.user.profile.current_workspace
+        other_collection = workspace_services.create_collection(ws, 'other')
+
+        self.assertTrue(workspace_services.check_if_collection_part_of_workspace(ws, other_collection.id))
+
+    def test_check_if_collection_part_of_workspace_false(self):
+        ws = self.user.profile.current_workspace
+        other_ws = workspace_services.create_workspace('other_ws', self.user)
+        other_collection = workspace_services.create_collection(other_ws, 'other')
+
+        self.assertFalse(workspace_services.check_if_collection_part_of_workspace(ws, other_collection.id))
+
     def test_get_pdfs_of_workspace(self):
         ws = self.user.profile.current_workspace
         default_collection = self.user.profile.current_collection

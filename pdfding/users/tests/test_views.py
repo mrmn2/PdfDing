@@ -331,6 +331,33 @@ class TestProfileSettingsViews(BaseProfileView):
         response = self.client.post(reverse('change_workspace', kwargs={'workspace_id': '4'}), **headers)
         self.assertEqual(response.status_code, 404)
 
+    def test_change_collection_no_htmx(self):
+        response = self.client.post(reverse('change_collection', kwargs={'collection_id': '1'}))
+
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_change_collection_post_all(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(reverse('change_collection', kwargs={'collection_id': 'all'}), **headers)
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.current_collection_id == 'all'
+
+    @patch('users.views.check_if_collection_part_of_workspace', return_value=True)
+    def test_change_collection_post_check_true(self, mock_check):
+        headers = {'HTTP_HX-Request': 'true'}
+        self.client.post(reverse('change_collection', kwargs={'collection_id': '3'}), **headers)
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.current_collection_id == '3'
+
+    @patch('users.views.check_if_collection_part_of_workspace', return_value=False)
+    def test_change_collection_post_no_access(self, mock_check):
+        headers = {'HTTP_HX-Request': 'true'}
+        response = self.client.post(reverse('change_collection', kwargs={'collection_id': '4'}), **headers)
+
+        self.assertEqual(response.status_code, 404)
+
 
 class TestProfileOtherViews(BaseProfileView):
     def test_delete_post(self):

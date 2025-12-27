@@ -162,7 +162,10 @@ class Profile(models.Model):
     def current_pdfs(self) -> QuerySet:
         """Return all PDFs of the current collections (all or single)."""
 
-        pdfs = Pdf.objects.filter(collection__in=self.current_workspace.collections)
+        if self.current_collection_id == 'all':
+            pdfs = Pdf.objects.filter(collection__in=self.current_workspace.collections)
+        else:
+            pdfs = Pdf.objects.filter(collection_id=self.current_collection_id)
 
         return pdfs
 

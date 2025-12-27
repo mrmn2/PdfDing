@@ -32,15 +32,15 @@ supervisor = "==4.3.0"
 whitenoise = { extras = ["brotli"], version = "==6.11.0" }
 
 [tool.poetry.group.dev.dependencies]
-bandit = "==1.8.6"
-black = "==25.9.0"
+bandit = "==1.9.2"
+black = "==25.12.0"
 flake8 = "==7.3.0"
-pytest = "==8.4.2"
+pytest = "==9.0.2"
 pytest-cov = "==7.0.0"
 pytest-django = "==4.11.1"
 
 [tool.poetry.group.e2e.dependencies]
-pytest-playwright = "==0.7.1"
+pytest-playwright = "==0.7.2"
 
 [tool.black]
 line-length = 120
