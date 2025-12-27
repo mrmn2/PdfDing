@@ -33,6 +33,7 @@ class CreateWorkspaceMixin(BaseWorkspaceMixin):
 
         profile = request.user.profile
         profile.current_workspace_id = created_ws.id
+        profile.current_collection_id = 'all'
         profile.save()
 
 
@@ -105,6 +106,7 @@ class Delete(WorkspaceMixin, base_views.BaseDelete):
         if identifier == request.user.profile.current_workspace_id:
             profile = request.user.profile
             profile.current_workspace_id = str(request.user.id)
+            profile.current_collection_id = 'all'
             profile.save()
 
 
