@@ -34,12 +34,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.openid_connect',
+    'knox',
     'django_htmx',
     'huey.contrib.djhuey',
+    'api',
     'admin',
     'backup',
     'pdf',
@@ -240,4 +243,18 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+
+# Django REST Framework
+# https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
+
+# Django REST Knox
+# https://jazzband.github.io/django-rest-knox/settings/
+KNOX_TOKEN_MODEL = 'knox.AuthToken'  # nosec B105
+REST_KNOX = {
+    'AUTO_REFRESH': True,
 }
