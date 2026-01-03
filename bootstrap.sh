@@ -25,4 +25,4 @@ HOST_PORT="${HOST_PORT:-8000}"
 python manage.py migrate
 python manage.py clean_up
 
-exec python -m gunicorn --bind 0.0.0.0:$HOST_PORT --workers 3 core.wsgi:application
+exec python -m gunicorn --bind 0.0.0.0:$HOST_PORT --workers 3 --timeout 120 --keep-alive 5 core.wsgi:application

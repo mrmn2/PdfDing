@@ -1,0 +1,9 @@
+{% if answer %}
+  <div class="text-blue-700 dark:text-blue-300">
+    <strong>AI Answer:</strong> {{ answer|truncatewords:50 }}
+  </div>
+{% elif error %}
+  <div class="text-red-700 dark:text-red-300">
+    <strong>Error:</strong> {{ error }}
+  </div>
+{% endif %}

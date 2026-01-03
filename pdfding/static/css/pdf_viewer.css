@@ -234,3 +234,31 @@ dialog {
   filter: grayscale(100%);
   filter: invert(80%);
 }
+
+/* AI Button specific styles */
+#aiButton {
+  background-color: var(--secondary-bg-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  display: none; /* Hidden by default, shown when text is selected */
+  margin: 2px 1px;
+  padding: 3px 4px 0;
+  transition: all 0.2s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
+}
+#aiButton:hover {
+  background-color: rgb({{ theme_color }} / 0.9);
+  color: white;
+  transform: scale(1.1);
+}
+#aiButton svg {
+  width: 20px;
+  height: 20px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}

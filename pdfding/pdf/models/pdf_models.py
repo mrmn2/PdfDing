@@ -280,6 +280,114 @@ class PdfHighlight(PdfAnnotation):
     """Model for the pdf highlights."""
 
 
+class PdfAIQuestionAnswer(PdfAnnotation):
+    """Model for AI question and answer pairs."""
+    
+    question = models.TextField(blank=False)
+    answer = models.TextField(blank=False)
+    
+    def __str__(self) -> str:
+        return f"Q: {self.question[:50]}... A: {self.answer[:50]}..."  # pragma: no cover
+    
+    def parse_combined_question(self) -> dict:
+        """
+        Parse the combined question format to extract selected text, actual question, and answer.
+        Returns a dictionary with 'selected_text', 'question', and 'answer' keys.
+        """
+        result = {
+            'selected_text': None,
+            'question': self.question,
+            'answer': self.answer
+        }
+        
+        # Check if this is a combined format with selected text
+        if 'Selected text: "' in self.question:
+            try:
+                # Extract selected text (between quotes after "Selected text: ")
+                selected_start = self.question.find('Selected text: "') + 16
+                # Look for question markers after selected text
+                question_markers = ['"\r\nQuestion:', '"\nQuestion:', '" Question:']
+                selected_end = -1
+                for marker in question_markers:
+                    pos = self.question.find(marker, selected_start)
+                    if pos > selected_start:
+                        selected_end = pos
+                        break
+                
+                if selected_end == -1:
+                    # Try unquoted format
+                    unquoted_markers = ['\r\nQuestion:', '\nQuestion:', ' Question:']
+                    for marker in unquoted_markers:
+                        pos = self.question.find(marker, selected_start)
+                        if pos > selected_start:
+                            selected_end = pos
+                            break
+                
+                if selected_start >= 16 and selected_end > selected_start:
+                    result['selected_text'] = self.question[selected_start:selected_end]
+                
+                # Extract actual question (after "Question:" and before "A:" if present)
+                # Find question start position
+                question_start_positions = []
+                
+                # Handle quoted format
+                for marker in ['"\r\nQuestion:', '"\nQuestion:', '" Question:']:
+                    pos = self.question.find(marker)
+                    if pos >= 0:
+                        question_start = pos + len(marker)
+                        question_start_positions.append(question_start)
+                
+                # Handle unquoted format
+                selected_text_pos = self.question.find('Selected text: "')
+                if selected_text_pos >= 0:
+                    for marker in ['\r\nQuestion:', '\nQuestion:', ' Question:']:
+                        pos = self.question.find(marker, selected_text_pos)
+                        if pos >= 0:
+                            question_start = pos + len(marker)
+                            question_start_positions.append(question_start)
+                
+                if question_start_positions:
+                    question_start_positions.sort()
+                    question_start = question_start_positions[0]
+                    
+                    # Look for where answer starts
+                    answer_markers = ['\nA:', '\r\nA:', ' A:', 'A:']
+                    answer_start = -1
+                    for marker in answer_markers:
+                        pos = self.question.find(marker, question_start)
+                        if pos > question_start:
+                            answer_start = pos
+                            break
+                    
+                    if answer_start > question_start:
+                        result['question'] = self.question[question_start:answer_start].strip()
+                        # Remove leading colon if present
+                        if result['question'].startswith(':'):
+                            result['question'] = result['question'][1:].strip()
+                        # Extract answer part
+                        # Calculate the length of the answer marker
+                        answer_marker = None
+                        for marker in ['\nA:', '\r\nA:', ' A:', 'A:']:
+                            if self.question[answer_start:].startswith(marker):
+                                answer_marker = marker
+                                break
+                        
+                        if answer_marker:
+                            answer_text_start = answer_start + len(answer_marker)
+                            if answer_text_start < len(self.question):
+                                result['answer'] = self.question[answer_text_start:].strip()
+                    else:
+                        result['question'] = self.question[question_start:].strip()
+                        # Remove leading colon if present
+                        if result['question'].startswith(':'):
+                            result['question'] = result['question'][1:].strip()
+            except Exception:
+                # If parsing fails, return the original question
+                pass
+        
+        return result
+
+
 class MarkdownHelper:  # pragma: no cover
     @staticmethod
     def get_allowed_markdown_tags() -> set[str]:

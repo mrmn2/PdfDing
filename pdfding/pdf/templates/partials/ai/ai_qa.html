@@ -1,0 +1,24 @@
+{% load static %}
+
+<div id="ai-qa-container" class="card mt-3">
+  <div class="card-header">
+    <h3 class="card-title">Ask AI about Annotations</h3>
+  </div>
+  
+  <div class="card-body">
+    <form id="ai-qa-form" hx-post="{% url 'ai_question' pdf.id %}" hx-target="#ai-qa-result">
+      <div class="form-group mb-3">
+        <label for="question" class="form-label">Your Question:</label>
+        <textarea name="question" id="question" class="form-control" rows="3" placeholder="Ask a question about the annotations in this PDF..."></textarea>
+      </div>
+      
+      <button type="submit" class="btn btn-primary">
+        Ask AI
+      </button>
+    </form>
+    
+    <div id="ai-qa-result" class="mt-4">
+      <!-- Results will be loaded here -->
+    </div>
+  </div>
+</div>

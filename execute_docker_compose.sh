@@ -1,0 +1,1 @@
+cd /media/elohsun/dataset1/My_Project/PdfDing/compose && docker compose -f postgres.docker-compose.yaml up

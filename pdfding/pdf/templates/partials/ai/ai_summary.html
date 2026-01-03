@@ -1,0 +1,38 @@
+{% load static %}
+{% load humanize %}
+
+<div id="ai-summary-container" class="card">
+  <div class="card-header">
+    <h3 class="card-title">AI Summary of Annotations</h3>
+  </div>
+  
+  <div class="card-body">
+    {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+    {% else %}
+      <form id="ai-summary-form" hx-post="{% url 'ai_summarize' pdf.id %}" hx-target="#ai-summary-result">
+        <div class="form-group mb-3">
+          <label for="summary-length" class="form-label">Summary Length:</label>
+          <select name="length" id="summary-length" class="form-select">
+            <option value="short">Short (2-3 sentences)</option>
+            <option value="medium" selected>Medium (5-7 sentences)</option>
+            <option value="long">Long (8-10 sentences)</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+          Generate Summary
+        </button>
+      </form>
+      
+      <div id="ai-summary-result" class="mt-4">
+        {% if summary %}
+          <div class="alert alert-info">
+            <h4>Summary</h4>
+            <p>{{ summary }}</p>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>

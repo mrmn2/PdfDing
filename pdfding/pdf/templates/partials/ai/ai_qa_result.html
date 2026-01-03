@@ -1,0 +1,12 @@
+{% if question and answer %}
+  <div class="alert alert-info">
+    <h5>Question:</h5>
+    <p>{{ question }}</p>
+    <h5>AI Answer:</h5>
+    <p>{{ answer }}</p>
+  </div>
+{% elif error %}
+  <div class="alert alert-warning">
+    <p>{{ error }}</p>
+  </div>
+{% endif %}

@@ -1,0 +1,11 @@
+{% if summary %}
+  <div class="alert alert-info">
+    <h4>AI Summary ({{ length }})</h4>
+    <p>{{ summary }}</p>
+    <small class="text-muted">Generated from {{ pdf.pdfhighlight_set.count }} highlights and {{ pdf.pdfcomment_set.count }} comments</small>
+  </div>
+{% else %}
+  <div class="alert alert-warning">
+    <p>Unable to generate summary. {{ summary }}</p>
+  </div>
+{% endif %}

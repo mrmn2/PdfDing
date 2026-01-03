@@ -44,6 +44,9 @@ WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
 
+# Update lock file to match pyproject.toml
+RUN poetry lock
+
 # install python packages and clean up
 RUN poetry install --without dev --without e2e --no-root \
     && rm -rf $POETRY_CACHE_DIR \

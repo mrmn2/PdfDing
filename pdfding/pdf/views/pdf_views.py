@@ -13,7 +13,7 @@ from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms
 from pdf.models.collection_models import Collection
-from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
+from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight, PdfAIQuestionAnswer
 from pdf.models.tag_models import Tag
 from pdf.services import pdf_services
 from pdf.services.pdf_services import PdfProcessingServices
@@ -866,3 +866,99 @@ class ExportAnnotations(View, PdfMixin):
             export_path.unlink()
 
             return response
+
+
+class AIQuestionAnswerOverview(AnnotationOverviewMixin, base_views.BaseOverview):
+    """
+    View for the AI Q&A overview page. Groups Q&A entries by PDF/book.
+    """
+
+    obj_name = 'pdf_ai_qa'
+    overview_page_name = 'pdf_annotation_overview/ai_qa_overview_page'
+
+    def get(self, request: HttpRequest, page: int = 1, items_per_page: int = 25, **kwargs):
+        """Override to support filtering by PDF and provide PDF list for sidebar."""
+        print("DEBUG: ===== AIQuestionAnswerOverview.get() STARTING =====")
+        from collections import defaultdict
+        from django.db.models import Count
+
+        # Get all Q&A entries for current PDFs
+        pdfs = request.user.profile.current_pdfs
+        print(f"DEBUG: Total PDFs for user: {pdfs.count()}")
+        ai_qa = PdfAIQuestionAnswer.objects.filter(pdf__in=pdfs).select_related('pdf')
+        print(f"DEBUG: Total Q&A entries: {ai_qa.count()}")
+
+        # Get PDF filter from URL parameter
+        selected_pdf_id = request.GET.get('pdf', None)
+        selected_pdf = None
+
+        if selected_pdf_id:
+            try:
+                selected_pdf = pdfs.get(id=selected_pdf_id)
+                ai_qa = ai_qa.filter(pdf=selected_pdf)
+            except Pdf.DoesNotExist:
+                pass
+
+        # Get sorting preference
+        sorting = self.get_sorting(request)
+        ai_qa = ai_qa.order_by(sorting)
+
+        # Group Q&A by PDF
+        qa_by_pdf = defaultdict(list)
+        for qa in ai_qa:
+            qa_by_pdf[qa.pdf].append(qa)
+
+        # Convert to list of tuples (pdf, qa_list) and sort by PDF name
+        grouped_qa = sorted(qa_by_pdf.items(), key=lambda x: x[0].name.lower())
+
+        # Get list of all PDFs with Q&A count for sidebar
+        pdfs_with_qa = (
+            pdfs.filter(pdfaiquestionanswer__isnull=False)
+            .annotate(qa_count=Count('pdfaiquestionanswer'))
+            .order_by('name')
+            .distinct()
+        )
+
+        print(f"DEBUG: pdfs_with_qa count = {pdfs_with_qa.count()}")
+        for pdf in pdfs_with_qa:
+            print(f"DEBUG: PDF: {pdf.name}, Q&A count: {pdf.qa_count}")
+
+        context = {
+            'grouped_qa': grouped_qa,
+            'total_qa_count': ai_qa.count(),
+            'pdfs_with_qa': pdfs_with_qa,
+            'selected_pdf': selected_pdf,
+        }
+
+        context |= self.get_extra_context(request, **kwargs)
+
+        print(f"DEBUG: Context keys: {context.keys()}")
+        print(f"DEBUG: grouped_qa length: {len(grouped_qa)}")
+        print(f"DEBUG: request.htmx: {request.htmx}")
+        print(f"DEBUG: Template to render: {'includes/' + self.overview_page_name + '.html' if request.htmx else self.obj_name + '_overview.html'}")
+
+        if request.htmx:
+            return render(request, f'includes/{self.overview_page_name}.html', context)
+        else:
+            return render(request, f'{self.obj_name}_overview.html', context)
+
+    @staticmethod
+    def filter_objects(request: HttpRequest) -> QuerySet:
+        """
+        Filter the AI Q&A in the overview.
+        """
+
+        pdfs = request.user.profile.current_pdfs
+        ai_qa = PdfAIQuestionAnswer.objects.filter(pdf__in=pdfs)
+
+        return ai_qa
+
+    @staticmethod
+    def get_extra_context(_) -> dict:  # pragma: no cover
+        """get further information that needs to be passed to the template."""
+
+        return {
+            'page': 'pdf_ai_qa_overview',
+            'get_next_overview_page': 'get_next_pdf_ai_qa_overview_page',
+            'kind': 'ai_qa',
+        }

@@ -8,19 +8,13 @@
         </div>
         <div class="flex w-full justify-center md:px-8 p-2">
             <div class="w-full md:w-[78%] min-[850px]:w-[90%]! lg:w-[90%]! pb-4">
-                {% if not page_obj %}
+                {% if not grouped_qa %}
                 <div class="pt-4 *:flex *:justify-center">
-                    {% if page == 'pdf_highlight_overview' %}
-                    <span class="text-2xl">You do not have any PDF highlights yet!</span>
-                    {% elif page == 'pdf_comment_overview' %}
-                    <span class="text-2xl">You do not have any PDF comments yet!</span>
-                    {% elif page == 'pdf_ai_qa_overview' %}
                     <span class="text-2xl">You do not have any saved AI Q&A yet!</span>
-                    {% endif %}
-                    <span class="pt-4 text-lg">Start by adding them in the pdf viewer.</span>
+                    <span class="pt-4 text-lg">Start by asking AI questions about your PDF annotations.</span>
                 </div>
                 {% else %}
-                {% include 'includes/pdf_annotation_overview/overview_page.html' %}
+                {% include 'includes/pdf_annotation_overview/ai_qa_overview_page.html' %}
                 {% endif %}
             </div>
         </div>

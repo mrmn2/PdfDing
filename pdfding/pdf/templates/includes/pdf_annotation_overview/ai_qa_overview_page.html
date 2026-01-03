@@ -1,0 +1,59 @@
+<!-- AI Q&A Overview - Grouped by Book/PDF -->
+<div class="flex flex-col gap-y-8 pb-5">
+    {% for pdf, qa_list in grouped_qa %}
+    <!-- Book/PDF Group -->
+    <div class="border-2 rounded-lg bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600 creme:bg-creme-light creme:border-creme-dark">
+        <!-- Book/PDF Header -->
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-800
+                    creme:from-creme-dark-light creme:to-creme-dark-light
+                    border-b-2 border-slate-300 dark:border-slate-600 creme:border-creme-dark
+                    px-4 py-3 rounded-t-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 creme:text-blue-700" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                    </svg>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 creme:text-stone-800">
+                            <a href="{% url 'view_pdf' pdf.id %}"
+                               class="hover:text-blue-600 dark:hover:text-blue-400 creme:hover:text-blue-700 transition-colors">
+                                {{ pdf.name }}
+                            </a>
+                        </h2>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 creme:text-stone-600">
+                            {{ qa_list|length }} Q&A {{ qa_list|length|pluralize:"entry,entries" }}
+                        </p>
+                    </div>
+                </div>
+                <a href="{% url 'view_pdf' pdf.id %}"
+                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-colors
+                          dark:bg-blue-500 dark:hover:bg-blue-600 creme:bg-blue-700 creme:hover:bg-blue-800">
+                    View PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Q&A Entries for this Book/PDF -->
+        <div class="p-4 space-y-4">
+            {% for annotation in qa_list %}
+            <div class="border rounded-md bg-slate-50 border-slate-200 hover:border-slate-400
+                        dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-500
+                        creme:bg-creme-dark-light creme:border-creme-dark creme:hover:border-stone-400
+                        transition-colors">
+                <div class="px-3 md:px-5 py-3">
+                    {% include 'includes/pdf_annotation_overview/ai_qa.html' %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-12">
+        <svg class="w-16 h-16 mx-auto text-slate-400 dark:text-slate-600 creme:text-stone-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+        </svg>
+        <p class="text-xl text-slate-600 dark:text-slate-400 creme:text-stone-600">No Q&A entries found</p>
+        <p class="text-sm text-slate-500 dark:text-slate-500 creme:text-stone-500 mt-2">Start by asking AI questions about your PDF annotations</p>
+    </div>
+    {% endfor %}
+</div>

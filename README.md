@@ -50,6 +50,7 @@ A live demo, powered by [PikaPods](https://www.pikapods.com/), is available at
 * Share PDFs with an external audience via a link or a QR Code with optional access control
 * Markdown Notes
 * Progress bars show the reading progress of each PDF at a quick glance
+* AI-powered analysis of PDF annotations including summarization, question answering, and theme extraction
 
 ## Getting started
 
@@ -57,6 +58,40 @@ Ready to dive into PdfDing? Then head over to the
 [Getting Started](https://docs.pdfding.com/getting_started/docker/) pages of the
 documentation and find instructions for setting up PdfDing via Docker, Docker Compose
 and Helm. Configuration options can be found [here](https://docs.pdfding.com/configuration/).
+
+## AI Features Configuration
+
+PdfDing now includes AI-powered analysis of PDF annotations. To enable these features:
+
+1. Copy the `.env.example` file to `.env` in the project root directory:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit the `.env` file and add your OpenAI API key:
+   ```bash
+   OPENAI_API_KEY=your-actual-api-key-here
+   ```
+
+3. Optionally configure other settings:
+   ```bash
+   # Choose a different model (default: gpt-3.5-turbo)
+   OPENAI_MODEL=gpt-4
+   
+   # Use a custom endpoint (for Azure OpenAI, local models, etc.)
+   OPENAI_BASE_URL=https://your-endpoint.com/v1
+   ```
+
+The AI features include:
+- Annotation summarization with configurable length
+- Question answering about your annotations
+- Key theme extraction from annotated content
+
+These features work with any OpenAI-compatible API, including:
+- OpenAI API
+- Azure OpenAI
+- Local models (via llama.cpp, lmstudio, ollama, etc.)
+- Other cloud providers (Anthropic, Mistral, etc.)
 
 ## Sponsor
 

@@ -1,0 +1,9 @@
+{% if summary %}
+  <div class="text-green-700 dark:text-green-300">
+    <strong>AI Summary:</strong> {{ summary|truncatewords:30 }}
+  </div>
+{% elif error %}
+  <div class="text-red-700 dark:text-red-300">
+    <strong>Error:</strong> {{ error }}
+  </div>
+{% endif %}

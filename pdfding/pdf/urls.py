@@ -2,6 +2,7 @@ import pdf.views.collection_views as collection_views
 import pdf.views.pdf_views as pdf_views
 import pdf.views.share_views as share_views
 import pdf.views.workspace_views as workspace_views
+import pdf.views.ai_views as ai_views
 from django.urls import path
 
 urlpatterns = [
@@ -60,6 +61,8 @@ urlpatterns = [
         pdf_views.DetailsCommentOverview.as_view(),
         name='get_next_pdf_details_comment_overview_page',
     ),
+    # AI endpoints
+    path('ai/ask_about_text/<identifier>', ai_views.AskAboutTextView.as_view(), name='ai_ask_about_text'),
     # sharing related views
     path('share/<identifier>', share_views.Share.as_view(), name='share_pdf'),
     path('shared/overview/', share_views.Overview.as_view(), name='shared_pdf_overview'),
@@ -89,4 +92,15 @@ urlpatterns = [
     path('', pdf_views.Overview.as_view(), name='workspace_overview'),  # needed for base views working
     path('collection/create', collection_views.Create.as_view(), name='create_collection'),
     path('', pdf_views.Overview.as_view(), name='collection_overview'),  # needed for base views working
+    # AI-powered features
+    path('ai/summarize/<identifier>', ai_views.AISummarizeView.as_view(), name='ai_summarize'),
+    path('ai/question/<identifier>', ai_views.AIQuestionView.as_view(), name='ai_question'),
+    path('ai/themes/<identifier>', ai_views.AIExtractThemesView.as_view(), name='ai_themes'),
+    path('ai/save_qa/<identifier>', ai_views.SaveAIQuestionAnswerView.as_view(), name='ai_save_qa'),
+    path('ai/qa', pdf_views.AIQuestionAnswerOverview.as_view(), name='pdf_ai_qa_overview'),
+    path(
+        'ai/qa/get_next_overview_page/<int:page>/',
+        pdf_views.AIQuestionAnswerOverview.as_view(),
+        name='get_next_pdf_ai_qa_overview_page',
+    ),
 ]

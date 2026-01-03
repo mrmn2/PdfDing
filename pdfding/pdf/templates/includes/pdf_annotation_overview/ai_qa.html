@@ -1,0 +1,51 @@
+{% load pdf_filters %}
+
+<div>
+    <div class="flex flex-row justify-between text-sm relative
+                text-slate-400 dark:text-slate-500 creme:text-stone-500">
+        <div class="flex flex-row items-center">
+            <span>
+                {% if annotation.natural_age == 'now' %}
+                {{ annotation.natural_age }}
+                {% else %}
+                {{ annotation.natural_age }} ago
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <div class="flex flex-col mt-3 space-y-4">
+        {% if annotation.question|has_selected_text %}
+            {% comment %}Handle combined format with selected text{% endcomment %}
+            <div class="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-r">
+                <h3 class="font-semibold text-blue-700 dark:text-blue-300 text-lg mb-2">Select Text:</h3>
+                <div class="ml-2 text-slate-700 dark:text-slate-300">
+                    {{ annotation.question|extract_selected_text|linebreaks }}
+                </div>
+            </div>
+            
+            <div class="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-r">
+                <h3 class="font-semibold text-purple-700 dark:text-purple-300 text-lg mb-2">Question:</h3>
+                <div class="ml-2 text-slate-700 dark:text-slate-300">
+                    {{ annotation.question|extract_actual_question|linebreaks }}
+                </div>
+            </div>
+        {% else %}
+            {% comment %}Standard format - separate question field{% endcomment %}
+            <div class="border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-r">
+                <h3 class="font-semibold text-purple-700 dark:text-purple-300 text-lg mb-2">Question:</h3>
+                <div class="ml-2 text-slate-700 dark:text-slate-300">
+                    {{ annotation.question|linebreaks }}
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-4 rounded-r">
+            <h3 class="font-semibold text-green-700 dark:text-green-300 text-lg mb-2">Answer:</h3>
+            <div class="ml-2 text-slate-700 dark:text-slate-300">
+                <!-- DEBUG: Answer field exists: {{ annotation.answer|length }} chars -->
+                <!-- DEBUG: Raw answer: {{ annotation.answer }} -->
+                {{ annotation.answer|linebreaks }}
+            </div>
+        </div>
+    </div>
+</div>

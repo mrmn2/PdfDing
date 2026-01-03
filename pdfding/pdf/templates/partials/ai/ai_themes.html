@@ -1,0 +1,17 @@
+{% load static %}
+
+<div id="ai-themes-container" class="card mt-3">
+  <div class="card-header">
+    <h3 class="card-title">AI Extracted Themes</h3>
+  </div>
+  
+  <div class="card-body">
+    <button hx-post="{% url 'ai_themes' pdf.id %}" hx-target="#ai-themes-result" class="btn btn-primary">
+      Extract Key Themes
+    </button>
+    
+    <div id="ai-themes-result" class="mt-4">
+      <!-- Results will be loaded here -->
+    </div>
+  </div>
+</div>

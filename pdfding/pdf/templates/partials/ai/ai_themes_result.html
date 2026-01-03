@@ -1,0 +1,19 @@
+{% if themes %}
+  <div class="alert alert-info">
+    <h5>Key Themes from Annotations:</h5>
+    <ul>
+      {% for theme in themes %}
+        <li>{{ theme }}</li>
+      {% endfor %}
+    </ul>
+    {% if pdf %}
+      <small class="text-muted">Generated from {{ pdf.pdfhighlight_set.count }} highlights and {{ pdf.pdfcomment_set.count }} comments</small>
+    {% else %}
+      <small class="text-muted">Generated from multiple PDFs</small>
+    {% endif %}
+  </div>
+{% elif error %}
+  <div class="alert alert-warning">
+    <p>{{ error }}</p>
+  </div>
+{% endif %}

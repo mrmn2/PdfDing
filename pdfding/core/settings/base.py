@@ -12,10 +12,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from os import environ
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(environ.get("DATA_DIR", BASE_DIR))
+
+# Load environment variables from .env file in project root
+import os
+env_file = BASE_DIR.parent / '.env'
+if env_file.exists():
+    from decouple import Config, RepositoryEnv
+    config = Config(RepositoryEnv(str(env_file)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -167,6 +175,11 @@ MEDIA_ROOT = DATA_DIR / 'media'
 
 # number of items of overview paginations
 ITEMS_PER_PAGE = 12
+
+# AI Settings
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
+OPENAI_MODEL = config('OPENAI_MODEL', default='gpt-3.5-turbo')
+OPENAI_BASE_URL = config('OPENAI_BASE_URL', default='https://api.openai.com/v1')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

@@ -19,6 +19,31 @@
               {{ annotation.creation_date }} UTC
             </span>
         </div>
+        <!-- AI Action Buttons -->
+        <div class="flex flex-row gap-x-1">
+            <button 
+                hx-post="{% url 'ai_question' annotation.pdf.id %}"
+                hx-vals='{"question": "Explain this annotation: {{ annotation.text|truncatewords:10 }}"}'
+                hx-target="#ai-result-{{ loop_id }}"
+                hx-swap="innerHTML"
+                title="Ask AI about this annotation"
+                class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+            <button 
+                hx-post="{% url 'ai_summarize' annotation.pdf.id %}"
+                hx-vals='{"length": "short"}'
+                hx-target="#ai-result-{{ loop_id }}"
+                hx-swap="innerHTML"
+                title="Get summary of all annotations in this PDF"
+                class="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </button>
+        </div>
     </div>
     <div class="flex flex-row items-center gap-x-2">
         <a id="annotation-text-{{ loop_id }}"
@@ -28,4 +53,6 @@
             {{ annotation.text }}
         </a>
     </div>
+    <!-- AI Results Container -->
+    <div id="ai-result-{{ loop_id }}" class="mt-2 p-2 bg-slate-50 dark:bg-slate-700 rounded text-sm"></div>
 </div>
