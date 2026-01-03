@@ -7,7 +7,7 @@ services:
       context: ../  # Adjust this path to the directory containing the cloned repository and Dockerfile
       dockerfile: Dockerfile
     volumes:
-      - /media/elohsun/dataset1/My_Project/PdfDing/books:/home/nonroot/pdfding/media
+      - ./media:/home/nonroot/pdfding/media
     env_file:
       - ../.env
     environment:
