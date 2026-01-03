@@ -1,5 +1,7 @@
 **/__pycache__/
 .idea/
+.augster/
+.env
 
 notes.md
 node_modules
