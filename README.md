@@ -68,11 +68,6 @@ of time. By sponsoring you allow me to spend more time on PdfDing and make it ev
 [GitHub Sponsors](https://github.com/sponsors/mrmn2) •
 [KoFi](https://ko-fi.com/mrmn2)
 
-Both available sponsorship options offer the company tiers *Bronze*, *Silver* and
-*Gold*. These tiers allow sponsoring companies to have their logos shown on the
-[project website](https://pdfding.com), the [documentation](https://docs.pdfding.com)
-and the [project readme](https://github.com/mrmn2/PdfDing/blob/master/README.md).
-
 ## Contributing
 
 Small improvements, bugfixes and documentation improvements are always welcome.
