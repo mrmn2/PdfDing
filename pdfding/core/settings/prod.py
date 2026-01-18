@@ -1,7 +1,5 @@
 from os import environ
 
-from django.contrib.auth.hashers import check_password
-
 from .base import *  # noqa: F401 F403
 
 try:
@@ -194,15 +192,6 @@ if environ.get('ALLOW_PDF_SUB_DIRECTORIES', 'FALSE') == 'TRUE':
     ALLOW_PDF_SUB_DIRECTORIES = True
 else:
     ALLOW_PDF_SUB_DIRECTORIES = False
-
-# supporter edition settings
-SUPPORTER_KEY_HASH = 'pbkdf2_sha256$1000000$supporter$ZHnPv0AcYm6ZV5Pcyw8ULh3C1Dd5EGD2XG49gWpeTns='
-SUPPORTER_KEY = environ.get('SUPPORTER_KEY', '')
-
-if check_password(SUPPORTER_KEY, SUPPORTER_KEY_HASH):
-    SUPPORTER_EDITION = True
-else:
-    SUPPORTER_EDITION = False
 
 # demo mode
 if environ.get('DEMO_MODE', 'FALSE') == 'TRUE':
