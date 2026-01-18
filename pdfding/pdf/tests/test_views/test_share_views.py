@@ -29,6 +29,8 @@ from pdf.views.share_views import (
     SharedPdfMixin,
 )
 
+from pdfding.pdf.views import share_views
+
 
 def set_up(self):
     self.client = Client()
@@ -129,6 +131,19 @@ class TestOverviewMixin(TestCase):
         shared_names = [shared.name for shared in filtered_shares]
 
         self.assertEqual(shared_names, ['shared_1', 'shared_2', 'shared_3'])
+
+    def test_get_extra_context(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse('shared_pdf_overview'))
+
+        generated_extra_context = share_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        expected_extra_context = {
+            'page': 'shared_pdf_overview',
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
 
 
 class TestSharedPdfMixin(TestCase):

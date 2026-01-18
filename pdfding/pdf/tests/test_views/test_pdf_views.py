@@ -416,6 +416,8 @@ class TestOverviewMixin(TestCase):
             'page': 'pdf_overview',
             'layout': 'Compact',
             'needs_nagging': False,
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -434,6 +436,8 @@ class TestOverviewMixin(TestCase):
             'page': 'pdf_overview_starred',
             'layout': 'Compact',
             'needs_nagging': False,
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -452,6 +456,8 @@ class TestOverviewMixin(TestCase):
             'page': 'pdf_overview',
             'layout': 'Compact',
             'needs_nagging': False,
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
@@ -470,6 +476,8 @@ class TestOverviewMixin(TestCase):
             'page': 'pdf_overview',
             'layout': 'Compact',
             'needs_nagging': False,
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)

@@ -150,6 +150,17 @@ class Profile(models.Model):
         return self.collections.get(id=self.current_collection_id)
 
     @property
+    def current_collection_name(self):
+        """Return the name of the current collection"""
+
+        if self.current_collection_id == 'all':
+            current_collection_name = 'All'
+        else:
+            current_collection_name = self.current_collection.name
+
+        return current_collection_name
+
+    @property
     def all_pdfs(self) -> QuerySet:
         """Return all PDFs of all workspaces the user has access to."""
 

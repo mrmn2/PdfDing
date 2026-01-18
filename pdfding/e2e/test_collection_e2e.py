@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
@@ -32,4 +34,44 @@ class TestCollectionE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#current_collection_name")).to_contain_text("Default")
             self.page.locator("#current_collection_name").click()
             self.page.locator("#collection_modal").get_by_text("other_collection").click()
+            expect(self.page.locator("#current_collection_name")).to_contain_text("other_collection")
+
+    def test_details(self):
+        collection = self.user.profile.current_collection
+
+        with sync_playwright() as p:
+            self.open(reverse('collection_details', kwargs={'identifier': collection.id}), p)
+
+            expect(self.page.locator("#name")).to_contain_text("Defaul")
+            expect(self.page.locator("#default_collection")).to_contain_text("Yes")
+            expect(self.page.locator("#description")).to_contain_text("Default Collection")
+
+    @patch('pdf.services.collection_services.move')
+    def test_change_details(self, mock_move):
+        collection = self.user.profile.current_collection
+
+        with sync_playwright() as p:
+            self.open(reverse('collection_details', kwargs={'identifier': collection.id}), p)
+
+            self.page.locator("#name-edit").click()
+            self.page.locator("#id_name").dblclick()
+            self.page.locator("#id_name").fill("other-name")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#name")).to_contain_text("other-name")
+            self.page.locator("#description-edit").click()
+            self.page.locator("#id_description").click()
+            self.page.locator("#id_description").fill("other description")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#description")).to_contain_text("other description")
+
+    def test_details_change_collection(self):
+        create_collection(self.user.profile.current_workspace, 'other_collection')
+
+        collection = self.user.profile.current_collection
+
+        with sync_playwright() as p:
+            self.open(reverse('collection_details', kwargs={'identifier': collection.id}), p)
+            expect(self.page.locator("#current_collection_name")).to_contain_text("Default")
+            self.page.locator("#current_collection_name").click()
+            self.page.get_by_text("other_collection").click()
             expect(self.page.locator("#current_collection_name")).to_contain_text("other_collection")

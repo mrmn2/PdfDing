@@ -11,8 +11,10 @@
     />
 </form>
 <div class="flex flex-row md:flex-col w-full md:py-3 gap-2 md:border-y border-slate-300 dark:border-slate-600 creme:border-stone-400">
-  {% include 'partials/workspace_dropdown.html' with page='pdf_overview' %}
+  {% include 'partials/workspace_dropdown.html' with page='overview' %}
+  {% if current_collection_id %}
   {% include 'partials/collection_dropdown.html' %}
+  {% endif %}
 </div>
 <div class="pt-2 mt-1 ">
   <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1

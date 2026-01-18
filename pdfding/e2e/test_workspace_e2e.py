@@ -38,21 +38,17 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#current_collection_name")).to_contain_text("All")
 
     def test_details(self):
-        ws = self.user.profile.current_workspace
-
         with sync_playwright() as p:
-            self.open(reverse('workspace_details', kwargs={'identifier': ws.id}), p)
+            self.open(reverse('workspace_details'), p)
 
             expect(self.page.locator("#name")).to_contain_text("Personal")
             expect(self.page.locator("#personal_workspace")).to_contain_text("Yes")
             expect(self.page.locator("#description")).to_contain_text("Personal Workspace")
 
     def test_change_details(self):
-        ws = self.user.profile.current_workspace
-
         # also test changing from inactive to active
         with sync_playwright() as p:
-            self.open(reverse('workspace_details', kwargs={'identifier': ws.id}), p)
+            self.open(reverse('workspace_details'), p)
 
             self.page.locator("#name-edit").click()
             self.page.locator("#id_name").dblclick()
@@ -65,6 +61,16 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#description")).to_contain_text("other description")
 
+    def test_details_change_workspace(self):
+        create_workspace('other_ws', self.user)
+
+        with sync_playwright() as p:
+            self.open(reverse('workspace_details'), p)
+            expect(self.page.locator("#current_ws_name")).to_contain_text("Personal")
+            self.page.locator("#current_ws_name").click()
+            self.page.get_by_text("other_ws").click()
+            expect(self.page.locator("#current_ws_name")).to_contain_text("other_ws")
+
     def test_cancel_delete(self):
         other_ws = create_workspace('other_ws', self.user)
         self.user.profile.current_workspace_id = other_ws.id
@@ -72,7 +78,7 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
 
         with sync_playwright() as p:
             # only display one pdf
-            self.open(reverse('workspace_details', kwargs={'identifier': other_ws.id}), p)
+            self.open(reverse('workspace_details'), p)
 
             expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
             self.page.locator("#delete-workspace").click()
@@ -86,7 +92,7 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.save()
 
         with sync_playwright() as p:
-            self.open(reverse('workspace_details', kwargs={'identifier': other_ws.id}), p)
+            self.open(reverse('workspace_details'), p)
 
             self.page.locator("#delete-workspace").click()
             self.page.locator("#confirm_delete").get_by_text("Submit").click()
@@ -96,6 +102,6 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
 
     def test_delete_not_visible_personal(self):
         with sync_playwright() as p:
-            self.open(reverse('workspace_details', kwargs={'identifier': self.user.id}), p)
+            self.open(reverse('workspace_details'), p)
 
             expect(self.page.locator("#delete-workspace").first).not_to_be_visible()

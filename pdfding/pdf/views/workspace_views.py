@@ -2,7 +2,9 @@ from base import base_views
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from pdf.forms import WorkspaceDescriptionForm, WorkspaceForm, WorkspaceNameForm
+from pdf.models.collection_models import Collection
 from pdf.models.workspace_models import Workspace, WorkspaceError
+from pdf.services.pdf_services import check_object_access_allowed
 from pdf.services.workspace_services import create_workspace
 
 
@@ -39,6 +41,7 @@ class CreateWorkspaceMixin(BaseWorkspaceMixin):
 
 class WorkspaceMixin(BaseWorkspaceMixin):
     @staticmethod
+    @check_object_access_allowed
     def get_object(request: HttpRequest, ws_id: str) -> Workspace:
         """Get the current workspace."""
 
@@ -118,13 +121,38 @@ class Details(WorkspaceMixin, base_views.BaseDetails):
     """View for displaying the details page of a workspace."""
 
     # returns the current workspace, needs to be adjusted in the future
-    def get(self, request: HttpRequest, identifier: str):  # pragma: no cover
+    def get(self, request: HttpRequest, identifier: str | None = None):  # pragma: no cover
         """Display the details page."""
 
         obj = request.user.profile.current_workspace
         context = {'workspace': obj}
 
         return render(request, 'workspace_details.html', context)
+
+
+class CollectionDetails(WorkspaceMixin, base_views.BaseDetails):
+    """View for displaying the collections page of a workspace."""
+
+    def get(self, request: HttpRequest, identifier: str):
+        """Display the collection page."""
+
+        workspace = request.user.profile.current_workspace
+        collection = self.get_collection(request, identifier=identifier)
+        context = {
+            'workspace': workspace,
+            'current_collection_id': identifier,
+            'collection': collection,
+            'current_collection_name': collection.name,
+        }
+
+        return render(request, 'collection_details.html', context)
+
+    @staticmethod
+    @check_object_access_allowed
+    def get_collection(request: HttpRequest, identifier: str) -> Collection:
+        collection = request.user.profile.collections.get(id=identifier)
+
+        return collection
 
 
 class Edit(EditWorkspaceMixin, base_views.BaseDetailsEdit):

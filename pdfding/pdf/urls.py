@@ -83,10 +83,14 @@ urlpatterns = [
     path('edit_tag/', pdf_views.EditTag.as_view(), name='edit_tag'),
     # workspace related views
     path('workspace/create', workspace_views.Create.as_view(), name='create_workspace'),
+    path('workspace/details', workspace_views.Details.as_view(), name='workspace_details'),
     path('workspace/details/<identifier>', workspace_views.Details.as_view(), name='workspace_details'),
     path('workspace/edit/<identifier>/<field_name>', workspace_views.Edit.as_view(), name='edit_workspace'),
     path('workspace/delete/<identifier>', workspace_views.Delete.as_view(), name='delete_workspace'),
     path('', pdf_views.Overview.as_view(), name='workspace_overview'),  # needed for base views working
     path('collection/create', collection_views.Create.as_view(), name='create_collection'),
+    path('collection/details/<identifier>', workspace_views.CollectionDetails.as_view(), name='collection_details'),
+    path('collection/edit/<identifier>/<field_name>', collection_views.Edit.as_view(), name='edit_collection'),
+    path('collection/delete/<identifier>', workspace_views.Delete.as_view(), name='delete_collection'),
     path('', pdf_views.Overview.as_view(), name='collection_overview'),  # needed for base views working
 ]

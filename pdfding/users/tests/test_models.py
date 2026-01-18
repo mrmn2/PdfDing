@@ -189,13 +189,24 @@ class TestProfile(TestCase):
         self.assertEqual(self.user.profile.current_workspace, other_workspace)
 
     def test_current_collection_property(self):
-        self.assertEqual(self.user.profile.current_collection.id, str(self.user.id))
-
         other_collection = create_collection(self.user.profile.current_workspace, 'other')
         self.user.profile.current_collection_id = other_collection.id
         self.user.profile.save()
 
         self.assertEqual(other_collection, self.user.profile.current_collection)
+
+    def test_current_collection_name_property(self):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+        self.user.profile.current_collection_id = other_collection.id
+        self.user.profile.save()
+
+        self.assertEqual('other', self.user.profile.current_collection_name)
+
+    def test_current_collection_name_all_property(self):
+        self.user.profile.current_collection_id = 'all'
+        self.user.profile.save()
+
+        self.assertEqual('All', self.user.profile.current_collection_name)
 
     def test_has_access_to_workspace(self):
         profile = self.user.profile

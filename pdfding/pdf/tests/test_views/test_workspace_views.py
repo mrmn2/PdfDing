@@ -66,6 +66,20 @@ class TestWorkspaceMixin(WorkspaceTestCase):
         assert ws == workspace_views.WorkspaceMixin.get_object(response.wsgi_request, ws.id)
 
 
+class TestCollectionDetails(WorkspaceTestCase):
+    def test_get(self):
+        default_collection = self.user.profile.current_collection
+
+        response = self.client.get(reverse('collection_details', kwargs={'identifier': default_collection.id}))
+
+        self.assertTemplateUsed(response, 'collection_details.html')
+
+        assert response.context['workspace'] == self.user.profile.current_workspace
+        assert response.context['collection'] == default_collection
+        assert response.context['current_collection_id'] == default_collection.id
+        assert response.context['current_collection_name'] == default_collection.name
+
+
 class TestEditWorkspaceMixin(WorkspaceTestCase):
     def test_get_edit_form_get(self):
         ws = self.user.profile.current_workspace

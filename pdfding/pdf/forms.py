@@ -5,6 +5,7 @@ from django import forms
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
@@ -533,6 +534,30 @@ class CollectionForm(forms.Form):
             raise ValidationError(f'There is already a collection named {collection_name} in the current workspace!')
 
         return collection_name
+
+
+class CollectionNameForm(forms.ModelForm):
+    """Form for changing the name of a collection."""
+
+    class Meta:
+        model = Collection
+        fields = ['name']
+
+    def clean_name(self) -> str:  # pragma: no cover
+        """Clean the submitted collection name. Removes trailing and multiple whitespaces."""
+
+        collection_name = CleanHelpers.clean_workspace_name(self.cleaned_data['name'])
+
+        return collection_name
+
+
+class CollectionDescriptionForm(forms.ModelForm):
+    """Form for changing the description of a collection."""
+
+    class Meta:
+        model = Collection
+        widgets = {'description': forms.Textarea(attrs={'rows': 3})}
+        fields = ['description']
 
 
 class CleanHelpers:

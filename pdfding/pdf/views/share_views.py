@@ -133,10 +133,14 @@ class OverviewMixin(BaseShareMixin):
         return shared_pdfs
 
     @staticmethod
-    def get_extra_context(_) -> dict:  # pragma: no cover
+    def get_extra_context(request: HttpRequest) -> dict:  # pragma: no cover
         """get further information that needs to be passed to the template."""
 
-        return {'page': 'shared_pdf_overview'}
+        return {
+            'page': 'shared_pdf_overview',
+            'current_collection_id': request.user.profile.current_collection_id,
+            'current_collection_name': request.user.profile.current_collection_name,
+        }
 
 
 class SharedPdfMixin(BaseShareMixin):

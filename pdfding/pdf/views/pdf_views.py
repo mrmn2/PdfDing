@@ -222,6 +222,8 @@ class OverviewMixin(BasePdfMixin):
             'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': TagServices.get_tag_info_dict(request.user.profile),
             'tag_query': tag_query,
+            'current_collection_id': request.user.profile.current_collection_id,
+            'current_collection_name': request.user.profile.current_collection_name,
         }
 
         return extra_context
