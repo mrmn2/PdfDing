@@ -1,7 +1,4 @@
-from unittest.mock import patch
-
 from django.contrib.auth.models import User
-from django.test import override_settings
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
 from pdf.models.pdf_models import Pdf
@@ -80,36 +77,6 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#user-13")).to_be_visible()
             expect(self.page.locator("#user-13")).to_contain_text('12@a.com')
             expect(self.page.locator("#next_page_2_toggle")).not_to_be_visible()
-
-    @patch('admin.views.get_latest_version', return_value='0.0.0')
-    def test_new_version_available(self, mock_get_latest_version):
-        with sync_playwright() as p:
-            self.open(reverse("instance_info"), p)
-
-            expect(self.page.locator("body")).to_contain_text("New Version Available!")
-            expect(self.page.locator("#new_version")).to_contain_text("0.0.0")
-
-    @patch('admin.views.get_latest_version', return_value='DEV')
-    def test_new_version_same(self, mock_get_latest_version):
-        with sync_playwright() as p:
-            self.open(reverse("instance_info"), p)
-
-            expect(self.page.locator("body")).not_to_contain_text("New Version Available!")
-
-    @patch('admin.views.get_latest_version', return_value='0.0.0')
-    @override_settings(VERSION='UNKNOWN')
-    def test_new_version_unknown(self, mock_get_latest_version):
-        with sync_playwright() as p:
-            self.open(reverse("instance_info"), p)
-
-            expect(self.page.locator("body")).not_to_contain_text("New Version Available!")
-
-    @patch('admin.views.get_latest_version', return_value='')
-    def test_new_version_empty(self, mock_get_latest_version):
-        with sync_playwright() as p:
-            self.open(reverse("instance_info"), p)
-
-            expect(self.page.locator("body")).not_to_contain_text("New Version Available!")
 
     def test_search_admin(self):
         with sync_playwright() as p:

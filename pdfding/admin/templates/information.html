@@ -26,18 +26,6 @@
                     <span class="text-3xl">{{ current_version }}</span>
                 </div>
             </div>
-            {% if latest_version and current_version != 'UNKNOWN' and current_version != latest_version %}
-
-            <div class="lg:w-58 flex flex-col font-semibold border px-4 py-2 rounded-sm mt-5">
-                <span>New Version Available!</span>
-                <a href="https://github.com/mrmn2/PdfDing/releases"
-                   id="new_version"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="text-3xl text-primary">{{ latest_version }}
-                </a>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>

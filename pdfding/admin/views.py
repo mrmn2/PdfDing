@@ -1,4 +1,3 @@
-from admin.service import get_latest_version
 from base import base_views
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -136,13 +135,11 @@ class Information(View):  # pragma: no cover
 
         number_of_users = User.objects.all().count()
         number_of_pdfs = Pdf.objects.all().count()
-        latest_version = get_latest_version()
 
         context = {
             'number_of_users': number_of_users,
             'number_of_pdfs': number_of_pdfs,
             'current_version': settings.VERSION,
-            'latest_version': latest_version,
         }
 
         return render(request, 'information.html', context=context)
