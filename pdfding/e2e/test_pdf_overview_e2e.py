@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
@@ -592,31 +591,3 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
             expect(self.page.locator("#progressbar-1")).not_to_be_visible()
-
-    @override_settings(SUPPORTER_EDITION=False)
-    def test_nagging_modal_needs_nagging(self):
-        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
-        self.user.profile.save()
-
-        self.assertTrue(self.user.profile.needs_nagging)
-
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#nagging")).to_be_visible()
-
-            self.page.get_by_role("button", name="Leave me alone").click()
-            expect(self.page.locator("#nagging")).not_to_be_visible()
-
-        changed_user = User.objects.get(id=self.user.id)
-        self.assertFalse(changed_user.profile.needs_nagging)
-
-        with sync_playwright() as p:
-            # test opening again
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#nagging")).not_to_be_visible()
-
-    @override_settings(SUPPORTER_EDITION=True)
-    def test_nagging_modal_not_needs_nagging(self):
-        with sync_playwright() as p:
-            self.open(reverse('pdf_overview'), p)
-            expect(self.page.locator("#nagging")).not_to_be_visible()

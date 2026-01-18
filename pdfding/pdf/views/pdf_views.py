@@ -216,7 +216,6 @@ class OverviewMixin(BasePdfMixin):
 
         extra_context = {
             'layout': request.user.profile.layout,
-            'needs_nagging': request.user.profile.needs_nagging,
             'page': page,
             'search_query': request.GET.get('search', ''),
             'special_pdf_selection': special_pdf_selection,
@@ -575,15 +574,6 @@ class Overview(OverviewMixin, base_views.BaseOverview):
     View for the PDF overview page. This view performs the searching and sorting of the PDFs. It's also responsible for
     paginating the PDFs.
     """
-
-    def do_extra_action(self, request: HttpRequest):
-        """When nagging modal is shown, set last time nagged to current datetime"""
-
-        profile = request.user.profile
-
-        if profile.needs_nagging:
-            profile.last_time_nagged = datetime.now(tz=timezone.utc)
-            profile.save()
 
 
 class OverviewQuery(BasePdfMixin, base_views.BaseOverviewQuery):

@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from pdf.models.collection_models import Collection
@@ -26,27 +24,6 @@ class TestProfile(TestCase):
         self.user.profile.save()
 
         self.assertEqual(self.user.profile.dark_mode_str, 'dark')
-
-    @override_settings(SUPPORTER_EDITION=True)
-    def test_needs_nagging_supporter_edition(self):
-        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
-        self.user.profile.save()
-
-        self.assertEqual(self.user.profile.needs_nagging, False)
-
-    @override_settings(SUPPORTER_EDITION=False)
-    def test_needs_nagging_needed_non_supporter(self):
-        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=9)
-        self.user.profile.save()
-
-        self.assertEqual(self.user.profile.needs_nagging, True)
-
-    @override_settings(SUPPORTER_EDITION=False)
-    def test_needs_nagging_not_needed_non_supporter(self):
-        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(days=40)
-        self.user.profile.save()
-
-        self.assertEqual(self.user.profile.needs_nagging, False)
 
     def test_pdfs_total_size_with_unit(self):
         profile = self.user.profile

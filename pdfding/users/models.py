@@ -1,6 +1,3 @@
-from datetime import datetime, timedelta, timezone
-
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
@@ -8,10 +5,6 @@ from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
-
-
-def get_last_time_nagged_initial():  # pragma: no cover
-    return datetime.now(tz=timezone.utc) - timedelta(weeks=5)
 
 
 class Profile(models.Model):
@@ -84,7 +77,6 @@ class Profile(models.Model):
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=6, default=DarkMode.DARK)
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
-    last_time_nagged = models.DateTimeField(default=get_last_time_nagged_initial)
     number_of_pdfs = models.IntegerField(default=0)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_keep_screen_awake = models.CharField(
@@ -111,18 +103,6 @@ class Profile(models.Model):
         """Return dark mode property so that it can be used in templates."""
 
         return str.lower(str(self.dark_mode))
-
-    @property
-    def needs_nagging(self):
-        """
-        Check if a user needs to be nagged to sponsor the project. Only nags once every 8 weeks. Users
-        of the Supporter Edition will never be nagged.
-        """
-
-        if not settings.SUPPORTER_EDITION and (datetime.now(tz=timezone.utc) - self.last_time_nagged).days > 7 * 8:
-            return True
-        else:
-            return False
 
     @property
     def pdfs_total_size_with_unit(self):
