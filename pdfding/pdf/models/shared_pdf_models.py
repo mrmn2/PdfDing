@@ -3,14 +3,15 @@ from uuid import uuid4
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
-from pdf.models.pdf_models import Pdf, get_pdf_parent_dirs
+from pdf.models.helpers import get_collection_dir
+from pdf.models.pdf_models import Pdf
 
 
 def get_qrcode_file_path(instance, _) -> str:
     """Get the file path for the qr code of a shared PDF."""
 
     file_name = f'qr/{instance.id}.svg'
-    file_path = f'{get_pdf_parent_dirs(instance.pdf)}/{file_name}'
+    file_path = f'{get_collection_dir(instance.pdf.collection)}/{file_name}'
 
     return str(file_path)
 

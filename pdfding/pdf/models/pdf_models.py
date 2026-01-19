@@ -11,16 +11,9 @@ from django.db.models import DateTimeField
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from pdf.models.collection_models import Collection
+from pdf.models.helpers import get_collection_dir
 from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace
-
-
-def get_pdf_parent_dirs(instance) -> str:
-    """Get the parent directories (worskpace_id/collection_name) of a PDF file."""
-
-    parent_dirs = f'{instance.workspace.id}/{instance.collection.name.lower()}'
-
-    return parent_dirs
 
 
 def get_file_path(instance, _) -> str:
@@ -51,7 +44,7 @@ def get_file_path(instance, _) -> str:
     else:
         file_path = '/'.join(['pdf', file_name])
 
-    file_path = f'{get_pdf_parent_dirs(instance)}/{file_path}'
+    file_path = f'{get_collection_dir(instance.collection)}/{file_path}'
     existing_pdf = Pdf.objects.filter(file=file_path).first()
 
     # make sure there each file path is unique
@@ -87,7 +80,7 @@ def get_thumbnail_path(instance, _) -> str:
     """Get the file path for the thumbnail of a PDF."""
 
     file_name = f'thumbnails/{instance.id}.png'
-    file_path = f'{get_pdf_parent_dirs(instance)}/{file_name}'
+    file_path = f'{get_collection_dir(instance.collection)}/{file_name}'
 
     return file_path
 
@@ -96,7 +89,7 @@ def get_preview_path(instance, _) -> str:
     """Get the file path for the preview of a PDF."""
 
     file_name = f'previews/{instance.id}.png'
-    file_path = f'{get_pdf_parent_dirs(instance)}/{file_name}'
+    file_path = f'{get_collection_dir(instance.collection)}/{file_name}'
 
     return file_path
 

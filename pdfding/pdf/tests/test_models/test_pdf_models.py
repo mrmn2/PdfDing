@@ -9,12 +9,10 @@ from pdf.models.pdf_models import (
     convert_to_natural_age,
     delete_empty_dirs_after_rename_or_delete,
     get_file_path,
-    get_pdf_parent_dirs,
     get_preview_path,
     get_thumbnail_path,
 )
-
-from pdfding.pdf.services.workspace_services import create_collection, create_workspace
+from pdf.services.workspace_services import create_workspace
 
 
 class TestPdf(TestCase):
@@ -62,17 +60,6 @@ class TestPdf(TestCase):
         mock_delete_empty_dirs_after_rename_or_delete.assert_called_once_with(
             file_name, collection.workspace.id, collection.name
         )
-
-    def test_get_pdf_parent_dirs(self):
-        ws = create_workspace('bla', self.user)
-        ws.id = '12345'
-        ws.save()
-        collection = create_collection(ws, 'Test')
-        pdf = Pdf.objects.create(name='asd', collection=collection)
-
-        expected_parent_dir = '12345/test'
-
-        self.assertEqual(expected_parent_dir, get_pdf_parent_dirs(pdf))
 
     def test_get_file_path(self):
         collection = self.user.profile.current_collection

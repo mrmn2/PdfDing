@@ -177,8 +177,8 @@ class TestMigrations(TestCase):
         self.assertEqual(changed_pdf.collection, profile.collections[0])
         self.assertEqual(changed_tag.workspace, workspace)
 
-    @patch('pdf.models.shared_pdf_models.get_pdf_parent_dirs')
-    @patch('pdf.models.pdf_models.get_pdf_parent_dirs')
+    @patch('pdf.models.shared_pdf_models.get_collection_dir')
+    @patch('pdf.models.pdf_models.get_collection_dir')
     def test_adjust_file_paths_to_ws_collection(self, mock_get_parent_dirs, mock_shared_get_parent_dirs):
         self.pdf.delete()  # we need to delete the pdf created by setUp
         user = User.objects.create_user(username='user', password='12345')

@@ -1,7 +1,9 @@
+from shutil import rmtree
 from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.db import models
+from pdf.models.helpers import get_workspace_path
 
 
 def get_uuid4_str() -> str:
@@ -30,6 +32,20 @@ class Workspace(models.Model):
 
     def __str__(self):  # pragma: no cover
         return str(self.name)
+
+    def delete(self, *args, **kwargs) -> None:
+        """
+        Override default delete method so that workspace directory gets deleted after the workspace is deleted.
+        """
+
+        ws_path = get_workspace_path(self)
+        super().delete(*args, **kwargs)
+
+        try:
+            rmtree(ws_path)
+        except Exception as e:
+            print(e)
+            pass
 
     @property
     def users(self) -> models.QuerySet[User]:
