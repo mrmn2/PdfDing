@@ -91,6 +91,6 @@ urlpatterns = [
     path('collection/create', collection_views.Create.as_view(), name='create_collection'),
     path('collection/details/<identifier>', workspace_views.CollectionDetails.as_view(), name='collection_details'),
     path('collection/edit/<identifier>/<field_name>', collection_views.Edit.as_view(), name='edit_collection'),
-    path('collection/delete/<identifier>', workspace_views.Delete.as_view(), name='delete_collection'),
+    path('collection/delete/<identifier>', collection_views.Delete.as_view(), name='delete_collection'),
     path('', pdf_views.Overview.as_view(), name='collection_overview'),  # needed for base views working
 ]

@@ -77,7 +77,6 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
         self.user.profile.save()
 
         with sync_playwright() as p:
-            # only display one pdf
             self.open(reverse('workspace_details'), p)
 
             expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()

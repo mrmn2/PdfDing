@@ -1,9 +1,9 @@
 {% extends 'layouts/blank.html' %}
 
 {% block content %}
-<div x-data="{ show_delete_workspace_modal: false }">
+<div x-data="{ show_delete_collection_modal: false }">
   <div class="flex flex-col md:flex-row md:justify-end"
-      :class="{ 'opacity-15': show_delete_workspace_modal }">
+      :class="{ 'opacity-15': show_delete_collection_modal }">
       <div class="w-full! md:w-72! lg:w-72! px-2 md:px-4 pt-2">
         {% include 'includes/workspace_sidebar.html' with page='collection_details' %}
       </div>
@@ -80,7 +80,7 @@
               {% if not collection.default_collection %}
               <div class="pt-12 text-xl font-bold text-red-500">Danger Zone</div>
               <div class="pt-3">
-                  <span class="text-lg font-bold">Delete Account</span>
+                  <span class="text-lg font-bold">Delete Collection</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
                   <div class="w-5/6">
@@ -88,8 +88,8 @@
                   </div>
                   <div class="pr-0 ml-2 md:pl-0 md:pr-4">
                     <a id="delete-collection" class="text-red-500 hover:text-red-600 cursor-pointer"
-                      @click="show_delete_delete_modal = true"
-                      hx-get="{% url 'delete_workspace' collection.id %}"
+                      @click="show_delete_collection_modal = true"
+                      hx-get="{% url 'delete_collection' collection.id %}"
                       hx-target="#delete_collection_modal"
                       hx-swap="innerHTML">
                         Delete

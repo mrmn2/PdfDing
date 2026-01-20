@@ -1,11 +1,17 @@
+from shutil import rmtree
 from uuid import uuid4
 
 from django.db import models
+from pdf.models.helpers import get_collection_path
 from pdf.models.workspace_models import Workspace
 
 
 def get_uuid4_str() -> str:
     return str(uuid4())
+
+
+class CollectionError(Exception):
+    """Exceptions for collection related problems"""
 
 
 class Collection(models.Model):
@@ -20,6 +26,19 @@ class Collection(models.Model):
 
     def __str__(self):  # pragma: no cover
         return str(self.name)
+
+    def delete(self, *args, **kwargs) -> None:
+        """
+        Override default delete method so that the collection directory gets deleted after the collection is deleted.
+        """
+
+        collection_path = get_collection_path(self)
+        super().delete(*args, **kwargs)
+
+        try:
+            rmtree(collection_path)
+        except Exception:  # pragma: no cover # nosec B110
+            pass
 
     @property
     def pdfs(self) -> models.QuerySet:

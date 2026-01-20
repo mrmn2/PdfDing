@@ -1,8 +1,9 @@
 from base import base_views
 from django.contrib import messages
 from django.http import HttpRequest
+from django.shortcuts import redirect, render
 from pdf.forms import CollectionDescriptionForm, CollectionForm, CollectionNameForm
-from pdf.models.collection_models import Collection
+from pdf.models.collection_models import Collection, CollectionError
 from pdf.services.collection_services import move_collection
 from pdf.services.pdf_services import check_object_access_allowed
 from pdf.services.workspace_services import create_collection
@@ -97,3 +98,35 @@ class Edit(EditCollectionMixin, base_views.BaseDetailsEdit):
     The view for editing a collection's name and description. The field, that is to be changed, is specified by the
     'field' argument.
     """
+
+
+class Delete(CollectionMixin, base_views.BaseDelete):
+    """View for deleting the collection specified by its ID."""
+
+    def get(self, request: HttpRequest, identifier: str):
+        """Triggered by htmx. Display an inline form for deleting the collection."""
+
+        if request.htmx:
+            collection = self.get_object(request, identifier)
+
+            return render(
+                request,
+                'partials/delete_collection.html',
+                {'collection_id': identifier, 'collection_name': collection.name},
+            )
+
+        return redirect('pdf_overview')
+
+    def pre_delete(self, obj: Collection, request: HttpRequest):
+        """Execute before deleting object."""
+
+        if obj.default_collection:
+            raise CollectionError('Default collections cannot be deleted!')
+
+    def post_delete(self, identifier: str, request: HttpRequest):
+        """Execute after deleting object."""
+
+        if identifier == request.user.profile.current_collection_id:
+            profile = request.user.profile
+            profile.current_collection_id = 'all'
+            profile.save()

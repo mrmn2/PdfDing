@@ -43,8 +43,7 @@ class Workspace(models.Model):
 
         try:
             rmtree(ws_path)
-        except Exception as e:
-            print(e)
+        except Exception:  # pragma: no cover # nosec B110
             pass
 
     @property

@@ -106,7 +106,6 @@ class TestDelete(WorkspaceTestCase):
         created_ws = create_workspace('created_ws', self.user)
         headers = {'HTTP_HX-Request': 'true'}
 
-        # archive the pdf
         response = self.client.get(reverse('delete_workspace', kwargs={'identifier': created_ws.id}), **headers)
 
         self.assertEqual(response.context['workspace_name'], 'created_ws')

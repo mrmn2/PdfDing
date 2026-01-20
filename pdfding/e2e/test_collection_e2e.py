@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
+from pdf.models.collection_models import Collection
 from pdf.services.workspace_services import create_collection
 from playwright.sync_api import expect, sync_playwright
 
@@ -75,3 +76,33 @@ class TestCollectionE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#current_collection_name").click()
             self.page.get_by_text("other_collection").click()
             expect(self.page.locator("#current_collection_name")).to_contain_text("other_collection")
+
+    def test_cancel_delete(self):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other_collection')
+
+        with sync_playwright() as p:
+            self.open(reverse('collection_details', kwargs={'identifier': other_collection.id}), p)
+
+            expect(self.page.locator("#delete_collection_modal").first).not_to_be_visible()
+            self.page.locator("#delete-collection").click()
+            expect(self.page.locator("#delete_collection_modal").first).to_be_visible()
+            self.page.locator("#cancel_delete").get_by_text("Cancel").click()
+            expect(self.page.locator("#delete_collection_modal").first).not_to_be_visible()
+
+    def test_delete(self):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other_collection')
+
+        with sync_playwright() as p:
+            self.open(reverse('collection_details', kwargs={'identifier': other_collection.id}), p)
+
+            self.page.locator("#delete-collection").click()
+            self.page.locator("#confirm_delete").get_by_text("Submit").click()
+            expect(self.page.locator("#delete_collection_modal").first).not_to_be_visible()
+
+        assert not Collection.objects.filter(id=other_collection.id).count()
+
+    def test_delete_not_visible_default(self):
+        with sync_playwright() as p:
+            self.open(reverse('collection_details', kwargs={'identifier': self.user.profile.current_collection_id}), p)
+
+            expect(self.page.locator("#delete-collection").first).not_to_be_visible()

@@ -7,6 +7,7 @@ from django.http import Http404
 from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import CollectionDescriptionForm, CollectionForm, CollectionNameForm
+from pdf.models.collection_models import CollectionError
 from pdf.services.workspace_services import create_collection, create_workspace
 from pdf.views import collection_views
 
@@ -119,3 +120,47 @@ class TestEditCollectionMixin(CollectionTestCase):
         self.assertEqual(
             list(messages)[0].message, 'This name is already used by another collection in this workspace!'
         )
+
+
+class TestDelete(CollectionTestCase):
+    def test_delete_get_no_htmx(self):
+        created_collection = create_collection(self.user.profile.current_workspace, 'created_collection')
+
+        response = self.client.get(reverse('delete_collection', kwargs={'identifier': created_collection.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_delete_get(self):
+        created_collection = create_collection(self.user.profile.current_workspace, 'created_collection')
+        headers = {'HTTP_HX-Request': 'true'}
+
+        response = self.client.get(
+            reverse('delete_collection', kwargs={'identifier': created_collection.id}), **headers
+        )
+
+        self.assertEqual(response.context['collection_name'], 'created_collection')
+        self.assertEqual(response.context['collection_id'], str(created_collection.id))
+        self.assertTemplateUsed(response, 'partials/delete_collection.html')
+
+    def test_pre_delete_default_collection(self):
+        headers = {'HTTP_HX-Request': 'true'}
+
+        with pytest.raises(CollectionError, match='Default collections cannot be deleted!'):
+            self.client.delete(
+                reverse('delete_collection', kwargs={'identifier': self.user.profile.current_collection_id}), **headers
+            )
+
+    def test_post_delete_current_collection_adjusted(self):
+        created_collection = create_collection(self.user.profile.current_workspace, 'created_collection')
+        headers = {'HTTP_HX-Request': 'true'}
+
+        profile = self.user.profile
+        profile.current_collection_id = created_collection.id
+        profile.save()
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.current_collection_id == created_collection.id
+
+        self.client.delete(reverse('delete_collection', kwargs={'identifier': created_collection.id}), **headers)
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.current_collection_id == 'all'
