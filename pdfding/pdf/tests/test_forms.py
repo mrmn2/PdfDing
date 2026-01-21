@@ -124,19 +124,6 @@ class TestPdfForms(TestCase):
 
         self.assertTrue(form.is_valid())
 
-    def test_pdf_collection_form(self):
-        other_collection = create_collection(self.user.profile.current_workspace, 'other')
-        current_collection = self.user.profile.current_collection
-        pdf = Pdf.objects.create(collection=other_collection, name='pdf')
-
-        form = forms.PdfCollectionForm(instance=pdf)
-
-        expected_choices = [
-            (other_collection.id, other_collection.name),
-            (current_collection.id, current_collection.name),
-        ]
-        assert form.fields['collection'].choices == expected_choices
-
     def test_pdf_collection_form_missing_pdf(self):
         with self.assertRaisesMessage(KeyError, 'instance'):
             forms.PdfCollectionForm()
@@ -353,3 +340,36 @@ class TestCleanHelpers(TestCase):
 
         with pytest.raises(ValidationError, match='"_" or "-" are not valid workspace names!'):
             CleanHelpers.clean_workspace_name('_')
+
+
+class TestOther(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='12345', email='a@a.com')
+
+    def test_get_collection_choices(self):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+        current_collection = self.user.profile.current_collection
+
+        expected_choices = [
+            (other_collection.id, other_collection.name),
+            (current_collection.id, current_collection.name),
+        ]
+        assert (
+            forms.get_collection_choices(
+                other_collection.id, other_collection.name, self.user.profile.current_workspace.collections
+            ).choices
+            == expected_choices
+        )
+
+    def test_get_collection_choices_all(self):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+        current_collection = self.user.profile.current_collection
+
+        expected_choices = [
+            (current_collection.id, current_collection.name),
+            (other_collection.id, other_collection.name),
+        ]
+        assert (
+            forms.get_collection_choices('all', 'All', self.user.profile.current_workspace.collections).choices
+            == expected_choices
+        )

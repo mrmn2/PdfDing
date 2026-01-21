@@ -5,6 +5,7 @@ from django import forms
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.db.models import QuerySet
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
@@ -45,11 +46,9 @@ class AddFormNoFile(forms.ModelForm):
         if not self.profile:
             raise KeyError('profile')
 
-        collections = self.profile.collections
-
         super(AddFormNoFile, self).__init__(*args, **kwargs)
-        self.fields['collection'] = forms.ChoiceField(
-            choices=[(collection.id, collection.name) for collection in collections],
+        self.fields['collection'] = get_collection_choices(
+            self.profile.current_collection_id, self.profile.current_collection_name, self.profile.collections
         )
 
     def clean_name(self) -> str:
@@ -150,11 +149,9 @@ class BulkAddFormNoFile(forms.Form):
         if not self.profile:
             raise KeyError('profile')
 
-        collections = self.profile.collections
-
         super(BulkAddFormNoFile, self).__init__(*args, **kwargs)
-        self.fields['collection'] = forms.ChoiceField(
-            choices=[(collection.id, collection.name) for collection in collections],
+        self.fields['collection'] = get_collection_choices(
+            self.profile.current_collection_id, self.profile.current_collection_name, self.profile.collections
         )
 
     def clean_file(self):
@@ -245,7 +242,7 @@ class PdfCollectionForm(forms.ModelForm):
         model = Pdf
         fields = []
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):  # pragma: no cover
         """
         Adds the profile to the form. This is done, so we can access information about the profile
         when creating a new pdf.
@@ -255,17 +252,11 @@ class PdfCollectionForm(forms.ModelForm):
         if not pdf:
             raise KeyError('instance')
 
-        collections = pdf.collection.workspace.collection_set.all()
-
         super(forms.ModelForm, self).__init__(*args, **kwargs)
 
-        # make sure current collection is first entry
-        choices = [(pdf.collection.id, pdf.collection.name)]
-
-        for collection in collections:
-            if collection != pdf.collection:
-                choices.append((collection.id, collection.name))
-        self.fields['collection'] = forms.ChoiceField(choices=choices)
+        self.fields['collection'] = get_collection_choices(
+            pdf.collection.id, pdf.collection.name, pdf.collection.workspace.collection_set.all()
+        )
 
 
 class ShareForm(forms.ModelForm):
@@ -700,3 +691,19 @@ class CleanHelpers:
             raise forms.ValidationError('Maximum number of characters for a workspace name is 50!')
 
         return ws_name
+
+
+def get_collection_choices(
+    current_collection_id: str, current_collection_name: str, collections: QuerySet[Collection]
+) -> forms.ChoiceField:
+    choices = []
+
+    # make sure current collection is first collection in dropdown
+    if current_collection_id != 'all':
+        choices.append((current_collection_id, current_collection_name))
+
+    for collection in collections:
+        if collection.id != current_collection_id:
+            choices.append((collection.id, collection.name))
+
+    return forms.ChoiceField(choices=choices)
