@@ -7,23 +7,6 @@ def set_pdf_stats(profile: Profile) -> None:
 
     pass
 
-    # pdfs = profile.all_pdfs
-    # pdfs_total_size = 0
-    #
-    # for pdf in pdfs:
-    #     pdf_size = 0
-    #
-    #     try:
-    #         pdf_size = pdf.file.size
-    #     except (FileNotFoundError, ValueError):
-    #         pass
-    #
-    #     pdfs_total_size += pdf_size
-    #
-    # profile.number_of_pdfs = pdfs.count()
-    # profile.pdfs_total_size = pdfs_total_size
-    # profile.save()
-
 
 def add_pdf_stats(apps, schema_editor):
     """Add PDF stats to all profiles."""

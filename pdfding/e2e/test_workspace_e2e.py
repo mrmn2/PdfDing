@@ -45,6 +45,9 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#personal_workspace")).to_contain_text("Yes")
             expect(self.page.locator("#description")).to_contain_text("Personal Workspace")
 
+            expect(self.page.locator('#number_of_pdfs')).to_contain_text('0 PDFs')
+            expect(self.page.locator('#pdfs_total_size')).to_contain_text('0 KB Total Size')
+
     def test_change_details(self):
         # also test changing from inactive to active
         with sync_playwright() as p:

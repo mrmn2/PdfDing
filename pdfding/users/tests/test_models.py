@@ -25,28 +25,6 @@ class TestProfile(TestCase):
 
         self.assertEqual(self.user.profile.dark_mode_str, 'dark')
 
-    def test_pdfs_total_size_with_unit(self):
-        profile = self.user.profile
-        profile.pdfs_total_size = 10000
-        profile.save()
-
-        self.assertEqual(profile.pdfs_total_size_with_unit, '10.0 KB')
-
-        profile.pdfs_total_size = 1234567
-        profile.save()
-
-        self.assertEqual(profile.pdfs_total_size_with_unit, '1.23 MB')
-
-        profile.pdfs_total_size = 9.99 * 10**10
-        profile.save()
-
-        self.assertEqual(profile.pdfs_total_size_with_unit, '99.9 GB')
-
-        profile.pdfs_total_size = 0
-        profile.save()
-
-        self.assertEqual(profile.pdfs_total_size_with_unit, '0.0 KB')
-
     def test_workspace_property(self):
         create_workspace('some_workspace', self.user)
 

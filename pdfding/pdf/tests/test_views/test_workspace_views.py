@@ -5,9 +5,11 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import WorkspaceDescriptionForm, WorkspaceForm, WorkspaceNameForm
+from pdf.models.pdf_models import Pdf
 from pdf.models.workspace_models import WorkspaceError
 from pdf.services.workspace_services import create_workspace
 from pdf.views import workspace_views
+from users.service import get_demo_pdf
 
 
 class WorkspaceTestCase(TestCase):
@@ -64,6 +66,26 @@ class TestWorkspaceMixin(WorkspaceTestCase):
         ws = self.user.profile.current_workspace
 
         assert ws == workspace_views.WorkspaceMixin.get_object(response.wsgi_request, ws.id)
+
+
+class TestWorkspaceDetails(WorkspaceTestCase):
+    def test_details_get(self):
+        default_collection = self.user.profile.current_collection
+        Pdf.objects.create(name='pdf_1', collection=default_collection, file=get_demo_pdf())
+        Pdf.objects.create(name='pdf_2', collection=default_collection, file=get_demo_pdf())
+        response = self.client.get(reverse('workspace_details', kwargs={'identifier': default_collection.id}))
+
+        self.assertTemplateUsed(response, 'workspace_details.html')
+        assert response.context['workspace'] == self.user.profile.current_workspace
+        assert response.context['number_of_pdfs'] == 2
+        # size of two demo files
+        assert response.context['pdfs_total_size'] == '58.9 KB'
+
+    def test_pdfs_total_size_with_unit(self):
+        assert workspace_views.Details.size_with_unit(0) == '0.0 KB'
+        assert workspace_views.Details.size_with_unit(10000) == '10.0 KB'
+        assert workspace_views.Details.size_with_unit(1234567) == '1.23 MB'
+        assert workspace_views.Details.size_with_unit(9.99 * 10**10) == '99.9 GB'
 
 
 class TestCollectionDetails(WorkspaceTestCase):

@@ -5,7 +5,7 @@ from pdf.forms import WorkspaceDescriptionForm, WorkspaceForm, WorkspaceNameForm
 from pdf.models.collection_models import Collection
 from pdf.models.workspace_models import Workspace, WorkspaceError
 from pdf.services.pdf_services import check_object_access_allowed
-from pdf.services.workspace_services import create_workspace
+from pdf.services.workspace_services import create_workspace, get_pdfs_of_workspace
 
 
 class BaseWorkspaceMixin:
@@ -125,9 +125,34 @@ class Details(WorkspaceMixin, base_views.BaseDetails):
         """Display the details page."""
 
         obj = request.user.profile.current_workspace
-        context = {'workspace': obj}
+        ws_pdfs = get_pdfs_of_workspace(obj)
+
+        ws_pdfs_total_size = 0
+
+        for pdf in ws_pdfs:
+            try:
+                ws_pdfs_total_size += pdf.file.size
+            except (FileNotFoundError, ValueError):
+                pass
+
+        context = {
+            'workspace': obj,
+            'number_of_pdfs': ws_pdfs.count(),
+            'pdfs_total_size': self.size_with_unit(ws_pdfs_total_size),
+        }
 
         return render(request, 'workspace_details.html', context)
+
+    @staticmethod
+    def size_with_unit(pdfs_total_size: float):
+        """Return the size of all PDFs with the units KB, MB, GB depending on the size."""
+
+        if pdfs_total_size < 10**6:
+            return f'{round(pdfs_total_size / 1000, 2)} KB'
+        elif pdfs_total_size < 10**9:
+            return f'{round(pdfs_total_size / (10 ** 6), 2)} MB'
+        else:
+            return f'{round(pdfs_total_size / (10 ** 9), 2)} GB'
 
 
 class CollectionDetails(WorkspaceMixin, base_views.BaseDetails):
