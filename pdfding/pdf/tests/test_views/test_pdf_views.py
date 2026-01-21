@@ -583,7 +583,7 @@ class TestEditPdfMixin(TestCase):
 
     @patch('pdf.views.pdf_views.adjust_pdf_path')
     def test_process_field_collection(self, mock_adjust_pdf_path):
-        other_collection = create_collection(self.user.profile.current_workspace, 'other_collection')
+        other_collection = create_collection(self.user.profile.current_workspace, 'OTHER_collection')
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
@@ -591,7 +591,7 @@ class TestEditPdfMixin(TestCase):
 
         pdf_views.EditPdfMixin.process_field('collection', pdf, request, {'collection': other_collection.id})
 
-        mock_adjust_pdf_path.assert_called_once_with(pdf, '/Default/', '/other_collection/', move_files=True)
+        mock_adjust_pdf_path.assert_called_once_with(pdf, '/default/', '/other_collection/', move_files=True)
         assert pdf.collection == other_collection
 
 

@@ -184,7 +184,7 @@ class EditSharedPdfMixin(SharedPdfMixin):
             'name': {'name': shared_pdf.name},
             'description': {'description': shared_pdf.description},
             'max_views': {'max_views': shared_pdf.max_views},
-            'password': {'password': ''},
+            'password': {'password': ''},  # nosec B105
             'expiration_date': {'expiration_date': ''},
             'deletion_date': {'deletion_date': ''},
         }

@@ -343,9 +343,9 @@ class EditPdfMixin(PdfMixin):
 
             # change collection and file paths if collection was changed
             if pdf.collection.id != collection_id:
-                old_collection_name = pdf.collection.name
+                old_collection_name = pdf.collection.name.lower()
                 pdf.collection_id = collection_id
-                new_collection_name = pdf.collection.name
+                new_collection_name = pdf.collection.name.lower()
                 adjust_pdf_path(pdf, f'/{old_collection_name}/', f'/{new_collection_name}/', move_files=True)
                 pdf.save()
 

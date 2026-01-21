@@ -3,7 +3,7 @@ from .base import *  # noqa: F401 F403
 try:
     # set the minio acces and secret key and the SOCIALACCOUNT_PROVIDERS in dev_secrets
     from .dev_secrets import *  # noqa: F401 F403
-except ModuleNotFoundError:  # pragma: no cover
+except ModuleNotFoundError:  # pragma: no cover 3 # nosec B105
     # dummy SOCIALACCOUNT_PROVIDERS for tests
     SOCIALACCOUNT_PROVIDERS = {
         "openid_connect": {

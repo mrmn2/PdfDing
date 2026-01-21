@@ -8,7 +8,7 @@ def set_pdf_stats(profile: Profile) -> None:
     pass
 
 
-def add_pdf_stats(apps, schema_editor):
+def add_pdf_stats(apps, schema_editor):  # pragma: no cover
     """Add PDF stats to all profiles."""
 
     profile_model = apps.get_model("users", "Profile")
