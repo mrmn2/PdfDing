@@ -14,7 +14,7 @@ from pdf import forms
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services.pdf_services import PdfProcessingServices
-from pdf.services.workspace_services import create_workspace
+from pdf.services.workspace_services import create_collection, create_workspace
 from pdf.views import pdf_views
 from users.service import get_demo_pdf
 
@@ -518,9 +518,9 @@ class TestEditPdfMixin(TestCase):
         edit_pdf_mixin_object = pdf_views.EditPdfMixin()
 
         for field, form_class, field_value in zip(
-            ['name', 'description', 'tags', 'notes'],
-            [forms.NameForm, forms.DescriptionForm, forms.PdfTagsForm, forms.NotesForm],
-            ['pdf_name', 'some_description', 'tag_0 tag_1', 'some_note'],
+            ['collection', 'name', 'description', 'tags', 'notes'],
+            [forms.PdfCollectionForm, forms.NameForm, forms.DescriptionForm, forms.PdfTagsForm, forms.NotesForm],
+            [self.user.profile.current_collection_name, 'pdf_name', 'some_description', 'tag_0 tag_1', 'some_note'],
         ):
             form = edit_pdf_mixin_object.get_edit_form_get(field, pdf)
             self.assertIsInstance(form, form_class)
@@ -580,6 +580,19 @@ class TestEditPdfMixin(TestCase):
 
         pdf_views.EditPdfMixin.process_field('file_directory', pdf, request, {'file_directory': 'some/dir'})
         mock_process_renaming_pdf.assert_called_once_with(pdf)
+
+    @patch('pdf.views.pdf_views.adjust_pdf_path')
+    def test_process_field_collection(self, mock_adjust_pdf_path):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other_collection')
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        request = response.wsgi_request
+
+        pdf_views.EditPdfMixin.process_field('collection', pdf, request, {'collection': other_collection.id})
+
+        mock_adjust_pdf_path.assert_called_once_with(pdf, '/Default/', '/other_collection/', move_files=True)
+        assert pdf.collection == other_collection
 
 
 class TestViews(TestCase):

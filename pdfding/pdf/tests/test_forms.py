@@ -13,6 +13,8 @@ from pdf.forms import CleanHelpers
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 
+from pdfding.pdf.services.workspace_services import create_collection
+
 
 class TestPdfForms(TestCase):
     def setUp(self):
@@ -121,6 +123,23 @@ class TestPdfForms(TestCase):
         )
 
         self.assertTrue(form.is_valid())
+
+    def test_pdf_collection_form(self):
+        other_collection = create_collection(self.user.profile.current_workspace, 'other')
+        current_collection = self.user.profile.current_collection
+        pdf = Pdf.objects.create(collection=other_collection, name='pdf')
+
+        form = forms.PdfCollectionForm(instance=pdf)
+
+        expected_choices = [
+            (other_collection.id, other_collection.name),
+            (current_collection.id, current_collection.name),
+        ]
+        assert form.fields['collection'].choices == expected_choices
+
+    def test_pdf_collection_form_missing_pdf(self):
+        with self.assertRaisesMessage(KeyError, 'instance'):
+            forms.PdfCollectionForm()
 
 
 class TestShareForms(TestCase):

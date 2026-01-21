@@ -10,6 +10,8 @@ from pdf.models.tag_models import Tag
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
 
+from pdfding.pdf.services.workspace_services import create_collection
+
 
 class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
@@ -38,6 +40,7 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)
 
             expect(self.page.locator("body")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#collection")).to_contain_text("Default")
             expect(self.page.locator("#name")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#description")).to_contain_text("this is number 1")
             expect(self.page.locator("#notes")).to_contain_text("some notes")
@@ -68,6 +71,8 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
         pdf.description = ''
         pdf.save()
         pdf.tags.set([])
+
+        create_collection(self.user.profile.current_workspace, 'Other')
 
         mock_get_file_path.return_value = pdf.file.name
 
@@ -119,6 +124,14 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_file_directory").fill("sub/dir")
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#file_directory")).to_contain_text("sub/dir")
+
+            # edit collection
+            expect(self.page.locator("#collection")).to_contain_text("Default")
+            self.page.locator("#collection-edit").click()
+            self.page.locator("#id_collection").click()
+            self.page.locator("#id_collection").select_option("Other")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#collection")).to_contain_text("Other")
 
     def test_details_star_archive(self):
         pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')

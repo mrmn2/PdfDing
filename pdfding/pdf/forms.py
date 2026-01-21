@@ -238,6 +238,36 @@ class PdfTagsForm(forms.ModelForm):
         return CleanHelpers.clean_tag_string_file_directory(self.cleaned_data['tag_string'])
 
 
+class PdfCollectionForm(forms.ModelForm):
+    """Form for changing the collection of a PDF."""
+
+    class Meta:
+        model = Pdf
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        """
+        Adds the profile to the form. This is done, so we can access information about the profile
+        when creating a new pdf.
+        """
+
+        pdf = kwargs['instance']
+        if not pdf:
+            raise KeyError('instance')
+
+        collections = pdf.collection.workspace.collection_set.all()
+
+        super(forms.ModelForm, self).__init__(*args, **kwargs)
+
+        # make sure current collection is first entry
+        choices = [(pdf.collection.id, pdf.collection.name)]
+
+        for collection in collections:
+            if collection != pdf.collection:
+                choices.append((collection.id, collection.name))
+        self.fields['collection'] = forms.ChoiceField(choices=choices)
+
+
 class ShareForm(forms.ModelForm):
     """Class for creating the form for sharing PDFs."""
 

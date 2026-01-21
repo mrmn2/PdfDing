@@ -16,6 +16,7 @@ from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services import pdf_services
+from pdf.services.collection_services import adjust_pdf_path
 from pdf.services.pdf_services import PdfProcessingServices
 from pdf.services.tag_services import TagServices
 from pdf.services.workspace_services import get_pdfs_of_workspace
@@ -272,13 +273,14 @@ class TagMixin:
 
 class EditPdfMixin(PdfMixin):
     obj_class = Pdf
-    fields_requiring_extra_processing = ['file_directory', 'name', 'tags']
+    fields_requiring_extra_processing = ['collection', 'file_directory', 'name', 'tags']
 
     @staticmethod
     def get_edit_form_dict():
         """Get the forms of the fields that can be edited as a dict."""
 
         form_dict = {
+            'collection': forms.PdfCollectionForm,
             'description': forms.DescriptionForm,
             'name': forms.NameForm,
             'tags': forms.PdfTagsForm,
@@ -294,6 +296,7 @@ class EditPdfMixin(PdfMixin):
         form_dict = self.get_edit_form_dict()
 
         initial_dict = {
+            'collection': {'collection': pdf.collection.name},
             'name': {'name': pdf.name},
             'description': {'description': pdf.description},
             'notes': {'notes': pdf.notes},
@@ -301,7 +304,7 @@ class EditPdfMixin(PdfMixin):
             'tags': {'tag_string': ' '.join(sorted([tag.name for tag in pdf.tags.all()]))},
         }
 
-        form = form_dict[field_name](initial=initial_dict[field_name])
+        form = form_dict[field_name](initial=initial_dict[field_name], instance=pdf)
 
         return form
 
@@ -334,6 +337,17 @@ class EditPdfMixin(PdfMixin):
 
         elif field_name == 'file_directory':
             PdfProcessingServices.process_renaming_pdf(pdf)
+
+        elif field_name == 'collection':
+            collection_id = form_data['collection']
+
+            # change collection and file paths if collection was changed
+            if pdf.collection.id != collection_id:
+                old_collection_name = pdf.collection.name
+                pdf.collection_id = collection_id
+                new_collection_name = pdf.collection.name
+                adjust_pdf_path(pdf, f'/{old_collection_name}/', f'/{new_collection_name}/', move_files=True)
+                pdf.save()
 
 
 class AnnotationOverviewMixin:

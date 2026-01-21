@@ -110,6 +110,24 @@
                            {% endif %}
                         </a>
                     </div>
+                    <div class="pt-2">
+                        <span class="text-lg font-bold">Collection</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                        <div class="w-[86%] text-sm">
+                            <span id="collection">
+                                {{ pdf.collection.name }}
+                            </span>
+                        </div>
+                        <div class="pr-0 md:pr-4">
+                            <a id="collection-edit" class="cursor-pointer text-primary hover:text-secondary"
+                                hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='collection' %}"
+                                hx-target="#collection"
+                                hx-swap="innerHTML" >
+                                Edit
+                            </a>
+                        </div>
+                    </div>
                     <div class="pt-4">
                         <span class="text-lg font-bold">Tags</span>
                     </div>
