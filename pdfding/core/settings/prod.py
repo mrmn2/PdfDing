@@ -56,6 +56,7 @@ if environ.get('BACKUP_ENABLE') == 'TRUE':
     BACKUP_ENDPOINT = environ.get('BACKUP_ENDPOINT', 'minio.pdfding.com')
     BACKUP_ACCESS_KEY = environ.get('BACKUP_ACCESS_KEY')
     BACKUP_SECRET_KEY = environ.get('BACKUP_SECRET_KEY')
+    BACKUP_REGION = environ.get('BACKUP_REGION', 'us-east-1')
     BACKUP_BUCKET_NAME = environ.get('BACKUP_BUCKET_NAME', 'pdfding')
     BACKUP_SCHEDULE = environ.get('BACKUP_SCHEDULE', '0 2 * * *')
     if environ.get('BACKUP_SECURE') == 'TRUE':
