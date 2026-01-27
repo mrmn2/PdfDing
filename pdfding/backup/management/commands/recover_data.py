@@ -8,6 +8,7 @@ from minio import Minio
 
 minio_client = Minio(
     endpoint=settings.BACKUP_ENDPOINT,
+    region=settings.BACKUP_REGION,
     secure=settings.BACKUP_SECURE,
     access_key=settings.BACKUP_ACCESS_KEY,
     secret_key=settings.BACKUP_SECRET_KEY,

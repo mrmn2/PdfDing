@@ -18,6 +18,7 @@ if settings.BACKUP_ENABLED:
     minio_client = Minio(
         endpoint=settings.BACKUP_ENDPOINT,
         secure=settings.BACKUP_SECURE,
+        region=settings.BACKUP_REGION,
         access_key=settings.BACKUP_ACCESS_KEY,
         secret_key=settings.BACKUP_SECRET_KEY,
     )
