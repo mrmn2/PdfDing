@@ -3,7 +3,7 @@ from .base import *  # noqa: F401 F403
 try:
     # set the minio acces and secret key and the SOCIALACCOUNT_PROVIDERS in dev_secrets
     from .dev_secrets import *  # noqa: F401 F403
-except ModuleNotFoundError:  # pragma: no cover 3 # nosec B105
+except ModuleNotFoundError:  # pragma: no cover
     # dummy SOCIALACCOUNT_PROVIDERS for tests
     SOCIALACCOUNT_PROVIDERS = {
         "openid_connect": {
@@ -14,7 +14,7 @@ except ModuleNotFoundError:  # pragma: no cover 3 # nosec B105
                     "provider_id": "oidc",
                     'name': 'OIDC',
                     "client_id": "dummy_id",
-                    "secret": "dummy_secret",
+                    "secret": "dummy_secret",  # nosec B105
                     "settings": {
                         "server_url": "dummy_url",
                     },

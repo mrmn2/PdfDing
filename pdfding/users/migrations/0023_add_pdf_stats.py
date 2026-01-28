@@ -2,7 +2,7 @@ from django.db import migrations, models
 from users.models import Profile
 
 
-def set_pdf_stats(profile: Profile) -> None:
+def set_pdf_stats(profile: Profile) -> None:  # pragma: no cover
     """Set PDF stats of a profile"""
 
     pass

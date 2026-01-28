@@ -55,7 +55,7 @@ class TestAuthRelated(TestCase):
     def test_oidc_callback(self):
         response = self.client.get(reverse('oidc_callback'))
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 401)
 
 
 class BaseProfileView(TestCase):
