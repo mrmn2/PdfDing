@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.5.0 (Jan 29, 2026)
+This release introduces workspaces and collections, which greatly improve the management of your PDF files.
+
+## Important
+Before updating, make sure to take a backup. The internal changes in this release are quite substantial and while everything is thoroughly tested, problems could still arise when performing the migrations. 
+
+### What's Changed
+
+* Add workspaces and collections by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/198, https://github.com/mrmn2/PdfDing/pull/206, https://github.com/mrmn2/PdfDing/pull/210, https://github.com/mrmn2/PdfDing/pull/211, https://github.com/mrmn2/PdfDing/pull/212, https://github.com/mrmn2/PdfDing/pull/213, https://github.com/mrmn2/PdfDing/pull/214, https://github.com/mrmn2/PdfDing/pull/215, https://github.com/mrmn2/PdfDing/pull/216, https://github.com/mrmn2/PdfDing/pull/217, https://github.com/mrmn2/PdfDing/pull/223, https://github.com/mrmn2/PdfDing/pull/226, https://github.com/mrmn2/PdfDing/pull/227, https://github.com/mrmn2/PdfDing/pull/228, https://github.com/mrmn2/PdfDing/pull/231, https://github.com/mrmn2/PdfDing/pull/235, https://github.com/mrmn2/PdfDing/pull/237, https://github.com/mrmn2/PdfDing/pull/238
+* Combine comments and highlights into annotation on PDF overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/195
+* fix: allow overriding data directory by @phanirithvij in https://github.com/mrmn2/PdfDing/pull/202
+* fix: Adjust PDF overview layout for long titles by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/230
+* Update dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/240
+* feat: allow specifying region for s3 backups by @phanirithvij in https://github.com/mrmn2/PdfDing/pull/242
+
+## New Contributors
+* @phanirithvij made their first contribution in https://github.com/mrmn2/PdfDing/pull/202
+
 ## v1.4.1 (Nov 15, 2025)
 ### What's Changed
 
