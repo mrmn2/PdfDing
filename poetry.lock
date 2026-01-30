@@ -731,8 +731,10 @@ files = [
 [package.dependencies]
 asgiref = ">=3.8.1"
 Django = ">=4.2.16"
+fido2 = {version = ">=1.1.2,<3", optional = true, markers = "extra == \"mfa\""}
 oauthlib = {version = ">=3.3.0,<4", optional = true, markers = "extra == \"socialaccount\""}
 pyjwt = {version = ">=2.0,<3", extras = ["crypto"], optional = true, markers = "extra == \"socialaccount\""}
+qrcode = {version = ">=7.0.0,<9", optional = true, markers = "extra == \"mfa\""}
 requests = {version = ">=2.0.0,<3", optional = true, markers = "extra == \"socialaccount\""}
 
 [package.extras]
@@ -772,6 +774,24 @@ files = [
 [package.dependencies]
 asgiref = ">=3.6"
 django = ">=4.2"
+
+[[package]]
+name = "fido2"
+version = "2.1.1"
+description = "FIDO2/WebAuthn library for implementing clients and servers."
+optional = false
+python-versions = "<4,>=3.10"
+groups = ["main"]
+files = [
+    {file = "fido2-2.1.1-py3-none-any.whl", hash = "sha256:f85c16c8084abf6530b6c6ec3a0cf8575943321842e06916686943a8b784182c"},
+    {file = "fido2-2.1.1.tar.gz", hash = "sha256:f1379f845870cc7fc64c7f07323c3ce41e8c96c37054e79e0acd5630b3fec5ac"},
+]
+
+[package.dependencies]
+cryptography = ">=2.6,<35 || >35,<49"
+
+[package.extras]
+pcsc = ["pyscard (>=1.9,<3)"]
 
 [[package]]
 name = "flake8"
@@ -2088,4 +2108,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11 <4.0"
-content-hash = "1029dbaf2ba82447d4ad1912ebd22fa729ce7aba8e1522e4501669d64d5f3d6f"
+content-hash = "c4bb85a8418b70a020b4b2b36271c994ffd1b0b07095f3997dd90ed478d4b0e5"

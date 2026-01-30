@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.openid_connect',
+    'allauth.mfa',
     'django_htmx',
     'huey.contrib.djhuey',
     'admin',
