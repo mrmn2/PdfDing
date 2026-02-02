@@ -41,7 +41,8 @@ A live demo, powered by [PikaPods](https://www.pikapods.com/), is available at
 ## Features
 
 * Seamless browser based PDF viewing on multiple devices. Remembers current position - continue where you stopped reading
-* Stay on top of your PDF collection with multi-level tagging, starring and archiving functionalities
+* Stay on top of your PDF collection with workspaces, collections, multi-level tagging,
+  starring and archiving functionalities
 * Edit PDFs by adding text, highlighting and drawings
 * Add signatures to PDFs and access them on all devices
 * Manage and export PDF highlights and comments in dedicated sections
