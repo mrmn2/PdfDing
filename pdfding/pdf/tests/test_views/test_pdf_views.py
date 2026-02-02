@@ -843,7 +843,7 @@ class TestViews(TestCase):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         export_path = PdfProcessingServices.get_annotation_export_path(str(self.user.id))
-        export_path.parent.mkdir(exist_ok=True)
+        export_path.parent.mkdir(parents=True, exist_ok=True)
         export_path.touch()
         self.client.get(reverse('export_annotations', kwargs={'kind': 'comments', 'identifier': pdf.id}))
 
@@ -858,7 +858,7 @@ class TestViews(TestCase):
         Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
         export_path = PdfProcessingServices.get_annotation_export_path(str(self.user.id))
-        export_path.parent.mkdir(exist_ok=True)
+        export_path.parent.mkdir(parents=True, exist_ok=True)
         export_path.touch()
         self.client.get(reverse('export_annotations', kwargs={'kind': 'highlights'}))
 
