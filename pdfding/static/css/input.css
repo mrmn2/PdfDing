@@ -81,7 +81,7 @@ hr {
     @apply mt-6 mb-6
 }
 .button, button, [type='submit'], [type='button'] {
-    @apply bg-primary text-white font-bold px-4 py-3 inline-block
+    @apply bg-primary text-white font-bold px-4 py-2 inline-block
     rounded-lg transition-all cursor-pointer
 }
 .button:hover, button:hover, [type='submit']:hover, [type='button']:hover {
