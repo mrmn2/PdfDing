@@ -169,26 +169,34 @@ class PdfProcessingServices:
                 pdfium_page = pyreadium_pdf[i]
 
                 if "/Annots" in pypdf_page:
-                    for annotation in pypdf_page["/Annots"]:
-                        annotation_object = annotation.get_object()
+                    try:
+                        for annotation in pypdf_page["/Annots"]:
+                            annotation_object = annotation.get_object()
 
-                        annotation_type = annotation_object["/Subtype"]
+                            annotation_type = annotation_object["/Subtype"]
 
-                        if annotation_type in ["/FreeText", "/Highlight"]:
-                            date_time_string = f'{annotation_object["/CreationDate"].split(':')[-1]}-+00:00'
-                            creation_date = datetime.strptime(date_time_string, '%Y%m%d%H%M%S-%z')
+                            if annotation_type in ["/FreeText", "/Highlight"]:
+                                date_time_string = f'{annotation_object["/CreationDate"].split(':')[-1]}-+00:00'
+                                creation_date = datetime.strptime(date_time_string, '%Y%m%d%H%M%S-%z')
 
-                            if annotation_type == "/FreeText":
-                                comment_text = annotation_object["/Contents"]
-                                pdf_comment_class.objects.create(
-                                    text=comment_text, page=i + 1, creation_date=creation_date, pdf=pdf
-                                )
+                                if annotation_type == "/FreeText":
+                                    comment_text = annotation_object["/Contents"]
+                                    pdf_comment_class.objects.create(
+                                        text=comment_text, page=i + 1, creation_date=creation_date, pdf=pdf
+                                    )
 
-                            elif annotation_type == "/Highlight":
-                                highlight_text = cls.extract_pdf_highlight_text(annotation_object, pdfium_page)
-                                pdf_highlight_class.objects.create(
-                                    text=highlight_text, page=i + 1, creation_date=creation_date, pdf=pdf
-                                )
+                                elif annotation_type == "/Highlight":
+                                    highlight_text = cls.extract_pdf_highlight_text(annotation_object, pdfium_page)
+                                    pdf_highlight_class.objects.create(
+                                        text=highlight_text, page=i + 1, creation_date=creation_date, pdf=pdf
+                                    )
+                    except Exception as e:  # nosec # noqa # pragma: no cover
+                        workspace_id = pdf.collection.workspace.id
+
+                        logger.info(
+                            f'Could not extract highlights and comments for "{pdf.name}" of workspace "{workspace_id}"'
+                        )
+                        logger.info(traceback.format_exc())
 
             pyreadium_pdf.close()
 
