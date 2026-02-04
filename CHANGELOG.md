@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.5.1 (Feb 04, 2026)
+### What's Changed
+* Add further zoom options in viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/245
+* Continue annotation extraction if error encountered by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/246
+* Dependencies security update for v1.5.1 by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/247
+
 ## v1.5.0 (Jan 29, 2026)
 This release introduces workspaces and collections, which greatly improve the management of your PDF files.
 
