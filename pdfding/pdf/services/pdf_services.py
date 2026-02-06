@@ -366,7 +366,12 @@ def get_pdf_info_list(workspace: Workspace) -> list[tuple]:
     pdf_info_list = []
 
     for pdf in get_pdfs_of_workspace(workspace):
-        pdf_size = Path(pdf.file.path).stat().st_size
+        try:
+            pdf_size = Path(pdf.file.path).stat().st_size
+        except FileNotFoundError:  # pragma: no cover
+            logger.info(f'File for PDF "{pdf.name}" of workspace "{pdf.collection.workspace.id}" not found!')
+            pdf_size = 0
+
         pdf_info_list.append((pdf.name, pdf_size))
 
     return pdf_info_list
