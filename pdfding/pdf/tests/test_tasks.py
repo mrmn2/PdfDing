@@ -30,6 +30,11 @@ class TestTasks(TestCase):
         user_consume_path = consume_path / str(self.user.id)
         user_consume_path.mkdir(exist_ok=True)
 
+        # set current collection to all, so we make sure that the
+        # default collection of the personal workspace is used.
+        self.user.profile.current_collection_id = 'all'
+        self.user.profile.save()
+
         pdf_path_1 = user_consume_path / 'dummy_1.pdf'
         pdf_path_2 = user_consume_path / 'dummy_2.pdf'
         pdf_path_3 = user_consume_path / 'dummy_3.pdf'
@@ -41,7 +46,7 @@ class TestTasks(TestCase):
         for target_path in [pdf_path_1, pdf_path_2, wrong_pdf_path]:
             copy(dummy_path, target_path)
 
-        pdfs = Pdf.objects.filter(collection=self.user.profile.current_collection).all()
+        pdfs = Pdf.objects.filter(collection__id=self.user.id).all()
         self.assertEqual(pdfs.count(), 1)
 
         # test with skip existing set to false
@@ -49,7 +54,7 @@ class TestTasks(TestCase):
         # as there is already a pdf with the name dummy_1, we expect dummy_1_12345678 as pdf name
         tasks.consume_function(False)
 
-        pdfs = Pdf.objects.filter(collection=self.user.profile.current_collection).all()
+        pdfs = Pdf.objects.filter(collection__id=self.user.id).all()
         self.assertEqual(pdfs.count(), 3)
         self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2'], sorted(pdf.name for pdf in pdfs))
         self.assertEqual(len(list(user_consume_path.iterdir())), 0)
@@ -60,7 +65,7 @@ class TestTasks(TestCase):
             copy(dummy_path, target_path)
 
         tasks.consume_function(True)
-        pdfs = Pdf.objects.filter(collection=self.user.profile.current_collection).all()
+        pdfs = Pdf.objects.filter(collection__id=self.user.id).all()
         self.assertEqual(pdfs.count(), 4)
         self.assertEqual(['dummy_1', 'dummy_1_12345678', 'dummy_2', 'dummy_3'], sorted(pdf.name for pdf in pdfs))
         self.assertEqual(len(list(user_consume_path.iterdir())), 0)

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
-from pdf.models.collection_models import Collection
+from pdf.models.collection_models import Collection, CollectionError
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
@@ -111,6 +111,9 @@ class Profile(models.Model):
     @property
     def current_collection(self):
         """Return the current collection of the profile."""
+
+        if self.current_collection_id == 'all':  # pragma: no cover
+            raise CollectionError('Current collection not defined for collection ID "all"!')
 
         return self.collections.get(id=self.current_collection_id)
 

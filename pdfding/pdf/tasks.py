@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from huey import crontab
 from huey.contrib.djhuey import periodic_task
+from pdf.models.collection_models import Collection
 from pdf.services import pdf_services
 
 logger = logging.getLogger('huey')
@@ -48,10 +49,11 @@ def consume_function(skip_existing: bool):
 
                     with file_path.open(mode="rb") as f:
                         pdf_file = File(f, name=file_path.name)
+                        collection = Collection.objects.get(id=user.id)
 
                         pdf_services.PdfProcessingServices.create_pdf(
                             name=pdf_name,
-                            collection=user.profile.current_collection,
+                            collection=collection,
                             pdf_file=pdf_file,
                             tag_string=settings.CONSUME_TAG_STRING,
                         )
