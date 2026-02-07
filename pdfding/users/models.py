@@ -168,7 +168,6 @@ class Profile(models.Model):
     def tags(self) -> QuerySet:
         """Return all tags associated with the profile."""
 
-        # return self.current_workspace.tag_set.all()
         return self.current_workspace.tag_set.all()
 
     @property
@@ -186,6 +185,15 @@ class Profile(models.Model):
         workspace = self.workspaces.get(id=self.current_workspace_id)
 
         return workspace.collections
+
+    @property
+    def mfa_activated(self) -> bool:
+        """Check if multi factor authentication is activated"""
+
+        if self.user.authenticator_set.count():
+            return True
+        else:
+            return False
 
     def has_access_to_workspace(self, workspace_id: str) -> bool:
         """Check if the profile has access to the specified workspace"""
