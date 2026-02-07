@@ -20,6 +20,7 @@ from django.urls import include, path
 from pdf.views.pdf_views import redirect_to_overview
 from users.views import (
     PdfDingLoginView,
+    PdfDingLogoutView,
     PdfDingPasswordResetDoneView,
     PdfDingPasswordResetView,
     PdfDingSignupView,
@@ -30,6 +31,7 @@ from users.views import (
 urlpatterns = [
     # overwrite some allauth urls as they are blocked otherwise because of the LoginRequiredMiddleware
     path('accountlogin/', PdfDingLoginView.as_view(), name='login'),
+    path('accountlogout/', PdfDingLogoutView.as_view(), name='logout'),
     path('accountsignup/', PdfDingSignupView.as_view(), name='signup'),
     path('accountpassword/reset/', PdfDingPasswordResetView.as_view(), name='password_reset'),
     path('accountpassword/reset/done/', PdfDingPasswordResetDoneView.as_view(), name='password_reset_done'),
