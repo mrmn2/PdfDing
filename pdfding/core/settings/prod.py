@@ -49,6 +49,21 @@ if environ.get('SECURE_SSL_REDIRECT') == 'TRUE':
 if environ.get('SECURE_HSTS_SECONDS'):
     SECURE_HSTS_SECONDS = environ.get('SECURE_HSTS_SECONDS')
 
+# MFA settings
+MFA_SUPPORTED_TYPES = ['totp']
+if environ.get('MFA_USE_RECOVERY_CODES', 'TRUE') == 'TRUE':
+    MFA_SUPPORTED_TYPES.append('recovery_codes')
+    MFA_RECOVERY_CODE_COUNT = environ.get('MFA_RECOVERY_CODE_COUNT', 10)
+if environ.get('MFA_USE_WEBAUTHN', 'TRUE') == 'TRUE':
+    MFA_SUPPORTED_TYPES.append('webauthn')
+if environ.get('MFA_TRUST_ENABLED', 'TRUE') == 'TRUE':
+    MFA_TRUST_ENABLED = True
+    MFA_TRUST_COOKIE_AGE = environ.get('MFA_TRUST_COOKIE_AGE', 14)
+if environ.get('MFA_ALLOW_UNVERIFIED_EMAIL', 'TRUE') == 'TRUE':
+    MFA_ALLOW_UNVERIFIED_EMAIL = True
+if environ.get('MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN', 'TRUE') == 'TRUE':
+    MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = True
+
 # backup settings
 if environ.get('BACKUP_ENABLE') == 'TRUE':
     # without a dummy value, huey will not start
