@@ -193,8 +193,8 @@ class TestPdfProcessingServices(TestCase):
         self.assertFalse(pdf.pdfcomment_set.count())
         self.assertFalse(pdf.pdfhighlight_set.count())
 
-    @mock.patch('pdf.services.pdf_services.PdfProcessingServices.export_annotations_to_yaml')
-    def test_export_annotations(self, mock_export_annotation_to_yaml):
+    @mock.patch('pdf.services.pdf_services.PdfProcessingServices.export_annotations_to_json')
+    def test_export_annotations(self, mock_export_annotation_to_json):
         pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
         pdf_2 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_2')
 
@@ -205,37 +205,37 @@ class TestPdfProcessingServices(TestCase):
 
         # kind = comments and all pdfs
         service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='comments')
-        comment_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        comment_arg, id_arg = mock_export_annotation_to_json.call_args.args
         self.assertEqual(id_arg, str(self.user.id))
         for actual_comment, expected_comment in zip(comment_arg.order_by('text'), [comment_1, comment_2]):
             self.assertEqual(actual_comment, expected_comment)
 
         # kind = highlights and all pdfs
         service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='highlights')
-        highlight_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        highlight_arg, id_arg = mock_export_annotation_to_json.call_args.args
         self.assertEqual(id_arg, str(self.user.id))
         for actual_highlight, expected_highlight in zip(highlight_arg.order_by('text'), [highlight_1, highlight_2]):
             self.assertEqual(actual_highlight, expected_highlight)
 
         # kind = comments and single pdfs
         service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='comments', pdf=pdf_1)
-        comment_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        comment_arg, id_arg = mock_export_annotation_to_json.call_args.args
         self.assertEqual(id_arg, str(self.user.id))
         for actual_comment, expected_comment in zip(comment_arg.order_by('text'), [comment_1]):
             self.assertEqual(actual_comment, expected_comment)
 
         # kind = highlights and single pdfs
         service.PdfProcessingServices.export_annotations(profile=self.user.profile, kind='highlights', pdf=pdf_1)
-        highlight_arg, id_arg = mock_export_annotation_to_yaml.call_args.args
+        highlight_arg, id_arg = mock_export_annotation_to_json.call_args.args
         self.assertEqual(id_arg, str(self.user.id))
         for actual_highlight, expected_highlight in zip(highlight_arg.order_by('text'), [highlight_1]):
             self.assertEqual(actual_highlight, expected_highlight)
 
     @mock.patch(
         'pdf.services.pdf_services.PdfProcessingServices.get_annotation_export_path',
-        return_value=Path(__file__).parents[1] / 'data' / 'tmp_export.yaml',
+        return_value=Path(__file__).parents[1] / 'data' / 'tmp_export.json',
     )
-    def test_export_annotation_to_yaml(self, mock_get_annotation_export_path):
+    def test_export_annotation_to_json(self, mock_export_annotation_to_json):
         creation_date = datetime.strptime('2025-03-17 20:26:48+00:00', '%Y-%m-%d %H:%M:%S%z')
 
         pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
@@ -246,13 +246,11 @@ class TestPdfProcessingServices(TestCase):
         PdfComment.objects.create(text='another c', page=0, creation_date=creation_date, pdf=pdf_2)
 
         export_path = service.PdfProcessingServices.get_annotation_export_path(str(self.user.id))
-        service.PdfProcessingServices.export_annotations_to_yaml(
+        service.PdfProcessingServices.export_annotations_to_json(
             PdfComment.objects.all(), self.user.profile.current_workspace.id
         )
 
-        self.assertTrue(
-            filecmp.cmp(export_path, Path(__file__).parents[1] / 'data' / 'dummy_export.yaml', shallow=False)
-        )
+        self.assertTrue(filecmp.cmp(export_path, Path(__file__).parents[1] / 'data' / 'tmp_export.json', shallow=False))
 
         export_path.unlink()
 
