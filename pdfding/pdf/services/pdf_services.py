@@ -30,8 +30,9 @@ from pdf.services.tag_services import TagServices
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_pdfs_of_workspace
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
-from ruamel.yaml import YAML
 from users.models import Profile
+
+import json
 
 logger = getLogger(__file__)
 
@@ -236,7 +237,7 @@ class PdfProcessingServices:
 
     @classmethod
     def export_annotations(cls, profile: Profile, kind: str, pdf: Pdf = None):
-        """Export annotations to yaml. Annotations can be comments or highlights of a single or all pdfs of a user."""
+        """Export annotations to json. Annotations can be comments or highlights of a single or all pdfs of a user."""
 
         if pdf:
             if kind == 'comments':
@@ -250,11 +251,11 @@ class PdfProcessingServices:
             else:
                 pdf_annotations = PdfHighlight.objects.filter(pdf__in=current_workspace_pdfs).all()
 
-        cls.export_annotations_to_yaml(pdf_annotations, profile.current_workspace.id)
+        cls.export_annotations_to_json(pdf_annotations, profile.current_workspace.id)
 
     @classmethod
-    def export_annotations_to_yaml(cls, annotations: QuerySet[PdfAnnotation], workspace_id: str):
-        """Export the provided annotations to yaml."""
+    def export_annotations_to_json(cls, annotations: QuerySet[PdfAnnotation], workspace_id: str):
+        """Export the provided annotations to json."""
 
         export_path = cls.get_annotation_export_path(workspace_id)
         export_path.parent.mkdir(exist_ok=True)
@@ -272,17 +273,14 @@ class PdfProcessingServices:
 
         serialized_annotations = dict(sorted(serialized_annotations.items(), key=lambda x: str.lower(x[0])))
 
-        yaml = YAML()
-        yaml.indent(mapping=2, sequence=4, offset=2)
-
-        with open(export_path, 'wb') as f:
-            yaml.dump(dict(serialized_annotations), f)
+        with open(export_path, 'w') as export_file:
+            json.dump(dict(serialized_annotations), export_file, indent=2)
 
     @staticmethod
     def get_annotation_export_path(workspace_id: str) -> Path:  # pragma: no cover
         """Get the annotation export path of the specified workspace."""
 
-        return MEDIA_ROOT / workspace_id / 'annotations' / 'annotations_export.yaml'
+        return MEDIA_ROOT / workspace_id / 'annotations' / 'annotations_export.json'
 
     @classmethod
     def process_renaming_pdf(cls, pdf: Pdf):
