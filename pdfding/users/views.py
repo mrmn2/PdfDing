@@ -3,7 +3,7 @@ from random import randint
 from uuid import uuid4
 
 from allauth.account.internal.flows.email_verification import send_verification_email_for_user
-from allauth.account.views import LoginView, PasswordResetDoneView, PasswordResetView, SignupView
+from allauth.account.views import LoginView, LogoutView, PasswordResetDoneView, PasswordResetView, SignupView
 from allauth.socialaccount.providers.openid_connect.views import callback, login
 from django.conf import settings as django_settings
 from django.contrib import messages
@@ -337,6 +337,17 @@ class PdfDingLoginView(LoginView):
     @login_not_required
     def dispatch(self, request, *args, **kwargs):
         return super(PdfDingLoginView, self).dispatch(request, *args, **kwargs)
+
+
+@method_decorator(login_not_required, name="dispatch")
+class PdfDingLogoutView(LogoutView):
+    """
+    Overwrite allauths login to be accessed without being logged in
+    """
+
+    @login_not_required
+    def dispatch(self, request, *args, **kwargs):  # pragma: no cover
+        return super(PdfDingLogoutView, self).dispatch(request, *args, **kwargs)
 
 
 @method_decorator(login_not_required, name="dispatch")

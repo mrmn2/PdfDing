@@ -1,5 +1,6 @@
 from unittest.mock import Mock, patch
 
+from allauth.mfa.models import Authenticator
 from allauth.socialaccount.models import SocialAccount
 from django.test import override_settings
 from django.urls import reverse
@@ -190,13 +191,17 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
                 self.page.get_by_text("Cancel").click()
                 expect(self.page.locator(name)).to_contain_text('Edit')
 
-    def test_settings_change_password(self):
+    def test_settings_mfa_activated(self):
+        Authenticator.objects.create(user=self.user, type='totp', data={})
+
         with sync_playwright() as p:
             self.open(reverse('account_settings'), p)
+            expect(self.page.locator('#mfa_activated')).to_contain_text('Activated')
 
-            # we just check if allauth change password is displayed
-            self.page.get_by_role('link', name='Edit').click()
-            expect(self.page.get_by_role('button')).to_contain_text('Change Password')
+    def test_settings_mfa_deactivated(self):
+        with sync_playwright() as p:
+            self.open(reverse('account_settings'), p)
+            expect(self.page.locator('#mfa_activated')).to_contain_text('Deactivated')
 
     def test_settings_social_only(self):
         # test that email and password settings are not present for oidc users
@@ -208,6 +213,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
 
             expect(self.page.locator('#email_edit')).to_have_count(0)
             expect(self.page.get_by_text("Password")).to_have_count(0)
+            expect(self.page.get_by_text("Two-Factor Authentication")).to_have_count(0)
 
     def test_header_dropdown(self):
         with sync_playwright() as p:

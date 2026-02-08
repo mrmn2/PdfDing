@@ -54,7 +54,24 @@
                     <span>***</span>
                 </div>
                 <div class="pr-0 md:pr-6">
-                    <a href="{% url 'account_change_password' %}" class="cursor-pointer text-primary hover:text-secondary">
+                    <a id="edit_password" href="{% url 'account_change_password' %}" class="cursor-pointer text-primary hover:text-secondary">
+                        Edit
+                    </a>
+                </div>
+            </div>
+            <div class="pt-3">
+                <span class="text-lg font-bold">Two-Factor Authentication</span>
+            </div>
+            <div id="mfa_activated" class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                <div>
+                    {% if request.user.profile.mfa_activated %}
+                    <span>Activated</span>
+                    {% else %}
+                    <span>Deactivated</span>
+                    {% endif %}
+                </div>
+                <div class="pr-0 md:pr-6">
+                    <a id="edit_mfa" href="{% url 'mfa_index' %}" class="cursor-pointer text-primary hover:text-secondary">
                         Edit
                     </a>
                 </div>
