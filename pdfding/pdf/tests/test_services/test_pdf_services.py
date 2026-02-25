@@ -250,7 +250,9 @@ class TestPdfProcessingServices(TestCase):
             PdfComment.objects.all(), self.user.profile.current_workspace.id
         )
 
-        self.assertTrue(filecmp.cmp(export_path, Path(__file__).parents[1] / 'data' / 'tmp_export.json', shallow=False))
+        self.assertTrue(
+            filecmp.cmp(export_path, Path(__file__).parents[1] / 'data' / 'dummy_export.json', shallow=False)
+        )
 
         export_path.unlink()
 
