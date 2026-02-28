@@ -6,9 +6,10 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl
                     border border-slate-200 dark:border-slate-700 creme:border-creme-dark-light
                     dark:text-slate-200 creme:bg-creme-light creme:text-stone-700 w-full">
-            <div class="px-2 py-4 md:p-8 [&>*>a]:underline [&>*>*>*>a]:hover:underline [&>*>a]:hover:text-primary
-                        [&>*>img]:bg-slate-100 [&>*>img]:mb-4">
-            {% block content %}
+            <div class="px-2 py-4 md:p-8 [&>div>a]:pr-3 [&>*>a]:underline [&>*>*>*>a]:hover:underline [&>*>a]:hover:text-primary">
+            {% block inner_layout %}
+              {% block content %}
+              {% endblock %}
             {% endblock %}
             </div>
         </div>
