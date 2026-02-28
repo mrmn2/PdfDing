@@ -511,7 +511,8 @@ class ViewerView(PdfMixin, View):
                 'current_page': current_page,
                 'pdf_id': identifier,
                 'revision': pdf.revision,
-                'tab_title': pdf.name,
+                # without replacing the update_pdf in viewer_logged_in.js will not work
+                'tab_title': pdf.name.replace("'", ""),
                 'theme': theme,
                 'theme_color': theme_color,
                 'user_view_bool': True,

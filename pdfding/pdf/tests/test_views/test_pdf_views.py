@@ -607,7 +607,8 @@ class TestViews(TestCase):
     def test_view_get(self, mock_get_viewer_theme_and_color):
         mock_get_viewer_theme_and_color.return_value = ('dark', '4 4 4')
 
-        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        # add quote too check if it is removed correctly
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name="pdf'_with_quote")
         pdf.current_page = 4
         pdf.revision = 3
         pdf.save()
@@ -616,14 +617,14 @@ class TestViews(TestCase):
 
         response = self.client.get(reverse('view_pdf', kwargs={'identifier': pdf.id}))
 
+        pdf = self.user.profile.current_collection.pdfs.get(name=pdf.name)
         # check that views increased by one
-        pdf = self.user.profile.current_collection.pdfs.get(name='pdf')
         self.assertEqual(pdf.views, 1)
         time_diff = datetime.now(timezone.utc) - pdf.last_viewed_date
         self.assertLess(time_diff.total_seconds(), 1)
 
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
-        self.assertEqual(response.context['tab_title'], str(pdf.name))
+        self.assertEqual(response.context['tab_title'], 'pdf_with_quote')
         self.assertEqual(response.context['current_page'], 4)
         self.assertEqual(response.context['revision'], 3)
         self.assertEqual(response.context['theme'], 'dark')
