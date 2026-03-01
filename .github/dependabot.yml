@@ -1,8 +1,10 @@
+version: 2
+
 multi-ecosystem-groups:
   pdfding:
     schedule:
       interval: "weekly"
-      day: "saturday"
+      day: "friday"
 
 updates:
   - package-ecosystem: "pip"
