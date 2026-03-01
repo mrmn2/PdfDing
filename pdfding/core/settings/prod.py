@@ -56,12 +56,12 @@ if environ.get('MFA_USE_RECOVERY_CODES', 'TRUE') == 'TRUE':
     MFA_RECOVERY_CODE_COUNT = environ.get('MFA_RECOVERY_CODE_COUNT', 10)
 if environ.get('MFA_USE_WEBAUTHN', 'TRUE') == 'TRUE':
     MFA_SUPPORTED_TYPES.append('webauthn')
-if environ.get('MFA_TRUST_ENABLED', 'TRUE') == 'TRUE':
+if environ.get('MFA_TRUST_ENABLED', 'FALSE') == 'TRUE':
     MFA_TRUST_ENABLED = True
     MFA_TRUST_COOKIE_AGE = environ.get('MFA_TRUST_COOKIE_AGE', 14)
-if environ.get('MFA_ALLOW_UNVERIFIED_EMAIL', 'TRUE') == 'TRUE':
+if environ.get('MFA_ALLOW_UNVERIFIED_EMAIL', 'FALSE') == 'TRUE':
     MFA_ALLOW_UNVERIFIED_EMAIL = True
-if environ.get('MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN', 'TRUE') == 'TRUE':
+if environ.get('MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN', 'FALSE') == 'TRUE':
     MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = True
 
 # backup settings
