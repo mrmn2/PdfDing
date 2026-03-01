@@ -148,6 +148,14 @@ class Pdf(models.Model):
         collection_name = self.collection.name
         workspace_id = self.workspace.id
 
+        # delete pdf, thumbnail and preview files
+        for file in [self.file, self.preview, self.thumbnail]:
+            try:
+                file.close()
+                file.delete()
+            except FileNotFoundError:  # pragma: no cover
+                pass
+
         super().delete(*args, **kwargs)
 
         if file_directory:

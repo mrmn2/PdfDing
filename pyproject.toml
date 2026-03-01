@@ -1,7 +1,7 @@
 [project]
 name = "pdfding"
 # do not change the version line position as it will break the automated update after a release
-version = "1.4.1"
+version = "1.6.1"
 description = "Selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices."
 authors = [
   { name = "mrmn2" },
@@ -14,7 +14,6 @@ license-files = ["LICENSE"]
 python = ">=3.11 <4.0"
 django = "==5.2.11"
 django-allauth = { extras = ["mfa", "socialaccount"], version = "==65.14.3" }
-django-cleanup = "==9.0.0"
 django-htmx = "==1.27.0"
 gunicorn = "==25.1.0"
 huey = "==2.6.0"

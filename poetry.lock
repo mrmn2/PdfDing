@@ -762,18 +762,6 @@ socialaccount = ["oauthlib (>=3.3.0,<4)", "pyjwt[crypto] (>=2.0,<3)", "requests 
 steam = ["python3-openid (>=3.0.8,<4)"]
 
 [[package]]
-name = "django-cleanup"
-version = "9.0.0"
-description = "Deletes old files."
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "django_cleanup-9.0.0-py3-none-any.whl", hash = "sha256:19f8b0e830233f9f0f683b17181f414672a0f48afe3ea3cc80ba47ae40ad880c"},
-    {file = "django_cleanup-9.0.0.tar.gz", hash = "sha256:bb9fb560aaf62959c81e31fa40885c36bbd5854d5aa21b90df2c7e4ba633531e"},
-]
-
-[[package]]
 name = "django-htmx"
 version = "1.27.0"
 description = "Extensions for using Django with htmx."
@@ -2104,4 +2092,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11 <4.0"
-content-hash = "d2d8aeee097982806dfa7a53d565f32c008a70a61575c7fe27461f57865ffa99"
+content-hash = "c76e03b9cba62c86364a9114bebb74f90502a846611b17ff748e2ee1348b898f"

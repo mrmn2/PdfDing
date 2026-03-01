@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
+from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf, get_qrcode_file_path
@@ -11,16 +13,28 @@ class TestSharedPdf(TestCase):
         self.user = User.objects.create_user(username='username', password='password')
         self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
+    def test_delete(self):
+        # the file name (path) is set automatically, the name in simpleupload is just a dummy
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=5)
+        shared_pdf.file = SimpleUploadedFile('qr.png', b'these are the file contents!')
+        shared_pdf.save()
+
+        file_path = MEDIA_ROOT / shared_pdf.file.name
+        file_path.touch(exist_ok=True)
+
+        shared_pdf.delete()
+
+        self.assertFalse(SharedPdf.objects.filter(id=shared_pdf.id))
+        assert not file_path.exists()
+
     def test_not_inactive(self):
         expiration_date = datetime.now(timezone.utc) + timedelta(minutes=5)
-
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=5, expiration_date=expiration_date)
 
         self.assertFalse(shared_pdf.inactive)
 
     def test_inactive_expiration(self):
         expiration_date = datetime.now(timezone.utc) - timedelta(minutes=5)
-
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=5, expiration_date=expiration_date)
 
         self.assertTrue(shared_pdf.inactive)

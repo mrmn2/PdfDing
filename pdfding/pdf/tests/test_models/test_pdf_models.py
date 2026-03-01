@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from pdf.models.pdf_models import (
     Pdf,
@@ -22,10 +23,25 @@ class TestPdf(TestCase):
 
     @patch('pdf.models.pdf_models.delete_empty_dirs_after_rename_or_delete')
     def test_delete(self, mock_delete_empty_dirs_after_rename_or_delete):
+        # the file name (path) is set automatically, the name in simpleupload is just a dummy
+        self.pdf.file = SimpleUploadedFile('bla.pdf', b'these are the file contents!')
+        self.pdf.preview = SimpleUploadedFile('preview.png', b'these are the file contents!')
+        self.pdf.thumbnail = SimpleUploadedFile('thumbnail.png', b'these are the file contents!')
+        self.pdf.save()
+
+        file_paths = []
+
+        for file_object in [self.pdf.file, self.pdf.preview, self.pdf.thumbnail]:
+            file_path = MEDIA_ROOT / file_object.name
+            file_path.touch(exist_ok=True)
+            file_paths.append(file_path)
+
         self.pdf.delete()
 
         self.assertFalse(Pdf.objects.filter(id=self.pdf.id))
         mock_delete_empty_dirs_after_rename_or_delete.assert_not_called()
+        for file_path in file_paths:
+            assert not file_path.exists()
 
     @patch('pdf.models.pdf_models.delete_empty_dirs_after_rename_or_delete')
     def test_delete_with_file_directory(self, mock_delete_empty_dirs_after_rename_or_delete):

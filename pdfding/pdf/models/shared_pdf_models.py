@@ -33,9 +33,19 @@ class SharedPdf(models.Model):
     def __str__(self) -> str:
         return self.name  # pragma: no cover
 
+    def delete(self, *args, **kwargs) -> None:
+        # delete qr code file
+        try:
+            self.file.close()
+            self.file.delete()
+        except FileNotFoundError:  # pragma: no cover
+            pass
+
+        super().delete(*args, **kwargs)
+
     @property
     def inactive(self) -> bool:
-        """The shared pdf weather is inactive. This will consider the expiration date and max views."""
+        """Wether the shared pdf is inactive. This will consider the expiration date and max views."""
 
         return (self.max_views and self.views >= self.max_views) or (
             self.expiration_date and datetime.now(timezone.utc) >= self.expiration_date
@@ -43,7 +53,7 @@ class SharedPdf(models.Model):
 
     @property
     def deleted(self) -> bool:
-        """The shared pdf weather is deleted. This will consider the deletion date."""
+        """Wether the shared pdf is deleted. This will consider the deletion date."""
 
         return self.deletion_date and datetime.now(timezone.utc) >= self.deletion_date
 

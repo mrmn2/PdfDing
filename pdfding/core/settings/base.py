@@ -45,8 +45,6 @@ INSTALLED_APPS = [
     'backup',
     'pdf',
     'users',
-    # django_cleanup needs to be placed last in INSTALLED_APPS
-    'django_cleanup.apps.CleanupConfig',
 ]
 
 # remove these apps for the e2e tests as they cause problems and are not needed
