@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.1 (Mar 01, 2026)
+### What's Changed
+* Fix: Set secure default value for MFA env variables @mrmn2 in https://github.com/mrmn2/PdfDing/pull/270
+* Make gunicorn worker timeout configurable via new ENV var. by @jpoesen in https://github.com/mrmn2/PdfDing/pull/269
+
+## New Contributors
+* @jpoesen made their first contribution in https://github.com/mrmn2/PdfDing/pull/269
+
 ## v1.6.0 (Mar 01, 2026)
 ### What's Changed
 
