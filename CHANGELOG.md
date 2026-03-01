@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.6.0 (Mar 01, 2026)
+### What's Changed
+
+* Add 2fa (TOTP + WebAuthn) by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/256 and https://github.com/mrmn2/PdfDing/pull/265
+* Change export PDF annotations format from YAML to JSON by @Sparlitu in https://github.com/mrmn2/PdfDing/pull/264
+* Fix consume issues by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/252
+* Fix: Allow saving of changed PDFs containing ' chars inside the viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/266
+* Update dependencies by @dependabot[bot] in https://github.com/mrmn2/PdfDing/pull/267 and https://github.com/mrmn2/PdfDing/pull/268
+
+## New Contributors
+* @Sparlitu made their first contribution in https://github.com/mrmn2/PdfDing/pull/267
+
 ## v1.5.1 (Feb 04, 2026)
 ### What's Changed
 * Add further zoom options in viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/245
