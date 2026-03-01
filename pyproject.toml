@@ -13,30 +13,30 @@ license-files = ["LICENSE"]
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
 django = "==5.2.11"
-django-allauth = { extras = ["mfa", "socialaccount"], version = "==65.14.0" }
+django-allauth = { extras = ["mfa", "socialaccount"], version = "==65.14.3" }
 django-cleanup = "==9.0.0"
 django-htmx = "==1.27.0"
-gunicorn = "==23.0.0"
+gunicorn = "==25.1.0"
 huey = "==2.6.0"
-Markdown = "==3.10"
+Markdown = "==3.10.2"
 minio = "==7.2.20"
-nh3 = "==0.3.2"
+nh3 = "==0.3.3"
 psycopg2-binary = "==2.9.11"
-pypdfium2 = "==5.3.0"
-pypdf = "==6.6.2"
+pypdfium2 = "==5.5.0"
+pypdf = "==6.7.4"
 python-magic = "==0.4.27"
 qrcode = { extras = ["pil"], version = "==8.2" }
 RapidFuzz = "==3.14.3"
 supervisor = "==4.3.0"
-whitenoise = { extras = ["brotli"], version = "==6.11.0" }
+whitenoise = { extras = ["brotli"], version = "==6.12.0" }
 
 [tool.poetry.group.dev.dependencies]
-bandit = "==1.9.3"
+bandit = "==1.9.4"
 black = "==26.1.0"
 flake8 = "==7.3.0"
 pytest = "==9.0.2"
 pytest-cov = "==7.0.0"
-pytest-django = "==4.11.1"
+pytest-django = "==4.12.0"
 
 [tool.poetry.group.e2e.dependencies]
 pytest-playwright = "==0.7.2"
