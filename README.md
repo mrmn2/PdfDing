@@ -35,8 +35,7 @@ devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
 your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/linkding).
 
-A live demo, powered by [PikaPods](https://www.pikapods.com/), is available at
-[demo.pdfding.com](https://demo.pdfding.com/).
+A live demo is available at [demo.pdfding.com](https://demo.pdfding.com/).
 
 ## Features
 
@@ -49,6 +48,7 @@ A live demo, powered by [PikaPods](https://www.pikapods.com/), is available at
 * Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
 * SSO support via OIDC
 * Share PDFs with an external audience via a link or a QR Code with optional access control
+* Protect accounts with two-factor authentication (TOTP + WebAuthn)
 * Markdown Notes
 * Progress bars show the reading progress of each PDF at a quick glance
 
@@ -80,7 +80,7 @@ If you are interested in contributing more information can be found in the
 [Contributing](https://docs.pdfding.com/contributing/about/) pages of the docs.
 There are also ways to contribute if you are not a developer.
 
-## Website, Docs & Blog
+## Website & Docs
 
 The repository, which contains the source code for the [project website](https://pdfding.com)
 and the [documentation](https://docs.pdfding.com), can be found on
