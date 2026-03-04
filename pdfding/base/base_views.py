@@ -1,5 +1,5 @@
 from base.service import construct_query_overview_url
-from core.settings import ITEMS_PER_PAGE, MEDIA_ROOT
+from core.settings import MEDIA_ROOT
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import FileResponse, HttpRequest
@@ -39,17 +39,17 @@ class BaseOverview(View):
     paginating the objects.
     """
 
-    def get(self, request: HttpRequest, page: int = 1, items_per_page: int = ITEMS_PER_PAGE, **kwargs):
+    def get(self, request: HttpRequest, page: int = 1, **kwargs):
         """
         Display the overview.
         """
 
         sorting = self.get_sorting(request)
-        page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page, **kwargs)
+        page_object, next_page_available = self.get_page_objects(request, sorting, page, **kwargs)
         context = {
             'page_obj': page_object,
             'sorting': sorting,
-            'items_per_page': items_per_page,
+            'items_per_page': self.request.user.profile.items_per_page,
             'next_page_available': next_page_available,
             'current_page': page,
         }
@@ -63,12 +63,13 @@ class BaseOverview(View):
 
             return render(request, f'{self.obj_name}_overview.html', context)
 
-    def get_page_objects(self, request: HttpRequest, sorting: str, page: int, items_per_page: int, **kwargs):
+    def get_page_objects(self, request: HttpRequest, sorting: str, page: int, **kwargs):
         # filter objects
         objects = self.filter_objects(request, **kwargs)
 
         # sort objects
         objects = objects.order_by(sorting)
+        items_per_page = self.request.user.profile.items_per_page
 
         paginator = Paginator(objects, per_page=items_per_page, allow_empty_first_page=True)
         page_object = paginator.get_page(page)

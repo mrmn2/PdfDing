@@ -1,5 +1,7 @@
 <div {% if layout == 'Grid' %}
      class="grid grid-cols-1 min-[1200px]:grid-cols-2 min-[1600px]:grid-cols-3 gap-5 pb-5"
+     {% elif layout == 'Minimal' %}
+     class="grid grid-cols-1"
      {% else %}
      class="grid grid-cols-1 gap-y-5 pb-5"
      {% endif %}
@@ -9,18 +11,32 @@
     {% with loop_id=forloop.counter|add:loop_offset %}
     <div x-data="{ show_actions_{{ loop_id }}: false }"
          id="pdf-{{ loop_id }}"
-         class="h-min relative border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
-                dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-600
-                creme:bg-creme-dark-light creme:border-creme-dark creme:hover:border-stone-400">
+         class="h-min relative rounded-md border
+                hover:border-slate-400 dark:hover:border-slate-600 creme:hover:border-stone-400
+                {% if layout == 'Minimal' %}
+                  {% if loop_id|add:1|divisibleby:2 %}
+                bg-slate-200/70 dark:bg-slate-800 creme:bg-creme-dark-light
+                border-slate-200/70 dark:border-slate-800 creme:border-creme-dark-light
+                  {% else %}
+                border-slate-50 dark:border-slate-900 creme:border-creme
+                  {% endif %}
+                {% else %}
+                bg-slate-100 border-slate-300
+                dark:bg-slate-800 dark:border-slate-700
+                creme:bg-creme-dark-light creme:border-creme-dark
+                {% endif %}
+              ">
         <div class="px-3 py-1">
             {% if layout == 'Compact' %}
             {% include 'includes/pdf_overview/compact_pdf.html' %}
+            {% elif layout == 'Minimal' %}
+            {% include 'includes/pdf_overview/minimal_pdf.html' %}
             {% else %}
             {% include 'includes/pdf_overview/spacious_pdf.html' %}
             {% endif %}
         </div>
         {% include 'includes/pdf_overview/pdf_actions_menu.html' %}
-        {% if request.user.profile.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 %}
+        {% if request.user.profile.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 and layout != 'Minimal' %}
         <div class="hover:cursor-pointer" x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
                 <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
                      class="w-full h-1 rounded-sm">

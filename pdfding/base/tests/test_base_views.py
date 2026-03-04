@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from base.tests import base_view_definitions
 from core.settings import MEDIA_ROOT
@@ -16,8 +16,8 @@ from users.models import Profile
 
 test_patterns = [
     path('test/add/<identifier>', base_view_definitions.Add.as_view(), name='test_add'),
-    path('test/overview/<items_per_page>', base_view_definitions.Overview.as_view(), name='test_overview'),
-    path('test/overview/<page>/<items_per_page>', base_view_definitions.Overview.as_view(), name='test_get_next_page'),
+    path('test/overview', base_view_definitions.Overview.as_view(), name='test_overview'),
+    path('test/overview/<page>', base_view_definitions.Overview.as_view(), name='test_get_next_page'),
     path('test/overview_query', base_view_definitions.OverviewQuery.as_view(), name='test_overview_query'),
     path('test/serve/<identifier>', base_view_definitions.Serve.as_view(), name='test_serve'),
     path('test/download/<identifier>', base_view_definitions.Download.as_view(), name='test_download'),
@@ -87,9 +87,12 @@ class TestViews(TestCase):
         self.assertEqual(len(pdfs), 1)
         self.assertRedirects(response, reverse('pdf_overview'))
 
+    @patch('users.models.Profile.items_per_page', new_callable=PropertyMock)
     @patch('base.base_views.BaseOverview.do_extra_action')
     @override_settings(ROOT_URLCONF=__name__)
-    def test_overview_get(self, mock_do_extra_action):
+    def test_overview_get(self, mock_do_extra_action, mock_items_per_page):
+        mock_items_per_page.return_value = 3
+
         # Also test sorting by title with capitalization taken into account
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
         self.user.profile.save()
@@ -99,20 +102,22 @@ class TestViews(TestCase):
         for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
             Pdf.objects.create(name=pdf_name, collection=self.user.profile.current_collection)
 
-        response = self.client.get(f'{reverse('test_overview', kwargs={'items_per_page': 3})}')
+        response = self.client.get(f'{reverse('test_overview')}')
         pdf_names = [pdf.name for pdf in response.context['page_obj']]
 
         self.assertEqual(pdf_names, ['Raspberry', 'orange', 'banana'])
         self.assertEqual(response.context['other'], 1234)
         self.assertEqual(response.context['next_page_available'], True)
-        self.assertEqual(response.context['items_per_page'], '3')
+        self.assertEqual(response.context['items_per_page'], 3)
         self.assertEqual(str(response.context['sorting']), 'OrderBy(Lower(F(name)), descending=True)')
         self.assertTemplateUsed(response, 'pdf_overview.html')
         mock_do_extra_action.assert_called_once_with(response.wsgi_request)
 
+    @patch('users.models.Profile.items_per_page', new_callable=PropertyMock)
     @patch('base.base_views.BaseOverview.do_extra_action')
     @override_settings(ROOT_URLCONF=__name__)
-    def test_overview_get_htmx(self, mock_do_extra_action):
+    def test_overview_get_htmx(self, mock_do_extra_action, mock_items_per_page):
+        mock_items_per_page.return_value = 3
         # Also test sorting by title with capitalization taken into account
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
         self.user.profile.save()
@@ -123,16 +128,14 @@ class TestViews(TestCase):
         for pdf_name in ['orange', 'banana', 'Apple', 'Raspberry', 'Kaki', 'fig']:
             Pdf.objects.create(name=pdf_name, collection=self.user.profile.current_collection)
 
-        response = self.client.get(
-            f'{reverse('test_get_next_page', kwargs={'items_per_page': 3, 'page': 2})}', **headers
-        )
+        response = self.client.get(f'{reverse('test_get_next_page', kwargs={'page': 2})}', **headers)
         pdf_names = [pdf.name for pdf in response.context['page_obj']]
 
         # since we are getting the second page only apple should be there and no next page
         self.assertEqual(pdf_names, ['Apple'])
         self.assertEqual(response.context['other'], 1234)
         self.assertEqual(response.context['next_page_available'], False)
-        self.assertEqual(response.context['items_per_page'], '3')
+        self.assertEqual(response.context['items_per_page'], 3)
         self.assertEqual(response.context['current_page'], '2')
         self.assertEqual(str(response.context['sorting']), 'OrderBy(Lower(F(name)), descending=True)')
         self.assertTemplateUsed(response, 'includes/pdf_overview/overview_page.html')

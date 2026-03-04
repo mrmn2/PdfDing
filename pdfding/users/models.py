@@ -66,6 +66,7 @@ class Profile(models.Model):
         COMPACT = 'Compact'
         LIST = 'List'
         GRID = 'Grid'
+        MINIMAL = 'Minimal'
 
     annotation_sorting = models.CharField(
         choices=AnnotationsSortingChoice, max_length=15, default=AnnotationsSortingChoice.NEWEST
@@ -194,6 +195,15 @@ class Profile(models.Model):
             return True
         else:
             return False
+
+    @property
+    def items_per_page(self) -> int:  # pragma: no cover
+        """Get the number of items of overview paginations"""
+
+        if self.layout == self.LayoutChoice.MINIMAL:
+            return 30
+        else:
+            return 12
 
     def has_access_to_workspace(self, workspace_id: str) -> bool:
         """Check if the profile has access to the specified workspace"""

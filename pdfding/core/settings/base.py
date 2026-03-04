@@ -164,9 +164,6 @@ MEDIA_ROOT = DATA_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-# number of items of overview paginations
-ITEMS_PER_PAGE = 12
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

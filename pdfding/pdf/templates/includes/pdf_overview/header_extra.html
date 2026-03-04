@@ -46,15 +46,20 @@
                x-bind:class="'{{ layout }}' === 'Compact' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 Compact
             </a>
+            <a hx-post="{% url 'change_layout' 'Grid' %}"
+               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+               x-bind:class="'{{ layout }}' === 'Grid' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Grid
+            </a>
             <a hx-post="{% url 'change_layout' 'List' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ layout }}' === 'List' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
                 List
             </a>
-            <a hx-post="{% url 'change_layout' 'Grid' %}"
+            <a hx-post="{% url 'change_layout' 'Minimal' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ layout }}' === 'Grid' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
-                Grid
+               x-bind:class="'{{ layout }}' === 'Minimal' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+                Minimal
             </a>
         </div>
     </div>
