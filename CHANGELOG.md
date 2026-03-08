@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.2 (Mar 08, 2026)
+### What's Changed
+* Add minimal layout by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/271
+* Update dependencies by @dependabot in https://github.com/mrmn2/PdfDing/pull/272
+
 ## v1.6.1 (Mar 01, 2026)
 ### What's Changed
 * Fix: Set secure default value for MFA env variables @mrmn2 in https://github.com/mrmn2/PdfDing/pull/270
