@@ -59,16 +59,6 @@ Ready to dive into PdfDing? Then head over to the
 documentation and find instructions for setting up PdfDing via Docker, Docker Compose
 and Helm. Configuration options can be found [here](https://docs.pdfding.com/configuration/).
 
-## Sponsor
-
-PdfDing is an open source project and its code & container images are provided for free,
-without any strings attached. However, developing and maintaining PdfDing requires a lot
-of time. By sponsoring you allow me to spend more time on PdfDing and make it even better.
-
-[Sponsorship Details](https://docs.pdfding.com/sponsor) •
-[GitHub Sponsors](https://github.com/sponsors/mrmn2) •
-[KoFi](https://ko-fi.com/mrmn2)
-
 ## Contributing
 
 Small improvements, bugfixes and documentation improvements are always welcome.
