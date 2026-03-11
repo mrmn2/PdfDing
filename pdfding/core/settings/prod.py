@@ -40,32 +40,32 @@ if ALLOWED_HOSTS:
 
 SECRET_KEY = environ.get('SECRET_KEY')
 
-if environ.get('CSRF_COOKIE_SECURE', 'TRUE') == 'TRUE':
+if environ.get('CSRF_COOKIE_SECURE', 'TRUE') in ['TRUE', 'True']:
     CSRF_COOKIE_SECURE = True
-if environ.get('SESSION_COOKIE_SECURE', 'TRUE') == 'TRUE':
+if environ.get('SESSION_COOKIE_SECURE', 'TRUE') in ['TRUE', 'True']:
     SESSION_COOKIE_SECURE = True
-if environ.get('SECURE_SSL_REDIRECT') == 'TRUE':
+if environ.get('SECURE_SSL_REDIRECT') in ['TRUE', 'True']:
     SECURE_SSL_REDIRECT = True
 if environ.get('SECURE_HSTS_SECONDS'):
     SECURE_HSTS_SECONDS = environ.get('SECURE_HSTS_SECONDS')
 
 # MFA settings
 MFA_SUPPORTED_TYPES = ['totp']
-if environ.get('MFA_USE_RECOVERY_CODES', 'TRUE') == 'TRUE':
+if environ.get('MFA_USE_RECOVERY_CODES', 'TRUE') in ['TRUE', 'True']:
     MFA_SUPPORTED_TYPES.append('recovery_codes')
     MFA_RECOVERY_CODE_COUNT = environ.get('MFA_RECOVERY_CODE_COUNT', 10)
-if environ.get('MFA_USE_WEBAUTHN', 'TRUE') == 'TRUE':
+if environ.get('MFA_USE_WEBAUTHN', 'TRUE') in ['TRUE', 'True']:
     MFA_SUPPORTED_TYPES.append('webauthn')
-if environ.get('MFA_TRUST_ENABLED', 'FALSE') == 'TRUE':
+if environ.get('MFA_TRUST_ENABLED', 'FALSE') in ['TRUE', 'True']:
     MFA_TRUST_ENABLED = True
     MFA_TRUST_COOKIE_AGE = environ.get('MFA_TRUST_COOKIE_AGE', 14)
-if environ.get('MFA_ALLOW_UNVERIFIED_EMAIL', 'FALSE') == 'TRUE':
+if environ.get('MFA_ALLOW_UNVERIFIED_EMAIL', 'FALSE') in ['TRUE', 'True']:
     MFA_ALLOW_UNVERIFIED_EMAIL = True
-if environ.get('MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN', 'FALSE') == 'TRUE':
+if environ.get('MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN', 'FALSE') in ['TRUE', 'True']:
     MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = True
 
 # backup settings
-if environ.get('BACKUP_ENABLE') == 'TRUE':
+if environ.get('BACKUP_ENABLE') in ['TRUE', 'True']:
     # without a dummy value, huey will not start
     BACKUP_ENABLED = True
     BACKUP_ENDPOINT = environ.get('BACKUP_ENDPOINT', 'minio.pdfding.com')
@@ -74,12 +74,12 @@ if environ.get('BACKUP_ENABLE') == 'TRUE':
     BACKUP_REGION = environ.get('BACKUP_REGION', 'us-east-1')
     BACKUP_BUCKET_NAME = environ.get('BACKUP_BUCKET_NAME', 'pdfding')
     BACKUP_SCHEDULE = environ.get('BACKUP_SCHEDULE', '0 2 * * *')
-    if environ.get('BACKUP_SECURE') == 'TRUE':
+    if environ.get('BACKUP_SECURE') in ['TRUE', 'True']:
         BACKUP_SECURE = True
     else:
         BACKUP_SECURE = False
 
-    if environ.get('BACKUP_ENCRYPTION_ENABLE') == 'TRUE':
+    if environ.get('BACKUP_ENCRYPTION_ENABLE') in ['TRUE', 'True']:
         BACKUP_ENCRYPTION_ENABLED = True
         BACKUP_ENCRYPTION_PASSWORD = environ['BACKUP_ENCRYPTION_PASSWORD']
         BACKUP_ENCRYPTION_SALT = environ.get('BACKUP_ENCRYPTION_SALT', 'pdfding')
@@ -93,7 +93,7 @@ else:
     BACKUP_SCHEDULE = '*/1 * * * *'
 
 # consume settings
-if environ.get('CONSUME_ENABLE') == 'TRUE':
+if environ.get('CONSUME_ENABLE') in ['TRUE', 'True']:
     CONSUME_ENABLED = True
     CONSUME_TAG_STRING = environ.get('CONSUME_TAGS', '')
     CONSUME_SCHEDULE = environ.get('CONSUME_SCHEDULE', '*/5 * * * *')
@@ -113,9 +113,9 @@ if environ.get('EMAIL_BACKEND') == 'SMTP':
     EMAIL_PORT = environ.get('SMTP_PORT', 587)
     EMAIL_HOST_USER = environ.get('SMTP_USER')
     EMAIL_HOST_PASSWORD = environ.get('SMTP_PASSWORD')
-    if environ.get('SMTP_USE_TLS') == 'TRUE':
+    if environ.get('SMTP_USE_TLS') in ['TRUE', 'True']:
         EMAIL_USE_TLS = True
-    if environ.get('SMTP_USE_SSL') == 'TRUE':
+    if environ.get('SMTP_USE_SSL') in ['TRUE', 'True']:
         EMAIL_USE_SSL = True
 
 if environ.get('EMAIL_ADDRESS'):
@@ -128,20 +128,20 @@ else:
 
 # authentication settings
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = environ.get('ACCOUNT_DEFAULT_HTTP_PROTOCOL', 'https')
-if environ.get('ACCOUNT_EMAIL_VERIFICATION') == 'TRUE':
+if environ.get('ACCOUNT_EMAIL_VERIFICATION') in ['TRUE', 'True']:
     ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 else:
     ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
-if environ.get('DISABLE_USER_SIGNUP') == 'TRUE':
+if environ.get('DISABLE_USER_SIGNUP') in ['TRUE', 'True']:
     SIGNUP_CLOSED = True
 else:
     SIGNUP_CLOSED = False
 
 # configure the oidc provider
-if environ.get('OIDC_ENABLE') == 'TRUE':
+if environ.get('OIDC_ENABLE') in ['TRUE', 'True']:
     # enable social logins only
-    if environ.get('OIDC_ONLY') == 'TRUE':
+    if environ.get('OIDC_ONLY') in ['TRUE', 'True']:
         SOCIALACCOUNT_ONLY = True
         ACCOUNT_EMAIL_VERIFICATION = 'none'
 
@@ -204,13 +204,13 @@ else:
     )
 
 # Allow subdirectories when saving PDFs to the media dir in the UI
-if environ.get('ALLOW_PDF_SUB_DIRECTORIES', 'FALSE') == 'TRUE':
+if environ.get('ALLOW_PDF_SUB_DIRECTORIES', 'FALSE') in ['TRUE', 'True']:
     ALLOW_PDF_SUB_DIRECTORIES = True
 else:
     ALLOW_PDF_SUB_DIRECTORIES = False
 
 # demo mode
-if environ.get('DEMO_MODE', 'FALSE') == 'TRUE':
+if environ.get('DEMO_MODE', 'FALSE') in ['TRUE', 'True']:
     DEMO_MODE = True
     DEMO_MODE_RESTART_INTERVAL = int(environ.get('DEMO_MODE_RESTART_INTERVAL', 60))  # in minutes
     DEMO_MAX_USERS = int(environ.get('DEMO_MAX_USERS', 500))
