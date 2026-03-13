@@ -5,6 +5,8 @@ multi-ecosystem-groups:
     schedule:
       interval: "weekly"
       day: "friday"
+    cooldown:
+      default-days: 7
 
 updates:
   - package-ecosystem: "pip"
