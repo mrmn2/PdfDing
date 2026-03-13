@@ -145,6 +145,9 @@ if environ.get('OIDC_ENABLE') in ['TRUE', 'True']:
         SOCIALACCOUNT_ONLY = True
         ACCOUNT_EMAIL_VERIFICATION = 'none'
 
+        # need to remove mfa as not compatible with this setting
+        INSTALLED_APPS.remove('allauth.mfa')  # noqa: F405
+
     OIDC_GROUPS_CLAIM = environ.get('OIDC_GROUPS_CLAIM', 'groups')
     OIDC_ADMIN_GROUP = environ.get('OIDC_ADMIN_GROUP', '')
     OIDC_EXTRA_SCOPE = environ.get('OIDC_EXTRA_SCOPE', '')

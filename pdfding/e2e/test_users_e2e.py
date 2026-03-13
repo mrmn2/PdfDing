@@ -191,6 +191,11 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
                 self.page.get_by_text("Cancel").click()
                 expect(self.page.locator(name)).to_contain_text('Edit')
 
+    def test_settings_mfa_edit_visible(self):
+        with sync_playwright() as p:
+            self.open(reverse('account_settings'), p)
+            expect(self.page.locator('#edit_mfa')).to_be_visible()
+
     def test_settings_mfa_activated(self):
         Authenticator.objects.create(user=self.user, type='totp', data={})
 

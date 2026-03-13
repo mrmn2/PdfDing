@@ -191,9 +191,12 @@ class Profile(models.Model):
     def mfa_activated(self) -> bool:
         """Check if multi factor authentication is activated"""
 
-        if self.user.authenticator_set.count():
-            return True
-        else:
+        try:
+            if self.user.authenticator_set.count():
+                return True
+            else:
+                return False
+        except AttributeError:  # pragma: no cover
             return False
 
     @property
