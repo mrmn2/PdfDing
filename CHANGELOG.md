@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.3 (Mar 14, 2026)
+### What's Changed
+* Add support for boolean environment variables in addition to strings by @niggoo in https://github.com/mrmn2/PdfDing/pull/276
+* Fix: Deactivate mfa for OIDC_ONLY setting, otherwise not working by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/282
+* Update dependencies by @dependabot[bot] + @mrmn2 in https://github.com/mrmn2/PdfDing/pull/281 and https://github.com/mrmn2/PdfDing/pull/283
+
+## New Contributors
+* @niggoo made their first contribution in https://github.com/mrmn2/PdfDing/pull/276
+
 ## v1.6.2 (Mar 08, 2026)
 ### What's Changed
 * Add minimal layout by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/271
