@@ -38,12 +38,12 @@ class TestUserServices(TestCase):
         self.assertEqual(generated_color, '0 0 0')
         self.assertEqual(generated_theme, 'inverted')
 
-    @override_settings(DEFAULT_THEME='creme', DEFAULT_THEME_COLOR='Brown')
+    @override_settings(DEFAULT_THEME='dark', DEFAULT_THEME_COLOR='Brown')
     def test_get_viewer_colors_no_profile(self):
         generated_theme, generated_color = service.get_viewer_theme_and_color()
 
         self.assertEqual(generated_color, '76 37 24')
-        self.assertEqual(generated_theme, 'creme')
+        self.assertEqual(generated_theme, 'dark')
 
     def test_get_demo_pdf(self):
         demo_pdf = service.get_demo_pdf()

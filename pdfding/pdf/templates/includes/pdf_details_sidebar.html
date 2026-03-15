@@ -3,7 +3,7 @@
 <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
             [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
             [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2
-            [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700 creme:[&>div]:hover:bg-creme-dark">
+            [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700">
     <div>
         <a href="{% url 'pdf_overview' %}">
             <svg class="w-5 h-5" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400.004 400.004" xml:space="preserve">
@@ -17,7 +17,7 @@
             <span class="hidden md:block">Back to App</span>
         </a>
     </div>
-    <div {% if page == 'pdf_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+    <div {% if page == 'pdf_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
         <a href="{% url 'pdf_details' pdf.id %}">
             <svg fill="currentColor" class="w-5 h-5" version="1.1" xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 330 330" xml:space="preserve">
@@ -32,7 +32,7 @@
             <span class="hidden md:block">Details</span>
         </a>
     </div>
-    <div {% if page == 'pdf_details_highlights' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+    <div {% if page == 'pdf_details_highlights' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
         <a href="{% url 'pdf_details_highlight_overview' pdf.id %}">
             <svg fill=currentColor version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                 class="w-5 h-5" viewBox="0 0 92.274 92.273" xml:space="preserve">
@@ -47,7 +47,7 @@
             <span class="hidden md:block">Highlights</span>
         </a>
     </div>
-    <div {% if page == 'pdf_details_comments' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+    <div {% if page == 'pdf_details_comments' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
         <a href="{% url 'pdf_details_comment_overview' pdf.id %}">
             <svg fill="currentColor" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   class="w-5 h-5" viewBox="0 0 98.167 98.167" xml:space="preserve">

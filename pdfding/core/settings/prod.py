@@ -183,7 +183,7 @@ if environ.get('OIDC_ENABLE') in ['TRUE', 'True']:
 
 # themes
 theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
-themes = ['light', 'dark', 'creme', 'system']
+themes = ['light', 'dark', 'system']
 
 if not environ.get('DEFAULT_THEME'):
     DEFAULT_THEME = 'system'

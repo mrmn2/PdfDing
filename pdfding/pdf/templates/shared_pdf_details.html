@@ -8,13 +8,12 @@
     <div class="flex w-full justify-start items-center py-2 px-2 md:px-8">
         <div class="rounded-md w-full md:w-115 min-[900px]:w-xl! min-[1000px]:w-2xl! min-[1100px]:w-3xl!
                     min-[1200px]:w-4xl! min-[1600px]:w-5xl! md:ml-10 min-[1600px]:ml-40! px-4 py-3 md:pb-6 border
-                    bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
-                    border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+                    bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
             <div class="flex flex-row gap-x-10">
                 <div class="hidden min-[1200px]:block pt-2">
                     <div id="qr_code" class="[&>div]:cursor-base">
                         <div class="w-60 h-60">
-                            <img class="w-60 h-60 bg-white creme:border-[1px] creme:border-stone-500"
+                            <img class="w-60 h-60 bg-white"
                                src="{% url 'serve_qrcode' shared_pdf.id %}"/>
                         </div>
                     </div>
@@ -24,7 +23,7 @@
                         <div class="flex w-full items-center justify-between">
                             <div id="name" class="w-[86%] text-sm flex flex-row">
                                 <a href="{% url 'view_pdf' shared_pdf.pdf.id %}"
-                                   class="text-2xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate pb-1">
+                                   class="text-2xl font-bold hover:black dark:hover:text-white truncate pb-1">
                                     {% if shared_pdf.inactive %}
                                     {{ shared_pdf.name }} | inactive
                                     {% else %}
@@ -57,7 +56,7 @@
                     <div class="pt-4">
                         <span class="text-lg font-bold">Description</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="description">
                                 {% if shared_pdf.description %}
@@ -79,7 +78,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Password</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="password">
                                 {% if shared_pdf.password %}
@@ -101,7 +100,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Views</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="max_views">
                                 {% if shared_pdf.max_views %}
@@ -123,7 +122,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Expiration</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="expiration_date">
                                 {{ shared_pdf.expires_in_string }}
@@ -141,7 +140,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Deletion</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="deletion_date">
                                 {{ shared_pdf.deletes_in_string }}
@@ -159,7 +158,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">PDF</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="pdf">
                                 {{ shared_pdf.pdf.name }}
@@ -175,7 +174,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Date added</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="creation_date">{{ shared_pdf.creation_date }}</span>
                         </div>
@@ -185,7 +184,7 @@
             <div class="flex justify-end pt-4">
                 <div x-data="{ delete_shared_pdf: false }"
                      class="pr-4 [&>a]:font-bold [&>a]:cursor-pointer
-                            [&>a]:hover:text-black dark:[&>a]:hover:text-white creme:[&>a]:hover:text-stone-1000">
+                            [&>a]:hover:text-black dark:[&>a]:hover:text-white">
                     <a x-show="delete_shared_pdf" x-cloak
                       hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'

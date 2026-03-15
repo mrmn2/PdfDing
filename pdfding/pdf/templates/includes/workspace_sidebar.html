@@ -1,6 +1,6 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% block sidebar_content %}
-<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 pb-3 md:mb-2 md:border-b border-slate-300 dark:border-slate-600 creme:border-stone-400">
+<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 pb-3 md:mb-2 md:border-b border-slate-300 dark:border-slate-600">
   {% if page == 'collection_details' %}
   {% include 'partials/workspace_dropdown.html' with page='collection_details' %}
   {% include 'partials/collection_dropdown.html' with page='collection_details' %}
@@ -11,7 +11,7 @@
 <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
             [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
             [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2
-            [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700 creme:[&>div]:hover:bg-creme-dark">
+            [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700">
     <div>
         <a href="{% url 'pdf_overview' %}">
             <svg class="w-5 h-5" fill="currentColor" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400.004 400.004" xml:space="preserve">
@@ -25,7 +25,7 @@
             <span class="hidden md:block">Back to App</span>
         </a>
     </div>
-    <div {% if page == 'workspace_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+    <div {% if page == 'workspace_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
         <a href="{% url 'workspace_details' %}">
             <svg fill="currentColor" class="w-5 h-5" version="1.1" xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 330 330" xml:space="preserve">
@@ -40,7 +40,7 @@
             <span class="hidden md:block">Details</span>
         </a>
     </div>
-    <div {% if page == 'collection_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+    <div {% if page == 'collection_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
         <a href="{% url 'collection_details' workspace.id %}">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->

@@ -12,18 +12,16 @@
     <div x-data="{ show_actions_{{ loop_id }}: false }"
          id="pdf-{{ loop_id }}"
          class="h-min relative rounded-md border
-                hover:border-slate-400 dark:hover:border-slate-600 creme:hover:border-stone-400
+                hover:border-slate-400 dark:hover:border-slate-600
                 {% if layout == 'Minimal' %}
                   {% if loop_id|add:1|divisibleby:2 %}
-                bg-slate-200/70 dark:bg-slate-800 creme:bg-creme-dark-light
-                border-slate-200/70 dark:border-slate-800 creme:border-creme-dark-light
+                bg-slate-200/70 dark:bg-slate-800 border-slate-200/70 dark:border-slate-800
                   {% else %}
-                border-slate-50 dark:border-slate-900 creme:border-creme
+                border-slate-50 dark:border-slate-900
                   {% endif %}
                 {% else %}
                 bg-slate-100 border-slate-300
                 dark:bg-slate-800 dark:border-slate-700
-                creme:bg-creme-dark-light creme:border-creme-dark
                 {% endif %}
               ">
         <div class="px-3 py-1">

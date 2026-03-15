@@ -5,14 +5,13 @@
              @click="window.open('{% url 'view_pdf' pdf.id %}', '_self');">
             {% if pdf.thumbnail %}
             <div class="w-26!">
-                <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600 creme:border-stone-400"
+                <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600"
                    src="{% url 'serve_thumbnail' pdf.id %}"/>
             </div>
             {% else %}
             <div class="flex items-center justify-center !rounded-md border-[1px] w-26! h-33!
                         border-slate-200 !bg-slate-100 text-slate-700
-                        dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200
-                        creme:border-stone-400 creme:!bg-creme-light creme:text-stone-400">
+                        dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200">
                 <svg class="w-10! h-10! py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
                   <!-- source: https://www.svgrepo.com/svg/489003/image -->
@@ -22,9 +21,9 @@
             </div>
             {% endif %}
         </div>
-        <div class="truncate w-full flex flex-col pl-3 md:pl-5 text-sm text-slate-700 dark:text-slate-200 creme:text-stone-700">
+        <div class="truncate w-full flex flex-col pl-3 md:pl-5 text-sm text-slate-700 dark:text-slate-200">
             <div class="flex flex-row justify-between relative -mb-1
-                        text-slate-400 dark:text-slate-500 creme:text-stone-500">
+                        text-slate-400 dark:text-slate-500">
                 <div>
                     <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
                         {% if pdf.natural_age == 'now' %}
@@ -44,7 +43,7 @@
                 <a id="pdf-link-{{ loop_id }}"
                    href="{% url 'view_pdf' pdf.id %}"
                    class="text-xl! font-bold truncate
-                          hover:text-slate-900 dark:hover:text-white creme:hover:text-stone-900">
+                          hover:text-slate-900 dark:hover:text-white">
                     {{ pdf.name }}
                 </a>
                 {% if pdf.starred %}
@@ -78,8 +77,8 @@
             <div class="truncate md:text-base pb-1">
                 {% for tag in pdf.tags.all|dictsort:"name" %}
                 <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
-                   class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark px-[2px] md:px-[4px]
-                          border border-slate-200 dark:border-slate-700 creme:border-creme-dark mr-[2px] md:mr-[4px]">
+                   class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 px-[2px] md:px-[4px]
+                          border border-slate-200 dark:border-slate-700 mr-[2px] md:mr-[4px]">
                     <span class="text-primary">#</span>{{ tag.name }}
                 </a>
                 {% endfor %}
