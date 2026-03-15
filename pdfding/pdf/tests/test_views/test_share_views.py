@@ -307,7 +307,7 @@ class TestLoginNotRequiredViews(TestCase):
 
     @patch('pdf.views.share_views.get_viewer_theme_and_color')
     def test_view_post_active_no_password(self, mock_get_viewer_theme_and_color):
-        mock_get_viewer_theme_and_color.return_value = 'creme', '4 4 4'
+        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
 
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
@@ -318,7 +318,7 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['current_page'], 1)
         self.assertEqual(response.context['revision'], 2)
         self.assertEqual(response.context['theme_color'], '4 4 4')
-        self.assertEqual(response.context['theme'], 'creme')
+        self.assertEqual(response.context['theme'], 'dark')
         self.assertEqual(response.context['tab_title'], 'PdfDing')
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')
@@ -328,7 +328,7 @@ class TestLoginNotRequiredViews(TestCase):
 
     @patch('pdf.views.share_views.get_viewer_theme_and_color')
     def test_view_post_active_correct_password(self, mock_get_viewer_theme_and_color):
-        mock_get_viewer_theme_and_color.return_value = 'creme', '4 4 4'
+        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
 
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
@@ -344,7 +344,7 @@ class TestLoginNotRequiredViews(TestCase):
 
         self.assertEqual(response.context['shared_pdf_id'], protected_shared_pdf.id)
         self.assertEqual(response.context['theme_color'], '4 4 4')
-        self.assertEqual(response.context['theme'], 'creme')
+        self.assertEqual(response.context['theme'], 'dark')
         self.assertEqual(response.context['revision'], 2)
         self.assertEqual(response.context['user_view_bool'], False)
         self.assertTemplateUsed(response, 'viewer.html')

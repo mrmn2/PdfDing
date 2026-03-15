@@ -5,7 +5,7 @@
        @click.away="sortOpen = false"
        @keyup.escape.window="sortOpen = false"
        class="cursor-pointer rounded-sm py-1 md:px-2 group relative
-              hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light">
+              hover:bg-slate-200 dark:hover:bg-slate-800">
         <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!-- source: https://www.svgrepo.com/svg/361828/sort -->
             <!-- license: PD -->
@@ -14,35 +14,33 @@
 
         <span x-show="!sortOpen" class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                      group-hover:opacity-100 group-hover:delay-350
-                     text-slate-600 dark:text-slate-200 creme:text-stone-700
-                     bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Sort
+                     text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">Sort
         </span>
     </a>
     <div x-show="sortOpen" x-cloak
          class="absolute top-11 right-0 shadow-sm rounded-lg w-40 p-2 z-20 border
-                bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
-                border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+                bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
         <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
                     [&>a]:cursor-pointer [&>a]:rounded-sm [&>a]:cursor-pointer
-                    [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark">
+                    [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700">
             <a hx-post="{% url 'change_sorting' 'shared_pdf_sorting' 'newest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === '-creation_date' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+               x-bind:class="'{{ sorting }}' === '-creation_date' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
                 Newest
             </a>
             <a hx-post="{% url 'change_sorting' 'shared_pdf_sorting' 'oldest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === 'creation_date' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+               x-bind:class="'{{ sorting }}' === 'creation_date' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
                 Oldest
             </a>
             <a hx-post="{% url 'change_sorting' 'shared_pdf_sorting' 'name_asc' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === 'Lower(F(name))' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+               x-bind:class="'{{ sorting }}' === 'Lower(F(name))' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
                 A - Z
             </a>
             <a hx-post="{% url 'change_sorting' 'shared_pdf_sorting' 'name_desc' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === 'OrderBy(Lower(F(name)), descending=True)' ? 'bg-slate-200! dark:bg-slate-700! creme:bg-creme-dark!' : ''">
+               x-bind:class="'{{ sorting }}' === 'OrderBy(Lower(F(name)), descending=True)' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
                 Z - A
             </a>
         </div>

@@ -2,15 +2,14 @@
 {% block sidebar_content %}
 <form class="flex pb-3 hidden md:block" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form">
     <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
-                  bg-slate-100 dark:bg-slate-800! creme:bg-creme-light-dark!
-                  border-slate-400 dark:border-slate-600 creme:border-stone-400"
+                  bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
             type="text" placeholder="Search for PDFs or #tags"
             id="search_input"
             name="search"
             @keyup.enter="document.getElementById('search_form').submit()"
     />
 </form>
-<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 md:border-y border-slate-300 dark:border-slate-600 creme:border-stone-400">
+<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 md:border-y border-slate-300 dark:border-slate-600">
   {% include 'partials/workspace_dropdown.html' with page='overview' %}
   {% if current_collection_id %}
   {% include 'partials/collection_dropdown.html' %}
@@ -20,8 +19,8 @@
   <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
               [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
               [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2
-              [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700 creme:[&>div]:hover:bg-creme-dark">
-      <div {% if page == 'pdf_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+              [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700">
+      <div {% if page == 'pdf_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
           <a href="{% url 'pdf_overview' %}">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <!-- source: https://www.svgrepo.com/svg/471517/home-02 -->
@@ -31,7 +30,7 @@
               <span class="hidden md:block">Home</span>
           </a>
       </div>
-      <div {% if page == 'shared_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+      <div {% if page == 'shared_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
           <a href="{% url 'shared_pdf_overview' %}">
               <svg fill="currentColor" class="w-5 h-5" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" ><title>share</title>
                   <!-- source: https://www.svgrepo.com/svg/367868/share -->
@@ -41,7 +40,7 @@
               <span class="hidden md:block">Shared</span>
           </a>
       </div>
-      <div {% if page == 'pdf_overview_starred' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+      <div {% if page == 'pdf_overview_starred' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
           <a href="{% url 'pdf_overview_query' %}?selection=starred">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <!-- source: https://www.svgrepo.com/svg/471930/star-01 -->
@@ -66,7 +65,7 @@
               <span class="hidden md:block">Annotations</span>
           </a>
       </div>
-      <div {% if page == 'pdf_overview_archived' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light" {% endif %}>
+      <div {% if page == 'pdf_overview_archived' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
           <a href="{% url 'pdf_overview_query' %}?selection=archived">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <!-- source: https://www.svgrepo.com/svg/470978/archive -->
@@ -83,7 +82,7 @@
 {% block sidebar_extra_content %}
 {% if page == 'pdf_overview' or page == 'pdf_overview_starred' or page == 'pdf_overview_archived' %}
 <div class="hidden md:block md:flex md:flex-row items-center pt-4 mt-3
-            border-t border-slate-300 dark:border-slate-600 creme:border-stone-400 gap-x-2 pb-2 pl-2 font-semibold">
+            border-t border-slate-300 dark:border-slate-600 gap-x-2 pb-2 pl-2 font-semibold">
     <div class="flex flex-row items-center justify-between! w-full">
         <div class="flex flex-row items-center gap-x-1">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,7 +96,7 @@
                       xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                       class="w-[16px] h-[16px] cursor-pointer text-slate-500! hover:text-black!
-                            dark:text-slate-300 dark:hover:text-white! creme:text-stone-400! creme:hover:text-stone-700!">
+                            dark:text-slate-300 dark:hover:text-white!">
                     <circle cx="12" cy="12" r="1"></circle>
                     <circle cx="12" cy="5" r="1"></circle>
                     <circle cx="12" cy="19" r="1"></circle>
@@ -107,19 +106,18 @@
                       @click.away="show_tag_mode_settings = false"
                       @keyup.escape.window="show_tag_mode_settings = false"
                       class="flex flex-row items-center z-20 w-35 top-5 py-1 px-2  absolute rounded-sm border gap-x-2
-                            bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
-                            border-slate-300 dark:border-slate-700 creme:border-creme-dark-light">
+                            bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
                     <span class="font-semibold">Tree Mode</span>
 
                     <div id="tag_mode_toggle"
                           class="flex items-center cursor-pointer w-8 h-4 rounded-full
-                                bg-slate-300 dark:bg-slate-600 creme:bg-creme-dark"
+                                bg-slate-300 dark:bg-slate-600"
                           hx-post="{% url 'change_tree_mode' %}"
                           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
                         {% if request.user.profile.tag_tree_mode %}
                         <div class="h-3 w-3 rounded-full bg-primary ml-4"></div>
                         {% else %}
-                        <div class="h-3 w-3 rounded-full bg-slate-400 creme:bg-stone-400 ml-1"></div>
+                        <div class="h-3 w-3 rounded-full bg-slate-400 ml-1"></div>
                         {% endif %}
                     </div>
                 </div>
@@ -131,7 +129,7 @@
               xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="w-5 h-5 mr-2 cursor-pointer text-slate-500! hover:text-black!
-                    dark:text-slate-300 dark:hover:text-white! creme:text-stone-400! creme:hover:text-stone-700!
+                    dark:text-slate-300 dark:hover:text-white!
                     {% if request.user.profile.tags_open %} rotate-90 {% endif %}">
             <path d="m9 18 6-6-6-6"></path>
         </svg>

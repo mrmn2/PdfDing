@@ -38,15 +38,6 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             # check that selected option is correct
             expect(self.page.locator("#id_dark_mode")).to_have_value("Dark")
 
-            # change to creme mode
-            self.page.locator("#id_dark_mode").select_option("Creme")
-            self.page.get_by_role("button", name="Submit").click()
-
-            # check that theme was changed to creme
-            expect(self.page.locator('html')).to_have_attribute('class', 'creme')
-            expect(self.page.locator("#theme")).to_contain_text("Creme")
-            expect(self.page.locator('body')).to_have_css('background-color', 'rgb(226, 220, 208)')
-
     def test_settings_change_theme_color(self):
         self.user.profile.theme_color = 'Green'
         self.user.profile.custom_theme_color = '#ffa385'

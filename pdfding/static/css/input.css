@@ -1,15 +1,10 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
-@custom-variant creme (&:where(.creme, .creme *));
 
 @theme {
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
-  --color-creme: #e2dcd0;
-  --color-creme-dark-light: #d9d2c9;
-  --color-creme-dark: #bcb6ae;
-  --color-creme-light: #f2eae0;
   --default-font-family: 'Poppins', var(--font-sans);
 }
 
@@ -106,7 +101,7 @@ label {
     @apply hidden
 }
 input[type=file] {
-    @apply  w-full text-gray-400 dark:text-slate-200 bg-gray-100 dark:bg-slate-700 creme:text-stone-700 creme:bg-creme-light file:cursor-pointer
+    @apply  w-full text-gray-400 dark:text-slate-200 bg-gray-100 dark:bg-slate-700 file:cursor-pointer
     cursor-pointer file:border-0 file:py-3 file:px-4 file:-my-7 file:-ml-5 file:mr-4 file:bg-primary
     file:hover:bg-secondary file:text-white file:font-bold file:rounded-lg
 }
@@ -117,7 +112,7 @@ select {
     @apply rounded-sm px-2
 }
 .textarea, textarea, input {
-    @apply w-full rounded-lg py-3 px-5 bg-gray-100 dark:bg-slate-700 creme:bg-creme-dark-light creme:text-stone-700
+    @apply w-full rounded-lg py-3 px-5 bg-gray-100 dark:bg-slate-700
 }
 .textarea:focus, textarea:focus, input:focus {
     @apply outline outline-1 outline-primary
@@ -199,19 +194,19 @@ form[action="/accountpassword/change/"] ul.errorlist {
     }
 
     & pre {
-        @apply pl-3 my-3 py-2 mt-1 mb-2 bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
+        @apply pl-3 my-3 py-2 mt-1 mb-2 bg-slate-200 dark:bg-slate-600
     }
 
     & pre code {
-        @apply bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
+        @apply bg-slate-200 dark:bg-slate-600
     }
 
     & code {
-        @apply bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light px-1 pt-1
+        @apply bg-slate-200 dark:bg-slate-600 px-1 pt-1
     }
 
     & blockquote {
-        @apply border-l-2 border-primary pl-4 pt-3 pb-1 mb-2 rounded-r bg-slate-200 dark:bg-slate-600 creme:bg-creme-dark-light
+        @apply border-l-2 border-primary pl-4 pt-3 pb-1 mb-2 rounded-r bg-slate-200 dark:bg-slate-600
     }
 }
 

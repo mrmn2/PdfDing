@@ -20,7 +20,7 @@
 </div>
 <span>&thinsp;</span>
 <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag_name }}"
-   class="text-slate-400 dark:text-slate-400 creme:text-stone-500 text-ellipsis overflow-hidden">
+   class="text-slate-400 dark:text-slate-400 text-ellipsis overflow-hidden">
    {{ tag_info.display_name }}
 </a>
 <div class="absolute left-0 pt-3">
@@ -28,10 +28,10 @@
          @keyup.escape.window="tag_options = false; tag_delete = false"
          @click.away="tag_options = false; tag_delete = false" tag_delete = false" x-show="tag_options" x-cloak
          class="relative top-5 shadow-sm rounded-lg w-32 p-2 z-20 [&>div]:cursor-pointer border
-                bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
-                border-slate-300 dark:border-slate-700 creme:border-creme-dark-light
+                bg-slate-100 dark:bg-slate-800
+                border-slate-300 dark:border-slate-700
                 [&>div>div]:py-1 [&>div>div]:px-2 [&>div>div]:rounded-sm
-                [&>div>div]:hover:bg-slate-200 dark:[&>div>div]:hover:bg-slate-700 creme:[&>div>div]:hover:bg-creme-dark-light"
+                [&>div>div]:hover:bg-slate-200 dark:[&>div>div]:hover:bg-slate-700"
         x-transition:enter="duration-300 ease-out"
         x-transition:enter-start="opacity-0 scale-90"
         x-transition:enter-end="opacity-100 scale-100"
@@ -56,7 +56,7 @@
                       hx-post="{% url 'delete_tag' %}"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                       class="text-red-400 py-1 px-2 rounded-sm
-                             hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark-light">
+                             hover:bg-slate-200 dark:hover:bg-slate-700">
                     <span>Confirm</span>
                 </div>
                 <input type="hidden" name="tag_name" value="{{ tag_name }}"/>

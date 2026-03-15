@@ -9,9 +9,8 @@
        cursor-pointer">
   <div @click="show_workspaces = !show_workspaces"
        class="flex flex-row justify-between w-full items-center px-2 py-1 relative
-              border border-slate-400 dark:border-slate-600 creme:border-stone-400 rounded-sm font-semibold
-              bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
-              hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark">
+              border border-slate-400 dark:border-slate-600 rounded-sm font-semibold
+              bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700">
     <div class="flex flex-row items-center gap-x-2 w-[85%]">
       <svg fill="currentColor" class="w-5 h-5" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
         viewBox="0 0 512 512" xml:space="preserve">
@@ -35,7 +34,7 @@
     </div>
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-         class="w-6! h-6! cursor-pointer text-slate-500! dark:text-slate-300  creme:text-stone-400! rotate-90">
+         class="w-6! h-6! cursor-pointer text-slate-500! dark:text-slate-300 rotate-90">
       <path d="m9 18 6-6-6-6"></path>
     </svg>
   </div>
@@ -44,17 +43,16 @@
         @keyup.escape.window="show_workspaces = false"
         {# leave background as otherwise popup will be transparent #}
         class="absolute z-20 mt-2 left-0 w-[96%] md:w-full mx-2 md:mx-0 rounded-sm p-1 border
-              bg-slate-50 dark:bg-slate-900 creme:bg-creme-dark-light
-              border-slate-400 dark:border-slate-600 creme:border-stone-400">
+              bg-slate-50 dark:bg-slate-900 border-slate-400 dark:border-slate-600">
     <div class="flex flex-col gap-y-1 p-1 [&>.ws-modal-child]:py-1 [&>.ws-modal-child]:px-2
                 [&>.ws-modal-child]:rounded-sm [&>.ws-modal-child]:flex [&>.ws-modal-child]:flex-row
-                [&>.ws-modal-child]:hover:bg-slate-200 [&>.ws-modal-child]:dark:hover:bg-slate-700 [&>.ws-modal-child]:creme:hover:bg-creme-dark">
+                [&>.ws-modal-child]:hover:bg-slate-200 [&>.ws-modal-child]:dark:hover:bg-slate-700">
       {% for workspace in request.user.profile.workspaces %}
       <div hx-post="{% url 'change_workspace' workspace.id %}"
           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
           class="ws-modal-child justify-between items-center rounded-sm
                   {% if workspace.id == request.user.profile.current_workspace_id %}
-                  bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark
+                  bg-slate-100 dark:bg-slate-800
                   {% endif %}">
         <div class="truncate w-9/10">{{ workspace.name }}</div>
         {% if workspace.id == request.user.profile.current_workspace_id %}
@@ -62,7 +60,7 @@
         {% endif %}
       </div>
       {% endfor %}
-      <span class="my-1 border-t border-slate-400 dark:border-slate-600 creme:border-stone-400"></span>
+      <span class="my-1 border-t border-slate-400 dark:border-slate-600"></span>
       <a href="{% url 'create_workspace' %}" class="ws-modal-child items-center gap-x-2">
         <svg class="-ml-1! h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <!-- source: https://www.svgrepo.com/svg/471793/plus -->

@@ -8,21 +8,19 @@
     <div class="flex w-full justify-start items-center py-2 px-2 md:px-8">
         <div class="rounded-md w-full md:w-115 min-[900px]:w-xl! min-[1000px]:w-2xl! min-[1100px]:w-3xl!
                     min-[1200px]:w-4xl! min-[1600px]:w-5xl! md:ml-10 min-[1600px]:ml-40! px-4 py-3 md:pb-6 border
-                    bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
-                    border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+                    bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
             <div class="flex flex-row gap-x-10">
                 <div class="hidden min-[1200px]:block pt-2">
                     <div id="preview" class="[&>div]:cursor-base">
                         {% if pdf.preview %}
                         <div class="w-60!">
-                            <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600 creme:border-stone-400"
+                            <img class="rounded-md border-[1px] border-slate-200 dark:border-slate-600"
                                src="{% url 'serve_preview' pdf.id %}"/>
                         </div>
                         {% else %}
                         <div class="flex items-center justify-center !rounded-md border-[1px] w-60! h-77!
                                     border-slate-200 !bg-slate-100 text-slate-700
-                                    dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200
-                                    creme:border-stone-400 creme:!bg-creme-light creme:text-stone-400">
+                                    dark:border-slate-600 dark:!bg-slate-700 dark:text-slate-200">
                             <svg class="w-20! h-20! py-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
                               <!-- source: https://www.svgrepo.com/svg/489003/image -->
@@ -38,7 +36,7 @@
                         <div class="flex w-full items-center justify-between">
                             <div id="name" class="w-[86%] text-sm flex flex-row">
                                 <a href="{% url 'view_pdf' pdf.id %}"
-                                   class="text-2xl font-bold hover:black dark:hover:text-white creme:hover:text-stone-1000 truncate pb-1">
+                                   class="text-2xl font-bold hover:black dark:hover:text-white truncate pb-1">
                                     {{ pdf.name }}
                                 </a>
                                 {% if pdf.starred %}
@@ -113,7 +111,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Collection</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="collection">
                                 {{ pdf.collection.name }}
@@ -131,13 +129,13 @@
                     <div class="pt-4">
                         <span class="text-lg font-bold">Tags</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%]">
                             {% if pdf.tags.all %}
                             <span id="tags">
                                 {% for tag in pdf.tags.all|dictsort:"name" %}
-                                    <a class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 creme:hover:bg-creme-dark px-[2px] md:px-[4px]
-                                              border border-slate-200 dark:border-slate-700 creme:border-creme-dark mr-[2px] md:mr-[4px]"
+                                    <a class="rounded-sm hover:bg-slate-200 dark:hover:bg-slate-700 px-[2px] md:px-[4px]
+                                              border border-slate-200 dark:border-slate-700 mr-[2px] md:mr-[4px]"
                                        href="{% url 'pdf_overview_query' %}?search=%23{{ tag }}">
                                         <span class="text-primary">#</span>{{ tag }}
                                     </a>
@@ -161,7 +159,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Description</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="description">
                                 {% if pdf.description %}
@@ -183,11 +181,11 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Notes</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%]">
                             {% if pdf.notes %}
                             <div id="notes"
-                                 class="markdown py-1 px-2 mr-2 md:mr-0! rounded-sm bg-slate-100 dark:bg-slate-700! creme:bg-creme-dark!">
+                                 class="markdown py-1 px-2 mr-2 md:mr-0! rounded-sm bg-slate-100 dark:bg-slate-700!">
                                 {{ pdf.notes_html }}
                             </div>
                             {% else %}
@@ -209,7 +207,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">File directory</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="file_directory">
                                 {% if pdf.file_directory %}
@@ -233,7 +231,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Progress</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="progress">{{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}</span>
                         </div>
@@ -242,7 +240,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Date added</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="creation_date">{{ pdf.creation_date }}</span>
                         </div>
@@ -250,7 +248,7 @@
                     <div class="pt-2">
                         <span class="text-lg font-bold">Views</span>
                     </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400 creme:text-stone-500">
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="views">{{ pdf.views }}</span>
                         </div>
@@ -260,7 +258,7 @@
             <div class="flex justify-end pt-4">
                 <div x-data="{ delete_pdf: false }"
                      class="pr-4 [&>a]:font-bold [&>a]:cursor-pointer
-                            [&>a]:hover:text-black dark:[&>a]:hover:text-white creme:[&>a]:hover:text-stone-1000">
+                            [&>a]:hover:text-black dark:[&>a]:hover:text-white">
                     <a x-show="delete_pdf" x-cloak
                       hx-delete="{% url 'delete_pdf' pdf.id %}"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'

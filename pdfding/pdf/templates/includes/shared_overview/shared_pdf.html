@@ -4,8 +4,8 @@
         <a id="shared-pdf-link-{{ loop_id }}"
            href="{% url 'shared_pdf_details' shared_pdf.id %}"
            {% if shared_pdf.inactive %}
-           class="truncate text-lg font-bold text-slate-500 dark:text-slate-400 creme:text-stone-400
-                  hover:text-slate-800 dark:hover:text-slate-200 creme:hover:text-stone-700">
+           class="truncate text-lg font-bold text-slate-500 dark:text-slate-400
+                  hover:text-slate-800 dark:hover:text-slate-200">
             {{ shared_pdf.name }} | inactive
            {% else %}
            class="truncate text-lg font-bold text-primary hover:text-secondary">
@@ -13,14 +13,14 @@
            {% endif %}
         </a>
     </div>
-    <div class="truncate [&>span]:text-slate-500 dark:[&>span]:text-slate-300 creme:[&>span]:text-stone-700">
+    <div class="truncate [&>span]:text-slate-500 dark:[&>span]:text-slate-300">
         <span>{{ shared_pdf.pdf.name }}</span>
         {% if shared_pdf.description %}
         <span>| {{ shared_pdf.description }}</span>
         {% endif %}
     </div>
     <div x-data="{ tooltip_del: false, tooltip_exp: false }"
-           class="flex flex-row items-center text-slate-500 text-sm dark:[&>span]:text-slate-400 creme:[&>span]:text-stone-600">
+           class="flex flex-row items-center text-slate-500 text-sm dark:[&>span]:text-slate-400">
         {% if shared_pdf.deletion_date %}
         <span x-on:mouseenter="tooltip_del = true" x-on:mouseleave="tooltip_del = false">
           {{ shared_pdf.deletes_in_string }}
@@ -51,8 +51,8 @@
         </svg>
         <span>{{ shared_pdf.views_string }}</span>
     </div>
-    <div class="flex flex-row justify-between text-slate-500 text-sm dark:text-slate-400 creme:text-stone-600
-                [&>div>a]:hover:text-slate-700 dark:[&>div>a]:hover:text-slate-100 creme:[&>div>a]:hover:text-stone-700"
+    <div class="flex flex-row justify-between text-slate-500 text-sm dark:text-slate-400
+                [&>div>a]:hover:text-slate-700 dark:[&>div>a]:hover:text-slate-100"
          x-data="{ delete_{{ loop_id }}: false }">
         <div class="flex flex-row gap-x-2 text-sm ">
             <a class="cursor-pointer"

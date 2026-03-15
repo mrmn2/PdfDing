@@ -1,6 +1,6 @@
 {% load static %}
 {# do not remove background as it otherwise sticky will lock strange #}
-<header class="py-1 pt-1 md:pt-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900 creme:bg-creme">
+<header class="py-1 pt-1 md:pt-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900">
     <div class="pr-2 pl-2 md:pl-4 md:pr-4 lg:pr-6 flex items-center justify-between">
         <a class="flex items-center gap-x-2" href="/">
             <div id="logo_div" class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
@@ -20,8 +20,7 @@
               {% endif %}
         >
             <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
-                          bg-slate-100 dark:bg-slate-800! creme:bg-creme-light-dark!
-                          border-slate-400 dark:border-slate-600 creme:border-stone-400"
+                          bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
                     type="text" placeholder="Search"
                     id="search_input_mobile"
                     name="search"
@@ -41,7 +40,7 @@
             {% include 'includes/pdf_annotation_overview/header_extra.html' %}
             {% endif %}
             <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:px-2 md:-ml-1! group relative
-                      hover:bg-slate-200 dark:hover:bg-slate-800 creme:hover:bg-creme-dark-light"
+                      hover:bg-slate-200 dark:hover:bg-slate-800"
                href="{% url 'add_pdf' %}">
                 <svg class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <!-- source: https://www.svgrepo.com/svg/471793/plus -->
@@ -50,8 +49,7 @@
                 </svg>
                 <span class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                              group-hover:opacity-100 group-hover:delay-350
-                             text-slate-600 dark:text-slate-200 creme:text-stone-700
-                             bg-slate-200 dark:bg-slate-800 creme:bg-creme-dark-light">Add
+                             text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">Add
                 </span>
             </a>
             <div @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" @keyup.escape.window="dropdownOpen = false"
@@ -61,8 +59,7 @@
             </div>
             <div x-show="dropdownOpen" x-cloak
                  class="absolute top-10 right-0 shadow-sm rounded-lg w-52 p-2 z-20 border
-                        bg-slate-100 dark:bg-slate-800 creme:bg-creme-dark-light
-                        border-slate-300 dark:border-slate-700 creme:border-creme-dark"
+                        bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700"
                 x-transition:enter="duration-300 ease-out"
                 x-transition:enter-start="opacity-0 scale-90"
                 x-transition:enter-end="opacity-100 scale-100"
@@ -79,10 +76,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-2 mb-1 border-b border-slate-300 dark:border-slate-600 creme:border-stone-400"></div>
+                <div class="mt-2 mb-1 border-b border-slate-300 dark:border-slate-600"></div>
                 <div class="flex flex-col pt-1 [&>a]:py-1 [&>a]:px-2 [&>a]:flex [&>a]:items-center [&>a]:gap-x-1
-                            [&>a]:cursor-pointer [&>a]:rounded-sm
-                            [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700 creme:[&>a]:hover:bg-creme-dark">
+                            [&>a]:cursor-pointer [&>a]:rounded-sm [&>a]:hover:bg-slate-200 dark:[&>a]:hover:bg-slate-700">
                     <a href="{% url 'account_settings' %}">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <!-- source: https://www.svgrepo.com/svg/304474/settings -->
@@ -109,7 +105,7 @@
                         Admin
                     </a>
                     {% endif %}
-                    <div class="my-1 border-b border-slate-300 dark:border-slate-600 creme:border-stone-400"></div>
+                    <div class="my-1 border-b border-slate-300 dark:border-slate-600"></div>
                     <a href="{% url 'account_logout' %}">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- source: https://www.svgrepo.com/svg/471638/log-out-01 -->

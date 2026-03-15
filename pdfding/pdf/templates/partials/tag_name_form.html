@@ -1,17 +1,16 @@
 <div x-ref="edit_tag_inner" id="tag_rename_form" class="rounded-2xl drop-shadow-2xl shadow-black w-full !h-48
-            bg-slate-100 dark:bg-slate-800 creme:bg-creme-light
-            border border-slate-300 dark:border-slate-700 creme:border-creme-dark">
+            bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
     <div class="pt-4 px-4">
         <h2 class="pb-2">Rename Tag</h2>
         <form action="{% url 'edit_tag' %}"
               method="post"
-              class="[&>input]:h-4 w-11/12 text-black dark:text-slate-200 creme:text-stone-700
-                     [&>input]:bg-slate-200! dark:[&>input]:bg-slate-700! creme:[&>input]:bg-creme-dark-light!"
+              class="[&>input]:h-4 w-11/12 text-black dark:text-slate-200
+                     [&>input]:bg-slate-200! dark:[&>input]:bg-slate-700!"
               autocomplete="off">
             {% csrf_token %}
 
             {% for field in form %}{{ field }}{% endfor %}
-            <span class="text-sm text-gray-500! text-slate-400! creme:text-stone-600!">New Tag Name</span>
+            <span class="text-sm text-gray-500! text-slate-400!">New Tag Name</span>
             <div class="pt-4 flex gap-x-2">
                 <button class="flex! items-center justify-center py-1! px-1" type="submit" >Submit</button>
                 <div @click="show_tag_name_modal = false"

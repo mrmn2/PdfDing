@@ -3,13 +3,13 @@
 {% block optional %}
 <div>
   <ul class="text-center flex font-bold md:text-lg rounded-t-2xl
-             text-slate-500 dark:text-slate-100 bg-slate-200 dark:bg-slate-700 creme:text-stone-600 creme:bg-stone-400
-             divide-x divide-slate-300 dark:divide-slate-800 creme:divide-stone-500
+             text-slate-500 dark:text-slate-100 bg-slate-200 dark:bg-slate-700
+             divide-x divide-slate-300 dark:divide-slate-800
              [&>li>a]:w-full [&>li]:w-1/2 [&>li>a]:py-2">
-    <li class="rounded-tl-2xl hover:bg-primary creme:hover:bg-stone-500">
+    <li class="rounded-tl-2xl hover:bg-primary">
         <a href="{% url 'add_pdf' %}" class="inline-block border-b-2 border-primary ">Individual</a>
     </li>
-    <li class="rounded-tr-2xl hover:bg-primary creme:hover:bg-stone-500">
+    <li class="rounded-tr-2xl hover:bg-primary">
         <a href="{% url 'bulk_add_pdfs' %}" class="inline-block hover:border-b-2 hover:border-primary">Bulk</a>
     </li>
   </ul>
@@ -23,14 +23,14 @@
         {% csrf_token %}
         <div class="flex flex-row items-center gap-x-4 pb-3!">
           <span>Collection</span>
-          <div class="w-28 bg-slate-100 dark:bg-slate-700 creme:bg-creme-dark-light p-2 rounded-lg [&>select]:hover:cursor-pointer">
+          <div class="w-28 bg-slate-100 dark:bg-slate-700 p-2 rounded-lg [&>select]:hover:cursor-pointer">
             {{ form.collection.errors }}
             {{ form.collection }}
           </div>
         </div>
         <p>
             <label
-                    class="w-auto! mr-2 inline-block! text-gray-600 dark:text-slate-300 creme:text-stone-600"
+                    class="w-auto! mr-2 inline-block! text-gray-600 dark:text-slate-300"
                     for="id_use_file_name">Use File Name:</label>
             <input x-model="hide_name_input" class="w-auto!" type="checkbox" name="use_file_name" id="id_use_file_name">
         </p>

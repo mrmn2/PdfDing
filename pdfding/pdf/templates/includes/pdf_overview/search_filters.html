@@ -1,5 +1,5 @@
 <div class="flex flex-wrap gap-x-2 pb-1 md:pb-2">
-    <div class="flex flex-row items-center text-slate-500 dark:text-slate-300 creme:text-stone-600 text-sm">
+    <div class="flex flex-row items-center text-slate-500 dark:text-slate-300 text-sm">
         <svg class="w-4 h-4 mr-[2px] mt-[2px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!--source: https://www.svgrepo.com/svg/471431/filter-funnel-02 -->
             <!--License: CC0-->
@@ -10,7 +10,7 @@
     {% if search_query %}
     <div id="search_filter" x-data="{}"
          class="flex items-center px-2 py-1 text-sm rounded-md gap-x-1
-                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 creme:bg-creme-dark-light creme:text-stone-700">
+                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700">
         <div class="flex flex-row items-center">
             <svg class="w-4 h-4 mt-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <!--source: https://www.svgrepo.com/svg/489122/search -->
@@ -20,7 +20,7 @@
             <span>{{ search_query|truncatechars:40 }}</span>
         </div>
         <div id="search_filter_close"
-             class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
+             class="dark:hover:text-white hover:text-black hover:cursor-pointer"
              @click="window.open('{% url 'pdf_overview_query' %}?search=', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">
@@ -33,9 +33,9 @@
     {% for tag in tag_query %}
     <div id="tag_{{ tag }}_filter"  x-data="{}"
          class="flex items-center px-2 py-1 text-sm rounded-md gap-x-1
-                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 creme:bg-creme-dark-light creme:text-stone-700">
+                bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700">
         <span>#{{ tag|truncatechars:40 }}</span>
-        <div class="dark:hover:text-white hover:text-black creme:hover:text-stone-900 hover:cursor-pointer"
+        <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"
              @click="window.open('{% url 'pdf_overview_query' %}?remove={{ tag }}', '_self');">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" class="w-4 h-auto">

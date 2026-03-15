@@ -14,7 +14,6 @@ class Profile(models.Model):
         SYSTEM = 'System'
         LIGHT = 'Light'
         DARK = 'Dark'
-        CREME = 'Creme'
 
     class PdfsPerPage(models.IntegerChoices):
         p_5 = 5, '5'
