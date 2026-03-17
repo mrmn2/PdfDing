@@ -46,10 +46,6 @@ See https://github.com/adobe-type-tools/cmap-resources
         --progressBar-color: rgb({{ theme_color }});  /* progressbar color */
         --toggled-btn-bg-color: rgb({{ theme_color }} / 0.9);  /* dropdown toggled color */
         --scrollbar-color: rgb({{ theme_color }});  /* scroll indicator color */
-        --treeitem-hover-color: rgb({{ theme_color }});  /* table of contents hover text color */
-        --treeitem-selected-color: rgb({{ theme_color }});  /* table of contents selected text color */
-        --thumbnail-hover-color: rgb({{ theme_color }} / 0.3);  /* thumbnail hover bg color */
-        --thumbnail-selected-color: rgb({{ theme_color }} / 0.7);  /* thumbnail selected bg color */
         --button-signature-hover-bg: rgb({{ theme_color }});
         --signature-hover-bg: rgb({{ theme_color }});
       }
@@ -59,6 +55,14 @@ See https://github.com/adobe-type-tools/cmap-resources
       }
       .button1:hover {
         background-color: rgb({{ theme_color }});
+      }
+      .treeView {
+        --treeitem-bg-color: rgb({{ theme_color }} / 0.8);
+        --treeitem-selected-bg-color: rgb({{ theme_color }});
+      }
+      #viewsManager {
+        --image-page-number-bg: rgb({{ theme_color }});
+        --image-current-border-color: rgb({{ theme_color }});
       }
       .pdfSidebarNotification::after {
         background-color: rgb({{ theme_color }});
