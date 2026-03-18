@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from base import base_views
+from core.settings import MEDIA_ROOT
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
@@ -571,11 +572,27 @@ class UpdatePdf(PdfMixin, View):
         else:
             updated_pdf = request.FILES.get('updated_pdf')
         try:
+            old_file_name = pdf.file.name
+            old_file_path = MEDIA_ROOT / old_file_name
+
             # make sure a valid pdf is sent
             updated_pdf = forms.CleanHelpers.clean_file(updated_pdf)
             pdf.file = updated_pdf
             pdf.revision += 1
             pdf.save()
+
+            # adjust file name, django adds a suffix changing the file
+            # we want to keep the original file name though.
+            try:
+                old_file_path.unlink()
+            except FileNotFoundError:  # pragma: no cover
+                pass
+
+            new_file_path = MEDIA_ROOT / pdf.file.name
+            pdf.file.name = old_file_name
+            pdf.save()
+
+            new_file_path.rename(old_file_path)
 
             PdfProcessingServices.set_highlights_and_comments(pdf)
 

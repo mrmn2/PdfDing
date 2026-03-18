@@ -18,6 +18,8 @@ from pdf.services.workspace_services import create_collection, create_workspace
 from pdf.views import pdf_views
 from users.service import get_demo_pdf
 
+from pdfding.core.settings.base import MEDIA_ROOT
+
 DEMO_FILE_SIZE = 29451
 
 
@@ -718,6 +720,9 @@ class TestViews(TestCase):
             pdf.file = file
             pdf.save()
 
+        original_file_name = pdf.file.name
+        original_file_path = MEDIA_ROOT / original_file_name
+
         self.assertEqual(pdf.file.size, 0)
         self.assertEqual(pdf.revision, 0)
 
@@ -732,6 +737,8 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(pdf.file.size, 8885)
         self.assertEqual(pdf.revision, 1)
+        self.assertEqual(pdf.file.name, original_file_name)
+        self.assertTrue(original_file_path.exists())
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
     @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
