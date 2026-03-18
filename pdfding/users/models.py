@@ -67,6 +67,10 @@ class Profile(models.Model):
         GRID = 'Grid'
         MINIMAL = 'Minimal'
 
+    class LanguageChoice(models.TextChoices):
+        AUTO = 'Auto'
+        ENGLISH = 'English'
+
     annotation_sorting = models.CharField(
         choices=AnnotationsSortingChoice, max_length=15, default=AnnotationsSortingChoice.NEWEST
     )
@@ -77,6 +81,7 @@ class Profile(models.Model):
     custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=6, default=DarkMode.DARK)
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
+    language = models.CharField(choices=LanguageChoice.choices, max_length=30, default=LanguageChoice.ENGLISH)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_keep_screen_awake = models.CharField(
         choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED
@@ -206,6 +211,14 @@ class Profile(models.Model):
             return 30
         else:
             return 12
+
+    @property
+    def language_code(self) -> str:  # pragma: no cover
+        """Return the language code of the selected language"""
+
+        language_codes = {'Auto': 'auto', 'English': 'en'}
+
+        return language_codes[self.language]
 
     def has_access_to_workspace(self, workspace_id: str) -> bool:
         """Check if the profile has access to the specified workspace"""
