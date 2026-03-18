@@ -1,9 +1,10 @@
 {% extends 'layouts/base_sidebar.html' %}
+{% load i18n %}
 {% block sidebar_content %}
 <form class="flex pb-3 hidden md:block" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form">
     <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
                   bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
-            type="text" placeholder="Search for PDFs or #tags"
+           type="text" placeholder="{% translate 'Search for PDFs or #tags' %}"
             id="search_input"
             name="search"
             @keyup.enter="document.getElementById('search_form').submit()"

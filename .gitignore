@@ -1,6 +1,7 @@
 **/__pycache__/
 .idea/
 
+**/*.mo
 notes.md
 node_modules
 dev.docker-compose.yaml
