@@ -1,3 +1,4 @@
+{% load i18n %}
 <div x-data="{ sortOpen: false, layoutOpen: false }" class="relative flex flex-row items-center md:gap-x-1">
     <a id="layout_settings"
        @click="layoutOpen = !layoutOpen"
@@ -12,7 +13,7 @@
         </svg>
         <span x-show="!layoutOpen" class="absolute pointer-events-none top-8 -left-3! mt-1 px-2 py-1 rounded-sm opacity-0
                      group-hover:opacity-100 group-hover:delay-350
-                     text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">Layout
+      text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">{% trans 'Layout' %}
         </span>
     </a>
     <a id="sorting_settings"
@@ -29,7 +30,7 @@
 
         <span x-show="!sortOpen" class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                      group-hover:opacity-100 group-hover:delay-350
-                     text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">Sort
+      text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">{% trans 'Sort' %}
         </span>
     </a>
     <div x-show="layoutOpen" x-cloak
@@ -41,22 +42,22 @@
             <a hx-post="{% url 'change_layout' 'Compact' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ layout }}' === 'Compact' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Compact
+                {% trans 'Compact' %}
             </a>
             <a hx-post="{% url 'change_layout' 'Grid' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ layout }}' === 'Grid' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Grid
+                {% trans 'Grid' %}
             </a>
             <a hx-post="{% url 'change_layout' 'List' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ layout }}' === 'List' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                List
+                {% trans 'List' %}
             </a>
             <a hx-post="{% url 'change_layout' 'Minimal' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ layout }}' === 'Minimal' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Minimal
+                {% trans 'Minimal' %}
             </a>
         </div>
     </div>
@@ -69,12 +70,12 @@
             <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'Newest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === '-creation_date' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Newest
+                {% trans 'Newest' %}
             </a>
             <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'oldest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === 'creation_date' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Oldest
+                {% trans 'Oldest' %}
             </a>
             <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'name_asc' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
@@ -89,17 +90,17 @@
             <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'most_viewed' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === '-views' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Most Viewed
+                {% trans 'Most Viewed' %}
             </a>
             <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'least_viewed' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === 'views' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Least Viewed
+                {% trans 'Least Viewed' %}
             </a>
             <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'recently_viewed' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === '-last_viewed_date' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Recently Viewed
+                {% trans 'Recently Viewed' %}
             </a>
         </div>
     </div>

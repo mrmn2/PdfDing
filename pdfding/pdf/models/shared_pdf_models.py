@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from pdf.models.helpers import get_collection_dir
 from pdf.models.pdf_models import Pdf
 
@@ -22,11 +23,11 @@ class SharedPdf(models.Model):
     name = models.CharField(max_length=150, blank=False)
     # the qr code file
     file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
-    description = models.TextField(default='', blank=True, help_text='Optional')
+    description = models.TextField(default='', blank=True, help_text=_('Optional'))
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     views = models.IntegerField(default=0)
-    max_views = models.IntegerField(null=True, blank=True, help_text='Optional')
-    password = models.CharField(max_length=128, null=True, blank=True, help_text='Optional')
+    max_views = models.IntegerField(null=True, blank=True, help_text=_('Optional'))
+    password = models.CharField(max_length=128, null=True, blank=True, help_text=_('Optional'))
     expiration_date = models.DateTimeField(null=True, blank=True)
     deletion_date = models.DateTimeField(null=True, blank=True)
 

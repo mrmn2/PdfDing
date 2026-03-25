@@ -1,3 +1,4 @@
+{% load i18n %}
 <div x-data="{ sortOpen: false }" class="relative flex flex-row items-center md:gap-x-2">
     <a id="sorting_settings"
        @click="sortOpen = !sortOpen"
@@ -13,7 +14,7 @@
 
         <span x-show="!sortOpen" class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                      group-hover:opacity-100 group-hover:delay-350
-                     text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">Sort
+                     text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">{% trans 'Sort' %}
         </span>
     </a>
     <div x-show="sortOpen" x-cloak
@@ -25,12 +26,12 @@
             <a hx-post="{% url 'change_sorting' 'user_sorting' 'newest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === '-date_joined' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Newest
+                {% trans 'Newest' %}
             </a>
             <a hx-post="{% url 'change_sorting' 'user_sorting' 'oldest' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                x-bind:class="'{{ sorting }}' === 'date_joined' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                Oldest
+                {% trans 'Oldest' %}
             </a>
             <a hx-post="{% url 'change_sorting' 'user_sorting' 'email_asc' %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'

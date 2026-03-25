@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 {# do not remove background as it otherwise sticky will lock strange #}
 <header class="py-1 pt-1 md:pt-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900">
     <div class="pr-2 pl-2 md:pl-4 md:pr-4 lg:pr-6 flex items-center justify-between">
@@ -49,7 +50,7 @@
                 </svg>
                 <span class="absolute pointer-events-none top-8 -left-1! mt-1 px-2 py-1 rounded-sm opacity-0
                              group-hover:opacity-100 group-hover:delay-350
-                             text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">Add
+                             text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">{% trans 'Add' %}
                 </span>
             </a>
             <div @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" @keyup.escape.window="dropdownOpen = false"
@@ -72,7 +73,7 @@
                         </div>
                         <div class="flex flex-col truncate [&>span]:text-sm">
                             <span class="truncate">{{ request.user.email }}</span>
-                            <span>User ID: {{ user.id }}</span>
+                            <span>{% trans 'User ID' %}: {{ user.id }}</span>
                         </div>
                     </div>
                 </div>
@@ -93,7 +94,7 @@
                                   1-1.169-.484l-.7-.7a1.65,1.65,0,0,1-.481-1.269l.1-1.59a8.748,8.748,0,0,0-.994-.413l-1.055,1.2a1.652,1.652,0,0,1-1.238.558H9.25a1.652,1.652,0,0,1-1.238-.558L6.958,1.61a8.8,8.8,0,0,0-.994.413l.1,1.59a1.65,1.65,0,0,1-.481,1.269l-.7.7a1.638,1.638,0,0,1-1.168.484c-.033,0-.067,0-.1,0l-1.59-.1a8.748,8.748,0,0,0-.413.994l1.2,1.055A1.652,1.652,0,0,1,3.363,
                                   9.25v.988a1.652,1.652,0,0,1-.558,1.238l-1.2,1.055a8.666,8.666,0,0,0,.413.994l1.59-.1.1,0A1.638,1.638,0,0,1,4.883,13.907Zm.106-4.168a4.75,4.75,0,1,1,4.75,4.75A4.756,4.756,0,0,1,4.989,9.739Zm1.5,0a3.25,3.25,0,1,0,3.25-3.25A3.254,3.254,0,0,0,6.489,9.739Z" transform="translate(2.261 2.261)" fill="currentColor"/>
                         </svg>
-                        Settings
+                        {% trans 'Settings' %}
                     </a>
                     {% if request.user.is_superuser and request.user.is_staff %}
                     <a href="{% url 'user_overview' %}">
@@ -102,7 +103,7 @@
                             <!-- license: PD License-->
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5 9C12.9853 9 15 6.98528 15 4.5C15 2.01472 12.9853 0 10.5 0C8.01475 0 6.00003 2.01472 6.00003 4.5C6.00003 5.38054 6.25294 6.20201 6.69008 6.89574L0.585815 13L3.58292 15.9971L4.99714 14.5829L3.41424 13L5.00003 11.4142L6.58292 12.9971L7.99714 11.5829L6.41424 10L8.10429 8.30995C8.79801 8.74709 9.61949 9 10.5 9ZM10.5 7C11.8807 7 13 5.88071 13 4.5C13 3.11929 11.8807 2 10.5 2C9.11932 2 8.00003 3.11929 8.00003 4.5C8.00003 5.88071 9.11932 7 10.5 7Z" fill="currentColor"/>
                         </svg>
-                        Admin
+                        {% trans 'Admin' %}
                     </a>
                     {% endif %}
                     <div class="my-1 border-b border-slate-300 dark:border-slate-600"></div>
@@ -112,7 +113,7 @@
                             <!-- license: CC0 License-->
                             <path d="M16 17L21 12M21 12L16 7M21 12H9M9 3H7.8C6.11984 3 5.27976 3 4.63803 3.32698C4.07354 3.6146 3.6146 4.07354 3.32698 4.63803C3 5.27976 3 6.11984 3 7.8V16.2C3 17.8802 3 18.7202 3.32698 19.362C3.6146 19.9265 4.07354 20.3854 4.63803 20.673C5.27976 21 6.11984 21 7.8 21H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Sign out
+                        {% trans 'Sign out' %}
                     </a>
                 </div>
             </div>

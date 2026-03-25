@@ -1,4 +1,5 @@
 {% extends 'layouts/base_sidebar.html' %}
+{% load i18n %}
 {% block sidebar_content %}
 <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
             [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
@@ -14,7 +15,7 @@
                     c6.764-6.76,6.764-17.726,0-24.484l-77.209-77.218h323.572c9.562,0,17.316-7.753,17.316-17.315
                     C400.004,190.438,392.251,182.686,382.688,182.686z"/>
             </svg>
-            <span class="hidden md:block">Back to App</span>
+            <span class="hidden md:block">{% trans 'Back to App' %}</span>
         </a>
     </div>
     <div {% if page == 'pdf_highlight_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
@@ -29,7 +30,7 @@
                         L32.992,67.991L19.627,54.627L68.416,9.038z M17.126,63.923l6.604,6.604l-10.162,3.632L17.126,63.923z"/>
                     <rect x="5.583" y="85.239" width="82.3" height="7.034"/>
             </svg>
-            <span class="hidden md:block">Highlights</span>
+            <span class="hidden md:block">{% trans 'Highlights' %}</span>
         </a>
     </div>
     <div {% if page == 'pdf_comment_overview' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
@@ -47,7 +48,7 @@
                 <path d="M98.167,24.562c0-0.293-0.114-0.567-0.321-0.772L86.785,12.729c-0.395-0.399-1.15-0.399-1.547-0.001l-5.221,5.221
                     l12.608,12.609l5.222-5.223C98.053,25.128,98.167,24.854,98.167,24.562z"/>
             </svg>
-            <span class="hidden md:block">Comments</span>
+            <span class="hidden md:block">{% trans 'Comments' %}</span>
         </a>
     </div>
 </div>

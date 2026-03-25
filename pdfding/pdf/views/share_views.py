@@ -12,6 +12,7 @@ from django.http import HttpRequest
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from pdf.forms import (
     SharedDeletionDateForm,
@@ -208,7 +209,7 @@ class EditSharedPdfMixin(SharedPdfMixin):
             existing_obj = shared_pdfs.filter(name__iexact=form_data.get('name')).first()
 
             if existing_obj and str(existing_obj.id) != str(shared_pdf.id):
-                messages.warning(request, 'This name is already used by another shared PDF!')
+                messages.warning(request, _('This name is already used by another shared PDF!'))
             else:
                 shared_pdf.name = form_data.get('name').strip()
                 shared_pdf.save()

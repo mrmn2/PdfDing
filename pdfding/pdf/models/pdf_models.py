@@ -10,6 +10,7 @@ from django.db import models
 from django.db.models import DateTimeField
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from pdf.models.collection_models import Collection
 from pdf.models.helpers import get_collection_dir
 from pdf.models.tag_models import Tag
@@ -65,7 +66,7 @@ def delete_empty_dirs_after_rename_or_delete(
 
     pdf_current_file_name_adjusted = pdf_current_file_name.replace(f'{workspace_id}/{collection_name.lower()}/pdf/', '')
 
-    for _ in pdf_current_file_name_adjusted.split('/'):
+    for __ in pdf_current_file_name_adjusted.split('/'):
         current_parent_path = current_path.parent
         sub_paths = [sub_path for sub_path in current_parent_path.iterdir()]
 
@@ -116,12 +117,12 @@ class Pdf(models.Model):
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False)
     current_page = models.IntegerField(default=1)
-    description = models.TextField(blank=True, help_text='Optional', default='')
+    description = models.TextField(blank=True, help_text=_('Optional'), default='')
     file_directory = models.CharField(
         max_length=120,
         default='',
         blank=True,
-        help_text='Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs',
+        help_text=_('Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs'),
     )
     file = models.FileField(upload_to=get_file_path, max_length=500, blank=False)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
@@ -129,7 +130,7 @@ class Pdf(models.Model):
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
     )
     name = models.CharField(max_length=150, blank=False)
-    notes = models.TextField(default='', blank=True, help_text='Optional, supports Markdown')
+    notes = models.TextField(default='', blank=True, help_text=_('Optional, supports Markdown'))
     number_of_pages = models.IntegerField(default=-1)
     preview = models.FileField(upload_to=get_preview_path, null=True, blank=False)
     revision = models.IntegerField(default=0)

@@ -73,7 +73,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         with sync_playwright() as p:
             self.open(reverse('add_pdf'), p)
-            self.page.get_by_label("Use File Name:").check()
+            self.page.get_by_label("Use File Name").check()
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
             self.page.locator("#id_file").click()
@@ -105,7 +105,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#notes")).not_to_be_visible()
 
             # add pdf and open notes field
-            self.page.get_by_label("Use File Name:").check()
+            self.page.get_by_label("Use File Name").check()
             self.page.locator("#id_file").click()
             self.page.locator("#id_file").set_input_files(dummy_file_path)
             self.page.locator("#show_additional").click()
@@ -162,7 +162,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
     def test_add_pdf_demo_mode(self):
         with sync_playwright() as p:
             self.open(reverse('add_pdf'), p)
-            self.page.get_by_label("Use File Name:").check()
+            self.page.get_by_label("Use File Name").check()
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
             self.page.get_by_placeholder("Add Tags").click()

@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="-ml-1!" x-data="{ show_notes_{{ loop_id }}: false }">
     <div class="flex flex-row pt-1 {% if layout == 'Grid' %} min-h-36 -mb-1! {% endif %}"
          x-data="{ tooltip_date: false }">
@@ -63,14 +64,14 @@
             {% endif %}
             <div>
                 {% if pdf.views == 1 %}
-                <span class="truncate">1 View</span>
+                <span class="truncate">1 {% trans 'View' context 'number of pdf views singular' %}</span>
                 {% else %}
-                <span class="truncate">{{ pdf.views }} Views</span>
+                <span class="truncate">{{ pdf.views }} {% trans 'Views' context 'number of pdf views plural' %}</span>
                 {% endif %}
             </div>
             {% if pdf.number_of_pages > 0 %}
             <div class="pb-1">
-                <span class="truncate"> {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}</span>
+              <span class="truncate"> {{ pdf.progress }}% - {% trans 'Page' %} {{ pdf.current_page_for_progress }} {% trans 'of' context 'page x of y pages' %} {{ pdf.number_of_pages }}</span>
             </div>
             {% endif %}
             {% if pdf.tags.all %}

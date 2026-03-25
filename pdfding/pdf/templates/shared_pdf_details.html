@@ -1,6 +1,8 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
+{% load i18n %}
 {% block content %}
+{% trans 'Edit' as edit %}
 <div class="flex flex-col md:flex-row md:justify-end">
     <div class="w-full! md:w-72! lg:w-72! px-2 md:px-4 pt-2">
         {% include 'includes/shared_details_sidebar.html' with page='shared_details' %}
@@ -25,7 +27,7 @@
                                 <a href="{% url 'view_pdf' shared_pdf.pdf.id %}"
                                    class="text-2xl font-bold hover:black dark:hover:text-white truncate pb-1">
                                     {% if shared_pdf.inactive %}
-                                    {{ shared_pdf.name }} | inactive
+                                    {{ shared_pdf.name }} | {% trans 'inactive' %}
                                     {% else %}
                                     {{ shared_pdf.name }}
                                     {% endif %}
@@ -36,7 +38,7 @@
                                     hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='name' %}"
                                     hx-target="#name"
                                     hx-swap="innerHTML" >
-                                    Edit
+                                    {{ edit }}
                                 </a>
                             </div>
                         </div>
@@ -50,11 +52,11 @@
                             <circle cx="12.1" cy="12.1" r="1"></circle>
                         </svg>
                         <a onclick="location.href='{% url 'download_qrcode' shared_pdf.id %}'">
-                           Download QR Code
+                          {% trans 'Download QR Code' %}
                         </a>
                     </div>
                     <div class="pt-4">
-                        <span class="text-lg font-bold">Description</span>
+                      <span class="text-lg font-bold">{% trans 'Description' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -62,7 +64,7 @@
                                 {% if shared_pdf.description %}
                                 {{ shared_pdf.description }}
                                 {% else %}
-                                no description available
+                                {% trans 'no description available' %}
                                 {% endif%}
                             </span>
                         </div>
@@ -71,12 +73,12 @@
                                 hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='description' %}"
                                 hx-target="#description"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Password</span>
+                      <span class="text-lg font-bold">{% trans 'Password' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -84,7 +86,7 @@
                                 {% if shared_pdf.password %}
                                 ***
                                 {% else %}
-                                not set
+                                {% trans 'not set' %}
                                 {% endif%}
                             </span>
                         </div>
@@ -93,12 +95,12 @@
                                 hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='password' %}"
                                 hx-target="#password"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Views</span>
+                      <span class="text-lg font-bold">{% trans 'Views' context 'number of views' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -106,7 +108,7 @@
                                 {% if shared_pdf.max_views %}
                                 {{ shared_pdf.views }}/{{ shared_pdf.max_views }}
                                 {% else %}
-                                {{ shared_pdf.views }} | not set
+                                {{ shared_pdf.views }} | {% trans 'not set' %}
                                 {% endif%}
                             </span>
                         </div>
@@ -115,12 +117,12 @@
                                 hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='max_views' %}"
                                 hx-target="#max_views"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Expiration</span>
+                      <span class="text-lg font-bold">{% trans 'Expiration' context ' shared pdf expriation date' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -133,12 +135,12 @@
                                 hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='expiration_date' %}"
                                 hx-target="#expiration_date"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Deletion</span>
+                      <span class="text-lg font-bold">{% trans 'Deletion' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -151,7 +153,7 @@
                                 hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='deletion_date' %}"
                                 hx-target="#deletion_date"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
@@ -167,12 +169,12 @@
                         <div class="pr-0 md:pr-4">
                             <a id="pdf-view" href="{% url 'view_pdf' shared_pdf.pdf.id %}"
                                class="cursor-pointer text-primary hover:text-secondary">
-                                View
+                              {% trans 'View' context 'view pdf' %}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Date added</span>
+                      <span class="text-lg font-bold">{% trans 'Date added' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -188,15 +190,15 @@
                     <a x-show="delete_shared_pdf" x-cloak
                       hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                      class="cursor-pointer pr-2">Confirm
+                      class="cursor-pointer pr-2">{% trans 'Confirm' %}
                     </a>
-                    <a x-show="delete_shared_pdf" x-cloak @click="delete_shared_pdf = false" class="">Cancel</a>
+                    <a x-show="delete_shared_pdf" x-cloak @click="delete_shared_pdf = false" class="">{% trans 'Cancel' %}</a>
                     <a id="delete_shared"
                        class="flex flex-row gap-x-1"
                        x-show="!delete_shared_pdf"
                        @click="delete_shared_pdf = true">
                         <img src="{% static 'images/trash.svg' %}" width="19">
-                        <span>Delete</span>
+                        <span>{% trans 'Delete' %}</span>
                     </a>
                 </div>
             </div>

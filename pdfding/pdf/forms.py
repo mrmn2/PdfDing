@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
@@ -18,9 +19,11 @@ class AddFormNoFile(forms.ModelForm):
 
     tag_string = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Tags'}),
-        help_text='Optional, enter any number of tags separated by space and without the hashtag (#). '
-        'If a tag does not exist it will be automatically created.',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Add Tags')}),
+        help_text=_(
+            'Optional, enter any number of tags separated by space and without the hashtag (#). '
+            'If a tag does not exist it will be automatically created.'
+        ),
     )
 
     use_file_name = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
@@ -28,10 +31,10 @@ class AddFormNoFile(forms.ModelForm):
     class Meta:
         model = Pdf
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Add PDF Name'}),
-            'description': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Add Description'}),
-            'notes': forms.Textarea(attrs={'rows': 8, 'placeholder': 'Add Notes'}),
-            'file_directory': forms.TextInput(attrs={'placeholder': 'Add File Directory'}),
+            'name': forms.TextInput(attrs={'placeholder': _('Add PDF Name')}),
+            'description': forms.Textarea(attrs={'rows': 2, 'placeholder': _('Add Description')}),
+            'notes': forms.Textarea(attrs={'rows': 8, 'placeholder': _('Add Notes')}),
+            'file_directory': forms.TextInput(attrs={'placeholder': _('Add File Directory')}),
         }
 
         fields = ['name', 'description', 'notes', 'file_directory']
@@ -65,7 +68,7 @@ class AddFormNoFile(forms.ModelForm):
         # only raise validation error if name is not the dummy placeholder from the frontend
         # otherwise it will be replaced by the filename in "clean".
         if pdf_name != 'bb36974a-3792-47c5-96cc-c79adb87cf82' and existing_pdf:
-            raise forms.ValidationError('A PDF with this name already exists!')
+            raise forms.ValidationError(_('A PDF with this name already exists!'))
 
         return pdf_name
 
@@ -116,27 +119,29 @@ class BulkAddFormNoFile(forms.Form):
 
     description = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': 'Add Description'}),
-        help_text='Optional',
+        widget=forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add Description')}),
+        help_text=_('Optional'),
     )
 
     notes = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={'rows': 8, 'placeholder': 'Add Notes'}),
-        help_text='Optional, supports Markdown',
+        widget=forms.Textarea(attrs={'rows': 8, 'placeholder': _('Add Notes')}),
+        help_text=_('Optional, supports Markdown'),
     )
 
     tag_string = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Tags'}),
-        help_text='Optional, enter any number of tags separated by space and without the hashtag (#). '
-        'If a tag does not exist it will be automatically created.',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Add Tags')}),
+        help_text=_(
+            'Optional, enter any number of tags separated by space and without the hashtag (#). '
+            'If a tag does not exist it will be automatically created.'
+        ),
     )
 
     file_directory = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add File Directory'}),
-        help_text='Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Add File Directory')}),
+        help_text=_('Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs'),
     )
 
     def __init__(self, *args, **kwargs):
@@ -264,23 +269,23 @@ class ShareForm(forms.ModelForm):
 
     expiration_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Expire in'}),
-        help_text='Optional | e.g. 1d0h22m to expire in 1 day, 0 hours and 22 minutes.',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Expire in')}),
+        help_text=_('Optional | e.g. 1d0h22m to expire in 1 day, 0 hours and 22 minutes.'),
     )
 
     deletion_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Delete in'}),
-        help_text='Optional | e.g. 1d0h22m to delete in 1 day, 0 hours and 22 minutes.',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Delete in')}),
+        help_text=_('Optional | e.g. 1d0h22m to delete in 1 day, 0 hours and 22 minutes.'),
     )
 
     class Meta:
         model = SharedPdf
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Add Share Name'}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Add a private description'}),
-            'max_views': forms.TextInput(attrs={'placeholder': 'Maximum number of views'}),
-            'password': forms.PasswordInput(attrs={'placeholder': 'Protect the share with a password'}),
+            'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add a private description')}),
+            'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
+            'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
         }
 
         fields = ['name', 'description', 'password', 'max_views']
@@ -309,7 +314,7 @@ class ShareForm(forms.ModelForm):
         existing_share = shared_pdfs.filter(name__iexact=share_name).first()
 
         if existing_share and not existing_share.deleted:
-            raise forms.ValidationError('A Share with this name already exists!')
+            raise forms.ValidationError(_('A Share with this name already exists!'))
 
         return share_name
 
@@ -388,7 +393,7 @@ class SharedExpirationDateForm(forms.ModelForm):
 
     expiration_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1d0h22m'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. 1d0h22m')}),
     )
 
     class Meta:
@@ -401,7 +406,7 @@ class SharedDeletionDateForm(forms.ModelForm):
 
     deletion_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1d0h22m'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. 1d0h22m')}),
     )
 
     class Meta:
@@ -414,8 +419,8 @@ class ViewSharedPasswordForm(forms.Form):
 
     password_input = forms.CharField(
         required=True,
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
-        help_text='This PDF is password protected',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Password')}),
+        help_text=_('This PDF is password protected'),
     )
 
     def __init__(self, *args, **kwargs):
@@ -429,7 +434,7 @@ class ViewSharedPasswordForm(forms.Form):
         password = self.cleaned_data['password_input']
 
         if not check_password(password, self.shared_pdf.password):
-            raise forms.ValidationError('Incorrect Password!')
+            raise forms.ValidationError(_('Incorrect Password!'))
 
         return password
 
@@ -446,7 +451,7 @@ class TagNameForm(forms.Form):
         new_tag_name = self.cleaned_data['name'].strip()
 
         if re.search(r'\s', new_tag_name):
-            raise ValidationError('Tag names are not allowed to contain spaces!')
+            raise ValidationError(_('Tag names are not allowed to contain spaces!'))
 
         new_tag_name = CleanHelpers.clean_tag_string_file_directory(new_tag_name)
 
@@ -458,12 +463,12 @@ class WorkspaceForm(forms.Form):
 
     name = forms.CharField(
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Workspace Name'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Add Workspace Name')}),
     )
     description = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add a workspace description'}),
-        help_text='Optional',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Add a workspace description')}),
+        help_text=_('Optional'),
     )
 
     def __init__(self, *args, **kwargs):
@@ -518,12 +523,12 @@ class CollectionForm(forms.Form):
 
     name = forms.CharField(
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Add Collection Name'}),
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Add Collection Name')}),
     )
     description = forms.CharField(
         required=False,
-        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Add a collection description'}),
-        help_text='Optional',
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': _('Add a collection description')}),
+        help_text=_('Optional'),
     )
 
     def __init__(self, *args, **kwargs):
@@ -549,10 +554,14 @@ class CollectionForm(forms.Form):
         collection_name = CleanHelpers.clean_workspace_name(self.cleaned_data['name'])
 
         if collection_name.lower() == 'all':
-            raise ValidationError('"All" is not a valid collection name!')
+            raise ValidationError(_('"All" is not a valid collection name!'))
 
         if workspace.collections.filter(name__iexact=collection_name).count():
-            raise ValidationError(f'There is already a collection named {collection_name} in the current workspace!')
+            raise ValidationError(
+                _('There is already a collection named {collection_name} in the current workspace!').format(
+                    collection_name=collection_name
+                )
+            )
 
         return collection_name
 
@@ -590,7 +599,7 @@ class CleanHelpers:
         file_type = magic.from_buffer(file.read(2048), mime=True)
 
         if file_type.lower() != 'application/pdf':
-            raise forms.ValidationError('Uploaded file is not a PDF!')
+            raise forms.ValidationError(_('Uploaded file is not a PDF!'))
 
         return file
 
@@ -617,7 +626,7 @@ class CleanHelpers:
         """Check that the provided max views are a positive integer"""
 
         if max_views and not re.match(r'^[0-9]*$', str(max_views)):
-            raise forms.ValidationError('Only positive numbers are allowed!')
+            raise forms.ValidationError(_('Only positive numbers are allowed!'))
 
         return max_views
 
@@ -626,7 +635,7 @@ class CleanHelpers:
         """Check if the provided time input is in the correct format _d_h_m, e.g. 1d0h22m."""
 
         if time_input and not re.match(r'^[0-9]+d[0-9]+h[0-9]+m$', str(time_input)):
-            raise forms.ValidationError('Wrong format! Format needs to be _d_h_m!')
+            raise forms.ValidationError(_('Wrong format! Format needs to be _d_h_m!'))
 
         return time_input
 
@@ -641,7 +650,7 @@ class CleanHelpers:
             file_directory = file_directory.strip()
 
             if re.search(r'\s', file_directory):
-                raise ValidationError('Directories are not allowed to contain spaces!')
+                raise ValidationError(_('Directories are not allowed to contain spaces!'))
 
             file_directory = cls.clean_tag_string_file_directory(file_directory)
 
@@ -656,7 +665,7 @@ class CleanHelpers:
         if input_string:
             for char in input_string:
                 if not (char.isalnum() or char in ['/', '-', '_', ' ']):
-                    raise forms.ValidationError('Only letters, numbers, "/", "-" and "_" are valid characters!')
+                    raise forms.ValidationError(_('Only letters, numbers, "/", "-" and "_" are valid characters!'))
 
             string_split = input_string.split(' ')
 
@@ -667,10 +676,10 @@ class CleanHelpers:
                     string_part = string_part.strip()
 
                     if string_part[0] == '/' or string_part[-1] == '/':
-                        raise forms.ValidationError('Not allowed to begin or end with "/"!')
+                        raise forms.ValidationError(_('Not allowed to begin or end with "/"!'))
 
                     if re.search(r'/{2,}', string_part):
-                        raise forms.ValidationError('Not allowed to contain consecutive "/" characters!')
+                        raise forms.ValidationError(_('Not allowed to contain consecutive "/" characters!'))
 
         return input_string
 
@@ -684,11 +693,11 @@ class CleanHelpers:
         ws_name = ws_name.strip()
 
         if ws_name in ['_', '-']:
-            raise forms.ValidationError('"_" or "-" are not valid workspace names!')
+            raise forms.ValidationError(_('"_" or "-" are not valid workspace names!'))
         elif ws_name and not re.match(r'^[A-Za-z0-9-_]*$', ws_name):
-            raise forms.ValidationError('Only "-", "_", numbers or letters are allowed!')
+            raise forms.ValidationError(_('Only "-", "_", numbers or letters are allowed!'))
         if len(ws_name) > 50:
-            raise forms.ValidationError('Maximum number of characters for a workspace name is 50!')
+            raise forms.ValidationError(_('Maximum number of characters for a workspace name is 50!'))
 
         return ws_name
 

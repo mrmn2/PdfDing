@@ -1,7 +1,8 @@
+{% load i18n %}
 <div x-data="{ delete{{ loop_id }}: false, admin{{ loop_id }}: false }">
     <div class="text font-bold text-primary">
         {% if user.is_superuser and request.user.is_staff %}
-        <span id="user-{{ loop_id }}">{{ user.email }} | Admin</span>
+        <span id="user-{{ loop_id }}">{{ user.email }} | {% trans 'Admin' %}</span>
         {% else %}
         <span id="user-{{ loop_id }}">{{ user.email }}</span>
         {% endif %}
@@ -9,7 +10,7 @@
     <div x-data="{ tooltip_date: false }"
          class="flex flex-row items-center text-slate-500 dark:text-slate-300 text-sm relative">
         <span x-on:mouseenter="tooltip_date = true" x-on:mouseleave="tooltip_date = false">
-            Registered: {{ user.date_joined.date }}
+          {% trans 'Registered' %}: {{ user.date_joined.date }}
         </span>
         <span x-show="tooltip_date" x-transition:enter.duration.500ms x-cloak
             class="left-0 top-5 z-50 absolute bg-primary text-slate-200 rounded-xs p-2 mt-1">
@@ -23,30 +24,30 @@
             <span id="delete-confirm-{{ loop_id }}"
                 x-show="delete{{ loop_id }}" x-cloak
                 hx-delete="{% url 'admin_delete_profile' user.id %}"
-                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>Confirm
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>{% trans 'Confirm' %}
             </span>
             <span id="delete-cancel-{{ loop_id }}"
-                x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false">Cancel
+                  x-show="delete{{ loop_id }}" x-cloak @click="delete{{ loop_id }} = false">{% trans 'Cancel' %}
             </span>
             <span id="delete-action-{{ loop_id }}"
-                x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true">Delete
+                  x-show="!delete{{ loop_id }}" @click="delete{{ loop_id }} = true">{% trans 'Delete' %}
             </span>
         </div>
         <div>
             <span id="admin-confirm-{{ loop_id }}"
                  x-show="admin{{ loop_id }}" x-cloak
                  hx-post="{% url 'admin_adjust_rights' user.id %}"
-                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'">Confirm
+                 hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>{% trans 'Confirm' %}
             </span>
             <span id="admin-cancel-{{ loop_id }}" x-show="admin{{ loop_id }}"
-                  x-cloak @click="admin{{ loop_id }} = false">Cancel
+                x-cloak @click="admin{{ loop_id }} = false">{% trans 'Cancel' %}
             </span>
             <span id="admin-action-{{ loop_id }}"
                 x-show="!admin{{ loop_id }}" @click="admin{{ loop_id }} = true">
                 {% if user.is_superuser and request.user.is_staff %}
-                Remove Admin Rights
+                {% trans 'Remove Admin Rights' %}
                 {% else %}
-                Add Admin Rights
+                {% trans 'Add Admin Rights' %}
                 {% endif %}
             </span>
             </div>

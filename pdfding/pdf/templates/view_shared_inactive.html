@@ -1,9 +1,10 @@
 {% extends 'layouts/box_allauth.html' %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="*:flex *:justify-center">
   <h1>Shared PDF unavailable</h1>
-  <span class="p-2">The shared PDF you are trying to access is no longer available.</span>
+  <span class="p-2">{% trans 'The shared PDF is no longer available' %}.</span>
 </div>
 {% endblock %}

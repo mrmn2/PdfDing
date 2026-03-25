@@ -1,4 +1,5 @@
 {% extends 'layouts/blank.html' %}
+{% load i18n %}
 
 {% block content %}
 <div class="" >
@@ -13,8 +14,8 @@
                 {% endif %}
                 {% if not page_obj %}
                 <div class="pt-4 *:flex *:justify-center">
-                    <span class="text-2xl">There aren't any users matching the search criteria</span>
-                    <span class="pt-4 text-lg">Please try a different search.</span>
+                  <span class="text-2xl">{% trans "There aren't any users matching the search criteria" %}</span>
+                  <span class="pt-4 text-lg">{% trans 'Please try a different search.' %}</span>
                 </div>
                 {% else %}
                 {% include 'includes/user_overview_page.html' %}

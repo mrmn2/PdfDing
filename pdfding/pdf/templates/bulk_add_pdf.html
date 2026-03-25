@@ -1,4 +1,5 @@
 {% extends 'layouts/box.html' %}
+{% load i18n %}
 
 {% block optional %}
 <div>
@@ -7,10 +8,10 @@
              divide-x divide-slate-300 dark:divide-slate-800
              [&>li>a]:w-full [&>li]:w-1/2 [&>li>a]:py-2">
     <li class="rounded-tl-2xl hover:bg-primary">
-        <a href="{% url 'add_pdf' %}" class="inline-block hover:border-b-2 hover:border-primary">Individual</a>
+        <a href="{% url 'add_pdf' %}" class="inline-block hover:border-b-2 hover:border-primary">{% trans 'Individual' context 'add individual pdf' %}</a>
     </li>
     <li class="rounded-tr-2xl hover:bg-primary">
-        <a href="{% url 'bulk_add_pdfs' %}" class="inline-block border-b-2 border-primary ">Bulk</a>
+        <a href="{% url 'bulk_add_pdfs' %}" class="inline-block border-b-2 border-primary ">{% trans 'Bulk' context 'bulk add pdfs' %}</a>
     </li>
   </ul>
 </div>
@@ -23,7 +24,7 @@
     <form x-on:submit="in_progress = true" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="flex flex-row items-center gap-x-4 pb-3!">
-          <span>Collection</span>
+          <span>{% trans 'Collection' context 'PDF collection' %}</span>
           <div class="w-28 bg-slate-100 dark:bg-slate-700 p-2 rounded-lg [&>select]:hover:cursor-pointer">
             {{ form.collection.errors }}
             {{ form.collection }}
@@ -50,7 +51,7 @@
         <p class="-mt-1">
             <label
                     class="w-auto! mr-2 inline-block! text-gray-600 dark:text-slate-300"
-                    for="id_skip_existing">Skip existing files:</label>
+                    for="id_skip_existing">{% trans 'Skip existing files' %}</label>
             <input class="w-auto!" type="checkbox" name="skip_existing" id="id_skip_existing"  checked>
         </p>
         {% include 'includes/add_pdf_optionals.html' %}

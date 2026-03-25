@@ -1,4 +1,5 @@
 {% extends 'layouts/blank.html' %}
+{% load i18n %}
 
 {% block content %}
 <div>
@@ -11,11 +12,11 @@
                 {% if not page_obj %}
                 <div class="pt-4 *:flex *:justify-center">
                     {% if page == 'pdf_details_highlights' %}
-                    <span class="text-2xl">This PDF does not have any highlights yet!</span>
+                    <span class="text-2xl">{% trans 'This PDF does not have any highlights yet!' %}</span>
                     {% elif page == 'pdf_details_comments' %}
-                    <span class="text-2xl">This PDF does not have any comments yet!</span>
+                    <span class="text-2xl">{% trans 'This PDF does not have any comments yet!' %}</span>
                     {% endif %}
-                    <span class="pt-4 text-lg">Start by adding them in the pdf viewer.</span>
+                    <span class="pt-4 text-lg">{% trans 'Start by adding them in the pdf viewer.' %}</span>
                 </div>
                 {% else %}
                 {% include 'includes/pdf_annotation_overview/overview_page.html' %}

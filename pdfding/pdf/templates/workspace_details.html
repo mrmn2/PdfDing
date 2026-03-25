@@ -1,6 +1,8 @@
 {% extends 'layouts/blank.html' %}
+{% load i18n %}
 
 {% block content %}
+{% trans 'Edit' as edit %}
 <div x-data="{ show_delete_workspace_modal: false }">
   <div class="flex flex-col md:flex-row md:justify-end"
       :class="{ 'opacity-15': show_delete_workspace_modal }">
@@ -12,21 +14,21 @@
                       bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
             <div>
               <div class="text-2xl font-bold">
-                Workspace Details
+                {% trans 'Workspace Details' %}
               </div>
               <div class="pt-4 flex flex-row text-start justify-start gap-x-4 lg:gap-x-30
                           [&>div]:flex [&>div]:flex-row [&>div]:items-end [&>div]:gap-x-1 [&>div]:lg:gap-x-2">
                   <div id="number_of_pdfs">
                     <span class="lg:-mb-[2px]! text-xl lg:text-3xl font-semibold">{{ number_of_pdfs }}</span>
-                    <span>PDFs</span>
+                    <span>{% trans 'PDFs' %}</span>
                   </div>
                   <div id="pdfs_total_size">
                     <span class="lg:-mb-[2px]! text-xl lg:text-3xl font-semibold">{{ pdfs_total_size }}</span>
-                    <span>Total Size</span>
+                    <span>{% trans 'Total Size' context 'size of all pdfs' %}</span>
                   </div>
               </div>
               <div class="pt-4">
-                  <span class="text-lg font-bold">Name</span>
+                <span class="text-lg font-bold">{% trans 'Name' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%] truncate">
@@ -39,7 +41,7 @@
                           hx-get="{% url 'edit_workspace' identifier=workspace.id field_name='name' %}"
                           hx-target="#name"
                           hx-swap="innerHTML">
-                          Edit
+                        {{ edit }}
                       </a>
                   </div>
               </div>
@@ -50,15 +52,15 @@
                   <div class="w-[86%]">
                       <span id="personal_workspace">
                           {% if workspace.personal_workspace %}
-                          Yes
+                          {% trans 'Yes' %}
                           {% else %}
-                          No
+                          {% trans 'No' %}
                           {% endif%}
                       </span>
                   </div>
               </div>
               <div class="pt-2">
-                  <span class="text-lg font-bold">Description</span>
+                <span class="text-lg font-bold">{% trans 'Description' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%] text-sm">
@@ -66,7 +68,7 @@
                           {% if workspace.description %}
                           {{ workspace.description }}
                           {% else %}
-                          no description available
+                          {% trans 'no description available' %}
                           {% endif%}
                       </span>
                   </div>
@@ -75,12 +77,12 @@
                           hx-get="{% url 'edit_workspace' identifier=workspace.id field_name='description' %}"
                           hx-target="#description"
                           hx-swap="innerHTML">
-                          Edit
+                        {{ edit }}
                       </a>
                   </div>
               </div>
               <div class="pt-2">
-                  <span class="text-lg font-bold">Date added</span>
+                <span class="text-lg font-bold">{% trans 'Date added' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%] text-sm">
@@ -88,13 +90,13 @@
                   </div>
               </div>
               {% if not workspace.personal_workspace %}
-              <div class="pt-12 text-xl font-bold text-red-500">Danger Zone</div>
+              <div class="pt-12 text-xl font-bold text-red-500">{% trans 'Danger Zone' %}</div>
               <div class="pt-3">
-                  <span class="text-lg font-bold">Delete Account</span>
+                <span class="text-lg font-bold">{% trans 'Delete Account' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-5/6">
-                      <span>Delete the workspace and all its collections and PDFs</span>
+                    <span>{% trans 'Delete the workspace and all its collections and PDFs' %}</span>
                   </div>
                   <div class="pr-0 ml-2 md:pl-0 md:pr-4">
                     <a id="delete-workspace" class="text-red-500 hover:text-red-600 cursor-pointer"
@@ -102,7 +104,7 @@
                       hx-get="{% url 'delete_workspace' workspace.id %}"
                       hx-target="#delete_workspace_modal"
                       hx-swap="innerHTML">
-                        Delete
+                      {% trans 'Delete' %}
                     </a>
                   </div>
               </div>

@@ -10,6 +10,7 @@ from django.db.models.functions import Lower
 from django.forms import ValidationError
 from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms
@@ -332,7 +333,7 @@ class EditPdfMixin(PdfMixin):
             )
 
             if existing_obj and str(existing_obj.id) != str(pdf.id):
-                messages.warning(request, 'This name is already used by another PDF!')
+                messages.warning(request, _('This name is already used by another PDF!'))
             else:
                 PdfProcessingServices.process_renaming_pdf(pdf)
 
@@ -770,7 +771,7 @@ class EditTag(TagMixin, View):
             try:
                 messages.warning(request, dict(form.errors)['name'][0])
             except:  # noqa # pragma: no cover
-                messages.warning(request, 'Input is not valid!')
+                messages.warning(request, _('Input is not valid!'))
 
         return redirect(redirect_url)
 

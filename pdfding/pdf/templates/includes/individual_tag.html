@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <div x-on:mouseenter="hashtag_hovered = true" x-on:mouseleave="hashtag_hovered = false"
    @click="tag_options = true"
    class="cursor-pointer text-primary hover:text-primary! [&>svg]:h-4 [&>svg]:w-4">
@@ -48,7 +49,7 @@
                     <!--source: https://www.svgrepo.com/svg/488918/edit-03, license: PD License-->
                     <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12.5L17.75 3.75C18.4404 3.05964 19.5596 3.05964 20.25 3.75V3.75C20.9404 4.44036 20.9404 5.55964 20.25 6.25L15.5 11L11.5 15H9Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Rename</span>
+                <span>{% translate 'Rename' %}</span>
             </div>
             <form x-show="tag_delete">
                 <div id="confirm-delete-tag-{{ tag_name }}"
@@ -57,7 +58,7 @@
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                       class="text-red-400 py-1 px-2 rounded-sm
                              hover:bg-slate-200 dark:hover:bg-slate-700">
-                    <span>Confirm</span>
+                  <span>{% translate 'Confirm' %}</span>
                 </div>
                 <input type="hidden" name="tag_name" value="{{ tag_name }}"/>
             </form>
@@ -67,11 +68,11 @@
                  x-show="!tag_delete" @click="tag_delete = true"
                  class="flex flex-row gap-x-1">
                 <img src="{% static 'images/trash.svg' %}" width="19">
-                <a>Delete</a>
+                <a>{% translate 'Delete' %}</a>
             </div>
             <div id="cancel-delete-tag-{{ tag_name }}"
                   x-show="tag_delete" x-cloak @click="tag_delete = false">
-                <span>Cancel</span>
+              <span>{% translate 'Cancel' %}</span>
             </div>
         </div>
     </div>

@@ -3,6 +3,7 @@ import re
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+from django.utils.translation import gettext_lazy as _
 from users.models import Profile
 
 
@@ -52,6 +53,6 @@ def clean_hex_color(color: str) -> str:
     """Check that the provided max views are a positive integer"""
 
     if not re.match(r'^#[A-Fa-f0-9]{6}$', color):
-        raise forms.ValidationError('Only valid hex colors are allowed! E.g.: #ffa385.')
+        raise forms.ValidationError(_('Only valid hex colors are allowed! E.g.: #ffa385.'))
 
     return str.lower(color)

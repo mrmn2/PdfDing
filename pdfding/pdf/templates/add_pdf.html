@@ -1,4 +1,5 @@
 {% extends 'layouts/box.html' %}
+{% load i18n %}
 
 {% block optional %}
 <div>
@@ -7,22 +8,22 @@
              divide-x divide-slate-300 dark:divide-slate-800
              [&>li>a]:w-full [&>li]:w-1/2 [&>li>a]:py-2">
     <li class="rounded-tl-2xl hover:bg-primary">
-        <a href="{% url 'add_pdf' %}" class="inline-block border-b-2 border-primary ">Individual</a>
+      <a href="{% url 'add_pdf' %}" class="inline-block border-b-2 border-primary ">{% trans 'Individual' context 'add individual pdf' %}</a>
     </li>
     <li class="rounded-tr-2xl hover:bg-primary">
-        <a href="{% url 'bulk_add_pdfs' %}" class="inline-block hover:border-b-2 hover:border-primary">Bulk</a>
+      <a href="{% url 'bulk_add_pdfs' %}" class="inline-block hover:border-b-2 hover:border-primary">{% trans 'Bulk' context 'bulk add pdfs' %}</a>
     </li>
   </ul>
 </div>
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-6">Add PDF File</h1>
+<h1 class="mb-6">{% trans 'Add PDF File' %}</h1>
 <div x-data="{ in_progress: false, hide_name_input: false, show_additional: false }">
     <form x-on:submit="in_progress = true" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="flex flex-row items-center gap-x-4 pb-3!">
-          <span>Collection</span>
+          <span>{% trans 'Collection' context 'PDF collection' %}</span>
           <div class="w-28 bg-slate-100 dark:bg-slate-700 p-2 rounded-lg [&>select]:hover:cursor-pointer">
             {{ form.collection.errors }}
             {{ form.collection }}
@@ -31,13 +32,13 @@
         <p>
             <label
                     class="w-auto! mr-2 inline-block! text-gray-600 dark:text-slate-300"
-                    for="id_use_file_name">Use File Name:</label>
+                    for="id_use_file_name">{% trans 'Use File Name' %}</label>
             <input x-model="hide_name_input" class="w-auto!" type="checkbox" name="use_file_name" id="id_use_file_name">
         </p>
         <p>
             {{ form.name.errors }}
             <input x-show="!hide_name_input" x-bind:value="get_name_place_holder(hide_name_input)"
-                   type="text" name="name" placeholder="Add PDF Name" maxlength="150"  id="id_name" required>
+                   type="text" name="name" placeholder="{% trans 'Add PDF Name' %}" maxlength="150"  id="id_name" required>
         </p>
         <p>
             {{ form.tag_string.errors }}

@@ -1,14 +1,15 @@
 {% extends 'layouts/box_allauth.html' %}
+{% load i18n %}
 
 {% block content %}
 
-<h1>Delete Account</h1>
-<p>Are you sure you want to delete your account?</p>
+<h1>{% trans 'Delete Account' %}</h1>
+<p>{% trans 'Are you sure you want to delete your account?' %}</p>
 
 <form method='POST'>
     {% csrf_token %}
-    <button type="submit" class="bg-red-500! hover:bg-red-600! mt-6">Yes, I want to delete my account</button>
-    <a class="button bg-gray-300! hover:bg-[#c3c9d0]! no-underline!" href="{{ request.META.HTTP_REFERER }}">Cancel</a>
+    <button type="submit" class="bg-red-500! hover:bg-red-600! mt-6">{% trans 'Yes, I want to delete my account' %}</button>
+    <a class="button bg-gray-300! hover:bg-[#c3c9d0]! no-underline!" href="{{ request.META.HTTP_REFERER }}">{% trans 'Cancel' %}</a>
 </form>
 
 {% endblock %}

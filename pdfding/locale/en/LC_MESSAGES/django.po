@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-15 11:42+0000\n"
+"POT-Creation-Date: 2026-03-25 07:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,967 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: pdfding/pdf/templates/includes/sidebar.html:8
+
+#: pdfding/admin/templates/includes/admin_sidebar.html:8
+msgid "Search for mail or #admin"
+msgstr ""
+
+#: pdfding/admin/templates/includes/admin_sidebar.html:28
+#: pdfding/pdf/templates/includes/annotations_sidebar.html:18
+#: pdfding/pdf/templates/includes/pdf_details_sidebar.html:18
+#: pdfding/pdf/templates/includes/shared_details_sidebar.html:18
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:26
+#: pdfding/users/templates/includes/settings_sidebar.html:18
+msgid "Back to App"
+msgstr ""
+
+#: pdfding/admin/templates/includes/admin_sidebar.html:38
+msgid "Users"
+msgstr ""
+
+#: pdfding/admin/templates/includes/admin_sidebar.html:49
+#: pdfding/admin/templates/information.html:12
+msgid "Information"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:5
+#: pdfding/templates/includes/header.html:106
+msgid "Admin"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:13
+msgid "Registered"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:27
+#: pdfding/admin/templates/includes/user.html:40
+#: pdfding/pdf/templates/includes/individual_tag.html:61
+#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:69
+#: pdfding/pdf/templates/pdf_details.html:267
+#: pdfding/pdf/templates/shared_pdf_details.html:193
+msgid "Confirm"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:30
+#: pdfding/admin/templates/includes/user.html:43
+#: pdfding/pdf/templates/includes/individual_tag.html:75
+#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:72
+#: pdfding/pdf/templates/partials/delete_collection.html:15
+#: pdfding/pdf/templates/partials/delete_pdf.html:15
+#: pdfding/pdf/templates/partials/delete_workspace.html:15
+#: pdfding/pdf/templates/partials/details_form.html:19
+#: pdfding/pdf/templates/partials/tag_name_form.html:19
+#: pdfding/pdf/templates/pdf_details.html:269
+#: pdfding/pdf/templates/shared_pdf_details.html:195
+#: pdfding/users/templates/partials/settings_form.html:16
+#: pdfding/users/templates/profile_delete.html:12
+msgid "Cancel"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:33
+#: pdfding/pdf/templates/includes/individual_tag.html:71
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:65
+#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:76
+#: pdfding/pdf/templates/partials/delete_collection.html:5
+#: pdfding/pdf/templates/partials/delete_pdf.html:5
+#: pdfding/pdf/templates/partials/delete_workspace.html:5
+#: pdfding/pdf/templates/pdf_details.html:272
+#: pdfding/pdf/templates/shared_pdf_details.html:201
+#: pdfding/pdf/templates/workspace_details.html:107
+#: pdfding/users/templates/danger_settings.html:23
+msgid "Delete"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:48
+msgid "Remove Admin Rights"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user.html:50
+msgid "Add Admin Rights"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user_header_extra.html:17
+#: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:42
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:33
+#: pdfding/pdf/templates/includes/shared_overview/header_extra.html:17
+msgid "Sort"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user_header_extra.html:29
+#: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:54
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:73
+#: pdfding/pdf/templates/includes/shared_overview/header_extra.html:29
+#: pdfding/users/models.py:10
+msgid "Newest"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user_header_extra.html:34
+#: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:59
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:78
+#: pdfding/pdf/templates/includes/shared_overview/header_extra.html:34
+#: pdfding/users/models.py:11
+msgid "Oldest"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user_search_filters.html:4
+#: pdfding/pdf/templates/includes/pdf_overview/search_filters.html:9
+msgid "Filters"
+msgstr ""
+
+#: pdfding/admin/templates/information.html:17
+msgid "Total Users"
+msgstr ""
+
+#: pdfding/admin/templates/information.html:21
+msgid "Total PDFs"
+msgstr ""
+
+#: pdfding/admin/templates/information.html:25
+msgid "Version"
+msgstr ""
+
+#: pdfding/admin/templates/user_overview.html:17
+msgid "There aren't any users matching the search criteria"
+msgstr ""
+
+#: pdfding/admin/templates/user_overview.html:18
+msgid "Please try a different search."
+msgstr ""
+
+#: pdfding/pdf/forms.py:22 pdfding/pdf/forms.py:134
+msgid "Add Tags"
+msgstr ""
+
+#: pdfding/pdf/forms.py:24 pdfding/pdf/forms.py:136
+msgid ""
+"Optional, enter any number of tags separated by space and without the "
+"hashtag (#). If a tag does not exist it will be automatically created."
+msgstr ""
+
+#: pdfding/pdf/forms.py:34 pdfding/pdf/templates/add_pdf.html:41
+msgid "Add PDF Name"
+msgstr ""
+
+#: pdfding/pdf/forms.py:35 pdfding/pdf/forms.py:122
+msgid "Add Description"
+msgstr ""
+
+#: pdfding/pdf/forms.py:36 pdfding/pdf/forms.py:128
+msgid "Add Notes"
+msgstr ""
+
+#: pdfding/pdf/forms.py:37 pdfding/pdf/forms.py:143
+msgid "Add File Directory"
+msgstr ""
+
+#: pdfding/pdf/forms.py:71
+msgid "A PDF with this name already exists!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:123 pdfding/pdf/forms.py:471 pdfding/pdf/forms.py:531
+#: pdfding/pdf/models/pdf_models.py:120
+#: pdfding/pdf/models/shared_pdf_models.py:26
+#: pdfding/pdf/models/shared_pdf_models.py:29
+#: pdfding/pdf/models/shared_pdf_models.py:30
+msgid "Optional"
+msgstr ""
+
+#: pdfding/pdf/forms.py:129 pdfding/pdf/models/pdf_models.py:133
+msgid "Optional, supports Markdown"
+msgstr ""
+
+#: pdfding/pdf/forms.py:144 pdfding/pdf/models/pdf_models.py:125
+msgid ""
+"Optional, save file in a sub directory of the pdf directory, e.g: important/"
+"pdfs"
+msgstr ""
+
+#: pdfding/pdf/forms.py:272
+msgid "Expire in"
+msgstr ""
+
+#: pdfding/pdf/forms.py:273
+msgid "Optional | e.g. 1d0h22m to expire in 1 day, 0 hours and 22 minutes."
+msgstr ""
+
+#: pdfding/pdf/forms.py:278
+msgid "Delete in"
+msgstr ""
+
+#: pdfding/pdf/forms.py:279
+msgid "Optional | e.g. 1d0h22m to delete in 1 day, 0 hours and 22 minutes."
+msgstr ""
+
+#: pdfding/pdf/forms.py:285
+msgid "Add Share Name"
+msgstr ""
+
+#: pdfding/pdf/forms.py:286
+msgid "Add a private description"
+msgstr ""
+
+#: pdfding/pdf/forms.py:287
+msgid "Maximum number of views"
+msgstr ""
+
+#: pdfding/pdf/forms.py:288
+msgid "Protect the share with a password"
+msgstr ""
+
+#: pdfding/pdf/forms.py:317
+msgid "A Share with this name already exists!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:396 pdfding/pdf/forms.py:409
+msgid "e.g. 1d0h22m"
+msgstr ""
+
+#: pdfding/pdf/forms.py:422 pdfding/pdf/templates/shared_pdf_details.html:81
+#: pdfding/users/templates/account_settings.html:52
+msgid "Password"
+msgstr ""
+
+#: pdfding/pdf/forms.py:423
+msgid "This PDF is password protected"
+msgstr ""
+
+#: pdfding/pdf/forms.py:437
+msgid "Incorrect Password!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:454
+msgid "Tag names are not allowed to contain spaces!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:466
+msgid "Add Workspace Name"
+msgstr ""
+
+#: pdfding/pdf/forms.py:470
+msgid "Add a workspace description"
+msgstr ""
+
+#: pdfding/pdf/forms.py:526
+msgid "Add Collection Name"
+msgstr ""
+
+#: pdfding/pdf/forms.py:530
+msgid "Add a collection description"
+msgstr ""
+
+#: pdfding/pdf/forms.py:557
+msgid "\"All\" is not a valid collection name!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:561
+#, python-brace-format
+msgid ""
+"There is already a collection named {collection_name} in the current "
+"workspace!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:602
+msgid "Uploaded file is not a PDF!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:629
+msgid "Only positive numbers are allowed!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:638
+msgid "Wrong format! Format needs to be _d_h_m!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:653
+msgid "Directories are not allowed to contain spaces!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:668
+msgid "Only letters, numbers, \"/\", \"-\" and \"_\" are valid characters!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:679
+msgid "Not allowed to begin or end with \"/\"!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:682
+msgid "Not allowed to contain consecutive \"/\" characters!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:696
+msgid "\"_\" or \"-\" are not valid workspace names!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:698
+msgid "Only \"-\", \"_\", numbers or letters are allowed!"
+msgstr ""
+
+#: pdfding/pdf/forms.py:700
+msgid "Maximum number of characters for a workspace name is 50!"
+msgstr ""
+
+#: pdfding/pdf/models/workspace_models.py:102
+msgid "Cannot add other users to personal workspaces!"
+msgstr ""
+
+#: pdfding/pdf/models/workspace_models.py:104
+msgid "User is already a user of the workspace!"
+msgstr ""
+
+#: pdfding/pdf/templates/add_pdf.html:11
+#: pdfding/pdf/templates/bulk_add_pdf.html:11
+msgctxt "add individual pdf"
+msgid "Individual"
+msgstr ""
+
+#: pdfding/pdf/templates/add_pdf.html:14
+#: pdfding/pdf/templates/bulk_add_pdf.html:14
+msgctxt "bulk add pdfs"
+msgid "Bulk"
+msgstr ""
+
+#: pdfding/pdf/templates/add_pdf.html:21
+msgid "Add PDF File"
+msgstr ""
+
+#: pdfding/pdf/templates/add_pdf.html:26
+#: pdfding/pdf/templates/bulk_add_pdf.html:27
+msgctxt "PDF collection"
+msgid "Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/add_pdf.html:35
+msgid "Use File Name"
+msgstr ""
+
+#: pdfding/pdf/templates/add_shared_pdf.html:12
+#: pdfding/pdf/templates/create_collection.html:11
+#: pdfding/pdf/templates/create_workspace.html:11
+#: pdfding/pdf/templates/partials/delete_collection.html:11
+#: pdfding/pdf/templates/partials/delete_pdf.html:11
+#: pdfding/pdf/templates/partials/delete_workspace.html:11
+#: pdfding/pdf/templates/partials/details_form.html:14
+#: pdfding/pdf/templates/partials/tag_name_form.html:16
+#: pdfding/users/templates/partials/settings_form.html:11
+msgid "Submit"
+msgstr ""
+
+#: pdfding/pdf/templates/bulk_add_pdf.html:54
+msgid "Skip existing files"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:16
+msgid "Collection Details"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:19
+#: pdfding/pdf/templates/workspace_details.html:31
+msgid "Name"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:32
+#: pdfding/pdf/templates/collection_details.html:68
+#: pdfding/pdf/templates/pdf_details.html:5
+#: pdfding/pdf/templates/shared_pdf_details.html:5
+#: pdfding/pdf/templates/workspace_details.html:5
+#: pdfding/users/templates/account_settings.html:5
+#: pdfding/users/templates/ui_settings.html:5
+#: pdfding/users/templates/viewer_settings.html:5
+msgid "Edit"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:37
+msgid "Default Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:43
+#: pdfding/pdf/templates/workspace_details.html:55
+msgid "Yes"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:45
+#: pdfding/pdf/templates/workspace_details.html:57
+msgid "No"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:51
+#: pdfding/pdf/templates/pdf_details.html:162
+#: pdfding/pdf/templates/shared_pdf_details.html:59
+#: pdfding/pdf/templates/workspace_details.html:63
+msgid "Description"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:59
+#: pdfding/pdf/templates/pdf_details.html:170
+#: pdfding/pdf/templates/shared_pdf_details.html:67
+#: pdfding/pdf/templates/workspace_details.html:71
+msgid "no description available"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:73
+#: pdfding/pdf/templates/pdf_details.html:243
+#: pdfding/pdf/templates/shared_pdf_details.html:177
+#: pdfding/pdf/templates/workspace_details.html:85
+msgid "Date added"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:81
+#: pdfding/pdf/templates/workspace_details.html:93
+#: pdfding/users/templates/danger_settings.html:12
+#: pdfding/users/templates/includes/settings_sidebar.html:73
+msgid "Danger Zone"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:83
+msgid "Delete Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/collection_details.html:87
+msgid "Delete the collection and all its PDFs"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/add_pdf_optionals.html:4
+msgid "Additional Fields"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/add_pdf_optionals.html:38
+msgid "Processing"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/annotations_sidebar.html:33
+#: pdfding/pdf/templates/includes/pdf_details_sidebar.html:48
+msgid "Highlights"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/annotations_sidebar.html:51
+#: pdfding/pdf/templates/includes/pdf_details_sidebar.html:66
+msgid "Comments"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/individual_tag.html:52
+msgid "Rename"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:25
+msgid "Export"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_details_sidebar.html:33
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:21
+#: pdfding/pdf/templates/includes/shared_details_sidebar.html:33
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:41
+msgid "Details"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:16
+msgid "Layout"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:45
+#: pdfding/users/models.py:71
+msgid "Compact"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:50
+#: pdfding/users/models.py:73
+msgid "Grid"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:55
+#: pdfding/users/models.py:72
+msgid "List"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:60
+#: pdfding/users/models.py:74
+msgid "Minimal"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:93
+msgid "Most Viewed"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:98
+msgid "Least Viewed"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:103
+msgid "Recently Viewed"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/overview_page.html:46
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:74
+#: pdfding/pdf/templates/pdf_details.html:238
+msgid "Page"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/overview_page.html:46
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:74
+msgctxt "page x of y pages"
+msgid "of"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:29
+#: pdfding/pdf/templates/pdf_details.html:83
+msgid "Share"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:40
+#: pdfding/pdf/templates/pdf_details.html:95
+msgid "Unstar"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:42
+#: pdfding/pdf/templates/pdf_details.html:97
+msgid "Star"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:54
+#: pdfding/pdf/templates/pdf_details.html:107
+msgid "Unarchive"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:56
+#: pdfding/pdf/templates/includes/sidebar.html:76
+#: pdfding/pdf/templates/pdf_details.html:109
+msgid "Archive"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:67
+msgctxt "number of pdf views singular"
+msgid "View"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:69
+msgctxt "number of pdf views plural"
+msgid "Views"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:10
+msgctxt "shared pdf is inactive"
+msgid "inactive"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:61
+msgid "Copy"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:63
+msgid "View"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/sidebar.html:7
 msgid "Search for PDFs or #tags"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/sidebar.html:31
+msgid "Home"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/sidebar.html:41
+msgid "Shared"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/sidebar.html:51
+msgid "Starred"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/sidebar.html:66
+msgid "Annotations"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/sidebar.html:111
+msgid "Tree Mode"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:52
+msgid "Collections"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/collection_dropdown.html:43
+msgctxt "all collections"
+msgid "All"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/collection_dropdown.html:82
+msgid "Create Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/delete_collection.html:6
+msgid ""
+"Are you sure you want to delete this collections and all its PDFs? This "
+"action cannot be reversed!"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/delete_pdf.html:6
+msgid "Are you sure you want to delete this PDF? This action is irreversible!"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/delete_workspace.html:6
+msgid ""
+"Are you sure you want to delete this workspace and all its collections and "
+"PDFs? This action cannot be reversed!"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/tag_name_form.html:5
+msgid "Rename Tag"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/tag_name_form.html:14
+msgid "New Tag Name"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/workspace_dropdown.html:71
+msgid "Create Workspace"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/workspace_dropdown.html:88
+msgid "Workspace Settings"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_annotation_overview.html:15
+msgid "You do not have any PDF highlights yet!"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_annotation_overview.html:17
+msgid "You do not have any PDF comments yet!"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_annotation_overview.html:19
+#: pdfding/pdf/templates/pdf_details_annotation_overview.html:19
+msgid "Start by adding them in the pdf viewer."
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:87
+msgid "Download"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:114
+msgid "Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:132
+msgid "Tags"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:148
+msgid "no tags available"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:184
+msgid "Notes"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:195
+msgid "no notes available"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:210
+msgid "File directory"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:218
+msgid "File directory not set"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:238
+msgid "of"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:251
+msgctxt "number of pdf views"
+msgid "Views"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details_annotation_overview.html:15
+msgid "This PDF does not have any highlights yet!"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details_annotation_overview.html:17
+msgid "This PDF does not have any comments yet!"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:27
+msgid "There aren't any PDFs matching the current filters"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:28
+msgid "Please try different filters"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:30
+msgid "Collection has no PDFs yet"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:32
+msgid "Get started by adding PDFs"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:30
+msgid "inactive"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:55
+msgid "Download QR Code"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:89
+#: pdfding/pdf/templates/shared_pdf_details.html:111
+msgid "not set"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:103
+msgctxt "number of views"
+msgid "Views"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:125
+msgctxt " shared pdf expriation date"
+msgid "Expiration"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:143
+msgid "Deletion"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_details.html:172
+#: pdfding/pdf/templates/view_shared_info.html:20
+msgctxt "view pdf"
+msgid "View"
+msgstr ""
+
+#: pdfding/pdf/templates/shared_pdf_overview.html:14
+msgid "You have not shared any PDFs yet"
+msgstr ""
+
+#: pdfding/pdf/templates/view_shared_inactive.html:8
+msgid "The shared PDF is no longer available"
+msgstr ""
+
+#: pdfding/pdf/templates/view_shared_info.html:11
+msgid "View Shared PDF"
+msgstr ""
+
+#: pdfding/pdf/templates/workspace_details.html:17
+msgid "Workspace Details"
+msgstr ""
+
+#: pdfding/pdf/templates/workspace_details.html:23
+msgid "PDFs"
+msgstr ""
+
+#: pdfding/pdf/templates/workspace_details.html:27
+msgctxt "size of all pdfs"
+msgid "Total Size"
+msgstr ""
+
+#: pdfding/pdf/templates/workspace_details.html:95
+#: pdfding/users/templates/danger_settings.html:15
+#: pdfding/users/templates/profile_delete.html:6
+msgid "Delete Account"
+msgstr ""
+
+#: pdfding/pdf/templates/workspace_details.html:99
+msgid "Delete the workspace and all its collections and PDFs"
+msgstr ""
+
+#: pdfding/pdf/views/collection_views.py:88
+msgid "This name is already used by another collection in this workspace!"
+msgstr ""
+
+#: pdfding/pdf/views/pdf_views.py:336
+msgid "This name is already used by another PDF!"
+msgstr ""
+
+#: pdfding/pdf/views/pdf_views.py:774
+msgid "Input is not valid!"
+msgstr ""
+
+#: pdfding/pdf/views/share_views.py:212
+msgid "This name is already used by another shared PDF!"
+msgstr ""
+
+#: pdfding/templates/includes/header.html:53
+msgid "Add"
+msgstr ""
+
+#: pdfding/templates/includes/header.html:76
+#: pdfding/users/templates/account_settings.html:23
+msgid "User ID"
+msgstr ""
+
+#: pdfding/templates/includes/header.html:97
+msgid "Settings"
+msgstr ""
+
+#: pdfding/templates/includes/header.html:116
+msgid "Sign out"
+msgstr ""
+
+#: pdfding/users/forms.py:56
+msgid "Only valid hex colors are allowed! E.g.: #ffa385."
+msgstr ""
+
+#: pdfding/users/models.py:12
+msgid "Name_asc"
+msgstr ""
+
+#: pdfding/users/models.py:13
+msgid "Name_desc"
+msgstr ""
+
+#: pdfding/users/models.py:20
+msgid "System"
+msgstr ""
+
+#: pdfding/users/models.py:21
+msgid "Light"
+msgstr ""
+
+#: pdfding/users/models.py:22
+msgid "Dark"
+msgstr ""
+
+#: pdfding/users/models.py:32
+msgid "Green"
+msgstr ""
+
+#: pdfding/users/models.py:33
+msgid "Blue"
+msgstr ""
+
+#: pdfding/users/models.py:34
+msgid "Gray"
+msgstr ""
+
+#: pdfding/users/models.py:35
+msgid "Red"
+msgstr ""
+
+#: pdfding/users/models.py:36
+msgid "Pink"
+msgstr ""
+
+#: pdfding/users/models.py:37
+msgid "Orange"
+msgstr ""
+
+#: pdfding/users/models.py:38
+msgid "Brown"
+msgstr ""
+
+#: pdfding/users/models.py:39
+msgid "Custom"
+msgstr ""
+
+#: pdfding/users/models.py:42
+msgid "Enabled"
+msgstr ""
+
+#: pdfding/users/models.py:43
+msgid "Disabled"
+msgstr ""
+
+#: pdfding/users/models.py:50
+msgid "Most_viewed"
+msgstr ""
+
+#: pdfding/users/models.py:51
+msgid "Least_viewed"
+msgstr ""
+
+#: pdfding/users/models.py:52
+msgid "Recently_viewed"
+msgstr ""
+
+#: pdfding/users/models.py:63
+msgid "Email_asc"
+msgstr ""
+
+#: pdfding/users/models.py:64
+msgid "Email_desc"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:14
+msgid "Account Information"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:29
+msgid "Email Address"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:36
+msgid "Verified"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:38
+msgid "Not verified"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:65
+msgid "Two-Factor Authentication"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:70
+msgid "Activated"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:72
+msgid "Deactivated"
+msgstr ""
+
+#: pdfding/users/templates/danger_settings.html:19
+msgid "Delete your account and data"
+msgstr ""
+
+#: pdfding/users/templates/includes/settings_sidebar.html:28
+msgid "Account"
+msgstr ""
+
+#: pdfding/users/templates/includes/settings_sidebar.html:39
+msgid "Viewer"
+msgstr ""
+
+#: pdfding/users/templates/includes/settings_sidebar.html:52
+msgid "UI"
+msgstr ""
+
+#: pdfding/users/templates/profile_delete.html:7
+msgid "Are you sure you want to delete your account?"
+msgstr ""
+
+#: pdfding/users/templates/profile_delete.html:11
+msgid "Yes, I want to delete my account"
+msgstr ""
+
+#: pdfding/users/templates/ui_settings.html:13
+msgid "UI Settings"
+msgstr ""
+
+#: pdfding/users/templates/ui_settings.html:15
+msgid "Theme"
+msgstr ""
+
+#: pdfding/users/templates/ui_settings.html:31
+msgid "Theme Color"
+msgstr ""
+
+#: pdfding/users/templates/ui_settings.html:47
+msgid "Custom Theme Color"
+msgstr ""
+
+#: pdfding/users/templates/ui_settings.html:63
+msgid "Show Progress Bars"
+msgstr ""
+
+#: pdfding/users/templates/viewer_settings.html:13
+msgid "Viewer Settings"
+msgstr ""
+
+#: pdfding/users/templates/viewer_settings.html:15
+msgid "Inverted PDF Colors"
+msgstr ""
+
+#: pdfding/users/templates/viewer_settings.html:31
+msgid "Keep Screen Awake"
 msgstr ""

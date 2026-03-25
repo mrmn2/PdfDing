@@ -1,4 +1,5 @@
 {% extends 'layouts/base_sidebar.html' %}
+{% load i18n %}
 {% block sidebar_content %}
 <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
             [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
@@ -14,7 +15,7 @@
                     c6.764-6.76,6.764-17.726,0-24.484l-77.209-77.218h323.572c9.562,0,17.316-7.753,17.316-17.315
                     C400.004,190.438,392.251,182.686,382.688,182.686z"/>
             </svg>
-            <span class="hidden md:block">Back to App</span>
+            <span class="hidden md:block">{% trans 'Back to App' %}</span>
         </a>
     </div>
     <div {% if page == 'shared_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
@@ -29,7 +30,7 @@
                     <path d="M165,140c-8.284,0-15,6.716-15,15v90c0,8.284,6.716,15,15,15c8.284,0,15-6.716,15-15v-90C180,146.716,173.284,140,165,140z"/>
                 </g>
             </svg>
-            <span class="hidden md:block">Details</span>
+            <span class="hidden md:block">{% trans 'Details' %}</span>
         </a>
     </div>
 </div>

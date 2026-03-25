@@ -1,3 +1,4 @@
+{% load i18n %}
 <div {% if layout == 'Grid' %}
      class="grid grid-cols-1 min-[1200px]:grid-cols-2 min-[1600px]:grid-cols-3 gap-5 pb-5"
      {% elif layout == 'Minimal' %}
@@ -36,14 +37,14 @@
         {% include 'includes/pdf_overview/pdf_actions_menu.html' %}
         {% if request.user.profile.show_progress_bars == 'Enabled' and pdf.number_of_pages > 0 and layout != 'Minimal' %}
         <div class="hover:cursor-pointer" x-data="{ tooltip_progress: false }" id="progressbar-{{ loop_id }}">
-                <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
-                     class="w-full h-1 rounded-sm">
-                    <div style="width: {{ pdf.progress }}%;" class="h-1 bg-primary! rounded-sm"></div>
-                </div>
-                <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
-                    class="z-50 absolute bg-primary text-gray-100 text-sm rounded-xs p-2 mt-1">
-                 {{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}
-                </span>
+            <div x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false"
+                  class="w-full h-1 rounded-sm">
+                <div style="width: {{ pdf.progress }}%;" class="h-1 bg-primary! rounded-sm"></div>
+            </div>
+            <span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
+                class="z-50 absolute bg-primary text-gray-100 text-sm rounded-xs p-2 mt-1">
+              {{ pdf.progress }}% - {% trans 'Page' %} {{ pdf.current_page_for_progress }} {% trans 'of' context 'page x of y pages' %} {{ pdf.number_of_pages }}
+            </span>
         </div>
         {% endif %}
     </div>

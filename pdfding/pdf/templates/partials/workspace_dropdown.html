@@ -1,3 +1,4 @@
+{% load i18n %}
 <div id="workspace_open_collapse_toggle"
      x-data="{ show_workspaces: false }"
      class="
@@ -67,7 +68,7 @@
           <!-- license: CC0 License-->
           <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="">Create Workspace</span>
+        <span class="">{% trans 'Create Workspace' %}</span>
       </a>
       {% if page == 'overview' %}
       <a href="{% url 'workspace_details' %}" class="ws-modal-child items-center gap-x-2">
@@ -84,7 +85,7 @@
             1-1.169-.484l-.7-.7a1.65,1.65,0,0,1-.481-1.269l.1-1.59a8.748,8.748,0,0,0-.994-.413l-1.055,1.2a1.652,1.652,0,0,1-1.238.558H9.25a1.652,1.652,0,0,1-1.238-.558L6.958,1.61a8.8,8.8,0,0,0-.994.413l.1,1.59a1.65,1.65,0,0,1-.481,1.269l-.7.7a1.638,1.638,0,0,1-1.168.484c-.033,0-.067,0-.1,0l-1.59-.1a8.748,8.748,0,0,0-.413.994l1.2,1.055A1.652,1.652,0,0,1,3.363,
             9.25v.988a1.652,1.652,0,0,1-.558,1.238l-1.2,1.055a8.666,8.666,0,0,0,.413.994l1.59-.1.1,0A1.638,1.638,0,0,1,4.883,13.907Zm.106-4.168a4.75,4.75,0,1,1,4.75,4.75A4.756,4.756,0,0,1,4.989,9.739Zm1.5,0a3.25,3.25,0,1,0,3.25-3.25A3.254,3.254,0,0,0,6.489,9.739Z" transform="translate(2.261 2.261)" fill="currentColor"/>
         </svg>
-        <span class="">Workspace Settings</span>
+        <span class="">{% trans 'Workspace Settings' %}</span>
       </a>
       {% endif %}
     </div>

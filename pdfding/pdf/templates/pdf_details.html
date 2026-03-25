@@ -1,6 +1,8 @@
 {% extends 'layouts/blank.html' %}
 {% load static %}
+{% load i18n %}
 {% block content %}
+{% trans 'Edit' as edit %}
 <div class="flex flex-col md:flex-row md:justify-end">
     <div class="w-full! md:w-72! lg:w-72! px-2 md:px-4 pt-2">
         {% include 'includes/pdf_details_sidebar.html' with page='pdf_details' %}
@@ -72,17 +74,17 @@
                                     hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='name' %}"
                                     hx-target="#name"
                                     hx-swap="innerHTML" >
-                                    Edit
+                                    {{ edit }}
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="flex flex-row items-center text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer -mt-1!">
-                        <a href="{% url 'share_pdf' pdf.id %}">Share</a>
+                      <a href="{% url 'share_pdf' pdf.id %}">{% trans 'Share' %}</a>
                         <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12.1" cy="12.1" r="1"></circle>
                         </svg>
-                        <a href="{% url 'download_pdf' pdf.id %}">Download</a>
+                        <a href="{% url 'download_pdf' pdf.id %}">{% trans 'Download' %}</a>
                         <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12.1" cy="12.1" r="1"></circle>
                         </svg>
@@ -90,9 +92,9 @@
                            hx-post="{% url 'star' pdf.id %}"
                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
                            {% if pdf.starred %}
-                           Unstar
+                           {% trans 'Unstar' %}
                            {% else %}
-                           Star
+                           {% trans 'Star' %}
                            {% endif %}
                         </a>
                         <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -102,14 +104,14 @@
                            hx-post="{% url 'archive' pdf.id %}"
                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
                            {% if pdf.archived %}
-                           Unarchive
+                           {% trans 'Unarchive' %}
                            {% else %}
-                           Archive
+                           {% trans 'Archive' %}
                            {% endif %}
                         </a>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Collection</span>
+                      <span class="text-lg font-bold">{% trans 'Collection' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -122,12 +124,12 @@
                                 hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='collection' %}"
                                 hx-target="#collection"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-4">
-                        <span class="text-lg font-bold">Tags</span>
+                      <span class="text-lg font-bold">{% trans 'Tags' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%]">
@@ -143,7 +145,7 @@
                             </span>
                             {% else %}
                             <span class="text-sm" id="tags">
-                                no tags available
+                              {% trans 'no tags available' %}
                             {% endif %}
                             </span>
                         </div>
@@ -152,12 +154,12 @@
                                 hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='tags' %}"
                                 hx-target="#tags"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Description</span>
+                      <span class="text-lg font-bold">{% trans 'Description' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -165,7 +167,7 @@
                                 {% if pdf.description %}
                                 {{ pdf.description }}
                                 {% else %}
-                                no description available
+                                {% trans 'no description available' %}
                                 {% endif %}
                             </span>
                         </div>
@@ -174,12 +176,12 @@
                                 hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='description' %}"
                                 hx-target="#description"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Notes</span>
+                      <span class="text-lg font-bold">{% trans 'Notes' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%]">
@@ -190,7 +192,7 @@
                             </div>
                             {% else %}
                             <span id="notes" class="text-sm">
-                                no notes available
+                              {% trans 'no notes available' %}
                             </span>
                             {% endif %}
                         </div>
@@ -199,13 +201,13 @@
                                 hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='notes' %}"
                                 hx-target="#notes"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
                     {% if ALLOW_PDF_SUB_DIRECTORIES %}
                     <div class="pt-2">
-                        <span class="text-lg font-bold">File directory</span>
+                      <span class="text-lg font-bold">{% trans 'File directory' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -213,7 +215,7 @@
                                 {% if pdf.file_directory %}
                                 {{ pdf.file_directory }}
                                 {% else %}
-                                File directory not set
+                                {% trans 'File directory not set' %}
                                 {% endif %}
                             </span>
                         </div>
@@ -222,7 +224,7 @@
                                 hx-get="{% url 'edit_pdf' identifier=pdf.id field_name='file_directory' %}"
                                 hx-target="#file_directory"
                                 hx-swap="innerHTML" >
-                                Edit
+                                {{ edit }}
                             </a>
                         </div>
                     </div>
@@ -233,12 +235,12 @@
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
-                            <span id="progress">{{ pdf.progress }}% - Page {{ pdf.current_page_for_progress }} of {{ pdf.number_of_pages }}</span>
+                          <span id="progress">{{ pdf.progress }}% - {% trans 'Page' %} {{ pdf.current_page_for_progress }} {% trans 'of' %} {{ pdf.number_of_pages }}</span>
                         </div>
                     </div>
                     {% endif %}
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Date added</span>
+                      <span class="text-lg font-bold">{% trans 'Date added' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -246,7 +248,7 @@
                         </div>
                     </div>
                     <div class="pt-2">
-                        <span class="text-lg font-bold">Views</span>
+                      <span class="text-lg font-bold">{% trans 'Views' context 'number of pdf views' %}</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
@@ -262,12 +264,12 @@
                     <a x-show="delete_pdf" x-cloak
                       hx-delete="{% url 'delete_pdf' pdf.id %}"
                       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                      class="cursor-pointer pr-2">Confirm
+                      class="cursor-pointer pr-2">{% trans 'Confirm' %}
                     </a>
-                    <a x-show="delete_pdf" x-cloak @click="delete_pdf = false" class="">Cancel</a>
+                    <a x-show="delete_pdf" x-cloak @click="delete_pdf = false" class="">{% trans 'Cancel' %}</a>
                     <a class="flex flex-row gap-x-1" x-show="!delete_pdf" @click="delete_pdf = true">
                         <img src="{% static 'images/trash.svg' %}" width="19">
-                        <span>Delete</span>
+                        <span>{% trans 'Delete' %}</span>
                     </a>
                 </div>
             </div>

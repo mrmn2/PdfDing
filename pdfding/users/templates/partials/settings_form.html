@@ -1,3 +1,4 @@
+{% load i18n %}
 <form action="{{ action_url }}"
       method="post"
       class="flex gap-2 text-black dark:text-slate-200 h-8 w-11/12!
@@ -7,10 +8,10 @@
     {% csrf_token %}
 
     {% for field in form %}{{ field }}{% endfor %}
-    <button class="flex! items-center justify-center" type="submit">Submit</button>
+    <button class="flex! items-center justify-center" type="submit">{% trans 'Submit' %}</button>
 </form>
 
 <a hx-swap-oob="true" id="{{ edit_id }}" @click="location.reload()"
    class="font-medium text-primary hover:text-secondary cursor-pointer">
-    Cancel
+  {% trans 'Cancel' %}
 </a>

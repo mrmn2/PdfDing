@@ -1,5 +1,6 @@
 {% extends 'layouts/box_allauth.html' %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 
 <div class="*:flex [&>*]:justify-left">
@@ -7,8 +8,7 @@
         <!-- bg-primary needed as profile image will flicker otherwise -->
         <img class="bg-primary w-16 h-16" src="{% static 'images/logo.svg' %}" alt="Logo"/>
     </div>
-    <h1 class="pt-8">View Shared PDF</h1>
-    <span class="pb-2">{{ host }} member <span class="font-bold px-1">{{ shared_pdf.owner.user.email }}</span> shared the following PDF with you</span>
+    <h1 class="pt-8">{% trans 'View Shared PDF' %}</h1>
     <span class="text-2xl font-bold pt-4 pb-8">{{ shared_pdf.pdf.name }}</span>
 
     <form class="w-3/4 gap-x-1" action="{% url 'view_shared_pdf' shared_pdf.id %}" method="post">
@@ -17,7 +17,7 @@
         {{ form.as_p }}
         {% endif %}
         <div class="flex justify-center">
-            <button class="flex items-center h-12" type="submit">View</button>
+          <button class="flex items-center h-12" type="submit">{% trans 'View' context 'view pdf' %}</button>
         </div>
   </form>
 </div>

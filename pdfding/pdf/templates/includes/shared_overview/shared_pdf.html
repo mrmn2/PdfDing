@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <div class="relative">
     <div class="flex flex-row items-center gap-x-2">
         <a id="shared-pdf-link-{{ loop_id }}"
@@ -6,7 +7,7 @@
            {% if shared_pdf.inactive %}
            class="truncate text-lg font-bold text-slate-500 dark:text-slate-400
                   hover:text-slate-800 dark:hover:text-slate-200">
-            {{ shared_pdf.name }} | inactive
+            {{ shared_pdf.name }} | {% trans 'inactive' context 'shared pdf is inactive' %}
            {% else %}
            class="truncate text-lg font-bold text-primary hover:text-secondary">
             {{ shared_pdf.name }}
@@ -57,22 +58,22 @@
         <div class="flex flex-row gap-x-2 text-sm ">
             <a class="cursor-pointer"
                @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
-                Copy
+              {% trans 'Copy' %}
             </a>
-            <a href="{% url 'view_pdf' shared_pdf.pdf_id %}"> View</a>
+            <a href="{% url 'view_pdf' shared_pdf.pdf_id %}">{% trans 'View' %}</a>
         </div>
         <div id="delete_{{ loop_id }}" class="text-base [&>a]:cursor-pointer">
             <a x-show="delete_{{ loop_id }}" x-cloak
                hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               class="">Confirm
+               class="">{% trans 'Confirm' %}
             </a>
-            <a class="pl-1" x-show="delete_{{ loop_id }}" x-cloak @click="delete_{{ loop_id }} = false"
-                    class="">Cancel
+            <a class="pl-1" x-show="delete_{{ loop_id }}" x-cloak @click="delete_{{ loop_id }} = false">
+              {% trans 'Cancel' %}
             </a>
             <a class="flex flex-row gap-x-1" x-show="!delete_{{ loop_id }}" @click="delete_{{ loop_id }} = true">
                 <img src="{% static 'images/trash.svg' %}" width="19">
-                <span>Delete</span>
+                <span>{% trans 'Delete' %}</span>
             </a>
         </div>
     </div>

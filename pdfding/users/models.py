@@ -1,19 +1,25 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
 from pdf.models.collection_models import Collection, CollectionError
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.models.workspace_models import Workspace
+
+newest_trans = _('Newest')
+oldest_trans = _('Oldest')
+name_asc_trans = _('Name_asc')
+name_desc_trans = _('Name_desc')
 
 
 class Profile(models.Model):
     """The user profile model of PdfDing"""
 
     class DarkMode(models.TextChoices):
-        SYSTEM = 'System'
-        LIGHT = 'Light'
-        DARK = 'Dark'
+        SYSTEM = 'System', _('System')
+        LIGHT = 'Light', _('Light')
+        DARK = 'Dark', _('Dark')
 
     class PdfsPerPage(models.IntegerChoices):
         p_5 = 5, '5'
@@ -23,49 +29,49 @@ class Profile(models.Model):
         p_100 = 100, '100'
 
     class ThemeColor(models.TextChoices):
-        GREEN = 'Green'
-        BLUE = 'Blue'
-        GRAY = 'Gray'
-        RED = 'Red'
-        PINK = 'Pink'
-        ORANGE = 'Orange'
-        BROWN = 'Brown'
-        CUSTOM = 'Custom'
+        GREEN = 'Green', _('Green')
+        BLUE = 'Blue', _('Blue')
+        GRAY = 'Gray', _('Gray')
+        RED = 'Red', _('Red')
+        PINK = 'Pink', _('Pink')
+        ORANGE = 'Orange', _('Orange')
+        BROWN = 'Brown', _('Brown')
+        CUSTOM = 'Custom', _('Custom')
 
     class EnabledChoice(models.TextChoices):
-        ENABLED = 'Enabled'
-        DISABLED = 'Disabled'
+        ENABLED = 'Enabled', _('Enabled')
+        DISABLED = 'Disabled', _('Disabled')
 
     class PdfSortingChoice(models.TextChoices):
-        NEWEST = 'Newest'
-        OLDEST = 'Oldest'
-        NAME_ASC = 'Name_asc'
-        NAME_DESC = 'Name_desc'
-        MOST_VIEWED = 'Most_viewed'
-        LEAST_VIEWED = 'Least_viewed'
-        RECENTLY_VIEWED = 'Recently_viewed'
+        NEWEST = 'Newest', newest_trans
+        OLDEST = 'Oldest', oldest_trans
+        NAME_ASC = 'Name_asc', name_asc_trans
+        NAME_DESC = 'Name_desc', name_desc_trans
+        MOST_VIEWED = 'Most_viewed', _('Most_viewed')
+        LEAST_VIEWED = 'Least_viewed', _('Least_viewed')
+        RECENTLY_VIEWED = 'Recently_viewed', _('Recently_viewed')
 
     class SharedPdfSortingChoice(models.TextChoices):
-        NEWEST = 'Newest'
-        OLDEST = 'Oldest'
-        NAME_ASC = 'Name_asc'
-        NAME_DESC = 'Name_desc'
+        NEWEST = 'Newest', newest_trans
+        OLDEST = 'Oldest', oldest_trans
+        NAME_ASC = 'Name_asc', name_asc_trans
+        NAME_DESC = 'Name_desc', name_desc_trans
 
     class UserSortingChoice(models.TextChoices):
-        NEWEST = 'Newest'
-        OLDEST = 'Oldest'
-        EMAIL_ASC = 'Email_asc'
-        EMAIL_DESC = 'Email_desc'
+        NEWEST = 'Newest', newest_trans
+        OLDEST = 'Oldest', oldest_trans
+        EMAIL_ASC = 'Email_asc', _('Email_asc')
+        EMAIL_DESC = 'Email_desc', _('Email_desc')
 
     class AnnotationsSortingChoice(models.TextChoices):
-        NEWEST = 'Newest'
-        OLDEST = 'Oldest'
+        NEWEST = 'Newest', newest_trans
+        OLDEST = 'Oldest', oldest_trans
 
     class LayoutChoice(models.TextChoices):
-        COMPACT = 'Compact'
-        LIST = 'List'
-        GRID = 'Grid'
-        MINIMAL = 'Minimal'
+        COMPACT = 'Compact', _('Compact')
+        LIST = 'List', _('List')
+        GRID = 'Grid', _('Grid')
+        MINIMAL = 'Minimal', _('Minimal')
 
     class LanguageChoice(models.TextChoices):
         AUTO = 'Auto'

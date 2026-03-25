@@ -2,6 +2,7 @@ from base import base_views
 from django.contrib import messages
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
 from pdf.forms import CollectionDescriptionForm, CollectionForm, CollectionNameForm
 from pdf.models.collection_models import Collection, CollectionError
 from pdf.services.collection_services import move_collection
@@ -84,7 +85,7 @@ class EditCollectionMixin(CollectionMixin):
             existing_collection = profile.collections.filter(name__iexact=form_data.get('name').strip()).first()
 
             if existing_collection and str(existing_collection.id) != str(collection.id):
-                messages.warning(request, 'This name is already used by another collection in this workspace!')
+                messages.warning(request, _('This name is already used by another collection in this workspace!'))
             else:
                 move_collection(collection)
 

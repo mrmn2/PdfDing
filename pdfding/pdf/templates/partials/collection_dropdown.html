@@ -1,3 +1,4 @@
+{% load i18n %}
 <div id="collections_open_collapse_toggle"
       x-data="{ show_collections: false }"
       class="w-5/10 md:w-full cursor-pointer">
@@ -39,7 +40,7 @@
                   {% if current_collection_id == 'all' %}
                   bg-slate-100 dark:bg-slate-800
                   {% endif %}">
-        <div class="truncate w-9/10">All</div>
+        <div class="truncate w-9/10">{% trans 'All' context 'all collections' %}</div>
         {% if current_collection_id == 'all' %}
         <div>✓</div>
         {% endif %}
@@ -78,7 +79,7 @@
           <!-- license: CC0 License-->
           <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <span class="">Create Collection</span>
+        <span>{% trans 'Create Collection' %}</span>
       </a>
     </div>
   </div>

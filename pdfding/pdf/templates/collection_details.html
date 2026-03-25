@@ -1,4 +1,5 @@
 {% extends 'layouts/blank.html' %}
+{% load i18n %}
 
 {% block content %}
 <div x-data="{ show_delete_collection_modal: false }">
@@ -12,10 +13,10 @@
                       bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
             <div>
               <div class="text-2xl font-bold">
-                Collection Details
+                {% trans 'Collection Details' %}
               </div>
               <div class="pt-4">
-                  <span class="text-lg font-bold">Name</span>
+                <span class="text-lg font-bold">{% trans 'Name' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%] truncate">
@@ -28,26 +29,26 @@
                           hx-get="{% url 'edit_collection' identifier=collection.id field_name='name' %}"
                           hx-target="#name"
                           hx-swap="innerHTML">
-                          Edit
+                        {% trans 'Edit' %}
                       </a>
                   </div>
               </div>
               <div class="pt-2">
-                  <span class="text-lg font-bold">Default Collection</span>
+                <span class="text-lg font-bold">{% trans 'Default Collection' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%]">
                       <span id="default_collection">
                           {% if collection.default_collection %}
-                          Yes
+                          {% trans 'Yes' %}
                           {% else %}
-                          No
+                          {% trans 'No' %}
                           {% endif%}
                       </span>
                   </div>
               </div>
               <div class="pt-2">
-                  <span class="text-lg font-bold">Description</span>
+                <span class="text-lg font-bold">{% trans 'Description' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%] text-sm">
@@ -55,7 +56,7 @@
                           {% if collection.description %}
                           {{ collection.description }}
                           {% else %}
-                          no description available
+                          {% trans 'no description available' %}
                           {% endif%}
                       </span>
                   </div>
@@ -64,12 +65,12 @@
                           hx-get="{% url 'edit_collection' identifier=collection.id field_name='description' %}"
                           hx-target="#description"
                           hx-swap="innerHTML">
-                          Edit
+                        {% trans 'Edit' %}
                       </a>
                   </div>
               </div>
               <div class="pt-2">
-                  <span class="text-lg font-bold">Date added</span>
+                <span class="text-lg font-bold">{% trans 'Date added' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-[86%] text-sm">
@@ -77,13 +78,13 @@
                   </div>
               </div>
               {% if not collection.default_collection %}
-              <div class="pt-12 text-xl font-bold text-red-500">Danger Zone</div>
+              <div class="pt-12 text-xl font-bold text-red-500">{% trans 'Danger Zone' %}</div>
               <div class="pt-3">
-                  <span class="text-lg font-bold">Delete Collection</span>
+                <span class="text-lg font-bold">{% trans 'Delete Collection' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
                   <div class="w-5/6">
-                      <span>Delete the collection and all its PDFs</span>
+                    <span>{% trans 'Delete the collection and all its PDFs' %}</span>
                   </div>
                   <div class="pr-0 ml-2 md:pl-0 md:pr-4">
                     <a id="delete-collection" class="text-red-500 hover:text-red-600 cursor-pointer"
@@ -91,7 +92,7 @@
                       hx-get="{% url 'delete_collection' collection.id %}"
                       hx-target="#delete_collection_modal"
                       hx-swap="innerHTML">
-                        Delete
+                      {% trans 'Delete' %}
                     </a>
                   </div>
               </div>

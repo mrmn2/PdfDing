@@ -1,4 +1,5 @@
 {% extends 'layouts/blank.html' %}
+{% load i18n %}
 
 {% block content %}
 <div class="flex flex-col md:flex-row md:justify-end">
@@ -8,18 +9,18 @@
     <div class="flex w-full justify-start items-center py-2 px-2 md:px-8">
         <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 min-[1600px]:ml-40! px-4 py-4 md:pb-4 border
                     bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
-            <span class="text-2xl font-bold text-red-600">Danger Zone</span>
+          <span class="text-2xl font-bold text-red-600">{% trans 'Danger Zone' %}</span>
 
             <div class="pt-3">
-                <span class="text-lg font-bold">Delete Account</span>
+              <span class="text-lg font-bold">{% trans 'Delete Account' %}</span>
             </div>
             <div class="flex justify-between text-slate-600 dark:text-slate-400">
                 <div class="w-5/6">
-                    <span>Delete your account and data</span>
+                  <span>{% trans 'Delete your account and data' %}</span>
                 </div>
                 <div class="pr-0 md:pr-6">
                     <a href="{% url 'profile-delete' %}" class="text-red-600! hover:underline">
-                        Delete
+                      {% trans 'Delete' %}
                     </a>
                 </div>
             </div>

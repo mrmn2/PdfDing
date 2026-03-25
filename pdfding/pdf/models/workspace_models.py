@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from pdf.models.helpers import get_workspace_path
 
 
@@ -98,9 +99,9 @@ class Workspace(models.Model):
         """Add a user to the workspace."""
 
         if self.personal_workspace:
-            raise WorkspaceError('Cannot add other users to personal workspaces!')
+            raise WorkspaceError(_('Cannot add other users to personal workspaces!'))
         elif user in self.users:
-            raise WorkspaceError('User is already a user of the workspace!')
+            raise WorkspaceError(_('User is already a user of the workspace!'))
         else:
             WorkspaceUser.objects.create(workspace=self, user=user, role=role)
 
