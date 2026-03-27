@@ -82,6 +82,24 @@
                 </div>
             </div>
             {% endif %}
+            {% if VERSION == 'DEV' %}
+            <div class="pt-2">
+              <span class="text-lg font-bold">{% trans 'Language' %}</span>
+            </div>
+            <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                <div class="w-5/6">
+                    <span id="language">{{ user.profile.language }}</span>
+                </div>
+                <div class="pr-0 md:pr-6">
+                    <a id="language_edit" class="cursor-pointer text-primary hover:text-secondary"
+                        hx-get="{% url 'profile-setting-change' 'language' %}"
+                        hx-target="#language"
+                        hx-swap="innerHTML" >
+                        {{ edit }}
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

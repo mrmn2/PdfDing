@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 07:01+0000\n"
+"POT-Creation-Date: 2026-03-27 16:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,12 +75,10 @@ msgid "Cancel"
 msgstr ""
 
 #: pdfding/admin/templates/includes/user.html:33
+#: pdfding/pdf/templates/collection_details.html:95
 #: pdfding/pdf/templates/includes/individual_tag.html:71
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:65
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:76
-#: pdfding/pdf/templates/partials/delete_collection.html:5
-#: pdfding/pdf/templates/partials/delete_pdf.html:5
-#: pdfding/pdf/templates/partials/delete_workspace.html:5
 #: pdfding/pdf/templates/pdf_details.html:272
 #: pdfding/pdf/templates/shared_pdf_details.html:201
 #: pdfding/pdf/templates/workspace_details.html:107
@@ -436,11 +434,11 @@ msgstr ""
 msgid "Delete the collection and all its PDFs"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/add_pdf_optionals.html:4
+#: pdfding/pdf/templates/includes/add_pdf_optionals.html:3
 msgid "Additional Fields"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/add_pdf_optionals.html:38
+#: pdfding/pdf/templates/includes/add_pdf_optionals.html:37
 msgid "Processing"
 msgstr ""
 
@@ -603,14 +601,29 @@ msgstr ""
 msgid "Create Collection"
 msgstr ""
 
+#: pdfding/pdf/templates/partials/delete_collection.html:5
+#, python-format
+msgid " Delete %(collection_name)s "
+msgstr ""
+
 #: pdfding/pdf/templates/partials/delete_collection.html:6
 msgid ""
 "Are you sure you want to delete this collections and all its PDFs? This "
 "action cannot be reversed!"
 msgstr ""
 
+#: pdfding/pdf/templates/partials/delete_pdf.html:5
+#, python-format
+msgid " Delete %(pdf_name)s "
+msgstr ""
+
 #: pdfding/pdf/templates/partials/delete_pdf.html:6
 msgid "Are you sure you want to delete this PDF? This action is irreversible!"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/delete_workspace.html:5
+#, python-format
+msgid " Delete %(workspace_name)s "
 msgstr ""
 
 #: pdfding/pdf/templates/partials/delete_workspace.html:6
@@ -924,6 +937,10 @@ msgstr ""
 
 #: pdfding/users/templates/account_settings.html:72
 msgid "Deactivated"
+msgstr ""
+
+#: pdfding/users/templates/account_settings.html:87
+msgid "Language"
 msgstr ""
 
 #: pdfding/users/templates/danger_settings.html:19

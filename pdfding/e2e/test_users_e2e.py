@@ -87,6 +87,25 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator('#email_address')).to_contain_text('a@b.com')
             expect(self.page.locator('body')).to_contain_text('Not verified')
 
+    def test_settings_change_language(self):
+        with sync_playwright() as p:
+            self.open(reverse('account_settings'), p)
+
+            expect(self.page.locator("#language")).to_contain_text("English")
+
+            self.page.locator("#language_edit").click()
+            self.page.locator("#id_language").select_option("Auto")
+            self.page.get_by_role("button", name="Submit").click()
+
+            expect(self.page.locator("#language")).to_contain_text("Auto")
+
+    @override_settings(VERSION='not_dev')
+    def test_settings_change_language_not_visible_prod(self):
+        with sync_playwright() as p:
+            self.open(reverse('account_settings'), p)
+
+            expect(self.page.locator("#language")).not_to_be_visible()
+
     def test_settings_change_custom_color(self):
         with sync_playwright() as p:
             self.open(reverse('ui_settings'), p)

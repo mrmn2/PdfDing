@@ -102,6 +102,7 @@ class TestProfileSettingsViews(BaseProfileView):
             'theme_color',
             'email',
             'show_progress_bars',
+            'language',
         ]
         form_list = [
             forms.GenericUserFieldForm,
@@ -110,6 +111,7 @@ class TestProfileSettingsViews(BaseProfileView):
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
             forms.EmailForm,
+            forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
         ]
         initial_dicts = [
@@ -120,6 +122,7 @@ class TestProfileSettingsViews(BaseProfileView):
             {'theme_color': 'Green'},
             {'email': 'a@a.com'},
             {'show_progress_bars': 'Enabled'},
+            {'language': 'English'},
         ]
 
         for field_name, form, initial_dict in zip(field_names, form_list, initial_dicts):
@@ -201,9 +204,9 @@ class TestProfileSettingsViews(BaseProfileView):
 
     def test_change_settings_normal_post_correct(self):
         for field_name, val_before, val_after in zip(
-            ['pdf_inverted_mode', 'pdf_keep_screen_awake', 'show_progress_bars'],
-            ['Disabled', 'Disabled', 'Enabled'],
-            ['Enabled', 'Enabled', 'Disabled'],
+            ['pdf_inverted_mode', 'pdf_keep_screen_awake', 'show_progress_bars', 'language'],
+            ['Disabled', 'Disabled', 'Enabled', 'English'],
+            ['Enabled', 'Enabled', 'Disabled', 'Auto'],
         ):
             self.assertEqual(getattr(self.user.profile, field_name), val_before)
             self.client.post(

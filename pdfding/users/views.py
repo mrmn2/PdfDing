@@ -58,6 +58,7 @@ class ChangeSetting(View):
 
     form_dict = {
         'email': forms.EmailForm,
+        'language': forms.create_user_field_form(['language']),
         'theme': forms.create_user_field_form(['dark_mode']),
         'theme_color': forms.create_user_field_form(['theme_color']),
         'pdf_inverted_mode': forms.create_user_field_form(['pdf_inverted_mode']),
@@ -71,6 +72,7 @@ class ChangeSetting(View):
 
         initial_dict = {
             'email': {'email': request.user.email},
+            'language': {'language': request.user.profile.language},
             'theme': {'dark_mode': request.user.profile.dark_mode},
             'theme_color': {'theme_color': request.user.profile.theme_color},
             'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
