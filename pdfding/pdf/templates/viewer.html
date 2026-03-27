@@ -38,6 +38,8 @@ See https://github.com/adobe-type-tools/cmap-resources
     <link rel="stylesheet" href="../../static/pdfjs/web/viewer.css">
     <link rel="stylesheet" href="{% static 'css/pdf_viewer.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
+    {# commented until more languages get added to PdfDing }
+    {# <link rel="resource" type="application/l10n" href="../../static/pdfjs/web/locale/locale.json"/> #}
     <style>
       :root{
 
@@ -122,7 +124,7 @@ See https://github.com/adobe-type-tools/cmap-resources
       {% else %}
       var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}"
       {% endif %}
-      start_viewer(page_number, url, "{{ tab_title }}");
+      start_viewer(page_number, url, "{{ tab_title }}", "{{ request.LANGUAGE_CODE }}");
 
       {% if user_view_bool %}
       get_remote_signatures("{% url 'signatures' %}");

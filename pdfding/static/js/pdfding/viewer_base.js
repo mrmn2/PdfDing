@@ -1,6 +1,7 @@
-function start_viewer(page_number, pdf_url, tab_title) {
+function start_viewer(page_number, pdf_url, tab_title, language_code) {
   // open pdf on the start page
   window.addEventListener('load', function() {
+      PDFViewerApplicationOptions.set("localeProperties", {lang: language_code});
       PDFViewerApplication.initialBookmark = "page="+page_number;
       PDFViewerApplication.open({ url: pdf_url });
       // overwrite setTitle so that PdfDing controls the tab's title
