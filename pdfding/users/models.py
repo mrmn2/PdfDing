@@ -9,8 +9,8 @@ from pdf.models.workspace_models import Workspace
 
 newest_trans = _('Newest')
 oldest_trans = _('Oldest')
-name_asc_trans = _('Name_asc')
-name_desc_trans = _('Name_desc')
+name_asc_trans = _('Name Asc')
+name_desc_trans = _('Name Desc')
 
 
 class Profile(models.Model):
@@ -47,9 +47,9 @@ class Profile(models.Model):
         OLDEST = 'Oldest', oldest_trans
         NAME_ASC = 'Name_asc', name_asc_trans
         NAME_DESC = 'Name_desc', name_desc_trans
-        MOST_VIEWED = 'Most_viewed', _('Most_viewed')
-        LEAST_VIEWED = 'Least_viewed', _('Least_viewed')
-        RECENTLY_VIEWED = 'Recently_viewed', _('Recently_viewed')
+        MOST_VIEWED = 'Most_viewed', _('Most Viewed')
+        LEAST_VIEWED = 'Least_viewed', _('Least Viewed')
+        RECENTLY_VIEWED = 'Recently_viewed', _('Recently Viewed')
 
     class SharedPdfSortingChoice(models.TextChoices):
         NEWEST = 'Newest', newest_trans
@@ -60,8 +60,8 @@ class Profile(models.Model):
     class UserSortingChoice(models.TextChoices):
         NEWEST = 'Newest', newest_trans
         OLDEST = 'Oldest', oldest_trans
-        EMAIL_ASC = 'Email_asc', _('Email_asc')
-        EMAIL_DESC = 'Email_desc', _('Email_desc')
+        EMAIL_ASC = 'Email_asc', _('Email Asc')
+        EMAIL_DESC = 'Email_desc', _('Email Desc')
 
     class AnnotationsSortingChoice(models.TextChoices):
         NEWEST = 'Newest', newest_trans

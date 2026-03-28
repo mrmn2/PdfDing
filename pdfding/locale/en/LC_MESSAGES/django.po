@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-27 16:10+0000\n"
+"POT-Creation-Date: 2026-03-28 11:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -174,9 +174,9 @@ msgstr ""
 
 #: pdfding/pdf/forms.py:123 pdfding/pdf/forms.py:471 pdfding/pdf/forms.py:531
 #: pdfding/pdf/models/pdf_models.py:120
-#: pdfding/pdf/models/shared_pdf_models.py:26
-#: pdfding/pdf/models/shared_pdf_models.py:29
+#: pdfding/pdf/models/shared_pdf_models.py:27
 #: pdfding/pdf/models/shared_pdf_models.py:30
+#: pdfding/pdf/models/shared_pdf_models.py:31
 msgid "Optional"
 msgstr ""
 
@@ -492,14 +492,17 @@ msgid "Minimal"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:93
+#: pdfding/users/models.py:50
 msgid "Most Viewed"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:98
+#: pdfding/users/models.py:51
 msgid "Least Viewed"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:103
+#: pdfding/users/models.py:52
 msgid "Recently Viewed"
 msgstr ""
 
@@ -832,11 +835,11 @@ msgid "Only valid hex colors are allowed! E.g.: #ffa385."
 msgstr ""
 
 #: pdfding/users/models.py:12
-msgid "Name_asc"
+msgid "Name Asc"
 msgstr ""
 
 #: pdfding/users/models.py:13
-msgid "Name_desc"
+msgid "Name Desc"
 msgstr ""
 
 #: pdfding/users/models.py:20
@@ -891,24 +894,12 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
-#: pdfding/users/models.py:50
-msgid "Most_viewed"
-msgstr ""
-
-#: pdfding/users/models.py:51
-msgid "Least_viewed"
-msgstr ""
-
-#: pdfding/users/models.py:52
-msgid "Recently_viewed"
-msgstr ""
-
 #: pdfding/users/models.py:63
-msgid "Email_asc"
+msgid "Email Asc"
 msgstr ""
 
 #: pdfding/users/models.py:64
-msgid "Email_desc"
+msgid "Email Desc"
 msgstr ""
 
 #: pdfding/users/templates/account_settings.html:14
