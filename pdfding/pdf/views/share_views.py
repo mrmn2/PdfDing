@@ -321,7 +321,7 @@ class ViewShared(BaseSharedPdfPublicView):
     def post(self, request: HttpRequest, identifier: str):
         shared_pdf = self.get_shared_pdf_public(request, identifier)
 
-        if shared_pdf.inactive:
+        if shared_pdf.inactive or shared_pdf.deleted:
             return render(request, 'view_shared_inactive.html')
         else:
             form = ViewSharedPasswordForm(request.POST, shared_pdf=shared_pdf)
