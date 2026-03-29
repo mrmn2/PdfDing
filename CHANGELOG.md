@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.7.0 (Mar 29, 2026)
+### What's Changed
+* **Security Fix**: Shared PDF authentication bypass (CVE-2026-34376) by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/294
+* Implement internationalization and base language setup  by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/286, https://github.com/mrmn2/PdfDing/pull/289, https://github.com/mrmn2/PdfDing/pull/292 and https://github.com/mrmn2/PdfDing/pull/293
+* Remove creme theme by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/284
+* fix: Do not create duplicates when saving PDFs in the viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/288
+* Dependency updates @dependabot[bot] and @mrmn2  in https://github.com/mrmn2/PdfDing/pull/290 and https://github.com/mrmn2/PdfDing/pull/294
+
+
 ## v1.6.3 (Mar 14, 2026)
 ### What's Changed
 * Add support for boolean environment variables in addition to strings by @niggoo in https://github.com/mrmn2/PdfDing/pull/276
