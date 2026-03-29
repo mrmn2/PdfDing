@@ -5,11 +5,12 @@ import qrcode
 from base import base_views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
+from django.contrib.sessions.models import Session
 from django.core.files import File
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
-from django.http import HttpRequest
-from django.shortcuts import render
+from django.http import Http404, HttpRequest
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -26,7 +27,11 @@ from pdf.forms import (
 )
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.services.pdf_services import check_object_access_allowed
-from pdf.services.shared_pdf_services import get_future_datetime
+from pdf.services.shared_pdf_services import (
+    check_shared_access_allowed,
+    check_shared_access_allowed_by_identifier,
+    get_future_datetime,
+)
 from pdf.services.workspace_services import get_shared_pdfs_of_workspace
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg
@@ -150,7 +155,7 @@ class SharedPdfMixin(BaseShareMixin):
     @staticmethod
     @check_object_access_allowed
     def get_object(request: HttpRequest, identifier: str):
-        """Get the shered pdf specified by the ID"""
+        """Get the shared pdf specified by the ID"""
 
         user_profile = request.user.profile
         shared_pdf = user_profile.all_shared_pdfs.get(id=identifier)
@@ -217,13 +222,15 @@ class EditSharedPdfMixin(SharedPdfMixin):
 
 class PdfPublicMixin:
     @staticmethod
-    @check_object_access_allowed
-    def get_object(_, shared_id: str):
+    def get_object(request: HttpRequest, shared_id: str):
         """Get the shared pdf specified by the ID"""
 
-        shared_pdf = SharedPdf.objects.get(pk=shared_id)
+        if check_shared_access_allowed_by_identifier(shared_id, request.session):
+            shared_pdf = SharedPdf.objects.get(pk=shared_id)
 
-        return shared_pdf.pdf
+            return shared_pdf.pdf
+        else:
+            raise Http404('Access to shared pdf not allowed!')
 
 
 class BaseSharedPdfPublicView(View):
@@ -302,6 +309,8 @@ class ViewShared(BaseSharedPdfPublicView):
 
         if shared_pdf.inactive or shared_pdf.deleted:
             return render(request, 'view_shared_inactive.html')
+        elif check_shared_access_allowed(shared_pdf, request.session):
+            return self.render_shared_pdf_view(request, shared_pdf)
         else:
             return render(
                 request,
@@ -315,15 +324,19 @@ class ViewShared(BaseSharedPdfPublicView):
         if shared_pdf.inactive:
             return render(request, 'view_shared_inactive.html')
         else:
-            if shared_pdf.password:
-                form = ViewSharedPasswordForm(request.POST, shared_pdf=shared_pdf)
+            form = ViewSharedPasswordForm(request.POST, shared_pdf=shared_pdf)
 
-                if form.is_valid():
-                    return self.render_shared_pdf_view(request, shared_pdf)
-                else:
-                    return render(request, 'view_shared_info.html', {'shared_pdf': shared_pdf, 'form': form})
+            if not shared_pdf.password or form.is_valid():
+                if not request.session or not request.session.session_key:
+                    request.session.create()
+                    # set session expiry to 1 week
+                    request.session.set_expiry(604800)
+                    request.session.save()
+
+                shared_pdf.sessions.add(Session.objects.get(session_key=request.session.session_key))
+                return redirect('view_shared_pdf', identifier=shared_pdf.id)
             else:
-                return self.render_shared_pdf_view(request, shared_pdf)
+                return render(request, 'view_shared_info.html', {'shared_pdf': shared_pdf, 'form': form})
 
     @staticmethod
     def render_shared_pdf_view(request: HttpRequest, shared_pdf: SharedPdf):

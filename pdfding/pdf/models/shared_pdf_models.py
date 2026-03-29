@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from pdf.models.helpers import get_collection_dir
@@ -30,6 +31,7 @@ class SharedPdf(models.Model):
     password = models.CharField(max_length=128, null=True, blank=True, help_text=_('Optional'))
     expiration_date = models.DateTimeField(null=True, blank=True)
     deletion_date = models.DateTimeField(null=True, blank=True)
+    sessions = models.ManyToManyField(Session)
 
     def __str__(self) -> str:
         return self.name  # pragma: no cover

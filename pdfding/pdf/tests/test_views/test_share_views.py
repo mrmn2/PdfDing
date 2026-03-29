@@ -2,9 +2,11 @@ from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from unittest.mock import MagicMock, patch
 
+import pytest
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from django.http.response import Http404
 from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import (
@@ -258,10 +260,22 @@ class TestPdfPublicMixin(TestCase):
         self.pdf = None
         set_up(self)
 
-    def test_get_object(self):
+    @patch('pdf.services.shared_pdf_services.check_shared_access_allowed', return_value=True)
+    def test_get_object(self, mock_check):
+        # get dummy request
+        response = self.client.get(reverse('pdf_overview'))
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
-        self.assertEqual(shared_pdf.pdf, PdfPublicMixin.get_object(None, shared_pdf.id))
+        self.assertEqual(shared_pdf.pdf, PdfPublicMixin.get_object(response.wsgi_request, shared_pdf.id))
+
+    @patch('pdf.services.shared_pdf_services.check_shared_access_allowed', return_value=False)
+    def test_get_object_404(self, mock_check):
+        # get dummy request
+        response = self.client.get(reverse('pdf_overview'))
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
+
+        with pytest.raises(Http404, match='Access to shared pdf not allowed!'):
+            PdfPublicMixin.get_object(response.wsgi_request, shared_pdf.id)
 
 
 class TestBaseSharedPdfPublicView(TestCase):
@@ -279,7 +293,7 @@ class TestBaseSharedPdfPublicView(TestCase):
         self.assertEqual(shared_pdf, BaseSharedPdfPublicView.get_shared_pdf_public(None, shared_pdf.id))
 
 
-class TestLoginNotRequiredViews(TestCase):
+class TestViewSharedPdf(TestCase):
     username = 'user'
     password = '12345'
 
@@ -289,7 +303,8 @@ class TestLoginNotRequiredViews(TestCase):
         set_up(self)
         self.shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='shared_pdf')
 
-    def test_view_get_active(self):
+    @patch('pdf.views.share_views.check_shared_access_allowed', return_value=False)
+    def test_view_get_active_no_active_session(self, mock_check):
         # test without http referer
         response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': self.shared_pdf.id}))
 
@@ -298,22 +313,17 @@ class TestLoginNotRequiredViews(TestCase):
         self.assertEqual(response.context['host'], 'testserver')
         self.assertEqual(response.context['form'], ViewSharedPasswordForm)
 
-    def test_view_get_inactive(self):
-        inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)
-        # test without http referer
-        response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': inactive_shared_pdf.id}))
-
-        self.assertTemplateUsed(response, 'view_shared_inactive.html')
-
     @patch('pdf.views.share_views.get_viewer_theme_and_color')
-    def test_view_post_active_no_password(self, mock_get_viewer_theme_and_color):
-        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
+    @patch('pdf.views.share_views.check_shared_access_allowed', return_value=True)
+    def test_view_get_active_active_session(self, mock_check, mock_get_viewer_theme_and_color):
+        # test without http referer
 
+        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
         self.shared_pdf.pdf.revision = 2
         self.shared_pdf.pdf.save()
         self.assertEqual(self.shared_pdf.views, 0)
 
-        response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': self.shared_pdf.id}))
+        response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': self.shared_pdf.id}))
         self.assertEqual(response.context['shared_pdf_id'], self.shared_pdf.id)
         self.assertEqual(response.context['current_page'], 1)
         self.assertEqual(response.context['revision'], 2)
@@ -326,34 +336,26 @@ class TestLoginNotRequiredViews(TestCase):
         shared_pdf = SharedPdf.objects.get(pk=self.shared_pdf.id)
         self.assertEqual(shared_pdf.views, 1)
 
-    @patch('pdf.views.share_views.get_viewer_theme_and_color')
-    def test_view_post_active_correct_password(self, mock_get_viewer_theme_and_color):
-        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
+    def test_view_get_inactive(self):
+        inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)
+        # test without http referer
+        response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': inactive_shared_pdf.id}))
 
-        self.shared_pdf.pdf.revision = 2
-        self.shared_pdf.pdf.save()
+        self.assertTemplateUsed(response, 'view_shared_inactive.html')
 
+    def test_view_post_active_no_password(self):
+        unprotected_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='unprotected_shared_pdf')
+        assert unprotected_shared_pdf.sessions.count() == 0
+
+        response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': unprotected_shared_pdf.id}))
+
+        assert unprotected_shared_pdf.sessions.count() == 1
+        self.assertRedirects(response, reverse('view_shared_pdf', kwargs={'identifier': unprotected_shared_pdf.id}))
+
+    def test_view_post_active_wrong_password(self):
         protected_shared_pdf = SharedPdf.objects.create(
             pdf=self.pdf, name='protected_shared_pdf', password=make_password('some_pw')
         )
-
-        response = self.client.post(
-            reverse('view_shared_pdf', kwargs={'identifier': protected_shared_pdf.id}),
-            data={'password_input': 'some_pw'},
-        )
-
-        self.assertEqual(response.context['shared_pdf_id'], protected_shared_pdf.id)
-        self.assertEqual(response.context['theme_color'], '4 4 4')
-        self.assertEqual(response.context['theme'], 'dark')
-        self.assertEqual(response.context['revision'], 2)
-        self.assertEqual(response.context['user_view_bool'], False)
-        self.assertTemplateUsed(response, 'viewer.html')
-
-        protected_shared_pdf = SharedPdf.objects.get(pk=protected_shared_pdf.id)
-        self.assertEqual(protected_shared_pdf.views, 1)
-
-    def test_view_post_active_wrong_password(self):
-        protected_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='protected_shared_pdf', password='some_pw')
 
         response = self.client.post(
             reverse('view_shared_pdf', kwargs={'identifier': protected_shared_pdf.id}), data={'password_input': 'wrong'}
@@ -361,6 +363,20 @@ class TestLoginNotRequiredViews(TestCase):
 
         self.assertIsInstance(response.context['form'], ViewSharedPasswordForm)
         self.assertTemplateUsed(response, 'view_shared_info.html')
+
+    def test_view_post_active_correct_password(self):
+        protected_shared_pdf = SharedPdf.objects.create(
+            pdf=self.pdf, name='protected_shared_pdf', password=make_password('some_pw')
+        )
+        assert protected_shared_pdf.sessions.count() == 0
+
+        response = self.client.post(
+            reverse('view_shared_pdf', kwargs={'identifier': protected_shared_pdf.id}),
+            data={'password_input': 'some_pw'},
+        )
+
+        assert protected_shared_pdf.sessions.count() == 1
+        self.assertRedirects(response, reverse('view_shared_pdf', kwargs={'identifier': protected_shared_pdf.id}))
 
     def test_view_post_inactive(self):
         inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)

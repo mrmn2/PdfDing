@@ -1,10 +1,34 @@
 from datetime import datetime, timedelta, timezone
 
+from django.contrib.sessions.models import Session
+from pdf.models.shared_pdf_models import SharedPdf
+
+
+def check_shared_access_allowed_by_identifier(identifier: str, session: Session):
+    """Check if access to shared pdf is allowed based on session."""
+
+    shared_pdf = SharedPdf.objects.get(pk=identifier)
+
+    return check_shared_access_allowed(shared_pdf, session)
+
+
+def check_shared_access_allowed(shared_pdf: SharedPdf, session: Session):
+    """Check if access to shared pdf is allowed based on session."""
+
+    if (
+        session
+        and (session.get_expiry_date() - datetime.now(timezone.utc)).total_seconds() > 0
+        and shared_pdf.sessions.filter(session_key=session.session_key).count()
+    ):
+        return True
+    else:
+        return False
+
 
 def get_future_datetime(time_input: str) -> datetime | None:
     """
     Gets a datetime in the future from now based on the input. Input is in the format _d_h_m, e.g. 1d0h22m.
-    If input is an empty string returns None
+    If input is an empty string returns None.
     """
 
     if not time_input:
