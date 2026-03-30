@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.7.1 (Mar 30, 2026)
+### What's Changed
+* **Security Fix:** Shared PDF Expiration, Max Views, and Deletion Bypass by @axel-corsiez in https://github.com/mrmn2/PdfDing/commit/a6783b259b25c839c52c6f2380333827a52e89eb
+
 ## v1.7.0 (Mar 29, 2026)
 ### What's Changed
 * **Security Fix**: Shared PDF authentication bypass (CVE-2026-34376) by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/294
