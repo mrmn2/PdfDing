@@ -36,6 +36,38 @@ class TestSharedPdfServices(TestCase):
         request.session.set_expiry(-1)
         assert not check_shared_access_allowed(shared_pdf, request.session)
 
+    def test_check_shared_access_allowed_inactive(self):
+        # get dummy request
+        response = self.client.get(reverse('pdf_overview'))
+        request = response.wsgi_request
+
+        # create dummy session
+        request.session.create()
+        pdf = Pdf.objects.create(name='bla', collection_id=self.user.id)
+
+        inactive_shared_pdf = SharedPdf.objects.create(
+            pdf=pdf, name='inactive_shared_pdf', expiration_date=(datetime.now(timezone.utc) - timedelta(minutes=5))
+        )
+        inactive_shared_pdf.sessions.add(Session.objects.get(session_key=request.session.session_key))
+
+        assert not check_shared_access_allowed(inactive_shared_pdf, request.session)
+
+    def test_check_shared_access_allowed_deleted(self):
+        # get dummy request
+        response = self.client.get(reverse('pdf_overview'))
+        request = response.wsgi_request
+
+        # create dummy session
+        request.session.create()
+        pdf = Pdf.objects.create(name='bla', collection_id=self.user.id)
+
+        deleted_shared_pdf = SharedPdf.objects.create(
+            pdf=pdf, name='inactive_shared_pdf', deletion_date=(datetime.now(timezone.utc) - timedelta(minutes=5))
+        )
+        deleted_shared_pdf.sessions.add(Session.objects.get(session_key=request.session.session_key))
+
+        assert not check_shared_access_allowed(deleted_shared_pdf, request.session)
+
     @mock.patch('pdf.services.shared_pdf_services.check_shared_access_allowed')
     def test_check_shared_access_allowed_by_identifier(self, mock_check):
         # get dummy request

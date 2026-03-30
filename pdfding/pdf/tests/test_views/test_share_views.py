@@ -338,7 +338,6 @@ class TestViewSharedPdf(TestCase):
 
     def test_view_get_inactive(self):
         inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)
-        # test without http referer
         response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': inactive_shared_pdf.id}))
 
         self.assertTemplateUsed(response, 'view_shared_inactive.html')
@@ -380,7 +379,14 @@ class TestViewSharedPdf(TestCase):
 
     def test_view_post_inactive(self):
         inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)
-        # test without http referer
         response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': inactive_shared_pdf.id}))
+
+        self.assertTemplateUsed(response, 'view_shared_inactive.html')
+
+    def test_view_post_deleted(self):
+        deleted_shared_pdf = SharedPdf.objects.create(
+            pdf=self.pdf, name='inactive_shared_pdf', deletion_date=(datetime.now(timezone.utc) - timedelta(minutes=5))
+        )
+        response = self.client.post(reverse('view_shared_pdf', kwargs={'identifier': deleted_shared_pdf.id}))
 
         self.assertTemplateUsed(response, 'view_shared_inactive.html')

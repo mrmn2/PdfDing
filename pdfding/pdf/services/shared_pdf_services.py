@@ -14,9 +14,10 @@ def check_shared_access_allowed_by_identifier(identifier: str, session: Session)
 
 def check_shared_access_allowed(shared_pdf: SharedPdf, session: Session):
     """Check if access to shared pdf is allowed based on session."""
+
     if shared_pdf.inactive or shared_pdf.deleted:
         return False
-    
+
     if (
         session
         and (session.get_expiry_date() - datetime.now(timezone.utc)).total_seconds() > 0
