@@ -78,7 +78,7 @@ jobs:
           cache: 'npm'
       - name: Install Node dependencies
         run: |
-          npm ci
+          npm ci --ignore-scripts
           npm run build
           npx --yes @tailwindcss/cli -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css --minify
       - name: Run tests

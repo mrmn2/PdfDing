@@ -23,7 +23,7 @@ RUN rm -rf pdfding/static/pdfjs/web/locale \
     pdfding/static/pdfjs/web/standard_fonts \
     pdfding/static/pdfjs/web/compressed.tracemonkey-pldi-09.pdf
 # get other dependecies
-RUN npm ci && npm run build
+RUN npm ci --ignore-scripts && npm run build
 RUN npx @tailwindcss/cli -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css --minify
 # minify pdfjs js files
 RUN for i in build/pdf.mjs build/pdf.sandbox.mjs build/pdf.worker.mjs web/viewer.mjs; \
