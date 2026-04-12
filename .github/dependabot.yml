@@ -5,6 +5,8 @@ multi-ecosystem-groups:
     schedule:
       interval: "monthly"
       day: "sunday"
+    commit-message:
+      prefix: chore
     cooldown:
       default-days: 7
 
