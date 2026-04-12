@@ -3,7 +3,7 @@ version: 2
 multi-ecosystem-groups:
   pdfding:
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "sunday"
     cooldown:
       default-days: 7
