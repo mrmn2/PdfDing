@@ -7,7 +7,7 @@ on:
       - 'pdfding/**/*.html'
       - 'pyproject.toml'
       - 'package.json'
-      - '.github/workflows/test.yaml'
+      - '.github/workflows/tests.yaml'
       - 'Dockerfile'
 
 concurrency:
