@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-28 11:18+0000\n"
+"POT-Creation-Date: 2026-04-15 23:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,6 +80,7 @@ msgstr ""
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:65
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:76
 #: pdfding/pdf/templates/pdf_details.html:272
+#: pdfding/pdf/templates/pdf_overview.html:48
 #: pdfding/pdf/templates/shared_pdf_details.html:201
 #: pdfding/pdf/templates/workspace_details.html:107
 #: pdfding/users/templates/danger_settings.html:23
@@ -96,14 +97,14 @@ msgstr ""
 
 #: pdfding/admin/templates/includes/user_header_extra.html:17
 #: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:42
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:33
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:47
 #: pdfding/pdf/templates/includes/shared_overview/header_extra.html:17
 msgid "Sort"
 msgstr ""
 
 #: pdfding/admin/templates/includes/user_header_extra.html:29
 #: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:54
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:73
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:87
 #: pdfding/pdf/templates/includes/shared_overview/header_extra.html:29
 #: pdfding/users/models.py:10
 msgid "Newest"
@@ -111,7 +112,7 @@ msgstr ""
 
 #: pdfding/admin/templates/includes/user_header_extra.html:34
 #: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:59
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:78
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:92
 #: pdfding/pdf/templates/includes/shared_overview/header_extra.html:34
 #: pdfding/users/models.py:11
 msgid "Oldest"
@@ -467,53 +468,57 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:16
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:14
+msgid "Bulk Edit"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:30
 msgid "Layout"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:45
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:59
 #: pdfding/users/models.py:71
 msgid "Compact"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:50
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:64
 #: pdfding/users/models.py:73
 msgid "Grid"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:55
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:69
 #: pdfding/users/models.py:72
 msgid "List"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:60
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:74
 #: pdfding/users/models.py:74
 msgid "Minimal"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:93
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:107
 #: pdfding/users/models.py:50
 msgid "Most Viewed"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:98
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:112
 #: pdfding/users/models.py:51
 msgid "Least Viewed"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:103
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:117
 #: pdfding/users/models.py:52
 msgid "Recently Viewed"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/overview_page.html:46
-#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:74
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:77
 #: pdfding/pdf/templates/pdf_details.html:238
 msgid "Page"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/overview_page.html:46
-#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:74
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:77
 msgctxt "page x of y pages"
 msgid "of"
 msgstr ""
@@ -541,15 +546,16 @@ msgstr ""
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:56
 #: pdfding/pdf/templates/includes/sidebar.html:76
 #: pdfding/pdf/templates/pdf_details.html:109
+#: pdfding/pdf/templates/pdf_overview.html:47
 msgid "Archive"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:67
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:70
 msgctxt "number of pdf views singular"
 msgid "View"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:69
+#: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:72
 msgctxt "number of pdf views plural"
 msgid "Views"
 msgstr ""
@@ -729,6 +735,23 @@ msgstr ""
 msgid "Get started by adding PDFs"
 msgstr ""
 
+#: pdfding/pdf/templates/pdf_overview.html:46
+msgid "Adjust Tags"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:49
+msgid "Set Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:50
+msgctxt "Star the PDF"
+msgid "Star"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_overview.html:54
+msgid "Execute"
+msgstr ""
+
 #: pdfding/pdf/templates/shared_pdf_details.html:30
 msgid "inactive"
 msgstr ""
@@ -809,7 +832,7 @@ msgstr ""
 msgid "Input is not valid!"
 msgstr ""
 
-#: pdfding/pdf/views/share_views.py:212
+#: pdfding/pdf/views/share_views.py:217
 msgid "This name is already used by another shared PDF!"
 msgstr ""
 

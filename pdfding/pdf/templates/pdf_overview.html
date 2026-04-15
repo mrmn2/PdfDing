@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class=""
-     x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false }"
+     x-data="{ show_tag_name_modal: false, show_preview_modal: false, show_delete_pdf_modal: false}"
      >
     <div class="flex flex-col md:flex-row md:justify-start"
          :class="{ 'opacity-15': show_tag_name_modal || show_preview_modal || show_delete_pdf_modal }">
@@ -34,6 +34,26 @@
                     {% endif %}
                 </div>
                 {% else %}
+                <div x-show="show_bulk_edit_menu" x-cloak
+                     class="flex flex-row items-center gap-x-4 border rounded-sm px-4 py-1 mb-4
+                            bg-slate-100 border-slate-300 dark:bg-slate-800 dark:border-slate-700">
+                    <div>
+                      <input type="checkbox" name="" value="">
+                    </div>
+                    {# select background color needs to be set in form so that options have correct background color#}
+                    <form class="[&>select]:bg-slate-200 dark:[&>select]:bg-slate-700">
+                      <select class="border border-slate-300 dark:border-slate-600 focus:border-primary">
+                        <option value="adjust_tags">{% trans "Adjust Tags" %}</option>
+                        <option value="archive">{% trans "Archive" %}</option>
+                        <option value="delete">{% trans "Delete" %}</option>
+                        <option value="set_collection">{% trans "Set Collection" %}</option>
+                        <option value="star">{% trans "Star" context "Star the PDF" %}</option>
+                      </select>
+                    </form>
+                    <div class="font-semibold">
+                      {% trans "Execute" %}
+                    </div>
+                </div>
                 {% include 'includes/pdf_overview/overview_page.html' %}
                 {% endif %}
             </div>

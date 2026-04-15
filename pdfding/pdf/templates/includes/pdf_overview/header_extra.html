@@ -1,5 +1,19 @@
 {% load i18n %}
 <div x-data="{ sortOpen: false, layoutOpen: false }" class="relative flex flex-row items-center md:gap-x-1">
+    <a id="bulk_edit"
+       @click="show_bulk_edit_menu = !show_bulk_edit_menu"
+       class="cursor-pointer rounded-sm py-1 pr-1 md:px-2 group relative
+              hover:bg-slate-200 dark:hover:bg-slate-800">
+            <!-- source: https://www.svgrepo.com/svg/488918/edit-03 -->
+            <!-- license: PD -->
+        <svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12.5L17.75 3.75C18.4404 3.05964 19.5596 3.05964 20.25 3.75V3.75C20.9404 4.44036 20.9404 5.55964 20.25 6.25L15.5 11L11.5 15H9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span x-show="!show_bulk_edit_menu" class="absolute pointer-events-none w-21 top-8 -left-5! mt-1 px-2 py-1 rounded-sm opacity-0
+                     group-hover:opacity-100 group-hover:delay-350
+      text-slate-600 dark:text-slate-200 bg-slate-200 dark:bg-slate-800">{% trans 'Bulk Edit' %}
+        </span>
+    </a>
     <a id="layout_settings"
        @click="layoutOpen = !layoutOpen"
        @click.away="layoutOpen = false"

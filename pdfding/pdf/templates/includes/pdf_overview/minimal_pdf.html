@@ -1,6 +1,9 @@
 <div x-data="{ tooltip_date: false, show_notes_{{ loop_id }}: false }">
     <div class="flex flex-row justify-between truncate">
         <div class="flex flex-row items-center gap-x-2 truncate">
+            <div class="pl-1" x-show="show_bulk_edit_menu" x-cloak>
+              <input class="" type="checkbox" name="bulk_edit_selected" value="{{ pdf.id }}">
+            </div>
             <a id="pdf-link-{{ loop_id }}"
               href="{% url 'view_pdf' pdf.id %}"
               class="text-md font-bold truncate text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white">

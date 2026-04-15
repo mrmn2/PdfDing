@@ -2,6 +2,9 @@
 <div class="-ml-1!" x-data="{ show_notes_{{ loop_id }}: false }">
     <div class="flex flex-row pt-1 {% if layout == 'Grid' %} min-h-36 -mb-1! {% endif %}"
          x-data="{ tooltip_date: false }">
+        <div class="pl-2 mr-4 mt-[20px]" x-show="show_bulk_edit_menu" x-cloak>
+          <input class="h-[14px]! w-[14px]!" type="checkbox" name="bulk_edit_selected" value="{{ pdf.id }}">
+        </div>
         <div id="thumbnail-{{ loop_id }}" class="[&>div]:cursor-pointer"
              @click="window.open('{% url 'view_pdf' pdf.id %}', '_self');">
             {% if pdf.thumbnail %}
