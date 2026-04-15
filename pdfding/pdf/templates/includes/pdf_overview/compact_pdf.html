@@ -1,4 +1,8 @@
-<div x-data="{ tooltip_date: false, show_notes_{{ loop_id }}: false }">
+<div class="flex flex-row gap-x-4" x-data="{ tooltip_date: false, show_notes_{{ loop_id }}: false }">
+  <div class="pl-1" x-show="show_bulk_edit_menu" x-cloak>
+    <input class="mt-[23px]" type="checkbox" name="bulk_edit_selected" value="{{ pdf.id }}">
+  </div>
+  <div class="w-full">
     <div class="flex flex-row justify-between text-sm relative -mb-1
                 text-slate-400 dark:text-slate-500">
         <div>
@@ -54,4 +58,5 @@
     {% endif %}
     <div id="notes-{{ loop_id }}" x-show="show_notes_{{ loop_id }}" x-cloak>
     </div>
+  </div>
 </div>

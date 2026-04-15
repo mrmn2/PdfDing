@@ -54,7 +54,8 @@
     </style>
     {% endif %}
 </head>
-<body class="flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+<body class="flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+      x-data="{ show_delete_pdf_modal: false, show_bulk_edit_menu: false }">
     {# fix FOUC for firefox #}
     <script>0</script>
     {% include 'includes/header.html' %}
