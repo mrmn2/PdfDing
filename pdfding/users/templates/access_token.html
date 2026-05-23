@@ -1,0 +1,68 @@
+{% extends 'layouts/blank.html' %}
+{% load i18n %}
+
+{% block content %}
+{% trans "Edit" as edit %}
+<div class="flex flex-col md:flex-row md:justify-end">
+    <div class="w-full! md:w-72! lg:w-72! px-2 md:px-4 pt-2">
+        {% include 'includes/settings_sidebar.html' with page='access_token' %}
+    </div>
+    <div class="flex w-full justify-center items-start py-2 px-2 md:px-8">
+        <div class="rounded-md w-full max-w-3xl mx-auto px-4 py-4 md:pb-8 border
+                    bg-slate-100 dark:bg-slate-800
+                    border-slate-300 dark:border-slate-700">
+            <span class="text-2xl font-bold">{% trans 'Access Token' %}</span>
+            <p class="text-sm text-slate-500 dark:text-slate-400 pt-1">{% trans 'Generate a single API token to authenticate your requests without sharing your password.' %}</p>
+            <div class="pt-3 space-y-4 text-slate-600 dark:text-slate-400" id="token_management">
+                <div class="w-full">
+                    {% if token %}
+                        <div class="flex flex-col gap-2">
+                            <div class="font-mono text-sm bg-slate-200 dark:bg-slate-700 p-2 rounded break-all">
+                                {% if token.key|length > 20 %}
+                                    {{ token.key|slice:":4" }}...{{ token.key|slice:"-4:" }}
+                                {% else %}
+                                    {{ token.key }}
+                                {% endif %}
+                            </div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">
+                                {% trans 'Created' %}: {{ token.created|date:"SHORT_DATE_FORMAT" }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <span class="text-slate-500 dark:text-slate-500">{% trans 'No API token generated yet' %}</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                    {% if token %}
+                        <button type="button" class="text-white bg-primary hover:bg-secondary rounded px-4 py-2"
+                                onclick="(async function(btn){const k='{{ token.key }}';try{await navigator.clipboard.writeText(k);const old=btn.innerText;btn.innerText='{% trans "Copied" %}';setTimeout(()=>btn.innerText=old,1400);}catch(e){alert('{% trans "Copy failed" %}');}})(this)">
+                            {% trans 'Copy' %}
+                        </button>
+
+                        <form method="post" action="{% url 'token-rotate' %}" class="inline" hx-post="{% url 'token-rotate' %}" hx-target="#token_management" hx-swap="outerHTML">
+                            {% csrf_token %}
+                            <button type="submit" class="text-white bg-primary hover:bg-secondary rounded px-4 py-2">
+                                {% trans 'Rotate' %}
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'token-delete' %}" class="inline" hx-post="{% url 'token-delete' %}" hx-target="#token_management" hx-swap="outerHTML">
+                            {% csrf_token %}
+                            <button type="submit" class="text-white bg-primary hover:bg-secondary rounded px-4 py-2">
+                                {% trans 'Delete' %}
+                            </button>
+                        </form>
+                    {% else %}
+                        <form method="post" action="{% url 'token-list' %}" class="inline" hx-post="{% url 'token-list' %}" hx-target="#token_management" hx-swap="outerHTML">
+                            {% csrf_token %}
+                            <button type="submit" class="text-white bg-primary hover:bg-secondary rounded px-4 py-2">
+                                {% trans 'Generate' %}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

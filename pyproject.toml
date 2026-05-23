@@ -14,6 +14,7 @@ license-files = ["LICENSE"]
 python = ">=3.11 <4.0"
 django = "==5.2.13"
 django-allauth = { extras = ["mfa", "socialaccount"], version = "==65.15.1" }
+djangorestframework = "==3.15.0"
 django-htmx = "==1.27.0"
 gunicorn = "==25.3.0"
 huey = "==2.6.0"

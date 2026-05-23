@@ -1,8 +1,14 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import SimpleRouter
 from users import views
+from users.api import TokenViewSet
+
+router = SimpleRouter()
+router.register('token', TokenViewSet, basename='token')
 
 urlpatterns = [
     path('account_settings', views.account_settings, name="account_settings"),
+    path('access_token', views.access_token_settings, name="access_token"),
     path('danger_settings', views.danger_settings, name="danger_settings"),
     path('ui_settings', views.ui_settings, name="ui_settings"),
     path('viewer_settings', views.viewer_settings, name="viewer_settings"),
@@ -16,4 +22,5 @@ urlpatterns = [
     path('change_collection/<collection_id>', views.ChangeCollection.as_view(), name="change_collection"),
     path('open_collapse_tags', views.OpenCollapseTags.as_view(), name="open_collapse_tags"),
     path('signatures', views.Signatures.as_view(), name="signatures"),
+    path('', include(router.urls)),
 ]

@@ -18,6 +18,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django_htmx.http import HttpResponseClientRefresh
 from pdf.services.workspace_services import check_if_collection_part_of_workspace
+from rest_framework.authtoken.models import Token
 from users import forms
 from users.models import Profile
 from users.service import create_demo_user, get_secondary_color
@@ -30,6 +31,18 @@ def account_settings(request):
 
     # pragma: no cover
     return render(request, 'account_settings.html', {'uses_social': uses_social})
+
+
+def access_token_settings(request):
+    """View for the access token settings page"""
+
+    try:
+        token = Token.objects.get(user=request.user)
+    except Token.DoesNotExist:
+        token = None
+
+    # pragma: no cover
+    return render(request, 'access_token.html', context={'token': token})
 
 
 def ui_settings(request):  # pragma: no cover
