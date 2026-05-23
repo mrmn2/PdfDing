@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.openid_connect',
     'allauth.mfa',
+    'rest_framework',
+    'rest_framework.authtoken',
     'django_htmx',
     'huey.contrib.djhuey',
     'admin',
@@ -206,6 +208,17 @@ HUEY = {
 CONSUME_DIR = DATA_DIR / 'consume'
 
 log_level = environ.get('LOG_LEVEL', 'ERROR')
+
+# Django REST Framework Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
 
 LOGGING = {
     'version': 1,
