@@ -583,8 +583,8 @@ class TestEditPdfMixin(TestCase):
         pdf_views.EditPdfMixin.process_field('file_directory', pdf, request, {'file_directory': 'some/dir'})
         mock_process_renaming_pdf.assert_called_once_with(pdf)
 
-    @patch('pdf.views.pdf_views.adjust_pdf_path')
-    def test_process_field_collection(self, mock_adjust_pdf_path):
+    @patch('pdf.views.pdf_views.change_collection_of_pdf')
+    def test_process_field_collection(self, mock_change_collection_of_pdf):
         other_collection = create_collection(self.user.profile.current_workspace, 'OTHER_collection')
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
@@ -593,8 +593,22 @@ class TestEditPdfMixin(TestCase):
 
         pdf_views.EditPdfMixin.process_field('collection', pdf, request, {'collection': other_collection.id})
 
-        mock_adjust_pdf_path.assert_called_once_with(pdf, '/default/', '/other_collection/', move_files=True)
-        assert pdf.collection == other_collection
+        mock_change_collection_of_pdf.assert_called_once_with(pdf, other_collection.id)
+
+    @patch('pdf.views.pdf_views.check_if_collection_part_of_workspace', return_value=False)
+    @patch('pdf.views.pdf_views.change_collection_of_pdf')
+    def test_process_field_collection_wrong_workspace(
+        self, mock_change_collection_of_pdf, check_if_collection_part_of_workspace
+    ):
+        other_collection = create_collection(self.user.profile.current_workspace, 'OTHER_collection')
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        request = response.wsgi_request
+
+        pdf_views.EditPdfMixin.process_field('collection', pdf, request, {'collection': other_collection.id})
+
+        mock_change_collection_of_pdf.assert_not_called()
 
 
 class TestViews(TestCase):

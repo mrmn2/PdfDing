@@ -27,6 +27,18 @@ def move_collection(collection: Collection) -> None:
     collection.save()
 
 
+def change_collection_of_pdf(pdf: Pdf, collection_id: str) -> None:
+    """Change the collection of a PDF."""
+
+    # change collection and file paths only if collection was changed
+    if pdf.collection.id != collection_id:
+        old_collection_name = pdf.collection.name.lower()
+        pdf.collection_id = collection_id
+        new_collection_name = pdf.collection.name.lower()
+        adjust_pdf_path(pdf, f'/{old_collection_name}/', f'/{new_collection_name}/', move_files=True)
+        pdf.save()
+
+
 def adjust_pdf_path(pdf: Pdf, to_be_replaced: str, replace_with: str, move_files: bool = False) -> None:
     """Adjust path of PDF and its shared PDFs when the path of a collection is changed"""
 

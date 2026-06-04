@@ -26,7 +26,6 @@
                 {% if search_query or tag_query %}
                 {% include 'includes/pdf_overview/search_filters.html' %}
                 {% endif %}
-
                 {% if not page_obj %}
                 <div class="pt-4 *:flex *:justify-center">
                     {% if search_query or tag_query or special_pdf_selection %}
@@ -40,46 +39,7 @@
                     {% endif %}
                 </div>
                 {% else %}
-                <div x-show="show_bulk_edit_menu" x-cloak
-                     id="bulk_edit_menu"
-                     class="flex flex-row justify-between items-center border rounded-sm px-1 py-1 mb-4
-                            bg-slate-100 border-slate-300 dark:bg-slate-800 dark:border-slate-700">
-                  <div class="flex flex-row gap-x-1 items-center
-                              [&>form>*]:bg-slate-200 dark:[&>form>*]:bg-slate-700
-                              [&>form>*]:border [&>form>*]:border-slate-300
-                              [&>form>*]:dark:border-slate-600 [&>form>*]:focus:border-primary">
-                    {# select background color needs to be set in form so that options have correct background color#}
-                    <form id="selected_bulk_action">
-                      <select x-model="selected_bulk_action">
-                        <option value="archive">{% trans "Archive" %}</option>
-                        <option value="delete">{% trans "Delete" %}</option>
-                        <option value="set_collection">{% trans "Set Collection" %}</option>
-                        <option value="set_tags">{% trans "Set Tags" %}</option>
-                        <option value="star">{% trans "Star" context "Star the PDF" %}</option>
-                      </select>
-                    </form>
-                    {# select background color needs to be set in form so that options have correct background color#}
-                    <form id="selected_collection" x-show="selected_bulk_action === 'set_collection'" x-cloak>
-                      <select>
-                        {% for collection in request.user.profile.current_workspace.collections %}
-                        <option>{{ collection.name }}</option>
-                        {% endfor %}
-                      </select>
-                    </form>
-                    <form id="selected tags" x-show="selected_bulk_action === 'set_tags'" x-cloak>
-                      <input type="text" placeholder="Enter tags"
-                            class="h-6 md:max-w-40 lg:max-w-80 rounded-sm! px-2!">
-                    </form>
-                    <div class="cursor-pointer font-semibold hover:text-black dark:hover:text-white pl-2">
-                      {% trans "Execute" %}
-                    </div>
-                  </div>
-                  <div class="flex flex-row gap-x-3 px-1 text-primary font-semibold
-                              [&>span]:cursor-pointer [&>span]:hover:text-secondary">
-                              <span @click="bulk_selected_pdfs=select_all_pdfs()">{% trans "All" %}</span>
-                              <span @click="bulk_selected_pdfs=[]">{% trans "None" %}</span>
-                  </div>
-                </div>
+                {% include 'includes/pdf_overview/bulk_action_menu.html' %}
                 {% include 'includes/pdf_overview/overview_page.html' %}
                 {% endif %}
             </div>

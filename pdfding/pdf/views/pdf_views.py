@@ -18,10 +18,10 @@ from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services import pdf_services
-from pdf.services.collection_services import adjust_pdf_path
+from pdf.services.collection_services import change_collection_of_pdf
 from pdf.services.pdf_services import PdfProcessingServices
 from pdf.services.tag_services import TagServices
-from pdf.services.workspace_services import get_pdfs_of_workspace
+from pdf.services.workspace_services import check_if_collection_part_of_workspace, get_pdfs_of_workspace
 from rapidfuzz import fuzz, utils
 from users.models import Profile
 from users.service import get_demo_pdf, get_viewer_theme_and_color
@@ -343,13 +343,12 @@ class EditPdfMixin(PdfMixin):
         elif field_name == 'collection':
             collection_id = form_data['collection']
 
-            # change collection and file paths if collection was changed
-            if pdf.collection.id != collection_id:
-                old_collection_name = pdf.collection.name.lower()
-                pdf.collection_id = collection_id
-                new_collection_name = pdf.collection.name.lower()
-                adjust_pdf_path(pdf, f'/{old_collection_name}/', f'/{new_collection_name}/', move_files=True)
-                pdf.save()
+            if check_if_collection_part_of_workspace(pdf.collection.workspace, collection_id):
+                change_collection_of_pdf(pdf, collection_id)
+            else:  # pragma: no cover
+                messages.warning(
+                    request, _('Cannot change collection to the specified ID as it is not part of the workspace!')
+                )
 
 
 class AnnotationOverviewMixin:

@@ -1,4 +1,5 @@
 import pdf.views.collection_views as collection_views
+import pdf.views.pdf_bulk_action_views as pdf_bulk_action_views
 import pdf.views.pdf_views as pdf_views
 import pdf.views.share_views as share_views
 import pdf.views.workspace_views as workspace_views
@@ -60,6 +61,8 @@ urlpatterns = [
         pdf_views.DetailsCommentOverview.as_view(),
         name='get_next_pdf_details_comment_overview_page',
     ),
+    # bulk edit views
+    path('bulk_actions/', pdf_bulk_action_views.BulkActions.as_view(), name='bulk_actions'),
     # sharing related views
     path('share/<identifier>', share_views.Share.as_view(), name='share_pdf'),
     path('shared/overview/', share_views.Overview.as_view(), name='shared_pdf_overview'),

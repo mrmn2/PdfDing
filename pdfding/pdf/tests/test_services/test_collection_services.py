@@ -6,6 +6,7 @@ from django.test import TestCase
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
 from pdf.services import collection_services
+from pdf.services.workspace_services import create_collection
 
 
 class TestCollectionServices(TestCase):
@@ -36,6 +37,15 @@ class TestCollectionServices(TestCase):
             ],
             any_order=True,
         )
+
+    @mock.patch('pdf.services.collection_services.adjust_pdf_path')
+    def test_change_collection_of_pdf(self, mock_adjust_pdf_path):
+        other_collection = create_collection(self.user.profile.current_workspace, 'OTHER_collection')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        collection_services.change_collection_of_pdf(pdf, other_collection.id)
+
+        mock_adjust_pdf_path.assert_called_once_with(pdf, '/default/', '/other_collection/', move_files=True)
+        assert pdf.collection == other_collection
 
     @mock.patch('pdf.services.collection_services.move_collection_file')
     def test_adjust_pdf_path_not_moving(self, mock_move_collection_file):
