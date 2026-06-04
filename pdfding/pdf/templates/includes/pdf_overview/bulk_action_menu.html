@@ -10,27 +10,28 @@
     {# select background color needs to be set in form so that options have correct background color#}
     <form class="flex flex-row gap-x-1 items-center" action="{% url 'bulk_actions' %}" method='POST'>
       {% csrf_token %}
-      <select name="selected_bulk_action" x-model="selected_bulk_action">
+      <select id="select_bulk_action" name="selected_bulk_action" x-model="selected_bulk_action">
         <option value="archive">{% trans "Archive" %}</option>
         <option value="delete">{% trans "Delete" %}</option>
         <option value="set_collection">{% trans "Set Collection" %}</option>
         <option value="set_tags">{% trans "Set Tags" %}</option>
         <option value="star">{% trans "Star" context "Star the PDF" %}</option>
       </select>
-      <select name="delete_confirmation" x-show="selected_bulk_action === 'delete'" x-cloak>
+      <select id='delete_confirmation' name="delete_confirmation" x-show="selected_bulk_action === 'delete'" x-cloak>
         <option value="no">{% trans 'No' %}</option>
         <option value="yes">{% trans 'Yes' %}</option>
       </select>
-      <select name="collection_id" x-show="selected_bulk_action === 'set_collection'" x-cloak>
+      <select id="select_collection" name="collection_id" x-show="selected_bulk_action === 'set_collection'" x-cloak>
         {% for collection in request.user.profile.current_workspace.collections %}
         <option value="{{ collection.id }}">{{ collection.name }}</option>
         {% endfor %}
       </select>
-      <input name="tag_string" type="text" placeholder="Enter tags"
+      <input id="select_tag" name="tag_string" type="text" placeholder="Enter tags"
               x-show="selected_bulk_action === 'set_tags'" x-cloak
               class="h-6 md:max-w-40 lg:max-w-80 rounded-sm! px-2!">
       <input type="hidden" name="bulk_selected_pdfs" x-bind:value="bulk_selected_pdfs"/>
-      <button type="submit" class="bg-slate-100! dark:bg-slate-800! cursor-default border-none px-2! py-0!">
+      <button id="execute_bulk_action" type="submit"
+              class="bg-slate-100! dark:bg-slate-800! cursor-default border-none px-2! py-0!">
         <span class="cursor-pointer font-semibold text-slate-800 dark:text-slate-200 hover:text-black dark:hover:text-white">
           {% trans 'Execute' %}</span>
       </button>
@@ -38,7 +39,7 @@
   </div>
   <div class="flex flex-row gap-x-3 px-1 text-primary font-semibold
               [&>span]:cursor-pointer [&>span]:hover:text-secondary">
-              <span @click="bulk_selected_pdfs=select_all_pdfs()">{% trans "All" %}</span>
-              <span @click="bulk_selected_pdfs=[]">{% trans "None" %}</span>
+              <span id="bulk_select_all" @click="bulk_selected_pdfs=select_all_pdfs()">{% trans "All" %}</span>
+              <span id="bulk_select_none" @click="bulk_selected_pdfs=[]">{% trans "None" %}</span>
   </div>
 </div>

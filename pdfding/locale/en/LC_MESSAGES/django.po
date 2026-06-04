@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-01 01:59+0000\n"
+"POT-Creation-Date: 2026-06-04 22:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,10 +77,10 @@ msgstr ""
 #: pdfding/admin/templates/includes/user.html:33
 #: pdfding/pdf/templates/collection_details.html:95
 #: pdfding/pdf/templates/includes/individual_tag.html:71
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:15
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:65
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:76
 #: pdfding/pdf/templates/pdf_details.html:272
-#: pdfding/pdf/templates/pdf_overview.html:55
 #: pdfding/pdf/templates/shared_pdf_details.html:201
 #: pdfding/pdf/templates/workspace_details.html:107
 #: pdfding/users/templates/danger_settings.html:23
@@ -291,7 +291,7 @@ msgstr ""
 msgid "Directories are not allowed to contain spaces!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:668
+#: pdfding/pdf/forms.py:668 pdfding/pdf/views/pdf_bulk_action_views.py:78
 msgid "Only letters, numbers, \"/\", \"-\" and \"_\" are valid characters!"
 msgstr ""
 
@@ -390,11 +390,13 @@ msgid "Default Collection"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:43
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:22
 #: pdfding/pdf/templates/workspace_details.html:55
 msgid "Yes"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:45
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:21
 #: pdfding/pdf/templates/workspace_details.html:57
 msgid "No"
 msgstr ""
@@ -466,6 +468,38 @@ msgstr ""
 #: pdfding/pdf/templates/includes/shared_details_sidebar.html:33
 #: pdfding/pdf/templates/includes/workspace_sidebar.html:41
 msgid "Details"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:14
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:56
+#: pdfding/pdf/templates/includes/sidebar.html:76
+#: pdfding/pdf/templates/pdf_details.html:109
+msgid "Archive"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:16
+msgid "Set Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:17
+msgid "Set Tags"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:18
+msgctxt "Star the PDF"
+msgid "Star"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:36
+msgid "Execute"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:42
+msgid "All"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:43
+msgid "None"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:15
@@ -541,13 +575,6 @@ msgstr ""
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:54
 #: pdfding/pdf/templates/pdf_details.html:107
 msgid "Unarchive"
-msgstr ""
-
-#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:56
-#: pdfding/pdf/templates/includes/sidebar.html:76
-#: pdfding/pdf/templates/pdf_details.html:109
-#: pdfding/pdf/templates/pdf_overview.html:54
-msgid "Archive"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:70
@@ -719,45 +746,20 @@ msgstr ""
 msgid "This PDF does not have any comments yet!"
 msgstr ""
 
-#: pdfding/pdf/templates/pdf_overview.html:33
+#: pdfding/pdf/templates/pdf_overview.html:32
 msgid "There aren't any PDFs matching the current filters"
 msgstr ""
 
-#: pdfding/pdf/templates/pdf_overview.html:34
+#: pdfding/pdf/templates/pdf_overview.html:33
 msgid "Please try different filters"
 msgstr ""
 
-#: pdfding/pdf/templates/pdf_overview.html:36
+#: pdfding/pdf/templates/pdf_overview.html:35
 msgid "Collection has no PDFs yet"
 msgstr ""
 
-#: pdfding/pdf/templates/pdf_overview.html:38
+#: pdfding/pdf/templates/pdf_overview.html:37
 msgid "Get started by adding PDFs"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_overview.html:56
-msgid "Set Collection"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_overview.html:57
-msgid "Set Tags"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_overview.html:58
-msgctxt "Star the PDF"
-msgid "Star"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_overview.html:74
-msgid "Execute"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_overview.html:79
-msgid "All"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_overview.html:80
-msgid "None"
 msgstr ""
 
 #: pdfding/pdf/templates/shared_pdf_details.html:30
@@ -836,7 +838,13 @@ msgstr ""
 msgid "This name is already used by another PDF!"
 msgstr ""
 
-#: pdfding/pdf/views/pdf_views.py:774
+#: pdfding/pdf/views/pdf_views.py:350
+msgid ""
+"Cannot change collection to the specified ID as it is not part of the "
+"workspace!"
+msgstr ""
+
+#: pdfding/pdf/views/pdf_views.py:773
 msgid "Input is not valid!"
 msgstr ""
 

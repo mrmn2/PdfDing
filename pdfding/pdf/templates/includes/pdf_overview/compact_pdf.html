@@ -1,6 +1,6 @@
 <div class="flex flex-row gap-x-4" x-data="{ tooltip_date: false, show_notes_{{ loop_id }}: false }">
   <div class="pl-1" x-show="show_bulk_edit_menu" x-cloak>
-    <input class="mt-[23px]" type="checkbox" name="bulk_edit_selected" value="{{ pdf.id }}">
+    <input class="mt-[23px]" type="checkbox" name="bulk_edit_selected" value="{{ pdf.id }}" x-model="bulk_selected_pdfs">
   </div>
   <div class="w-full">
     <div class="flex flex-row justify-between text-sm relative -mb-1
