@@ -31,7 +31,7 @@
         {% elif page == 'user_overview' %}
         {% endif %}
         <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center ">
-            {% if page == 'pdf_overview' %}
+            {% if page == 'pdf_overview' or page == 'pdf_overview_archived' or page == 'pdf_overview_starred' %}
             {% include 'includes/pdf_overview/header_extra.html' %}
             {% elif page == 'shared_pdf_overview' %}
             {% include 'includes/shared_overview/header_extra.html' %}

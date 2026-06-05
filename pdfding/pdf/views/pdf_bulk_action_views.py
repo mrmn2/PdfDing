@@ -74,7 +74,6 @@ class BulkActions(PdfMixin, View):
 
         for char in tag_string:
             if not (char.isalnum() or char in ['/', '-', '_', ' ']):
-                print('asd')
                 messages.warning(request, _('Only letters, numbers, "/", "-" and "_" are valid characters!'))
 
         tag_names = Tag.parse_tag_string(tag_string)
