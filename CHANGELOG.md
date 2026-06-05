@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.8.0 (Jun 05, 2026)
+### What's Changed
+* Add Bulk actions by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/310
+* Update dependencies in https://github.com/mrmn2/PdfDing/pull/308, https://github.com/mrmn2/PdfDing/pull/311
+* fix: Display the the correct head icons for the starred and archive overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/311
+
 ## v1.7.2 (Apr 12, 2026)
 ### What's Changed
 * **Security Update:** Update dependencies in https://github.com/mrmn2/PdfDing/pull/301 + https://github.com/mrmn2/PdfDing/pull/302
