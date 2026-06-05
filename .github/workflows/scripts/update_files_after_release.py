@@ -19,9 +19,7 @@ def update_changelog(changelog_path: Path, release_tag: str, release_body: str) 
     changelog_str = '# Changelog\n\n'
     release_header = f'## {release_tag} ({release_date})\n'
     release_body = f'{release_body}\n'
-    release_body = release_body.replace(
-        "## What's Changed", "### What's Changed"
-    )  # make sure release body headers have the right size
+    release_body = release_body.replace("## ", "### ")  # make sure release body headers have the right size
 
     # construct changelog
     lines = [changelog_str, release_header, release_body] + lines[1:]

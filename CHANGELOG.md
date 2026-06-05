@@ -24,7 +24,7 @@
 * Fix: Deactivate mfa for OIDC_ONLY setting, otherwise not working by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/282
 * Update dependencies by @dependabot[bot] + @mrmn2 in https://github.com/mrmn2/PdfDing/pull/281 and https://github.com/mrmn2/PdfDing/pull/283
 
-## New Contributors
+### New Contributors
 * @niggoo made their first contribution in https://github.com/mrmn2/PdfDing/pull/276
 
 ## v1.6.2 (Mar 08, 2026)
@@ -37,7 +37,7 @@
 * Fix: Set secure default value for MFA env variables @mrmn2 in https://github.com/mrmn2/PdfDing/pull/270
 * Make gunicorn worker timeout configurable via new ENV var. by @jpoesen in https://github.com/mrmn2/PdfDing/pull/269
 
-## New Contributors
+### New Contributors
 * @jpoesen made their first contribution in https://github.com/mrmn2/PdfDing/pull/269
 
 ## v1.6.0 (Mar 01, 2026)
@@ -49,7 +49,7 @@
 * Fix: Allow saving of changed PDFs containing ' chars inside the viewer by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/266
 * Update dependencies by @dependabot[bot] in https://github.com/mrmn2/PdfDing/pull/267 and https://github.com/mrmn2/PdfDing/pull/268
 
-## New Contributors
+### New Contributors
 * @Sparlitu made their first contribution in https://github.com/mrmn2/PdfDing/pull/267
 
 ## v1.5.1 (Feb 04, 2026)
@@ -62,7 +62,7 @@
 This release introduces workspaces and collections, which greatly improve the management of your PDF files.
 
 ## Important
-Before updating, make sure to take a backup. The internal changes in this release are quite substantial and while everything is thoroughly tested, problems could still arise when performing the migrations. 
+Before updating, make sure to take a backup. The internal changes in this release are quite substantial and while everything is thoroughly tested, problems could still arise when performing the migrations.
 
 ### What's Changed
 
@@ -73,7 +73,7 @@ Before updating, make sure to take a backup. The internal changes in this releas
 * Update dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/240
 * feat: allow specifying region for s3 backups by @phanirithvij in https://github.com/mrmn2/PdfDing/pull/242
 
-## New Contributors
+### New Contributors
 * @phanirithvij made their first contribution in https://github.com/mrmn2/PdfDing/pull/202
 
 ## v1.4.1 (Nov 15, 2025)
