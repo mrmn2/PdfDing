@@ -1,16 +1,6 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% load i18n %}
 {% block sidebar_content %}
-{% if page == 'user_overview' %}
-<form class="flex pb-4 hidden md:block" action="{% url 'user_overview_query' %}" method="GET" id="search_form">
-    <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
-                  bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
-           type="text" placeholder="{% trans 'Search for mail or #admin' %}"
-            id="search_input"
-            name="search"
-            @keyup.enter="document.getElementById('search_form').submit()"/>
-</form>
-{% endif %}
 <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
             [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
             [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2

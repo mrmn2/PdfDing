@@ -1,9 +1,9 @@
 {% load static %}
 {% load i18n %}
 {# do not remove background as it otherwise sticky will lock strange #}
-<header class="py-1 pt-1 md:pt-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900">
+<header class="pt-1 md:pt-2 pb-1 md:pb-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900">
     <div class="pr-2 pl-2 md:pl-4 md:pr-4 lg:pr-6 flex items-center justify-between">
-        <a class="flex items-center gap-x-2" href="/">
+        <a class="flex items-center gap-x-2 md:pr-4" href="/">
             <div id="logo_div" class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
                 {# bg-primary needed as profile image will flicker otherwise #}
                 <img class="bg-primary rounded-lg h-6 w-6" src="{% static 'images/logo.svg' %}" alt="Logo"/>
@@ -11,26 +11,7 @@
             <span class="hidden md:block text-xl font-bold text-primary">PdfDing</span>
         </a>
         {% if request.user.is_authenticated %}
-        {% if page == 'pdf_overview' or page == 'user_overview' %}
-        <form class="flex grow md:hidden px-4"
-              method="GET" id="search_form_mobile"
-              {% if page == 'pdf_overview' %}
-              action="{% url 'pdf_overview_query' %}"
-              {% elif page == 'user_overview' %}
-              action="{% url 'user_overview_query' %}"
-              {% endif %}
-        >
-            <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
-                          bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
-                    type="text" placeholder="Search"
-                    id="search_input_mobile"
-                    name="search"
-                    @keyup.enter="document.getElementById('search_form_mobile').submit()"
-            />
-        </form>
-        {% elif page == 'user_overview' %}
-        {% endif %}
-        <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row items-center ">
+        <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row grow justify-end items-center">
             {% if page == 'pdf_overview' or page == 'pdf_overview_archived' or page == 'pdf_overview_starred' %}
             {% include 'includes/pdf_overview/header_extra.html' %}
             {% elif page == 'shared_pdf_overview' %}

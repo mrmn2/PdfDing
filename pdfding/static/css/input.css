@@ -112,7 +112,7 @@ select {
     @apply rounded-sm px-2
 }
 .textarea, textarea, input {
-    @apply w-full rounded-lg py-3 px-5 bg-gray-100 dark:bg-slate-700
+    @apply w-full rounded-lg py-3 px-2 min-[450px]:px-3 min-[600px]:px-5 bg-gray-100 dark:bg-slate-700
 }
 .textarea:focus, textarea:focus, input:focus {
     @apply outline outline-1 outline-primary

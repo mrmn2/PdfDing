@@ -1,16 +1,7 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% load i18n %}
 {% block sidebar_content %}
-<form class="flex pb-3 hidden md:block" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form">
-    <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
-                  bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
-           type="text" placeholder="{% translate 'Search for PDFs or #tags' %}"
-            id="search_input"
-            name="search"
-            @keyup.enter="document.getElementById('search_form').submit()"
-    />
-</form>
-<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 md:border-y border-slate-300 dark:border-slate-600">
+<div class="flex flex-row md:flex-col w-full md:pb-3 gap-2 md:border-b border-slate-300 dark:border-slate-600">
   {% include 'partials/workspace_dropdown.html' with page='overview' %}
   {% if current_collection_id %}
   {% include 'partials/collection_dropdown.html' %}

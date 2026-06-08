@@ -1,5 +1,13 @@
 {% load i18n %}
-<div x-data="{ sortOpen: false, layoutOpen: false }" class="relative flex flex-row items-center md:gap-x-1">
+<div x-data="{ sortOpen: false, layoutOpen: false }" class="relative flex flex-row grow justify-end items-center md:gap-x-1">
+    <form class="flex grow md:max-w-120 lg:max-w-160 px-3 md:px-5" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form"> <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
+                      bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
+              type="text" placeholder="{% translate 'Search for PDFs or #tags' %}"
+                id="search_input"
+                name="search"
+                @keyup.enter="document.getElementById('search_form').submit()"
+        />
+    </form>
     <a id="bulk_edit"
        @click="show_bulk_edit_menu = !show_bulk_edit_menu"
        class="hidden md:block cursor-pointer rounded-sm py-1 pr-1 md:px-2 group relative
