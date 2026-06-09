@@ -143,6 +143,7 @@ class TestOverviewMixin(TestCase):
             'page': 'shared_pdf_overview',
             'current_collection_id': str(self.user.id),
             'current_collection_name': 'Default',
+            'current_workspace_id': str(self.user.id),
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)

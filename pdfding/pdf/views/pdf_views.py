@@ -226,6 +226,7 @@ class OverviewMixin(BasePdfMixin):
             'tag_query': tag_query,
             'current_collection_id': request.user.profile.current_collection_id,
             'current_collection_name': request.user.profile.current_collection_name,
+            'current_workspace_id': request.user.profile.current_workspace_id,
         }
 
         return extra_context
