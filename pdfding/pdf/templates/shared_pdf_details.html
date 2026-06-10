@@ -25,11 +25,13 @@
                         <div class="flex w-full items-center justify-between">
                             <div id="name" class="w-[86%] text-sm flex flex-row">
                                 <a href="{% url 'view_pdf' shared_pdf.pdf.id %}"
-                                   class="text-2xl font-bold hover:black dark:hover:text-white truncate pb-1">
+                                   class="text-2xl font-bold truncate pb-1">
                                     {% if shared_pdf.inactive %}
-                                    {{ shared_pdf.name }} | {% trans 'inactive' %}
+                                    <span class="text-slate-400 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-400">
+                                      {{ shared_pdf.name }}
+                                    </span>
                                     {% else %}
-                                    {{ shared_pdf.name }}
+                                    <span class="hover:text-slate-500 dark:hover:text-slate-200">{{ shared_pdf.name }}</span>
                                     {% endif %}
                                 </a>
                             </div>

@@ -103,8 +103,8 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#tag_admin_filter")).to_be_visible()
 
             # check that filters are invisible
-            self.page.locator("#search_filter").get_by_role("img").click()
-            self.page.locator("#tag_admin_filter").get_by_role("img").click()
+            self.page.locator("#tag_admin_filter_close").click()
+            self.page.locator("#search_filter_close").click()
             expect(self.page.locator("#search_filter")).not_to_be_visible()
             expect(self.page.locator("#tag_admin_filter")).not_to_be_visible()
 

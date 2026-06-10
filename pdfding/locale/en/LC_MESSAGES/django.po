@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-04 22:47+0000\n"
+"POT-Creation-Date: 2026-06-10 23:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: pdfding/admin/templates/includes/admin_sidebar.html:8
-msgid "Search for mail or #admin"
-msgstr ""
-
-#: pdfding/admin/templates/includes/admin_sidebar.html:28
+#: pdfding/admin/templates/includes/admin_sidebar.html:18
 #: pdfding/pdf/templates/includes/annotations_sidebar.html:18
 #: pdfding/pdf/templates/includes/pdf_details_sidebar.html:18
 #: pdfding/pdf/templates/includes/shared_details_sidebar.html:18
@@ -31,17 +27,17 @@ msgstr ""
 msgid "Back to App"
 msgstr ""
 
-#: pdfding/admin/templates/includes/admin_sidebar.html:38
+#: pdfding/admin/templates/includes/admin_sidebar.html:28
 msgid "Users"
 msgstr ""
 
-#: pdfding/admin/templates/includes/admin_sidebar.html:49
+#: pdfding/admin/templates/includes/admin_sidebar.html:39
 #: pdfding/admin/templates/information.html:12
 msgid "Information"
 msgstr ""
 
 #: pdfding/admin/templates/includes/user.html:5
-#: pdfding/templates/includes/header.html:106
+#: pdfding/templates/includes/header.html:87
 msgid "Admin"
 msgstr ""
 
@@ -95,24 +91,28 @@ msgstr ""
 msgid "Add Admin Rights"
 msgstr ""
 
-#: pdfding/admin/templates/includes/user_header_extra.html:17
+#: pdfding/admin/templates/includes/user_header_extra.html:6
+msgid "Search for mail or #admin"
+msgstr ""
+
+#: pdfding/admin/templates/includes/user_header_extra.html:25
 #: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:42
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:48
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:56
 #: pdfding/pdf/templates/includes/shared_overview/header_extra.html:17
 msgid "Sort"
 msgstr ""
 
-#: pdfding/admin/templates/includes/user_header_extra.html:29
+#: pdfding/admin/templates/includes/user_header_extra.html:37
 #: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:54
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:88
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:96
 #: pdfding/pdf/templates/includes/shared_overview/header_extra.html:29
 #: pdfding/users/models.py:10
 msgid "Newest"
 msgstr ""
 
-#: pdfding/admin/templates/includes/user_header_extra.html:34
+#: pdfding/admin/templates/includes/user_header_extra.html:42
 #: pdfding/pdf/templates/includes/pdf_annotation_overview/header_extra.html:59
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:93
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:101
 #: pdfding/pdf/templates/includes/shared_overview/header_extra.html:34
 #: pdfding/users/models.py:11
 msgid "Oldest"
@@ -291,7 +291,7 @@ msgstr ""
 msgid "Directories are not allowed to contain spaces!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:668 pdfding/pdf/views/pdf_bulk_action_views.py:78
+#: pdfding/pdf/forms.py:668 pdfding/pdf/views/pdf_bulk_action_views.py:77
 msgid "Only letters, numbers, \"/\", \"-\" and \"_\" are valid characters!"
 msgstr ""
 
@@ -366,6 +366,7 @@ msgid "Skip existing files"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:16
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:52
 msgid "Collection Details"
 msgstr ""
 
@@ -416,7 +417,7 @@ msgid "no description available"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:73
-#: pdfding/pdf/templates/pdf_details.html:243
+#: pdfding/pdf/templates/pdf_details.html:251
 #: pdfding/pdf/templates/shared_pdf_details.html:177
 #: pdfding/pdf/templates/workspace_details.html:85
 msgid "Date added"
@@ -466,13 +467,12 @@ msgstr ""
 #: pdfding/pdf/templates/includes/pdf_details_sidebar.html:33
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:21
 #: pdfding/pdf/templates/includes/shared_details_sidebar.html:33
-#: pdfding/pdf/templates/includes/workspace_sidebar.html:41
 msgid "Details"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:14
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:56
-#: pdfding/pdf/templates/includes/sidebar.html:76
+#: pdfding/pdf/templates/includes/sidebar.html:67
 #: pdfding/pdf/templates/pdf_details.html:109
 msgid "Archive"
 msgstr ""
@@ -502,52 +502,56 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:15
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:5
+msgid "Search for PDFs or #tags"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:23
 msgid "Bulk Edit"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:31
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:39
 msgid "Layout"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:60
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:68
 #: pdfding/users/models.py:71
 msgid "Compact"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:65
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:73
 #: pdfding/users/models.py:73
 msgid "Grid"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:70
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:78
 #: pdfding/users/models.py:72
 msgid "List"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:75
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:83
 #: pdfding/users/models.py:74
 msgid "Minimal"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:108
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:116
 #: pdfding/users/models.py:50
 msgid "Most Viewed"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:113
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:121
 #: pdfding/users/models.py:51
 msgid "Least Viewed"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:118
+#: pdfding/pdf/templates/includes/pdf_overview/header_extra.html:126
 #: pdfding/users/models.py:52
 msgid "Recently Viewed"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/pdf_overview/overview_page.html:46
 #: pdfding/pdf/templates/includes/pdf_overview/spacious_pdf.html:77
-#: pdfding/pdf/templates/pdf_details.html:238
+#: pdfding/pdf/templates/pdf_details.html:246
 msgid "Page"
 msgstr ""
 
@@ -587,11 +591,6 @@ msgctxt "number of pdf views plural"
 msgid "Views"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:10
-msgctxt "shared pdf is inactive"
-msgid "inactive"
-msgstr ""
-
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:61
 msgid "Copy"
 msgstr ""
@@ -600,32 +599,29 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/sidebar.html:7
-msgid "Search for PDFs or #tags"
-msgstr ""
-
-#: pdfding/pdf/templates/includes/sidebar.html:31
+#: pdfding/pdf/templates/includes/sidebar.html:22
 msgid "Home"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/sidebar.html:41
+#: pdfding/pdf/templates/includes/sidebar.html:32
 msgid "Shared"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/sidebar.html:51
+#: pdfding/pdf/templates/includes/sidebar.html:42
 msgid "Starred"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/sidebar.html:66
+#: pdfding/pdf/templates/includes/sidebar.html:57
 msgid "Annotations"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/sidebar.html:111
+#: pdfding/pdf/templates/includes/sidebar.html:102
 msgid "Tree Mode"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/workspace_sidebar.html:52
-msgid "Collections"
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:41
+#: pdfding/pdf/templates/workspace_details.html:17
+msgid "Workspace Details"
 msgstr ""
 
 #: pdfding/pdf/templates/partials/collection_dropdown.html:43
@@ -635,6 +631,10 @@ msgstr ""
 
 #: pdfding/pdf/templates/partials/collection_dropdown.html:82
 msgid "Create Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/partials/collection_dropdown.html:105
+msgid "Collection Settings"
 msgstr ""
 
 #: pdfding/pdf/templates/partials/delete_collection.html:5
@@ -729,13 +729,13 @@ msgstr ""
 msgid "File directory not set"
 msgstr ""
 
-#: pdfding/pdf/templates/pdf_details.html:238
-msgid "of"
-msgstr ""
-
-#: pdfding/pdf/templates/pdf_details.html:251
+#: pdfding/pdf/templates/pdf_details.html:233
 msgctxt "number of pdf views"
 msgid "Views"
+msgstr ""
+
+#: pdfding/pdf/templates/pdf_details.html:246
+msgid "of"
 msgstr ""
 
 #: pdfding/pdf/templates/pdf_details_annotation_overview.html:15
@@ -807,10 +807,6 @@ msgstr ""
 msgid "View Shared PDF"
 msgstr ""
 
-#: pdfding/pdf/templates/workspace_details.html:17
-msgid "Workspace Details"
-msgstr ""
-
 #: pdfding/pdf/templates/workspace_details.html:23
 msgid "PDFs"
 msgstr ""
@@ -834,38 +830,38 @@ msgstr ""
 msgid "This name is already used by another collection in this workspace!"
 msgstr ""
 
-#: pdfding/pdf/views/pdf_views.py:336
+#: pdfding/pdf/views/pdf_views.py:337
 msgid "This name is already used by another PDF!"
 msgstr ""
 
-#: pdfding/pdf/views/pdf_views.py:350
+#: pdfding/pdf/views/pdf_views.py:351
 msgid ""
 "Cannot change collection to the specified ID as it is not part of the "
 "workspace!"
 msgstr ""
 
-#: pdfding/pdf/views/pdf_views.py:773
+#: pdfding/pdf/views/pdf_views.py:774
 msgid "Input is not valid!"
 msgstr ""
 
-#: pdfding/pdf/views/share_views.py:217
+#: pdfding/pdf/views/share_views.py:218
 msgid "This name is already used by another shared PDF!"
 msgstr ""
 
-#: pdfding/templates/includes/header.html:53
+#: pdfding/templates/includes/header.html:34
 msgid "Add"
 msgstr ""
 
-#: pdfding/templates/includes/header.html:76
+#: pdfding/templates/includes/header.html:57
 #: pdfding/users/templates/account_settings.html:23
 msgid "User ID"
 msgstr ""
 
-#: pdfding/templates/includes/header.html:97
+#: pdfding/templates/includes/header.html:78
 msgid "Settings"
 msgstr ""
 
-#: pdfding/templates/includes/header.html:116
+#: pdfding/templates/includes/header.html:97
 msgid "Sign out"
 msgstr ""
 

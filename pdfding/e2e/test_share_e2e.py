@@ -36,7 +36,7 @@ class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_placeholder("Delete in").click()
             self.page.get_by_placeholder("Delete in").fill("1d0h22m")
             self.page.get_by_role("button", name="Submit").click()
-            expect(self.page.locator("#shared-pdf-link-1")).to_contain_text("some_shared_pdf | inactive")
+            expect(self.page.locator("#shared-pdf-link-1")).to_contain_text("some_shared_pdf")
             expect(self.page.locator("body")).to_contain_text("some_pdf")
             expect(self.page.locator("body")).to_contain_text("some_description")
             # needs to be split because of hover tooltips
@@ -142,7 +142,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('shared_pdf_details', kwargs={'identifier': shared_pdf.id}), p)
 
-            expect(self.page.locator("body")).to_contain_text("some_shared_pdf | inactive")
+            expect(self.page.locator("body")).to_contain_text("some_shared_pdf")
             expect(self.page.locator("#name")).to_contain_text("some_shared_pdf")
             expect(self.page.locator("#description")).to_contain_text("some_description")
             expect(self.page.locator("#pdf")).to_contain_text("some_pdf")
@@ -171,7 +171,7 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#id_name").dblclick()
             self.page.locator("#id_name").fill("other name")
             self.page.get_by_role("button", name="Submit").click()
-            expect(self.page.locator("body")).to_contain_text("other name | inactive")
+            expect(self.page.locator("body")).to_contain_text("other name")
             expect(self.page.locator("#name")).to_contain_text("other name")
             self.page.locator("#description-edit").click()
             self.page.locator("#id_description").click()
@@ -190,7 +190,6 @@ class SharedPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_placeholder("e.g. 1d0h22m").click()
             self.page.get_by_role("button", name="Submit").click()
             expect(self.page.locator("#expiration_date")).to_contain_text("expires never")
-            expect(self.page.locator("body")).not_to_contain_text('inactive')
             self.page.locator("#deletion_date-edit").click()
             self.page.get_by_placeholder("e.g. 1d0h22m").click()
             self.page.get_by_placeholder("e.g. 1d0h22m").fill("0d0h5m")

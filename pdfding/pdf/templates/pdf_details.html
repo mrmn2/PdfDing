@@ -229,6 +229,14 @@
                         </div>
                     </div>
                     {% endif %}
+                    <div class="pt-2">
+                      <span class="text-lg font-bold">{% trans 'Views' context 'number of pdf views' %}</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                        <div class="w-[86%] text-sm">
+                            <span id="views">{{ pdf.views }}</span>
+                        </div>
+                    </div>
                     {% if pdf.number_of_pages > 0 %}
                     <div class="pt-2">
                         <span class="text-lg font-bold">Progress</span>
@@ -245,14 +253,6 @@
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <div class="w-[86%] text-sm">
                             <span id="creation_date">{{ pdf.creation_date }}</span>
-                        </div>
-                    </div>
-                    <div class="pt-2">
-                      <span class="text-lg font-bold">{% trans 'Views' context 'number of pdf views' %}</span>
-                    </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                        <div class="w-[86%] text-sm">
-                            <span id="views">{{ pdf.views }}</span>
                         </div>
                     </div>
                 </div>
