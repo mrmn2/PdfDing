@@ -92,7 +92,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
     def test_delete_tag_cancel(self):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             expect(self.page.locator("#confirm-delete-tag-bla")).not_to_be_visible()
             expect(self.page.locator("#cancel-delete-tag-bla")).not_to_be_visible()
             expect(self.page.locator("#delete-tag-bla")).to_be_visible()
@@ -111,7 +111,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
     def test_delete_tag_click_away(self):
         with sync_playwright() as p:
             self.open(reverse('pdf_overview'), p)
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             expect(self.page.locator("#delete-tag-bla")).to_be_visible()
 
             # click somewhere
@@ -132,7 +132,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
             expect(self.page.locator("#tag-bla")).to_contain_text('bla')
             expect(self.page.locator("body")).to_contain_text("#bla")
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
             self.page.locator("#confirm-delete-tag-bla").click()
             expect(self.page.locator("#tag-bla")).not_to_be_visible()
@@ -153,7 +153,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
 
             expect(self.page.locator("#tag-bla")).to_contain_text('bla')
             expect(self.page.locator("body")).to_contain_text("#bla")
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             self.page.locator("#delete-tag-bla").get_by_text("Delete").click()
             self.page.locator("#confirm-delete-tag-bla").click()
             expect(self.page.locator("#tag-bla")).not_to_be_visible()
@@ -169,7 +169,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
 
             expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
             expect(self.page.locator("#tag_rename_form")).to_be_visible()
 
@@ -184,7 +184,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('pdf_overview'), p)
 
             expect(self.page.locator("#tag_rename_form")).not_to_be_visible()
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
             expect(self.page.locator("#tag_rename_form")).to_be_visible()
 
@@ -208,7 +208,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("#bla")
             expect(self.page.locator("body")).not_to_contain_text("#renamed")
 
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
 
             self.page.locator("#id_name").dblclick()
@@ -238,7 +238,7 @@ class TagE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("#bla")
             expect(self.page.locator("body")).not_to_contain_text("#renamed")
 
-            self.page.locator("#tag-bla").get_by_role("img").click()
+            self.page.locator("#tag-bla-options").click()
             self.page.locator("#rename-tag-bla").get_by_text("Rename").click()
 
             self.page.locator("#id_name").dblclick()

@@ -1,8 +1,9 @@
 {% load static %}
 {% load i18n %}
-<div x-on:mouseenter="hashtag_hovered = true" x-on:mouseleave="hashtag_hovered = false"
-   @click="tag_options = true"
-   class="cursor-pointer text-primary hover:text-primary! [&>svg]:h-4 [&>svg]:w-4">
+<div id="tag-{{ tag_name }}-options"
+      x-on:mouseenter="hashtag_hovered = true" x-on:mouseleave="hashtag_hovered = false"
+      @click="tag_options = true"
+      class="cursor-pointer text-primary hover:text-primary! [&>svg]:h-4 [&>svg]:w-4">
     <svg x-show="!hashtag_hovered" x-transition:enter.duration.100ms
          xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

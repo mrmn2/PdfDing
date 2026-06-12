@@ -33,8 +33,6 @@ class BaseShared(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=150, blank=False)
-    # the qr code file
-    file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
     description = models.TextField(default='', blank=True, help_text=_('Optional'))
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     views = models.IntegerField(default=0)
@@ -132,12 +130,12 @@ class BaseShared(models.Model):
 
 
 class SharedPdf(BaseShared):
-    # the qr code file
     pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
+    # the qr code file
     file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
 
 
 class SharedCollection(BaseShared):
-    # the qr code file
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False)
+    # the qr code file
     file = models.FileField(upload_to=get_collection_qr_code_path, blank=False)

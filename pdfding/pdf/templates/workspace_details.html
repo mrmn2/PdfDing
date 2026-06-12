@@ -13,8 +13,22 @@
           <div class="rounded-md w-full min-[1200px]:w-3xl! md:ml-10 min-[1600px]:ml-40! px-4 py-4 md:pb-4 border
                       bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700">
             <div>
-              <div class="text-2xl font-bold">
-                {% trans 'Workspace Details' %}
+              <div class="flex flex-row items-center">
+                  <div class="flex w-full items-center justify-between">
+                      <div id="name" class="w-[86%] text-md flex flex-row">
+                          <span class="text-2xl font-bold hover:black dark:hover:text-white truncate">
+                              {{ workspace.name }}
+                          </span>
+                      </div>
+                      <div class="pr-0 md:pr-4">
+                          <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
+                              hx-get="{% url 'edit_workspace' identifier=workspace.id field_name='name' %}"
+                              hx-target="#name"
+                              hx-swap="innerHTML" >
+                              {{ edit }}
+                          </a>
+                      </div>
+                  </div>
               </div>
               <div class="pt-4 flex flex-row text-start justify-start gap-x-4 lg:gap-x-30
                           [&>div]:flex [&>div]:flex-row [&>div]:items-end [&>div]:gap-x-1 [&>div]:lg:gap-x-2">
@@ -28,24 +42,6 @@
                   </div>
               </div>
               <div class="pt-4">
-                <span class="text-lg font-bold">{% trans 'Name' %}</span>
-              </div>
-              <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                  <div class="w-[86%] truncate">
-                      <span id="name">
-                          {{ workspace.name }}
-                      </span>
-                  </div>
-                  <div class="pr-0 md:pr-4">
-                      <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
-                          hx-get="{% url 'edit_workspace' identifier=workspace.id field_name='name' %}"
-                          hx-target="#name"
-                          hx-swap="innerHTML">
-                        {{ edit }}
-                      </a>
-                  </div>
-              </div>
-              <div class="pt-2">
                   <span class="text-lg font-bold">Personal Workspace</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
