@@ -5,10 +5,10 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf, get_qrcode_file_path
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf, get_collection_qr_code_path, get_qrcode_file_path
 
 
-class TestSharedPdf(TestCase):
+class TestSharedBased(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='username', password='password')
         self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
@@ -81,8 +81,20 @@ class TestSharedPdf(TestCase):
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', views=2)
         self.assertEqual(shared_pdf.views_string, '2 Views')
 
+
+class TestOther(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='username', password='password')
+
     def test_get_qrcode_file_path(self):
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        shared_pdf = SharedPdf.objects.create(pdf=pdf, name='share')
         generated_filepath = get_qrcode_file_path(shared_pdf, '')
 
         self.assertEqual(generated_filepath, f'{self.user.id}/default/qr/{shared_pdf.id}.svg')
+
+    def test_get_collection_qr_code_path(self):
+        shared_collection = SharedCollection(collection=self.user.profile.current_collection, name='shared_collection')
+        generated_filepath = get_collection_qr_code_path(shared_collection, '')
+
+        self.assertEqual(generated_filepath, f'{self.user.id}/shared_collections_qr/{shared_collection.id}.svg')

@@ -1,7 +1,7 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% load i18n %}
 {% block sidebar_content %}
-<div class="flex flex-row md:flex-col w-full md:py-3 gap-2 pb-3 md:mb-2 md:border-b border-slate-300 dark:border-slate-600">
+<div class="flex flex-row md:flex-col w-full gap-2 pb-3 md:mb-2 md:border-b border-slate-300 dark:border-slate-600">
   {% if page == 'collection_details' %}
   {% include 'partials/workspace_dropdown.html' with page='collection_details' %}
   {% include 'partials/collection_dropdown.html' with page='collection_details' %}

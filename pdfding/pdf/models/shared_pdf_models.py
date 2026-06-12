@@ -5,7 +5,8 @@ from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from pdf.models.helpers import get_collection_dir
+from pdf.models.collection_models import Collection
+from pdf.models.helpers import get_collection_dir, get_workspace_dir
 from pdf.models.pdf_models import Pdf
 
 
@@ -18,9 +19,19 @@ def get_qrcode_file_path(instance, _) -> str:
     return str(file_path)
 
 
-class SharedPdf(models.Model):
+def get_collection_qr_code_path(instance, _) -> str:
+    """Get the file path for the qr code of a shared collection."""
+
+    file_name = f'shared_collections_qr/{instance.id}.svg'
+    file_path = f'{get_workspace_dir(instance.collection.workspace)}/{file_name}'
+
+    return str(file_path)
+
+
+class BaseShared(models.Model):
+    """Base class for shared PDFs and collections"""
+
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
     name = models.CharField(max_length=150, blank=False)
     # the qr code file
     file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
@@ -32,6 +43,10 @@ class SharedPdf(models.Model):
     expiration_date = models.DateTimeField(null=True, blank=True)
     deletion_date = models.DateTimeField(null=True, blank=True)
     sessions = models.ManyToManyField(Session)
+
+    class Meta:
+        # this makes sure that this model is not used to create a database table
+        abstract = True
 
     def __str__(self) -> str:
         return self.name  # pragma: no cover
@@ -114,3 +129,15 @@ class SharedPdf(models.Model):
             return f'{self.views}/{self.max_views} Views'
         else:
             return f'{self.views} Views'
+
+
+class SharedPdf(BaseShared):
+    # the qr code file
+    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
+    file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
+
+
+class SharedCollection(BaseShared):
+    # the qr code file
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False)
+    file = models.FileField(upload_to=get_collection_qr_code_path, blank=False)
