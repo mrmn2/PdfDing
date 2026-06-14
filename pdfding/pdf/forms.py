@@ -9,7 +9,7 @@ from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import Workspace
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_shared_pdfs_of_workspace
 
@@ -264,8 +264,8 @@ class PdfCollectionForm(forms.ModelForm):
         )
 
 
-class ShareForm(forms.ModelForm):
-    """Class for creating the form for sharing PDFs."""
+class BaseShareForm(forms.ModelForm):
+    """Base class for creating the form for sharing PDFs and collections."""
 
     expiration_input = forms.CharField(
         required=False,
@@ -279,28 +279,22 @@ class ShareForm(forms.ModelForm):
         help_text=_('Optional | e.g. 1d0h22m to delete in 1 day, 0 hours and 22 minutes.'),
     )
 
-    class Meta:
-        model = SharedPdf
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add a private description')}),
-            'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
-            'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
-        }
-
-        fields = ['name', 'description', 'password', 'max_views']
-
     def __init__(self, *args, **kwargs):
         """
         Adds the profile to the form. This is done, so we can access information about the profile
-        when creating a new shared pdf.
+        when creating a new shared object.
         """
 
         self.profile = kwargs.pop('profile', None)
         if not self.profile:
             raise KeyError('profile')
 
-        super(ShareForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+    def get_existing_with_same_name(self, share_name: str):  # pragma: no cover
+        """Check if a shared object with the same name already exists."""
+
+        return None
 
     def clean_name(self) -> str:
         """
@@ -310,8 +304,7 @@ class ShareForm(forms.ModelForm):
 
         share_name = CleanHelpers.clean_name(self.cleaned_data['name'])
 
-        shared_pdfs = get_shared_pdfs_of_workspace(self.profile.current_workspace)
-        existing_share = shared_pdfs.filter(name__iexact=share_name).first()
+        existing_share = self.get_existing_with_same_name(share_name)
 
         if existing_share and not existing_share.deleted:
             raise forms.ValidationError(_('A Share with this name already exists!'))
@@ -337,6 +330,47 @@ class ShareForm(forms.ModelForm):
         """Check that the provided max views are a positive integer"""
 
         return CleanHelpers.clean_max_views(self.cleaned_data['max_views'])
+
+
+class ShareForm(BaseShareForm):
+    class Meta:
+        model = SharedPdf
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add a private description')}),
+            'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
+            'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
+        }
+
+        fields = ['name', 'description', 'password', 'max_views']
+
+    def get_existing_with_same_name(self, share_name: str):
+        """Check if a shared pdf with the same name already exists."""
+
+        shared_pdfs = get_shared_pdfs_of_workspace(self.profile.current_workspace)
+        existing_share = shared_pdfs.filter(name__iexact=share_name).first()
+
+        return existing_share
+
+
+class ShareCollectionForm(BaseShareForm):
+    class Meta:
+        model = SharedCollection
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
+            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add a private description')}),
+            'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
+            'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
+        }
+
+        fields = ['name', 'description', 'password', 'max_views']
+
+    def get_existing_with_same_name(self, share_name: str):
+        """Check if a shared collection with the same name already exists."""
+
+        existing_collection = self.profile.current_workspace.collections.filter(name__iexact=share_name).first()
+
+        return existing_collection
 
 
 class SharedDescriptionForm(forms.ModelForm):

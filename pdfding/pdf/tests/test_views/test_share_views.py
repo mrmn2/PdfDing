@@ -10,6 +10,7 @@ from django.http.response import Http404
 from django.test import Client, TestCase
 from django.urls import reverse
 from pdf.forms import (
+    ShareCollectionForm,
     SharedDeletionDateForm,
     SharedDescriptionForm,
     SharedExpirationDateForm,
@@ -21,8 +22,9 @@ from pdf.forms import (
 )
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedPdf
-from pdf.services.workspace_services import create_workspace
+from pdf.services.workspace_services import create_workspace, get_shared_collections_of_workspace
 from pdf.views.share_views import (
+    AddSharedCollectionMixin,
     AddSharedPdfMixin,
     BaseSharedPdfPublicView,
     EditSharedPdfMixin,
@@ -45,8 +47,6 @@ class TestAddSharedPdfMixin(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
         self.client.login(username=self.username, password=self.password)
 
@@ -104,13 +104,57 @@ class TestAddSharedPdfMixin(TestCase):
             self.assertTrue((generated_result - expected_result).total_seconds() < 0.1)
 
 
+class TestAddSharedCollectionMixin(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        set_up(self)
+        self.client.login(username=self.username, password=self.password)
+
+    @patch('pdf.views.share_views.AddSharedCollectionMixin.form')
+    def test_get_context_get(self, mock_share_form):
+        collection = self.user.profile.current_collection
+
+        # we need to create a request so get_pdf can access the user profile
+        response = self.client.get(reverse('pdf_overview'))
+
+        shared_collection_mixin = AddSharedCollectionMixin()
+        generated_context = shared_collection_mixin.get_context_get(response.wsgi_request, collection.id)
+
+        self.assertEqual(generated_context['collection_name'], collection.name)
+        mock_share_form.assert_called_once_with(profile=self.user.profile)
+        self.assertIsInstance(generated_context['form'], MagicMock)
+
+    @patch('pdf.views.share_views.get_future_datetime', return_value=datetime.now(timezone.utc))
+    @patch('pdf.views.share_views.AddSharedCollectionMixin.add_qr_code')
+    def test_obj_save(self, mock_add_qr_code, mock_get_future_datetime):
+        collection = self.user.profile.current_collection
+
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        form = ShareCollectionForm(
+            data={'name': 'some_shared_collection', 'expiration_input': '0d1h1m', 'deletion_input': '0d2h2m'},
+            profile=self.user.profile,
+        )
+
+        AddSharedCollectionMixin.obj_save(form, response.wsgi_request, collection.id)
+        shared_collections = get_shared_collections_of_workspace(collection.workspace)
+        assert shared_collections.count() == 1
+
+        shared_collection = shared_collections.first()
+
+        self.assertEqual(shared_collection.collection, collection)
+        mock_get_future_datetime.assert_any_call('0d1h1m')
+        mock_get_future_datetime.assert_any_call('0d2h2m')
+        mock_add_qr_code.assert_called_with(shared_collection, response.wsgi_request)
+
+
 class TestOverviewMixin(TestCase):
     username = 'user'
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
 
         # create some pdfs

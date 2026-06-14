@@ -164,6 +164,33 @@ class TestShareForms(TestCase):
 
         self.assertTrue(form.is_valid())
 
+    def test_get_existing_with_same_name_pdf_existing(self):
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_name')
+        shared_pdf = SharedPdf.objects.create(pdf=pdf, name='existing_name')
+
+        form = forms.ShareForm(data={'name': 'existing_name'}, profile=self.user.profile)
+
+        assert shared_pdf == form.get_existing_with_same_name('existing_name')
+
+    def test_get_existing_with_same_name_pdf_not_existing(self):
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_name')
+        SharedPdf.objects.create(pdf=pdf, name='existing_name')
+
+        form = forms.ShareForm(data={'name': 'not_existing_name'}, profile=self.user.profile)
+
+        assert not form.get_existing_with_same_name('not_existing_name')
+
+    def test_get_existing_with_same_name_collection_existing(self):
+        collection = self.user.profile.current_collection
+        form = forms.ShareCollectionForm(data={'name': 'Default'}, profile=self.user.profile)
+
+        assert collection == form.get_existing_with_same_name('Default')
+
+    def test_get_existing_with_same_name_collection_not_existing(self):
+        form = forms.ShareCollectionForm(data={'name': 'other'}, profile=self.user.profile)
+
+        assert not form.get_existing_with_same_name('other')
+
 
 class TestViewSharedPasswordForm(TestCase):
     def test_clean_password_input_valid(self):

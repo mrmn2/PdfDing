@@ -3,7 +3,8 @@
 
 {% block content %}
 
-<h1 class="pb-2">{% trans 'Create Collection' %}</h1>
+<h1>{% trans 'Share Collection' %}</h1>
+<h2 class="pb-2 truncate">{{ collection_name }}</h2>
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}

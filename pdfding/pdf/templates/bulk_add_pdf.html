@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="mb-6">Bulk Add PDF Files</h1>
+<h1 class="mb-6">{% trans 'Bulk Add PDF Files' %}</h1>
 
 <div x-data="{ in_progress: false, show_additional: false }">
     <form x-on:submit="in_progress = true" method="POST" enctype="multipart/form-data">

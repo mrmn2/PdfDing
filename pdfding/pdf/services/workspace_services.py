@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import Workspace, WorkspaceError, WorkspaceRoles, WorkspaceUser
 from users.models import Profile
 
@@ -71,6 +71,12 @@ def get_pdfs_of_workspace(workspace: Workspace) -> QuerySet[Pdf]:
     """Get all PDFs of the workspace."""
 
     return Pdf.objects.filter(collection__in=workspace.collections)
+
+
+def get_shared_collections_of_workspace(workspace: Workspace) -> QuerySet[SharedCollection]:
+    """Get all shared collections of a workspace."""
+
+    return SharedCollection.objects.filter(collection__in=workspace.collections)
 
 
 def check_if_pdf_with_name_exists(name: str, workspace: Workspace) -> bool:

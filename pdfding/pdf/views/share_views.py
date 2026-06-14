@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from pdf.forms import (
+    ShareCollectionForm,
     SharedDeletionDateForm,
     SharedDescriptionForm,
     SharedExpirationDateForm,
@@ -25,7 +26,7 @@ from pdf.forms import (
     ShareForm,
     ViewSharedPasswordForm,
 )
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.services.pdf_services import check_object_access_allowed
 from pdf.services.shared_pdf_services import (
     check_shared_access_allowed,
@@ -33,6 +34,7 @@ from pdf.services.shared_pdf_services import (
     get_future_datetime,
 )
 from pdf.services.workspace_services import get_shared_pdfs_of_workspace
+from pdf.views.collection_views import CollectionMixin
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg
 from users.service import get_viewer_theme_and_color
@@ -42,9 +44,12 @@ class BaseShareMixin:
     obj_name = 'shared_pdf'
 
 
-class AddSharedPdfMixin(BaseShareMixin):
-    form = ShareForm
-    template_name = 'add_shared_pdf.html'
+class BaseSharecollectionMixin:
+    obj_name = 'shared_collection'
+
+
+class BaseAddSharedMixin:
+    template_name: str
 
     @staticmethod
     def generate_qr_code(qr_code_content: str) -> BytesIO:  # pragma: no cover
@@ -63,8 +68,35 @@ class AddSharedPdfMixin(BaseShareMixin):
 
         return qr_as_byte
 
+    @classmethod
+    def add_qr_code(cls, shared_obj: SharedPdf | SharedCollection, request: HttpRequest) -> None:
+        """Add the QR code to the shared object."""
+
+        qr_code_content = (
+            f'{request.scheme}://{request.get_host()}{reverse("view_shared_pdf", kwargs={"identifier": shared_obj.id})}'
+        )
+        qr_as_byte = cls.generate_qr_code(qr_code_content)
+
+        shared_obj.file.save(None, File(qr_as_byte))
+
+    @staticmethod
+    def set_access_dates(shared_obj: SharedPdf | SharedCollection, expiration_input: str, deletion_input: str) -> None:
+        """Set the deletion date and expiration date of the shared object."""
+
+        if expiration_input:
+            shared_obj.expiration_date = get_future_datetime(expiration_input)
+        if deletion_input:
+            shared_obj.deletion_date = get_future_datetime(deletion_input)
+
+        shared_obj.save()
+
+
+class AddSharedPdfMixin(BaseAddSharedMixin, BaseShareMixin):
+    form = ShareForm
+    template_name = 'add_shared_pdf.html'
+
     def get_context_get(self, request: HttpRequest, pdf_id: str):
-        """Get the context needed to be passed to the template containing the form for adding a shared PDf."""
+        """Get the context needed to be passed to the template containing the form for adding a shared PDF."""
 
         pdf = PdfMixin.get_object(request, pdf_id)
         form = self.form
@@ -83,27 +115,30 @@ class AddSharedPdfMixin(BaseShareMixin):
         cls.add_qr_code(shared_pdf, request)
         cls.set_access_dates(shared_pdf, form.data.get('expiration_input'), form.data.get('deletion_input'))
 
+
+class AddSharedCollectionMixin(BaseAddSharedMixin, BaseSharecollectionMixin):
+    form = ShareCollectionForm
+    template_name = 'add_shared_collection.html'
+
+    def get_context_get(self, request: HttpRequest, pdf_id: str):
+        """Get the context needed to be passed to the template containing the form for adding a shared collection."""
+
+        collection = CollectionMixin.get_object(request, pdf_id)
+        form = self.form
+
+        context = {'form': form(profile=request.user.profile), 'collection_name': collection.name}
+
+        return context
+
     @classmethod
-    def add_qr_code(cls, shared_pdf: SharedPdf, request: HttpRequest):
-        """Add the QR code to the shared PDF."""
+    def obj_save(cls, form: ShareForm, request: HttpRequest, identifier: str):
+        """Save the shared collection based on the submitted form."""
 
-        qr_code_content = (
-            f'{request.scheme}://{request.get_host()}{reverse("view_shared_pdf", kwargs={"identifier": shared_pdf.id})}'
-        )
-        qr_as_byte = cls.generate_qr_code(qr_code_content)
+        shared_collection = form.save(commit=False)
+        shared_collection.collection = CollectionMixin.get_object(request, identifier)
 
-        shared_pdf.file.save(None, File(qr_as_byte))
-
-    @staticmethod
-    def set_access_dates(shared_pdf, expiration_input, deletion_input):
-        """Set the deletion date and expiration date of the shared PDF."""
-
-        if expiration_input:
-            shared_pdf.expiration_date = get_future_datetime(expiration_input)
-        if deletion_input:
-            shared_pdf.deletion_date = get_future_datetime(deletion_input)
-
-        shared_pdf.save()
+        cls.add_qr_code(shared_collection, request)
+        cls.set_access_dates(shared_collection, form.data.get('expiration_input'), form.data.get('deletion_input'))
 
 
 class OverviewMixin(BaseShareMixin):
@@ -247,7 +282,11 @@ class BaseSharedPdfPublicView(View):
 
 
 class Share(AddSharedPdfMixin, base_views.BaseAdd):
-    """View for new shared PDF files."""
+    """View for sharing PDF files."""
+
+
+class ShareCollection(AddSharedCollectionMixin, base_views.BaseAdd):
+    """View for sharing collections."""
 
 
 class Overview(OverviewMixin, base_views.BaseOverview):
