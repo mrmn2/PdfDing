@@ -1,10 +1,10 @@
-{% extends 'layouts/box.html' %}
+{% extends 'layouts/add_box.html' %}
 {% load i18n %}
 
 {% block content %}
 
 <h1>Share PDF</h1>
-<h2 class="mb-6 truncate">{{ pdf_name }}</h2>
+<h2 class="pb-2 truncate">{{ pdf_name }}</h2>
 
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}

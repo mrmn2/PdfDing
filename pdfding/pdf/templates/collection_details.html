@@ -30,7 +30,10 @@
                       </div>
                   </div>
               </div>
-              <div class="pt-4">
+              <div class="flex flex-row items-center pt-2 text-md font-bold! [&>a]:text-primary [&>a]:hover:text-secondary [&>a]:cursor-pointer -mt-1!">
+                <a href="{% url 'share_collection' collection.id %}">{% trans 'Share' %}</a>
+              </div>
+              <div class="pt-3">
                 <span class="text-lg font-bold">{% trans 'Default Collection' %}</span>
               </div>
               <div class="flex justify-between text-slate-600 dark:text-slate-400">
