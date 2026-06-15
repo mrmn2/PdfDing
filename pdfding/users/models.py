@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 from pdf.models.collection_models import Collection, CollectionError
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import Workspace
 
 newest_trans = _('Newest')
@@ -172,6 +172,22 @@ class Profile(models.Model):
         """Return all shared PDFs of the current collection (all or single)."""
 
         shared_pdfs = SharedPdf.objects.filter(pdf__in=self.current_pdfs)
+
+        return shared_pdfs
+
+    @property
+    def all_collections(self) -> QuerySet:
+        """Return all collections of all workspaces the user has access to."""
+
+        collections = Collection.objects.filter(workspace__in=self.workspaces)
+
+        return collections
+
+    @property
+    def all_shared_collections(self) -> QuerySet:
+        """Return all shared collections of all workspaces the profile has access to."""
+
+        shared_pdfs = SharedCollection.objects.filter(collection__in=self.all_collections)
 
         return shared_pdfs
 

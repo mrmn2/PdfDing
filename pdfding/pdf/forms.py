@@ -11,7 +11,11 @@ from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import Workspace
-from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_shared_pdfs_of_workspace
+from pdf.services.workspace_services import (
+    check_if_pdf_with_name_exists,
+    get_shared_collections_of_workspace,
+    get_shared_pdfs_of_workspace,
+)
 
 
 class AddFormNoFile(forms.ModelForm):
@@ -368,7 +372,8 @@ class ShareCollectionForm(BaseShareForm):
     def get_existing_with_same_name(self, share_name: str):
         """Check if a shared collection with the same name already exists."""
 
-        existing_collection = self.profile.current_workspace.collections.filter(name__iexact=share_name).first()
+        shared_collections = get_shared_collections_of_workspace(self.profile.current_workspace)
+        existing_collection = shared_collections.filter(name__iexact=share_name).first()
 
         return existing_collection
 

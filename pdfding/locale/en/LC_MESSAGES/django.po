@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-10 23:48+0000\n"
+"POT-Creation-Date: 2026-06-14 23:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,9 +19,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: pdfding/admin/templates/includes/admin_sidebar.html:18
+#: pdfding/pdf/templates/includes/add_sidebar.html:18
 #: pdfding/pdf/templates/includes/annotations_sidebar.html:18
 #: pdfding/pdf/templates/includes/pdf_details_sidebar.html:18
-#: pdfding/pdf/templates/includes/shared_details_sidebar.html:18
 #: pdfding/pdf/templates/includes/workspace_sidebar.html:26
 #: pdfding/users/templates/includes/settings_sidebar.html:18
 msgid "Back to App"
@@ -47,16 +47,16 @@ msgstr ""
 
 #: pdfding/admin/templates/includes/user.html:27
 #: pdfding/admin/templates/includes/user.html:40
-#: pdfding/pdf/templates/includes/individual_tag.html:61
+#: pdfding/pdf/templates/includes/individual_tag.html:62
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:69
 #: pdfding/pdf/templates/pdf_details.html:267
-#: pdfding/pdf/templates/shared_pdf_details.html:193
+#: pdfding/pdf/templates/shared_pdf_details.html:195
 msgid "Confirm"
 msgstr ""
 
 #: pdfding/admin/templates/includes/user.html:30
 #: pdfding/admin/templates/includes/user.html:43
-#: pdfding/pdf/templates/includes/individual_tag.html:75
+#: pdfding/pdf/templates/includes/individual_tag.html:76
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:72
 #: pdfding/pdf/templates/partials/delete_collection.html:15
 #: pdfding/pdf/templates/partials/delete_pdf.html:15
@@ -64,7 +64,7 @@ msgstr ""
 #: pdfding/pdf/templates/partials/details_form.html:19
 #: pdfding/pdf/templates/partials/tag_name_form.html:19
 #: pdfding/pdf/templates/pdf_details.html:269
-#: pdfding/pdf/templates/shared_pdf_details.html:195
+#: pdfding/pdf/templates/shared_pdf_details.html:197
 #: pdfding/users/templates/partials/settings_form.html:16
 #: pdfding/users/templates/profile_delete.html:12
 msgid "Cancel"
@@ -72,13 +72,13 @@ msgstr ""
 
 #: pdfding/admin/templates/includes/user.html:33
 #: pdfding/pdf/templates/collection_details.html:95
-#: pdfding/pdf/templates/includes/individual_tag.html:71
+#: pdfding/pdf/templates/includes/individual_tag.html:72
 #: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:15
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:65
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:76
 #: pdfding/pdf/templates/pdf_details.html:272
-#: pdfding/pdf/templates/shared_pdf_details.html:201
-#: pdfding/pdf/templates/workspace_details.html:107
+#: pdfding/pdf/templates/shared_pdf_details.html:203
+#: pdfding/pdf/templates/workspace_details.html:103
 #: pdfding/users/templates/danger_settings.html:23
 msgid "Delete"
 msgstr ""
@@ -173,11 +173,11 @@ msgstr ""
 msgid "A PDF with this name already exists!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:123 pdfding/pdf/forms.py:471 pdfding/pdf/forms.py:531
+#: pdfding/pdf/forms.py:123 pdfding/pdf/forms.py:505 pdfding/pdf/forms.py:565
 #: pdfding/pdf/models/pdf_models.py:120
-#: pdfding/pdf/models/shared_pdf_models.py:27
-#: pdfding/pdf/models/shared_pdf_models.py:30
-#: pdfding/pdf/models/shared_pdf_models.py:31
+#: pdfding/pdf/models/shared_pdf_models.py:36
+#: pdfding/pdf/models/shared_pdf_models.py:39
+#: pdfding/pdf/models/shared_pdf_models.py:40
 msgid "Optional"
 msgstr ""
 
@@ -207,111 +207,111 @@ msgstr ""
 msgid "Optional | e.g. 1d0h22m to delete in 1 day, 0 hours and 22 minutes."
 msgstr ""
 
-#: pdfding/pdf/forms.py:285
-msgid "Add Share Name"
-msgstr ""
-
-#: pdfding/pdf/forms.py:286
-msgid "Add a private description"
-msgstr ""
-
-#: pdfding/pdf/forms.py:287
-msgid "Maximum number of views"
-msgstr ""
-
-#: pdfding/pdf/forms.py:288
-msgid "Protect the share with a password"
-msgstr ""
-
-#: pdfding/pdf/forms.py:317
+#: pdfding/pdf/forms.py:310
 msgid "A Share with this name already exists!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:396 pdfding/pdf/forms.py:409
+#: pdfding/pdf/forms.py:339 pdfding/pdf/forms.py:360
+msgid "Add Share Name"
+msgstr ""
+
+#: pdfding/pdf/forms.py:340 pdfding/pdf/forms.py:361
+msgid "Add a private description"
+msgstr ""
+
+#: pdfding/pdf/forms.py:341 pdfding/pdf/forms.py:362
+msgid "Maximum number of views"
+msgstr ""
+
+#: pdfding/pdf/forms.py:342 pdfding/pdf/forms.py:363
+msgid "Protect the share with a password"
+msgstr ""
+
+#: pdfding/pdf/forms.py:430 pdfding/pdf/forms.py:443
 msgid "e.g. 1d0h22m"
 msgstr ""
 
-#: pdfding/pdf/forms.py:422 pdfding/pdf/templates/shared_pdf_details.html:81
+#: pdfding/pdf/forms.py:456 pdfding/pdf/templates/shared_pdf_details.html:83
 #: pdfding/users/templates/account_settings.html:52
 msgid "Password"
 msgstr ""
 
-#: pdfding/pdf/forms.py:423
+#: pdfding/pdf/forms.py:457
 msgid "This PDF is password protected"
 msgstr ""
 
-#: pdfding/pdf/forms.py:437
+#: pdfding/pdf/forms.py:471
 msgid "Incorrect Password!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:454
+#: pdfding/pdf/forms.py:488
 msgid "Tag names are not allowed to contain spaces!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:466
+#: pdfding/pdf/forms.py:500
 msgid "Add Workspace Name"
 msgstr ""
 
-#: pdfding/pdf/forms.py:470
+#: pdfding/pdf/forms.py:504
 msgid "Add a workspace description"
 msgstr ""
 
-#: pdfding/pdf/forms.py:526
+#: pdfding/pdf/forms.py:560
 msgid "Add Collection Name"
 msgstr ""
 
-#: pdfding/pdf/forms.py:530
+#: pdfding/pdf/forms.py:564
 msgid "Add a collection description"
 msgstr ""
 
-#: pdfding/pdf/forms.py:557
+#: pdfding/pdf/forms.py:591
 msgid "\"All\" is not a valid collection name!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:561
+#: pdfding/pdf/forms.py:595
 #, python-brace-format
 msgid ""
 "There is already a collection named {collection_name} in the current "
 "workspace!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:602
+#: pdfding/pdf/forms.py:636
 msgid "Uploaded file is not a PDF!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:629
+#: pdfding/pdf/forms.py:663
 msgid "Only positive numbers are allowed!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:638
+#: pdfding/pdf/forms.py:672
 msgid "Wrong format! Format needs to be _d_h_m!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:653
+#: pdfding/pdf/forms.py:687
 msgid "Directories are not allowed to contain spaces!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:668 pdfding/pdf/views/pdf_bulk_action_views.py:77
+#: pdfding/pdf/forms.py:702 pdfding/pdf/views/pdf_bulk_action_views.py:77
 msgid "Only letters, numbers, \"/\", \"-\" and \"_\" are valid characters!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:679
+#: pdfding/pdf/forms.py:713
 msgid "Not allowed to begin or end with \"/\"!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:682
+#: pdfding/pdf/forms.py:716
 msgid "Not allowed to contain consecutive \"/\" characters!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:696
+#: pdfding/pdf/forms.py:730
 msgid "\"_\" or \"-\" are not valid workspace names!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:698
+#: pdfding/pdf/forms.py:732
 msgid "Only \"-\", \"_\", numbers or letters are allowed!"
 msgstr ""
 
-#: pdfding/pdf/forms.py:700
+#: pdfding/pdf/forms.py:734
 msgid "Maximum number of characters for a workspace name is 50!"
 msgstr ""
 
@@ -349,6 +349,11 @@ msgstr ""
 msgid "Use File Name"
 msgstr ""
 
+#: pdfding/pdf/templates/add_shared_collection.html:6
+msgid "Share Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/add_shared_collection.html:12
 #: pdfding/pdf/templates/add_shared_pdf.html:12
 #: pdfding/pdf/templates/create_collection.html:11
 #: pdfding/pdf/templates/create_workspace.html:11
@@ -361,22 +366,19 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
+#: pdfding/pdf/templates/add_shared_pdf.html:6
+msgid "Share PDF"
+msgstr ""
+
+#: pdfding/pdf/templates/bulk_add_pdf.html:21
+msgid "Bulk Add PDF Files"
+msgstr ""
+
 #: pdfding/pdf/templates/bulk_add_pdf.html:54
 msgid "Skip existing files"
 msgstr ""
 
-#: pdfding/pdf/templates/collection_details.html:16
-#: pdfding/pdf/templates/includes/workspace_sidebar.html:52
-msgid "Collection Details"
-msgstr ""
-
-#: pdfding/pdf/templates/collection_details.html:19
-#: pdfding/pdf/templates/workspace_details.html:31
-msgid "Name"
-msgstr ""
-
-#: pdfding/pdf/templates/collection_details.html:32
-#: pdfding/pdf/templates/collection_details.html:68
+#: pdfding/pdf/templates/collection_details.html:5
 #: pdfding/pdf/templates/pdf_details.html:5
 #: pdfding/pdf/templates/shared_pdf_details.html:5
 #: pdfding/pdf/templates/workspace_details.html:5
@@ -386,45 +388,51 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+#: pdfding/pdf/templates/collection_details.html:34
+#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:29
+#: pdfding/pdf/templates/pdf_details.html:83
+msgid "Share"
+msgstr ""
+
 #: pdfding/pdf/templates/collection_details.html:37
 msgid "Default Collection"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:43
 #: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:22
-#: pdfding/pdf/templates/workspace_details.html:55
+#: pdfding/pdf/templates/workspace_details.html:51
 msgid "Yes"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:45
 #: pdfding/pdf/templates/includes/pdf_overview/bulk_action_menu.html:21
-#: pdfding/pdf/templates/workspace_details.html:57
+#: pdfding/pdf/templates/workspace_details.html:53
 msgid "No"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:51
 #: pdfding/pdf/templates/pdf_details.html:162
-#: pdfding/pdf/templates/shared_pdf_details.html:59
-#: pdfding/pdf/templates/workspace_details.html:63
+#: pdfding/pdf/templates/shared_pdf_details.html:61
+#: pdfding/pdf/templates/workspace_details.html:59
 msgid "Description"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:59
 #: pdfding/pdf/templates/pdf_details.html:170
-#: pdfding/pdf/templates/shared_pdf_details.html:67
-#: pdfding/pdf/templates/workspace_details.html:71
+#: pdfding/pdf/templates/shared_pdf_details.html:69
+#: pdfding/pdf/templates/workspace_details.html:67
 msgid "no description available"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:73
 #: pdfding/pdf/templates/pdf_details.html:251
-#: pdfding/pdf/templates/shared_pdf_details.html:177
-#: pdfding/pdf/templates/workspace_details.html:85
+#: pdfding/pdf/templates/shared_pdf_details.html:179
+#: pdfding/pdf/templates/workspace_details.html:81
 msgid "Date added"
 msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:81
-#: pdfding/pdf/templates/workspace_details.html:93
+#: pdfding/pdf/templates/workspace_details.html:89
 #: pdfding/users/templates/danger_settings.html:12
 #: pdfding/users/templates/includes/settings_sidebar.html:73
 msgid "Danger Zone"
@@ -436,6 +444,16 @@ msgstr ""
 
 #: pdfding/pdf/templates/collection_details.html:87
 msgid "Delete the collection and all its PDFs"
+msgstr ""
+
+#: pdfding/pdf/templates/create_collection.html:6
+#: pdfding/pdf/templates/partials/collection_dropdown.html:82
+msgid "Create Collection"
+msgstr ""
+
+#: pdfding/pdf/templates/create_workspace.html:6
+#: pdfding/pdf/templates/partials/workspace_dropdown.html:71
+msgid "Create Workspace"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/add_pdf_optionals.html:3
@@ -456,7 +474,7 @@ msgstr ""
 msgid "Comments"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/individual_tag.html:52
+#: pdfding/pdf/templates/includes/individual_tag.html:53
 msgid "Rename"
 msgstr ""
 
@@ -561,11 +579,6 @@ msgctxt "page x of y pages"
 msgid "of"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:29
-#: pdfding/pdf/templates/pdf_details.html:83
-msgid "Share"
-msgstr ""
-
 #: pdfding/pdf/templates/includes/pdf_overview/pdf_actions_menu.html:40
 #: pdfding/pdf/templates/pdf_details.html:95
 msgid "Unstar"
@@ -591,6 +604,10 @@ msgctxt "number of pdf views plural"
 msgid "Views"
 msgstr ""
 
+#: pdfding/pdf/templates/includes/shared_details_sidebar.html:18
+msgid "Back to Overview"
+msgstr ""
+
 #: pdfding/pdf/templates/includes/shared_overview/shared_pdf.html:61
 msgid "Copy"
 msgstr ""
@@ -599,8 +616,17 @@ msgstr ""
 msgid "View"
 msgstr ""
 
+#: pdfding/pdf/templates/includes/shared_overview_sidebar.html:25
+msgid "Back to PDFs"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/shared_overview_sidebar.html:35
+msgid "Shared PDFs"
+msgstr ""
+
 #: pdfding/pdf/templates/includes/sidebar.html:22
-msgid "Home"
+#: pdfding/pdf/templates/workspace_details.html:37
+msgid "PDFs"
 msgstr ""
 
 #: pdfding/pdf/templates/includes/sidebar.html:32
@@ -619,18 +645,17 @@ msgstr ""
 msgid "Tree Mode"
 msgstr ""
 
-#: pdfding/pdf/templates/includes/workspace_sidebar.html:41
-#: pdfding/pdf/templates/workspace_details.html:17
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:47
 msgid "Workspace Details"
+msgstr ""
+
+#: pdfding/pdf/templates/includes/workspace_sidebar.html:58
+msgid "Collection Details"
 msgstr ""
 
 #: pdfding/pdf/templates/partials/collection_dropdown.html:43
 msgctxt "all collections"
 msgid "All"
-msgstr ""
-
-#: pdfding/pdf/templates/partials/collection_dropdown.html:82
-msgid "Create Collection"
 msgstr ""
 
 #: pdfding/pdf/templates/partials/collection_dropdown.html:105
@@ -674,10 +699,6 @@ msgstr ""
 
 #: pdfding/pdf/templates/partials/tag_name_form.html:14
 msgid "New Tag Name"
-msgstr ""
-
-#: pdfding/pdf/templates/partials/workspace_dropdown.html:71
-msgid "Create Workspace"
 msgstr ""
 
 #: pdfding/pdf/templates/partials/workspace_dropdown.html:88
@@ -762,34 +783,30 @@ msgstr ""
 msgid "Get started by adding PDFs"
 msgstr ""
 
-#: pdfding/pdf/templates/shared_pdf_details.html:30
-msgid "inactive"
-msgstr ""
-
-#: pdfding/pdf/templates/shared_pdf_details.html:55
+#: pdfding/pdf/templates/shared_pdf_details.html:57
 msgid "Download QR Code"
 msgstr ""
 
-#: pdfding/pdf/templates/shared_pdf_details.html:89
-#: pdfding/pdf/templates/shared_pdf_details.html:111
+#: pdfding/pdf/templates/shared_pdf_details.html:91
+#: pdfding/pdf/templates/shared_pdf_details.html:113
 msgid "not set"
 msgstr ""
 
-#: pdfding/pdf/templates/shared_pdf_details.html:103
+#: pdfding/pdf/templates/shared_pdf_details.html:105
 msgctxt "number of views"
 msgid "Views"
 msgstr ""
 
-#: pdfding/pdf/templates/shared_pdf_details.html:125
+#: pdfding/pdf/templates/shared_pdf_details.html:127
 msgctxt " shared pdf expriation date"
 msgid "Expiration"
 msgstr ""
 
-#: pdfding/pdf/templates/shared_pdf_details.html:143
+#: pdfding/pdf/templates/shared_pdf_details.html:145
 msgid "Deletion"
 msgstr ""
 
-#: pdfding/pdf/templates/shared_pdf_details.html:172
+#: pdfding/pdf/templates/shared_pdf_details.html:174
 #: pdfding/pdf/templates/view_shared_info.html:20
 msgctxt "view pdf"
 msgid "View"
@@ -807,22 +824,18 @@ msgstr ""
 msgid "View Shared PDF"
 msgstr ""
 
-#: pdfding/pdf/templates/workspace_details.html:23
-msgid "PDFs"
-msgstr ""
-
-#: pdfding/pdf/templates/workspace_details.html:27
+#: pdfding/pdf/templates/workspace_details.html:41
 msgctxt "size of all pdfs"
 msgid "Total Size"
 msgstr ""
 
-#: pdfding/pdf/templates/workspace_details.html:95
+#: pdfding/pdf/templates/workspace_details.html:91
 #: pdfding/users/templates/danger_settings.html:15
 #: pdfding/users/templates/profile_delete.html:6
 msgid "Delete Account"
 msgstr ""
 
-#: pdfding/pdf/templates/workspace_details.html:99
+#: pdfding/pdf/templates/workspace_details.html:95
 msgid "Delete the workspace and all its collections and PDFs"
 msgstr ""
 
@@ -844,7 +857,7 @@ msgstr ""
 msgid "Input is not valid!"
 msgstr ""
 
-#: pdfding/pdf/views/share_views.py:218
+#: pdfding/pdf/views/share_views.py:253
 msgid "This name is already used by another shared PDF!"
 msgstr ""
 

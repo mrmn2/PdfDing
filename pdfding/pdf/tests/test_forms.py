@@ -11,7 +11,7 @@ from django.test import Client, TestCase
 from pdf import forms
 from pdf.forms import CleanHelpers
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 
 from pdfding.pdf.services.workspace_services import create_collection
 
@@ -182,11 +182,14 @@ class TestShareForms(TestCase):
 
     def test_get_existing_with_same_name_collection_existing(self):
         collection = self.user.profile.current_collection
-        form = forms.ShareCollectionForm(data={'name': 'Default'}, profile=self.user.profile)
+        existing_shared_collection = SharedCollection.objects.create(collection=collection, name='shared_col')
+        form = forms.ShareCollectionForm(data={'name': existing_shared_collection.name}, profile=self.user.profile)
 
-        assert collection == form.get_existing_with_same_name('Default')
+        assert existing_shared_collection == form.get_existing_with_same_name(existing_shared_collection.name)
 
     def test_get_existing_with_same_name_collection_not_existing(self):
+        collection = self.user.profile.current_collection
+        SharedCollection.objects.create(collection=collection, name='shared_col')
         form = forms.ShareCollectionForm(data={'name': 'other'}, profile=self.user.profile)
 
         assert not form.get_existing_with_same_name('other')

@@ -97,5 +97,12 @@ urlpatterns = [
     path('collection/delete/<identifier>', collection_views.Delete.as_view(), name='delete_collection'),
     path('collection/share/<identifier>', share_views.ShareCollection.as_view(), name='share_collection'),
     path('', pdf_views.Overview.as_view(), name='collection_overview'),  # needed for base views working
-    path('', pdf_views.Overview.as_view(), name='shared_collection_overview'),  # needed for base views working
+    path(
+        'collection/shared/overview', share_views.CollectionOverview.as_view(), name='shared_collection_overview'
+    ),  # needed for base views working
+    path(
+        'collection/shared/delete/<identifier>',
+        share_views.DeleteSharedCollection.as_view(),
+        name='delete_shared_collection',
+    ),
 ]

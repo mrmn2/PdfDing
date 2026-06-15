@@ -33,7 +33,7 @@ from pdf.services.shared_pdf_services import (
     check_shared_access_allowed_by_identifier,
     get_future_datetime,
 )
-from pdf.services.workspace_services import get_shared_pdfs_of_workspace
+from pdf.services.workspace_services import get_shared_collections_of_workspace, get_shared_pdfs_of_workspace
 from pdf.views.collection_views import CollectionMixin
 from pdf.views.pdf_views import PdfMixin
 from qrcode.image import svg
@@ -44,7 +44,7 @@ class BaseShareMixin:
     obj_name = 'shared_pdf'
 
 
-class BaseSharecollectionMixin:
+class BaseShareCollectionMixin:
     obj_name = 'shared_collection'
 
 
@@ -116,7 +116,7 @@ class AddSharedPdfMixin(BaseAddSharedMixin, BaseShareMixin):
         cls.set_access_dates(shared_pdf, form.data.get('expiration_input'), form.data.get('deletion_input'))
 
 
-class AddSharedCollectionMixin(BaseAddSharedMixin, BaseSharecollectionMixin):
+class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
     form = ShareCollectionForm
     template_name = 'add_shared_collection.html'
 
@@ -141,7 +141,7 @@ class AddSharedCollectionMixin(BaseAddSharedMixin, BaseSharecollectionMixin):
         cls.set_access_dates(shared_collection, form.data.get('expiration_input'), form.data.get('deletion_input'))
 
 
-class OverviewMixin(BaseShareMixin):
+class BaseOverviewMixin(BaseShareMixin):
     overview_page_name = 'shared_overview/overview_page'
 
     @staticmethod
@@ -159,6 +159,8 @@ class OverviewMixin(BaseShareMixin):
 
         return sorting_dict[profile.shared_pdf_sorting]
 
+
+class OverviewMixin(BaseOverviewMixin):
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """
@@ -174,11 +176,38 @@ class OverviewMixin(BaseShareMixin):
         return shared_pdfs
 
     @staticmethod
-    def get_extra_context(request: HttpRequest) -> dict:  # pragma: no cover
+    def get_extra_context(request: HttpRequest) -> dict:
         """get further information that needs to be passed to the template."""
 
         return {
             'page': 'shared_pdf_overview',
+            'current_collection_id': request.user.profile.current_collection_id,
+            'current_collection_name': request.user.profile.current_collection_name,
+            'current_workspace_id': request.user.profile.current_workspace_id,
+        }
+
+
+class CollectionOverviewMixin(BaseOverviewMixin):
+    @staticmethod
+    def filter_objects(request: HttpRequest) -> QuerySet:
+        """
+        Filter the shared collections when performing a search in the overview. As there is no search
+        functionality, this is just a dummy function.
+        """
+
+        shared_collections = get_shared_collections_of_workspace(request.user.profile.current_workspace)
+        shared_collections = shared_collections.filter(
+            Q(deletion_date__isnull=True) | Q(deletion_date__gt=datetime.now(timezone.utc))
+        )
+
+        return shared_collections
+
+    @staticmethod
+    def get_extra_context(request: HttpRequest) -> dict:
+        """get further information that needs to be passed to the template."""
+
+        return {
+            'page': 'shared_collection_overview',
             'current_collection_id': request.user.profile.current_collection_id,
             'current_collection_name': request.user.profile.current_collection_name,
             'current_workspace_id': request.user.profile.current_workspace_id,
@@ -197,6 +226,20 @@ class SharedPdfMixin(BaseShareMixin):
         shared_pdf = user_profile.all_shared_pdfs.get(id=identifier)
 
         return shared_pdf
+
+
+class SharedCollectionMixin(BaseShareMixin):
+    obj_class = SharedCollection
+
+    @staticmethod
+    @check_object_access_allowed
+    def get_object(request: HttpRequest, identifier: str):
+        """Get the shared pdf specified by the ID"""
+
+        user_profile = request.user.profile
+        shared_collection = user_profile.all_shared_collections.get(id=identifier)
+
+        return shared_collection
 
 
 class EditSharedPdfMixin(SharedPdfMixin):
@@ -295,11 +338,25 @@ class Overview(OverviewMixin, base_views.BaseOverview):
     """
 
 
+class CollectionOverview(CollectionOverviewMixin, base_views.BaseOverview):
+    """
+    View for the shared collection overview page. It's also responsible for paginating the shared collections.
+    """
+
+
 class OverviewQuery(BaseShareMixin, base_views.BaseOverviewQuery):
     """View for performing searches and sorting on the shared PDF overview page."""
 
 
+class CollectionOverviewQuery(BaseShareCollectionMixin, base_views.BaseOverviewQuery):
+    """View for performing searches and sorting on the shared PDF overview page."""
+
+
 class Delete(SharedPdfMixin, base_views.BaseDelete):
+    """View for deleting the shared PDF specified by its ID."""
+
+
+class DeleteSharedCollection(SharedCollectionMixin, base_views.BaseDelete):
     """View for deleting the shared PDF specified by its ID."""
 
 

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.services.workspace_services import create_collection, create_workspace
 
 
@@ -65,6 +65,22 @@ class TestProfile(TestCase):
         for pdf_a, pdf_b in zip(self.user.profile.all_pdfs.order_by('name'), [pdf_1, pdf_2, pdf_3]):
             self.assertEqual(pdf_a, pdf_b)
 
+    def test_all_collections_property(self):
+        default_collection_1 = self.user.profile.current_collection
+        other_workspace = create_workspace('other_ws', self.user)
+        default_collection_2 = other_workspace.collections.first()
+        default_collection_2.name = 'extra_default'
+        default_collection_2.save()
+        other_collection = create_collection(other_workspace, 'other')
+
+        self.assertEqual(self.user.profile.all_collections.count(), 3)
+
+        for col_a, col_b in zip(
+            self.user.profile.all_collections.order_by('name'),
+            [default_collection_1, default_collection_2, other_collection],
+        ):
+            self.assertEqual(col_a, col_b)
+
     def test_current_pdfs_property(self):
         ws = self.user.profile.current_workspace
         collection = self.user.profile.current_collection
@@ -118,6 +134,19 @@ class TestProfile(TestCase):
             self.user.profile.all_shared_pdfs.order_by('name'), [shared_pdf_1, shared_pdf_2]
         ):
             self.assertEqual(shared_pdf_a, shared_pdf_b)
+
+    def test_all_shared_collections_property(self):
+        collection = self.user.profile.current_collection
+        other_workspace = create_workspace('other_ws', self.user)
+        other_collection = create_collection(other_workspace, 'other')
+
+        shared_1 = SharedCollection.objects.create(collection=collection, name='shared_1')
+        shared_2 = SharedCollection.objects.create(collection=other_collection, name='shared_2')
+
+        self.assertEqual(self.user.profile.all_shared_collections.count(), 2)
+
+        for shared_a, shared_b in zip(self.user.profile.all_shared_collections.order_by('name'), [shared_1, shared_2]):
+            self.assertEqual(shared_a, shared_b)
 
     def test_shared_pdfs_property(self):
         collection = self.user.profile.current_collection

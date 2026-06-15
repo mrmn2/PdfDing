@@ -21,15 +21,17 @@ from pdf.forms import (
     ViewSharedPasswordForm,
 )
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
 from pdf.services.workspace_services import create_workspace, get_shared_collections_of_workspace
 from pdf.views.share_views import (
     AddSharedCollectionMixin,
     AddSharedPdfMixin,
     BaseSharedPdfPublicView,
+    CollectionOverviewMixin,
     EditSharedPdfMixin,
     OverviewMixin,
     PdfPublicMixin,
+    SharedCollectionMixin,
     SharedPdfMixin,
 )
 
@@ -193,6 +195,50 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(generated_extra_context, expected_extra_context)
 
 
+class TestCollectionOverviewMixin(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        set_up(self)
+
+        # create some pdfs
+        for i in range(1, 4):
+            SharedCollection.objects.create(collection=self.user.profile.current_collection, name=f'shared_{i}')
+
+        deletion_date = datetime.now(timezone.utc) - timedelta(minutes=5)
+        SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='shared_deleted', deletion_date=deletion_date
+        )
+
+    def test_filter_objects(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(f'{reverse('shared_collection_overview')}?q=pdf_2+%23tag_2')
+
+        # make sure only current shared collections are returned
+        other_ws = create_workspace('other_ws', creator=self.user)
+        SharedCollection.objects.create(collection=other_ws.collections.first(), name='other_share')
+
+        filtered_shares = CollectionOverviewMixin.filter_objects(response.wsgi_request)
+        shared_names = [shared.name for shared in filtered_shares]
+
+        self.assertEqual(shared_names, ['shared_1', 'shared_2', 'shared_3'])
+
+    def test_get_extra_context(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(reverse('shared_pdf_overview'))
+
+        generated_extra_context = share_views.CollectionOverviewMixin.get_extra_context(response.wsgi_request)
+        expected_extra_context = {
+            'page': 'shared_collection_overview',
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
+            'current_workspace_id': str(self.user.id),
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+
 class TestSharedPdfMixin(TestCase):
     username = 'user'
     password = '12345'
@@ -214,6 +260,29 @@ class TestSharedPdfMixin(TestCase):
 
         self.assertNotEqual(other_ws, self.user.profile.current_workspace)
         self.assertEqual(other_shared_pdf, SharedPdfMixin.get_object(response.wsgi_request, other_shared_pdf.id))
+
+
+class TestSharedCollectionMixin(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        self.user = None
+        self.pdf = None
+        set_up(self)
+
+    def test_get_object(self):
+        self.client.login(username=self.username, password=self.password)
+        # we need to create a request so get_pdf can access the user profile
+        response = self.client.get(reverse('pdf_overview'))
+
+        # make sure we can access shared collection of non active
+        other_ws = create_workspace('other_ws', creator=self.user)
+        collection = other_ws.collections.first()
+        other_shared = SharedCollection.objects.create(collection=collection, name='other_share')
+
+        self.assertNotEqual(other_ws, self.user.profile.current_workspace)
+        self.assertEqual(other_shared, SharedCollectionMixin.get_object(response.wsgi_request, other_shared.id))
 
 
 class TestEditSharedPdfMixin(TestCase):

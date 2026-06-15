@@ -1,4 +1,4 @@
-{% for shared_pdf in page_obj %}
+{% for shared_obj in page_obj %}
 {% widthratio current_page|add:-1 1 items_per_page as loop_offset %}
 {% with loop_id=forloop.counter|add:loop_offset %}
 <div id="shared-pdf-{{ loop_id }}" class="border rounded-md bg-slate-100 border-slate-300 hover:border-slate-400
@@ -9,5 +9,8 @@
 </div>
 {% endwith %}
 {% endfor %}
-
+{% if page == 'shared_pdf_overview' %}
 {% include 'includes/get_next_page.html' with get_next_overview_page_name='get_next_shared_overview_page' %}
+{% elif page == 'shared_collection_overview' %}
+{% include 'includes/get_next_page.html' with get_next_overview_page_name='get_next_shared_overview_page' %}
+{% endif %}

@@ -3,68 +3,90 @@
 <div class="relative">
     <div class="flex flex-row items-center gap-x-2">
         <a id="shared-pdf-link-{{ loop_id }}"
-           href="{% url 'shared_pdf_details' shared_pdf.id %}"
-           {% if shared_pdf.inactive %}
+           {% if page == 'shared_pdf_overview' %}
+           href="{% url 'shared_pdf_details' shared_obj.id %}"
+           {% elif page == 'shared_collection_overview' %}
+           href="{% url 'shared_pdf_details' shared_obj.id %}"
+           {% endif %}
+           {% if shared_obj.inactive %}
            class="truncate text-lg font-bold text-slate-400 dark:text-slate-500
                   hover:text-slate-500 dark:hover:text-slate-400">
-            {{ shared_pdf.name }}
+            {{ shared_obj.name }}
            {% else %}
            class="truncate text-lg font-bold text-primary hover:text-secondary">
-            {{ shared_pdf.name }}
+            {{ shared_obj.name }}
            {% endif %}
         </a>
     </div>
     <div class="font-semibold -mt-[3px]! truncate [&>span]:text-slate-500 dark:[&>span]:text-slate-300">
-        <span>{{ shared_pdf.pdf.name }}</span>
-        {% if shared_pdf.description %}
-        <span>| {{ shared_pdf.description }}</span>
+        {% if page == 'shared_pdf_overview' %}
+        <span>{{ shared_obj.pdf.name }}</span>
+        {% elif page == 'shared_collection_overview' %}
+        <span>{{ shared_obj.collection.name }}</span>
+        {% endif %}
+        {% if shared_obj.description %}
+        <span>| {{ shared_obj.description }}</span>
         {% endif %}
     </div>
     <div x-data="{ tooltip_del: false, tooltip_exp: false }"
            class="flex flex-row items-center text-slate-500 text-sm dark:[&>span]:text-slate-400">
-        {% if shared_pdf.deletion_date %}
+        {% if shared_obj.deletion_date %}
         <span x-on:mouseenter="tooltip_del = true" x-on:mouseleave="tooltip_del = false">
-          {{ shared_pdf.deletes_in_string }}
+          {{ shared_obj.deletes_in_string }}
         </span>
         <span x-show="tooltip_del" x-transition:enter.duration.500ms x-cloak
               class="-left-0 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
-          {{ shared_pdf.deletion_date }} UTC
+          {{ shared_obj.deletion_date }} UTC
         </span>
         {% else %}
-        <span>{{ shared_pdf.deletes_in_string }}</span>
+        <span>{{ shared_obj.deletes_in_string }}</span>
         {% endif %}
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12.1" cy="12.1" r="1"></circle>
         </svg>
-        {% if shared_pdf.expiration_date %}
+        {% if shared_obj.expiration_date %}
         <span x-on:mouseenter="tooltip_exp = true" x-on:mouseleave="tooltip_exp = false">
-          {{ shared_pdf.expires_in_string }}
+          {{ shared_obj.expires_in_string }}
         </span>
         <span x-show="tooltip_exp" x-cloak x-transition:enter.duration.500ms
               class="left-20 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
-          {{ shared_pdf.expiration_date }} UTC
+          {{ shared_obj.expiration_date }} UTC
         </span>
         {% else %}
-        <span>{{ shared_pdf.expires_in_string }}</span>
+        <span>{{ shared_obj.expires_in_string }}</span>
         {% endif %}
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12.1" cy="12.1" r="1"></circle>
         </svg>
-        <span>{{ shared_pdf.views_string }}</span>
+        <span>{{ shared_obj.views_string }}</span>
     </div>
     <div class="flex flex-row justify-between text-slate-500 text-sm dark:text-slate-400
                 [&>div>a]:hover:text-slate-700 dark:[&>div>a]:hover:text-slate-100"
          x-data="{ delete_{{ loop_id }}: false }">
         <div class="flex flex-row gap-x-2 text-sm ">
             <a class="cursor-pointer"
-               @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_pdf.id %}')">
+              @click="copy_to_clipboard('
+                {% if page == 'shared_pdf_overview' %}
+                {{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}
+                {% elif page == 'shared_collection_overview' %}
+                {{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}
+                {% endif %}
+              ')">
               {% trans 'Copy' %}
             </a>
-            <a href="{% url 'view_pdf' shared_pdf.pdf_id %}">{% trans 'View' %}</a>
+            {% if page == 'shared_pdf_overview' %}
+            <a href="{% url 'view_pdf' shared_obj.pdf_id %}">{% trans 'View' %}</a>
+            {% endif %}
         </div>
         <div id="delete_{{ loop_id }}" class="text-base [&>a]:cursor-pointer">
             <a x-show="delete_{{ loop_id }}" x-cloak
-               hx-delete="{% url 'delete_shared_pdf' shared_pdf.id %}"
+               hx-delete="
+                  {% if page == 'shared_pdf_overview' %}
+                  {% url 'delete_shared_pdf' shared_obj.id %}
+                  {% elif page == 'shared_collection_overview' %}
+                  {% url 'delete_shared_collection' shared_obj.id %}
+                  {% endif %}
+                "
                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                class="">{% trans 'Confirm' %}
             </a>

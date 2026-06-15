@@ -14,7 +14,7 @@
         <div id="open-user-dropdown" x-data="{ dropdownOpen: false }" class="relative flex flex-row grow justify-end items-center">
             {% if page == 'pdf_overview' or page == 'pdf_overview_archived' or page == 'pdf_overview_starred' %}
             {% include 'includes/pdf_overview/header_extra.html' %}
-            {% elif page == 'shared_pdf_overview' %}
+            {% elif page == 'shared_pdf_overview' or page == 'shared_collection_overview' %}
             {% include 'includes/shared_overview/header_extra.html' %}
             {% elif page == 'user_overview' %}
             {% include 'includes/user_header_extra.html' %}
