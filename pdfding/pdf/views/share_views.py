@@ -24,9 +24,9 @@ from pdf.forms import (
     ShareForm,
     ViewSharedPasswordForm,
 )
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.services.pdf_services import check_object_access_allowed
-from pdf.services.shared_pdf_services import (
+from pdf.services.shared_services import (
     check_shared_access_allowed,
     check_shared_access_allowed_by_identifier,
     get_future_datetime,
@@ -157,6 +157,8 @@ class BaseOverviewMixin(BaseShareMixin):
 
 
 class OverviewMixin(BaseOverviewMixin):
+    overview_name = 'shared_overview'
+
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """
@@ -184,6 +186,8 @@ class OverviewMixin(BaseOverviewMixin):
 
 
 class CollectionOverviewMixin(BaseOverviewMixin):
+    overview_name = 'shared_overview'
+
     @staticmethod
     def filter_objects(request: HttpRequest) -> QuerySet:
         """

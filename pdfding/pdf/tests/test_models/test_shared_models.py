@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf, get_collection_qr_code_path, get_qrcode_file_path
+from pdf.models.shared_models import SharedCollection, SharedPdf, get_collection_qr_code_path, get_qrcode_file_path
 
 
 class TestSharedBased(TestCase):

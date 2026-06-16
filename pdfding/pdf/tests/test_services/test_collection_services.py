@@ -4,7 +4,7 @@ from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_models import SharedPdf
 from pdf.services import collection_services
 from pdf.services.workspace_services import create_collection
 

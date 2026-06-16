@@ -3,8 +3,8 @@
 import uuid
 
 import django.db.models.deletion
-import pdf.models.shared_pdf_models
 from django.db import migrations, models
+from pdf.models.shared_models import get_collection_qr_code_path
 
 
 class Migration(migrations.Migration):
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('password', models.CharField(blank=True, help_text='Optional', max_length=128, null=True)),
                 ('expiration_date', models.DateTimeField(blank=True, null=True)),
                 ('deletion_date', models.DateTimeField(blank=True, null=True)),
-                ('file', models.FileField(upload_to=pdf.models.shared_pdf_models.get_collection_qr_code_path)),
+                ('file', models.FileField(upload_to=get_collection_qr_code_path)),
                 ('collection', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pdf.collection')),
                 ('sessions', models.ManyToManyField(to='sessions.session')),
             ],

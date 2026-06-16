@@ -9,7 +9,7 @@ from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import Workspace
 from pdf.services.workspace_services import (
     check_if_pdf_with_name_exists,

@@ -10,7 +10,7 @@ from huey import crontab
 from huey.contrib.djhuey import periodic_task
 from minio import Minio
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_models import SharedPdf
 
 logger = logging.getLogger('huey')
 

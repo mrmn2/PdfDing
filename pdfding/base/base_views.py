@@ -61,7 +61,12 @@ class BaseOverview(View):
         else:
             self.do_extra_action(request)
 
-            return render(request, f'{self.obj_name}_overview.html', context)
+            try:  # pragma: no cover
+                # this is needed for the shared overviews
+                # tested via e2e
+                return render(request, f'{self.overview_name}.html', context)
+            except AttributeError:
+                return render(request, f'{self.obj_name}_overview.html', context)
 
     def get_page_objects(self, request: HttpRequest, sorting: str, page: int, **kwargs):
         # filter objects

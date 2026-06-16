@@ -4,7 +4,7 @@ import uuid
 
 import django.db.models.deletion
 from django.db import migrations, models
-from pdf.models.shared_pdf_models import get_qrcode_file_path
+from pdf.models.shared_models import get_qrcode_file_path
 
 
 class Migration(migrations.Migration):

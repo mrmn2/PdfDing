@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import WorkspaceError
 from pdf.services import workspace_services
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from django.contrib.sessions.models import Session
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_models import SharedPdf
 
 
 def check_shared_access_allowed_by_identifier(identifier: str, session: Session):

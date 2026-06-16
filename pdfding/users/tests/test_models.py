@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.services.workspace_services import create_collection, create_workspace
 
 

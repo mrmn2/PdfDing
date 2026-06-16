@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import Workspace, WorkspaceError, WorkspaceRoles, WorkspaceUser
 from users.models import Profile
 

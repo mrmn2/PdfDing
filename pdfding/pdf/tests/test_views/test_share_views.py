@@ -19,7 +19,7 @@ from pdf.forms import (
     ViewSharedPasswordForm,
 )
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedCollection, SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.services.workspace_services import create_workspace, get_shared_collections_of_workspace
 from pdf.views.share_views import (
     AddSharedCollectionMixin,
@@ -367,7 +367,7 @@ class TestPdfPublicMixin(TestCase):
         self.pdf = None
         set_up(self)
 
-    @patch('pdf.services.shared_pdf_services.check_shared_access_allowed', return_value=True)
+    @patch('pdf.services.shared_services.check_shared_access_allowed', return_value=True)
     def test_get_object(self, mock_check):
         # get dummy request
         response = self.client.get(reverse('pdf_overview'))
@@ -375,7 +375,7 @@ class TestPdfPublicMixin(TestCase):
 
         self.assertEqual(shared_pdf.pdf, PdfPublicMixin.get_object(response.wsgi_request, shared_pdf.id))
 
-    @patch('pdf.services.shared_pdf_services.check_shared_access_allowed', return_value=False)
+    @patch('pdf.services.shared_services.check_shared_access_allowed', return_value=False)
     def test_get_object_404(self, mock_check):
         # get dummy request
         response = self.client.get(reverse('pdf_overview'))

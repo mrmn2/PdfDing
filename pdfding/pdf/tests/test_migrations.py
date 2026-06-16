@@ -9,7 +9,7 @@ from django.db import connection
 from django.db.models.functions import Lower
 from django.test import TestCase
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
+from pdf.models.shared_models import SharedPdf
 from pdf.models.tag_models import Tag
 from pdf.models.workspace_models import Workspace
 from pdf.services.pdf_services import PdfProcessingServices
@@ -177,7 +177,7 @@ class TestMigrations(TestCase):
         self.assertEqual(changed_pdf.collection, profile.collections[0])
         self.assertEqual(changed_tag.workspace, workspace)
 
-    @patch('pdf.models.shared_pdf_models.get_collection_dir')
+    @patch('pdf.models.shared_models.get_collection_dir')
     @patch('pdf.models.pdf_models.get_collection_dir')
     def test_adjust_file_paths_to_ws_collection(self, mock_get_parent_dirs, mock_shared_get_parent_dirs):
         self.pdf.delete()  # we need to delete the pdf created by setUp

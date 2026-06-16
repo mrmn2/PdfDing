@@ -6,8 +6,8 @@ from django.contrib.sessions.models import Session
 from django.test import TestCase
 from django.urls import reverse
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_pdf_models import SharedPdf
-from pdf.services.shared_pdf_services import (
+from pdf.models.shared_models import SharedPdf
+from pdf.services.shared_services import (
     check_shared_access_allowed,
     check_shared_access_allowed_by_identifier,
     get_future_datetime,
@@ -66,7 +66,7 @@ class TestSharedPdfServices(TestCase):
 
         assert not check_shared_access_allowed(deleted_shared_pdf, request.session)
 
-    @mock.patch('pdf.services.shared_pdf_services.check_shared_access_allowed')
+    @mock.patch('pdf.services.shared_services.check_shared_access_allowed')
     def test_check_shared_access_allowed_by_identifier(self, mock_check):
         # get dummy request
         response = self.client.get(reverse('pdf_overview'))
