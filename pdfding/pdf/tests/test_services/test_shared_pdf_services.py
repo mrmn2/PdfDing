@@ -45,9 +45,7 @@ class TestSharedPdfServices(TestCase):
         request.session.create()
         pdf = Pdf.objects.create(name='bla', collection_id=self.user.id)
 
-        inactive_shared_pdf = SharedPdf.objects.create(
-            pdf=pdf, name='inactive_shared_pdf', expiration_date=(datetime.now(timezone.utc) - timedelta(minutes=5))
-        )
+        inactive_shared_pdf = SharedPdf.objects.create(pdf=pdf, name='inactive_shared_pdf', max_views=1, views=2)
         inactive_shared_pdf.sessions.add(Session.objects.get(session_key=request.session.session_key))
 
         assert not check_shared_access_allowed(inactive_shared_pdf, request.session)

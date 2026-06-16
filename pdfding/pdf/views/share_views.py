@@ -18,8 +18,6 @@ from django.views import View
 from pdf.forms import (
     ShareCollectionForm,
     SharedDeletionDateForm,
-    SharedDescriptionForm,
-    SharedExpirationDateForm,
     SharedMaxViewsForm,
     SharedNameForm,
     SharedPasswordForm,
@@ -80,11 +78,9 @@ class BaseAddSharedMixin:
         shared_obj.file.save(None, File(qr_as_byte))
 
     @staticmethod
-    def set_access_dates(shared_obj: SharedPdf | SharedCollection, expiration_input: str, deletion_input: str) -> None:
-        """Set the deletion date and expiration date of the shared object."""
+    def set_access_dates(shared_obj: SharedPdf | SharedCollection, deletion_input: str) -> None:
+        """Set the deletion date of the shared object."""
 
-        if expiration_input:
-            shared_obj.expiration_date = get_future_datetime(expiration_input)
         if deletion_input:
             shared_obj.deletion_date = get_future_datetime(deletion_input)
 
@@ -113,7 +109,7 @@ class AddSharedPdfMixin(BaseAddSharedMixin, BaseShareMixin):
         shared_pdf.pdf = PdfMixin.get_object(request, identifier)
 
         cls.add_qr_code(shared_pdf, request)
-        cls.set_access_dates(shared_pdf, form.data.get('expiration_input'), form.data.get('deletion_input'))
+        cls.set_access_dates(shared_pdf, form.data.get('deletion_input'))
 
 
 class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
@@ -138,7 +134,7 @@ class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
         shared_collection.collection = CollectionMixin.get_object(request, identifier)
 
         cls.add_qr_code(shared_collection, request)
-        cls.set_access_dates(shared_collection, form.data.get('expiration_input'), form.data.get('deletion_input'))
+        cls.set_access_dates(shared_collection, form.data.get('deletion_input'))
 
 
 class BaseOverviewMixin(BaseShareMixin):
@@ -243,18 +239,16 @@ class SharedCollectionMixin(BaseShareMixin):
 
 
 class EditSharedPdfMixin(SharedPdfMixin):
-    fields_requiring_extra_processing = ['expiration_date', 'deletion_date', 'name']
+    fields_requiring_extra_processing = ['deletion_date', 'name']
 
     @staticmethod
     def get_edit_form_dict():
         """Get the forms of the fields that can be edited as a dict."""
 
         form_dict = {
-            'description': SharedDescriptionForm,
             'name': SharedNameForm,
             'max_views': SharedMaxViewsForm,
             'password': SharedPasswordForm,
-            'expiration_date': SharedExpirationDateForm,
             'deletion_date': SharedDeletionDateForm,
         }
 
@@ -267,10 +261,8 @@ class EditSharedPdfMixin(SharedPdfMixin):
 
         initial_dict = {
             'name': {'name': shared_pdf.name},
-            'description': {'description': shared_pdf.description},
             'max_views': {'max_views': shared_pdf.max_views},
             'password': {'password': ''},  # nosec B105
-            'expiration_date': {'expiration_date': ''},
             'deletion_date': {'deletion_date': ''},
         }
 
@@ -282,10 +274,7 @@ class EditSharedPdfMixin(SharedPdfMixin):
     def process_field(cls, field_name: str, shared_pdf: SharedPdf, request: HttpRequest, form_data: dict):
         """Process fields that are not covered in the base edit view."""
 
-        if field_name == 'expiration_date':
-            shared_pdf.expiration_date = get_future_datetime(form_data['expiration_input'])
-            shared_pdf.save()
-        elif field_name == 'deletion_date':
+        if field_name == 'deletion_date':
             shared_pdf.deletion_date = get_future_datetime(form_data['deletion_input'])
             shared_pdf.save()
         elif field_name == 'name':
@@ -362,7 +351,7 @@ class DeleteSharedCollection(SharedCollectionMixin, base_views.BaseDelete):
 
 class Edit(EditSharedPdfMixin, base_views.BaseDetailsEdit):
     """
-    The view for editing a shared PDF's name and description. The field, that is to be changed, is specified by the
+    The view for editing a shared PDF's name. The field, that is to be changed, is specified by the
     'field' argument.
     """
 

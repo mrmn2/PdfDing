@@ -33,12 +33,10 @@ class BaseShared(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=150, blank=False)
-    description = models.TextField(default='', blank=True, help_text=_('Optional'))
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     views = models.IntegerField(default=0)
     max_views = models.IntegerField(null=True, blank=True, help_text=_('Optional'))
     password = models.CharField(max_length=128, null=True, blank=True, help_text=_('Optional'))
-    expiration_date = models.DateTimeField(null=True, blank=True)
     deletion_date = models.DateTimeField(null=True, blank=True)
     sessions = models.ManyToManyField(Session)
 
@@ -61,15 +59,13 @@ class BaseShared(models.Model):
 
     @property
     def inactive(self) -> bool:
-        """Wether the shared pdf is inactive. This will consider the expiration date and max views."""
+        """Wether the shared obj is inactive. This will consider the max views."""
 
-        return (self.max_views and self.views >= self.max_views) or (
-            self.expiration_date and datetime.now(timezone.utc) >= self.expiration_date
-        )
+        return self.max_views and self.views >= self.max_views
 
     @property
     def deleted(self) -> bool:
-        """Wether the shared pdf is deleted. This will consider the deletion date."""
+        """Wether the shared obj is deleted. This will consider the deletion date."""
 
         return self.deletion_date and datetime.now(timezone.utc) >= self.deletion_date
 
@@ -80,14 +76,6 @@ class BaseShared(models.Model):
         """
 
         return self.get_natural_time_future(self.deletion_date, 'deletes', 'deleted')
-
-    @property
-    def expires_in_string(self) -> str:  # pragma: no cover
-        """
-        Get the natural time representation of the expiration date compared to the current datetime.
-        """
-
-        return self.get_natural_time_future(self.expiration_date, 'expires', 'expired')
 
     @staticmethod
     def get_natural_time_future(date: models.DateTimeField, context_present: str, context_past: str) -> str:

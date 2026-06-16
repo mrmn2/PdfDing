@@ -271,12 +271,6 @@ class PdfCollectionForm(forms.ModelForm):
 class BaseShareForm(forms.ModelForm):
     """Base class for creating the form for sharing PDFs and collections."""
 
-    expiration_input = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Expire in')}),
-        help_text=_('Optional | e.g. 1d0h22m to expire in 1 day, 0 hours and 22 minutes.'),
-    )
-
     deletion_input = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('Delete in')}),
@@ -320,11 +314,6 @@ class BaseShareForm(forms.ModelForm):
 
         return CleanHelpers.clean_password(self.cleaned_data['password'])
 
-    def clean_expiration_input(self) -> str:  # pragma: no cover
-        """Check if the expiration input is in the correct format _d_h_m, e.g. 1d0h22m."""
-
-        return CleanHelpers.clean_time_input(self.cleaned_data['expiration_input'])
-
     def clean_deletion_input(self) -> str:  # pragma: no cover
         """Check if the deletion input is in the correct format _d_h_m, e.g. 1d0h22m."""
 
@@ -341,12 +330,11 @@ class ShareForm(BaseShareForm):
         model = SharedPdf
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add a private description')}),
             'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
             'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
         }
 
-        fields = ['name', 'description', 'password', 'max_views']
+        fields = ['name', 'password', 'max_views']
 
     def get_existing_with_same_name(self, share_name: str):
         """Check if a shared pdf with the same name already exists."""
@@ -362,12 +350,11 @@ class ShareCollectionForm(BaseShareForm):
         model = SharedCollection
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
-            'description': forms.Textarea(attrs={'rows': 3, 'placeholder': _('Add a private description')}),
             'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
             'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
         }
 
-        fields = ['name', 'description', 'password', 'max_views']
+        fields = ['name', 'password', 'max_views']
 
     def get_existing_with_same_name(self, share_name: str):
         """Check if a shared collection with the same name already exists."""
@@ -376,15 +363,6 @@ class ShareCollectionForm(BaseShareForm):
         existing_collection = shared_collections.filter(name__iexact=share_name).first()
 
         return existing_collection
-
-
-class SharedDescriptionForm(forms.ModelForm):
-    """Form for changing the description of a shared PDF."""
-
-    class Meta:
-        model = SharedPdf
-        widgets = {'description': forms.Textarea(attrs={'rows': 5})}
-        fields = ['description']
 
 
 class SharedNameForm(forms.ModelForm):
@@ -425,19 +403,6 @@ class SharedPasswordForm(forms.ModelForm):
         """Hash the user provided input."""
 
         return CleanHelpers.clean_password(self.cleaned_data['password'])
-
-
-class SharedExpirationDateForm(forms.ModelForm):
-    """Form for changing the tags of a PDF."""
-
-    expiration_input = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': _('e.g. 1d0h22m')}),
-    )
-
-    class Meta:
-        model = SharedPdf
-        fields = []
 
 
 class SharedDeletionDateForm(forms.ModelForm):

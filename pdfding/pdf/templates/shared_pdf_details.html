@@ -57,28 +57,6 @@
                           {% trans 'Download QR Code' %}
                         </a>
                     </div>
-                    <div class="pt-4">
-                      <span class="text-lg font-bold">{% trans 'Description' %}</span>
-                    </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                        <div class="w-[86%] text-sm">
-                            <span id="description">
-                                {% if shared_pdf.description %}
-                                {{ shared_pdf.description }}
-                                {% else %}
-                                {% trans 'no description available' %}
-                                {% endif%}
-                            </span>
-                        </div>
-                        <div class="pr-0 md:pr-4">
-                            <a id="description-edit" class="cursor-pointer text-primary hover:text-secondary"
-                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='description' %}"
-                                hx-target="#description"
-                                hx-swap="innerHTML" >
-                                {{ edit }}
-                            </a>
-                        </div>
-                    </div>
                     <div class="pt-2">
                       <span class="text-lg font-bold">{% trans 'Password' %}</span>
                     </div>
@@ -118,24 +96,6 @@
                             <a id="max_views-edit" class="cursor-pointer text-primary hover:text-secondary"
                                 hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='max_views' %}"
                                 hx-target="#max_views"
-                                hx-swap="innerHTML" >
-                                {{ edit }}
-                            </a>
-                        </div>
-                    </div>
-                    <div class="pt-2">
-                      <span class="text-lg font-bold">{% trans 'Expiration' context ' shared pdf expriation date' %}</span>
-                    </div>
-                    <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                        <div class="w-[86%] text-sm">
-                            <span id="expiration_date">
-                                {{ shared_pdf.expires_in_string }}
-                            </span>
-                        </div>
-                        <div class="pr-0 md:pr-4">
-                            <a id="expiration_date-edit" class="cursor-pointer text-primary hover:text-secondary"
-                                hx-get="{% url 'edit_shared_pdf' identifier=shared_pdf.id field_name='expiration_date' %}"
-                                hx-target="#expiration_date"
                                 hx-swap="innerHTML" >
                                 {{ edit }}
                             </a>

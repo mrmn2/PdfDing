@@ -12,8 +12,6 @@ from django.urls import reverse
 from pdf.forms import (
     ShareCollectionForm,
     SharedDeletionDateForm,
-    SharedDescriptionForm,
-    SharedExpirationDateForm,
     SharedMaxViewsForm,
     SharedNameForm,
     SharedPasswordForm,
@@ -70,7 +68,7 @@ class TestAddSharedPdfMixin(TestCase):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = ShareForm(
-            data={'name': 'some_shared_pdf', 'expiration_input': '0d1h1m', 'deletion_input': '0d2h2m'},
+            data={'name': 'some_shared_pdf', 'deletion_input': '0d2h2m'},
             profile=self.user.profile,
         )
 
@@ -78,7 +76,6 @@ class TestAddSharedPdfMixin(TestCase):
         shared_pdf = self.user.profile.current_shared_pdfs.get(name='some_shared_pdf')
 
         self.assertEqual(shared_pdf.pdf, self.pdf)
-        mock_get_future_datetime.assert_any_call('0d1h1m')
         mock_get_future_datetime.assert_any_call('0d2h2m')
         mock_add_qr_code.assert_called_with(shared_pdf, response.wsgi_request)
 
@@ -95,12 +92,12 @@ class TestAddSharedPdfMixin(TestCase):
     def test_set_access_dates(self):
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
-        AddSharedPdfMixin.set_access_dates(shared_pdf, '1d0h22m', '1d0h22m')
+        AddSharedPdfMixin.set_access_dates(shared_pdf, '1d0h22m')
 
         # get pdf again so changes are reflected
         shared_pdf = self.user.profile.current_shared_pdfs.get(name='share')
 
-        for generated_result in [shared_pdf.expiration_date, shared_pdf.deletion_date]:
+        for generated_result in [shared_pdf.deletion_date]:
             expected_result = datetime.now(timezone.utc) + timedelta(days=1, hours=0, minutes=22)
 
             self.assertTrue((generated_result - expected_result).total_seconds() < 0.1)
@@ -136,7 +133,7 @@ class TestAddSharedCollectionMixin(TestCase):
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
         form = ShareCollectionForm(
-            data={'name': 'some_shared_collection', 'expiration_input': '0d1h1m', 'deletion_input': '0d2h2m'},
+            data={'name': 'some_shared_collection', 'deletion_input': '0d2h2m'},
             profile=self.user.profile,
         )
 
@@ -147,7 +144,6 @@ class TestAddSharedCollectionMixin(TestCase):
         shared_collection = shared_collections.first()
 
         self.assertEqual(shared_collection.collection, collection)
-        mock_get_future_datetime.assert_any_call('0d1h1m')
         mock_get_future_datetime.assert_any_call('0d2h2m')
         mock_add_qr_code.assert_called_with(shared_collection, response.wsgi_request)
 
@@ -295,21 +291,19 @@ class TestEditSharedPdfMixin(TestCase):
         set_up(self)
 
     def test_get_edit_form_get(self):
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', description='some_description', max_views=4)
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=4)
 
         edit_pdf_mixin_object = EditSharedPdfMixin()
 
         for field, form_class, field_value in zip(
-            ['name', 'description', 'max_views', 'password', 'expiration_date', 'deletion_date'],
+            ['name', 'max_views', 'password', 'deletion_date'],
             [
                 SharedNameForm,
-                SharedDescriptionForm,
                 SharedMaxViewsForm,
                 SharedPasswordForm,
-                SharedExpirationDateForm,
                 SharedDeletionDateForm,
             ],
-            ['share', 'some_description', 4, '', '', ''],
+            ['share', 4, '', '', ''],
         ):
             form = edit_pdf_mixin_object.get_edit_form_get(field, shared_pdf)
             self.assertIsInstance(form, form_class)
@@ -318,11 +312,10 @@ class TestEditSharedPdfMixin(TestCase):
     def test_process_field_changed_field(self):
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
-        EditSharedPdfMixin.process_field('expiration_date', shared_pdf, None, {'expiration_input': '1d0h22m'})
         EditSharedPdfMixin.process_field('deletion_date', shared_pdf, None, {'deletion_input': '1d0h22m'})
         adjusted_shared_pdf = self.user.profile.current_shared_pdfs.get(name='share')
 
-        for generated_result in [adjusted_shared_pdf.expiration_date, adjusted_shared_pdf.deletion_date]:
+        for generated_result in [adjusted_shared_pdf.deletion_date]:
             expected_result = datetime.now(timezone.utc) + timedelta(days=1, hours=0, minutes=22)
 
             self.assertTrue((generated_result - expected_result).total_seconds() < 0.1)

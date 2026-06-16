@@ -24,9 +24,6 @@
         {% elif page == 'shared_collection_overview' %}
         <span>{{ shared_obj.collection.name }}</span>
         {% endif %}
-        {% if shared_obj.description %}
-        <span>| {{ shared_obj.description }}</span>
-        {% endif %}
     </div>
     <div x-data="{ tooltip_del: false, tooltip_exp: false }"
            class="flex flex-row items-center text-slate-500 text-sm dark:[&>span]:text-slate-400">
@@ -40,20 +37,6 @@
         </span>
         {% else %}
         <span>{{ shared_obj.deletes_in_string }}</span>
-        {% endif %}
-        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12.1" cy="12.1" r="1"></circle>
-        </svg>
-        {% if shared_obj.expiration_date %}
-        <span x-on:mouseenter="tooltip_exp = true" x-on:mouseleave="tooltip_exp = false">
-          {{ shared_obj.expires_in_string }}
-        </span>
-        <span x-show="tooltip_exp" x-cloak x-transition:enter.duration.500ms
-              class="left-20 -bottom-10 z-50 absolute bg-primary text-gray-100! rounded-xs p-2 mt-1">
-          {{ shared_obj.expiration_date }} UTC
-        </span>
-        {% else %}
-        <span>{{ shared_obj.expires_in_string }}</span>
         {% endif %}
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12.1" cy="12.1" r="1"></circle>

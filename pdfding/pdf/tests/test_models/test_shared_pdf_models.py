@@ -28,16 +28,9 @@ class TestSharedBased(TestCase):
         assert not file_path.exists()
 
     def test_not_inactive(self):
-        expiration_date = datetime.now(timezone.utc) + timedelta(minutes=5)
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=5, expiration_date=expiration_date)
+        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=4, views=2)
 
         self.assertFalse(shared_pdf.inactive)
-
-    def test_inactive_expiration(self):
-        expiration_date = datetime.now(timezone.utc) - timedelta(minutes=5)
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=5, expiration_date=expiration_date)
-
-        self.assertTrue(shared_pdf.inactive)
 
     def test_inactive_views(self):
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=2, views=4)
