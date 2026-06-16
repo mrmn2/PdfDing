@@ -34,8 +34,6 @@ class BaseShared(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=150, blank=False)
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
-    views = models.IntegerField(default=0)
-    max_views = models.IntegerField(null=True, blank=True, help_text=_('Optional'))
     password = models.CharField(max_length=128, null=True, blank=True, help_text=_('Optional'))
     deletion_date = models.DateTimeField(null=True, blank=True)
     sessions = models.ManyToManyField(Session)
@@ -61,7 +59,7 @@ class BaseShared(models.Model):
     def inactive(self) -> bool:
         """Wether the shared obj is inactive. This will consider the max views."""
 
-        return self.max_views and self.views >= self.max_views
+        return False
 
     @property
     def deleted(self) -> bool:
@@ -104,6 +102,20 @@ class BaseShared(models.Model):
 
         return return_string
 
+
+class SharedPdf(BaseShared):
+    views = models.IntegerField(default=0)
+    max_views = models.IntegerField(null=True, blank=True, help_text=_('Optional'))
+    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
+    # the qr code file
+    file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
+
+    @property
+    def inactive(self) -> bool:
+        """Wether the shared obj is inactive. This will consider the max views."""
+
+        return self.max_views and self.views >= self.max_views
+
     @property
     def views_string(self) -> str:
         """
@@ -115,12 +127,6 @@ class BaseShared(models.Model):
             return f'{self.views}/{self.max_views} Views'
         else:
             return f'{self.views} Views'
-
-
-class SharedPdf(BaseShared):
-    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
-    # the qr code file
-    file = models.FileField(upload_to=get_qrcode_file_path, blank=False)
 
 
 class SharedCollection(BaseShared):

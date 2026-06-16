@@ -38,23 +38,24 @@
         {% else %}
         <span>{{ shared_obj.deletes_in_string }}</span>
         {% endif %}
+        {% if page == 'shared_pdf_overview' %}
         <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12.1" cy="12.1" r="1"></circle>
         </svg>
         <span>{{ shared_obj.views_string }}</span>
+        {% endif %}
     </div>
     <div class="flex flex-row justify-between text-slate-500 text-sm dark:text-slate-400
                 [&>div>a]:hover:text-slate-700 dark:[&>div>a]:hover:text-slate-100"
          x-data="{ delete_{{ loop_id }}: false }">
         <div class="flex flex-row gap-x-2 text-sm ">
             <a class="cursor-pointer"
-              @click="copy_to_clipboard('
-                {% if page == 'shared_pdf_overview' %}
-                {{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}
-                {% elif page == 'shared_collection_overview' %}
-                {{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}
-                {% endif %}
-              ')">
+              {% if page == 'shared_pdf_overview' %}
+              @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}')"
+              {% elif page == 'shared_collection_overview' %}
+              @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}')"
+              {% endif %}
+            >
               {% trans 'Copy' %}
             </a>
             {% if page == 'shared_pdf_overview' %}

@@ -350,11 +350,10 @@ class ShareCollectionForm(BaseShareForm):
         model = SharedCollection
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': _('Add Share Name')}),
-            'max_views': forms.TextInput(attrs={'placeholder': _('Maximum number of views')}),
             'password': forms.PasswordInput(attrs={'placeholder': _('Protect the share with a password')}),
         }
 
-        fields = ['name', 'password', 'max_views']
+        fields = ['name', 'password']
 
     def get_existing_with_same_name(self, share_name: str):
         """Check if a shared collection with the same name already exists."""

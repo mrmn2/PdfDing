@@ -303,7 +303,7 @@ class TestEditSharedPdfMixin(TestCase):
                 SharedPasswordForm,
                 SharedDeletionDateForm,
             ],
-            ['share', 4, '', '', ''],
+            ['share', 4, '', ''],
         ):
             form = edit_pdf_mixin_object.get_edit_form_get(field, shared_pdf)
             self.assertIsInstance(form, form_class)
