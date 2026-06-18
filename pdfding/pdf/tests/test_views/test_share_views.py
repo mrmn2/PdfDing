@@ -26,6 +26,7 @@ from pdf.views.share_views import (
     AddSharedPdfMixin,
     BaseSharedPdfPublicView,
     CollectionOverviewMixin,
+    EditSharedCollectionMixin,
     EditSharedPdfMixin,
     OverviewMixin,
     PdfPublicMixin,
@@ -77,7 +78,7 @@ class TestAddSharedPdfMixin(TestCase):
 
         self.assertEqual(shared_pdf.pdf, self.pdf)
         mock_get_future_datetime.assert_any_call('0d2h2m')
-        mock_add_qr_code.assert_called_with(shared_pdf, response.wsgi_request)
+        mock_add_qr_code.assert_called_with(shared_pdf, 'view_shared_pdf', response.wsgi_request)
 
     @patch('pdf.views.share_views.AddSharedPdfMixin.generate_qr_code', return_value=BytesIO())
     def test_add_qr_code(self, mock_generate_qr_code):
@@ -85,7 +86,7 @@ class TestAddSharedPdfMixin(TestCase):
         # we need to create a request so get_pdf can access the user profile
         response = self.client.get(reverse('pdf_overview'))
 
-        AddSharedPdfMixin.add_qr_code(shared_pdf, response.wsgi_request)
+        AddSharedPdfMixin.add_qr_code(shared_pdf, 'view_shared_pdf', response.wsgi_request)
 
         mock_generate_qr_code.assert_called_with(f'http://testserver/pdf/shared/{shared_pdf.id}')
 
@@ -145,7 +146,7 @@ class TestAddSharedCollectionMixin(TestCase):
 
         self.assertEqual(shared_collection.collection, collection)
         mock_get_future_datetime.assert_any_call('0d2h2m')
-        mock_add_qr_code.assert_called_with(shared_collection, response.wsgi_request)
+        mock_add_qr_code.assert_called_with(shared_collection, 'view_shared_collection', response.wsgi_request)
 
 
 class TestOverviewMixin(TestCase):
@@ -240,8 +241,6 @@ class TestSharedPdfMixin(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
 
     def test_get_object(self):
@@ -263,8 +262,6 @@ class TestSharedCollectionMixin(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
 
     def test_get_object(self):
@@ -286,9 +283,8 @@ class TestEditSharedPdfMixin(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
+        self.shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
     def test_get_edit_form_get(self):
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share', max_views=4)
@@ -310,9 +306,7 @@ class TestEditSharedPdfMixin(TestCase):
             self.assertEqual(form.initial, {field: field_value})
 
     def test_process_field_changed_field(self):
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
-
-        EditSharedPdfMixin.process_field('deletion_date', shared_pdf, None, {'deletion_input': '1d0h22m'})
+        EditSharedPdfMixin.process_field('deletion_date', self.shared_pdf, None, {'deletion_input': '1d0h22m'})
         adjusted_shared_pdf = self.user.profile.current_shared_pdfs.get(name='share')
 
         for generated_result in [adjusted_shared_pdf.deletion_date]:
@@ -321,21 +315,18 @@ class TestEditSharedPdfMixin(TestCase):
             self.assertTrue((generated_result - expected_result).total_seconds() < 0.1)
 
     def test_process_field_unchanged_field(self):
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
-
-        EditSharedPdfMixin.process_field('other', shared_pdf, None, {})
+        EditSharedPdfMixin.process_field('other', self.shared_pdf, None, {})
         adjusted_shared_pdf = self.user.profile.current_shared_pdfs.get(name='share')
 
-        self.assertEqual(shared_pdf, adjusted_shared_pdf)
+        self.assertEqual(self.shared_pdf, adjusted_shared_pdf)
 
     def test_process_field_name(self):
         self.client.login(username=self.username, password=self.password)
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
-        EditSharedPdfMixin.process_field('name', shared_pdf, response.wsgi_request, {'name': 'new name '})
-        adjusted_shared_pdf = self.user.profile.current_shared_pdfs.get(id=shared_pdf.id)
+        EditSharedPdfMixin.process_field('name', self.shared_pdf, response.wsgi_request, {'name': 'new name '})
+        adjusted_shared_pdf = self.user.profile.current_shared_pdfs.get(id=self.shared_pdf.id)
 
         # also make sure space was stripped
         self.assertEqual(adjusted_shared_pdf.name, 'new name')
@@ -344,18 +335,94 @@ class TestEditSharedPdfMixin(TestCase):
         self.client.login(username=self.username, password=self.password)
         # do a dummy request so we can get a request object
         response = self.client.get(reverse('pdf_overview'))
-        shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
         shared_pdf_2 = SharedPdf.objects.create(pdf=self.pdf, name='shared_2')
         request = response.wsgi_request
 
-        EditSharedPdfMixin.process_field('name', shared_pdf, request, {'name': shared_pdf_2.name})
+        EditSharedPdfMixin.process_field('name', self.shared_pdf, request, {'name': shared_pdf_2.name})
 
         messages = get_messages(request)
 
         self.assertEqual(len(messages), 1)
         self.assertEqual(list(messages)[0].message, 'This name is already used by another shared PDF!')
-        changed_shared_pdf = SharedPdf.objects.get(id=shared_pdf.id)
+        changed_shared_pdf = SharedPdf.objects.get(id=self.shared_pdf.id)
         self.assertEqual(changed_shared_pdf.name, 'share')
+
+
+class TestEditSharedCollectionMixin(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        set_up(self)
+        self.shared_collection = SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='share'
+        )
+
+    def test_get_edit_form_get(self):
+        edit_collection_mixin_object = EditSharedCollectionMixin()
+
+        for field, form_class, field_value in zip(
+            ['name', 'password', 'deletion_date'],
+            [
+                SharedNameForm,
+                SharedPasswordForm,
+                SharedDeletionDateForm,
+            ],
+            ['share', '', ''],
+        ):
+            form = edit_collection_mixin_object.get_edit_form_get(field, self.shared_collection)
+            self.assertIsInstance(form, form_class)
+            self.assertEqual(form.initial, {field: field_value})
+
+    def test_process_field_changed_field(self):
+        EditSharedCollectionMixin.process_field(
+            'deletion_date', self.shared_collection, None, {'deletion_input': '1d0h22m'}
+        )
+        adjusted_shared_collection = self.user.profile.all_shared_collections.get(name='share')
+
+        for generated_result in [adjusted_shared_collection.deletion_date]:
+            expected_result = datetime.now(timezone.utc) + timedelta(days=1, hours=0, minutes=22)
+
+            self.assertTrue((generated_result - expected_result).total_seconds() < 0.1)
+
+    def test_process_field_unchanged_field(self):
+        EditSharedCollectionMixin.process_field('other', self.shared_collection, None, {})
+        adjusted_shared_collection = self.user.profile.all_shared_collections.get(name='share')
+
+        self.assertEqual(self.shared_collection, adjusted_shared_collection)
+
+    def test_process_field_name(self):
+        self.client.login(username=self.username, password=self.password)
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+
+        EditSharedCollectionMixin.process_field(
+            'name', self.shared_collection, response.wsgi_request, {'name': 'new name '}
+        )
+        adjusted_shared_collection = self.user.profile.all_shared_collections.get(id=self.shared_collection.id)
+
+        # also make sure space was stripped
+        self.assertEqual(adjusted_shared_collection.name, 'new name')
+
+    def test_process_field_name_existing(self):
+        self.client.login(username=self.username, password=self.password)
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        shared_collection_2 = SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='shared_2'
+        )
+        request = response.wsgi_request
+
+        EditSharedCollectionMixin.process_field(
+            'name', self.shared_collection, request, {'name': shared_collection_2.name}
+        )
+
+        messages = get_messages(request)
+
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(list(messages)[0].message, 'This name is already used by another shared collection!')
+        changed_shared_collection = SharedCollection.objects.get(id=self.shared_collection.id)
+        self.assertEqual(changed_shared_collection.name, 'share')
 
 
 class TestPdfPublicMixin(TestCase):
@@ -363,8 +430,6 @@ class TestPdfPublicMixin(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
 
     @patch('pdf.services.shared_services.check_shared_access_allowed', return_value=True)
@@ -390,8 +455,6 @@ class TestBaseSharedPdfPublicView(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
 
     def test_get_object(self):
@@ -405,8 +468,6 @@ class TestViewSharedPdf(TestCase):
     password = '12345'
 
     def setUp(self):
-        self.user = None
-        self.pdf = None
         set_up(self)
         self.shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='shared_pdf')
 

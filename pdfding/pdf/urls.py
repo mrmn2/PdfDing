@@ -108,4 +108,25 @@ urlpatterns = [
         share_views.CollectionOverview.as_view(),
         name='get_next_shared_collection_overview_page',
     ),
+    path(
+        'collection/shared/details/<identifier>',
+        share_views.DetailsSharedCollection.as_view(),
+        name='shared_collection_details',
+    ),
+    path(
+        'collection/shared/edit/<identifier>/<field_name>',
+        share_views.EditSharedCollection.as_view(),
+        name='edit_shared_collection',
+    ),
+    path(
+        'collection/shared/get_qrcode/<identifier>',
+        share_views.ServeSharedCollectionQrCode.as_view(),
+        name='serve_shared_collection_qrcode',
+    ),
+    path(
+        'collection/shared/download_qrcode/<identifier>',
+        share_views.DownloadSharedCollectionQrCode.as_view(),
+        name='download_shared_collection_qrcode',
+    ),
+    path('collection/shared/<identifier>', share_views.ViewShared.as_view(), name='view_shared_collection'),
 ]

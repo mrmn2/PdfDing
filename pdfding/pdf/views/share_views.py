@@ -67,11 +67,11 @@ class BaseAddSharedMixin:
         return qr_as_byte
 
     @classmethod
-    def add_qr_code(cls, shared_obj: SharedPdf | SharedCollection, request: HttpRequest) -> None:
+    def add_qr_code(cls, shared_obj: SharedPdf | SharedCollection, reverse_url_name: str, request: HttpRequest) -> None:
         """Add the QR code to the shared object."""
 
         qr_code_content = (
-            f'{request.scheme}://{request.get_host()}{reverse("view_shared_pdf", kwargs={"identifier": shared_obj.id})}'
+            f'{request.scheme}://{request.get_host()}{reverse(reverse_url_name, kwargs={"identifier": shared_obj.id})}'
         )
         qr_as_byte = cls.generate_qr_code(qr_code_content)
 
@@ -108,7 +108,7 @@ class AddSharedPdfMixin(BaseAddSharedMixin, BaseShareMixin):
         shared_pdf = form.save(commit=False)
         shared_pdf.pdf = PdfMixin.get_object(request, identifier)
 
-        cls.add_qr_code(shared_pdf, request)
+        cls.add_qr_code(shared_pdf, 'view_shared_pdf', request)
         cls.set_access_dates(shared_pdf, form.data.get('deletion_input'))
 
 
@@ -133,7 +133,7 @@ class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
         shared_collection = form.save(commit=False)
         shared_collection.collection = CollectionMixin.get_object(request, identifier)
 
-        cls.add_qr_code(shared_collection, request)
+        cls.add_qr_code(shared_collection, 'view_shared_collection', request)
         cls.set_access_dates(shared_collection, form.data.get('deletion_input'))
 
 
@@ -228,7 +228,7 @@ class SharedPdfMixin(BaseShareMixin):
         return shared_pdf
 
 
-class SharedCollectionMixin(BaseShareMixin):
+class SharedCollectionMixin(BaseShareCollectionMixin):
     obj_class = SharedCollection
 
     @staticmethod
@@ -290,6 +290,54 @@ class EditSharedPdfMixin(SharedPdfMixin):
             else:
                 shared_pdf.name = form_data.get('name').strip()
                 shared_pdf.save()
+
+
+class EditSharedCollectionMixin(SharedCollectionMixin):
+    fields_requiring_extra_processing = ['deletion_date', 'name']
+
+    @staticmethod
+    def get_edit_form_dict():
+        """Get the forms of the fields that can be edited as a dict."""
+
+        form_dict = {
+            'name': SharedNameForm,
+            'password': SharedPasswordForm,
+            'deletion_date': SharedDeletionDateForm,
+        }
+
+        return form_dict
+
+    def get_edit_form_get(self, field_name: str, shared_collection: SharedCollection):
+        """Get the form belonging to the specified field."""
+
+        form_dict = self.get_edit_form_dict()
+
+        initial_dict = {
+            'name': {'name': shared_collection.name},
+            'password': {'password': ''},  # nosec B105
+            'deletion_date': {'deletion_date': ''},
+        }
+
+        form = form_dict[field_name](initial=initial_dict[field_name])
+
+        return form
+
+    @classmethod
+    def process_field(cls, field_name: str, shared_collection: SharedCollection, request: HttpRequest, form_data: dict):
+        """Process fields that are not covered in the base edit view."""
+
+        if field_name == 'deletion_date':
+            shared_collection.deletion_date = get_future_datetime(form_data['deletion_input'])
+            shared_collection.save()
+        elif field_name == 'name':
+            shared_collections = get_shared_collections_of_workspace(request.user.profile.current_workspace)
+            existing_obj = shared_collections.filter(name__iexact=form_data.get('name')).first()
+
+            if existing_obj and str(existing_obj.id) != str(shared_collection.id):
+                messages.warning(request, _('This name is already used by another shared collection!'))
+            else:
+                shared_collection.name = form_data.get('name').strip()
+                shared_collection.save()
 
 
 class PdfPublicMixin:
@@ -360,16 +408,43 @@ class Edit(EditSharedPdfMixin, base_views.BaseDetailsEdit):
     """
 
 
+class EditSharedCollection(EditSharedCollectionMixin, base_views.BaseDetailsEdit):
+    """
+    The view for editing a shared collection's name. The field, that is to be changed, is specified by the
+    'field' argument.
+    """
+
+
 class Details(SharedPdfMixin, base_views.BaseDetails):
     """View for displaying the details page of a shared PDF."""
 
 
+class DetailsSharedCollection(SharedCollectionMixin, base_views.BaseDetails):
+    """View for displaying the details page of a shared collection."""
+
+
 class ServeQrCode(SharedPdfMixin, base_views.BaseServe):
-    """View used for serving the qr code of a shared PDF files specified by the shared PDF id"""
+    """View used for serving the qr code of a shared PDF files specified by its id."""
+
+
+class ServeSharedCollectionQrCode(SharedCollectionMixin, base_views.BaseServe):
+    """View used for serving the qr code of a shared collection specified by its id."""
 
 
 class DownloadQrCode(SharedPdfMixin, base_views.BaseDownload):
-    """View used for downloading the qr code of a shared PDF files specified by the shared PDF id"""
+    """View used for downloading the qr code of a shared PDF files specified by its id."""
+
+    @staticmethod
+    def get_suffix():  # pragma: no cover
+        """
+        Return svg suffix
+        """
+
+        return '.svg'
+
+
+class DownloadSharedCollectionQrCode(SharedCollectionMixin, base_views.BaseDownload):
+    """View used for downloading the qr code of a shared collection specified by its id."""
 
     @staticmethod
     def get_suffix():  # pragma: no cover

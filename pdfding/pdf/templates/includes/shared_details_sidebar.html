@@ -11,8 +11,12 @@
             <span class="hidden md:block">{% trans 'Back to Overview' %}</span>
         </a>
     </div>
-    <div {% if page == 'shared_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
+    <div {% if page == 'shared_details' or page == 'shared_collection_details' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
+        {% if page == 'shared_details' %}
         <a href="{% url 'shared_pdf_details' shared_pdf.id %}">
+        {% elif page == 'shared_collection_details' %}
+        <a href="{% url 'shared_collection_details' shared_collection.id %}">
+        {% endif %}
             {% include 'includes/svg/detail.html' %}
             <span class="hidden md:block">{% trans 'Details' %}</span>
         </a>

@@ -6,7 +6,7 @@
            {% if page == 'shared_pdf_overview' %}
            href="{% url 'shared_pdf_details' shared_obj.id %}"
            {% elif page == 'shared_collection_overview' %}
-           href="{% url 'shared_pdf_details' shared_obj.id %}"
+           href="{% url 'shared_collection_details' shared_obj.id %}"
            {% endif %}
            {% if shared_obj.inactive %}
            class="truncate text-lg font-bold text-slate-400 dark:text-slate-500
