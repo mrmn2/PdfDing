@@ -2,7 +2,7 @@
 {% load i18n %}
 <div class="relative">
     <div class="flex flex-row items-center gap-x-2">
-        <a id="shared-pdf-link-{{ loop_id }}"
+        <a id="shared-obj-link-{{ loop_id }}"
            {% if page == 'shared_pdf_overview' %}
            href="{% url 'shared_pdf_details' shared_obj.id %}"
            {% elif page == 'shared_collection_overview' %}
