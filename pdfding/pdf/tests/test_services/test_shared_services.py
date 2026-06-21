@@ -6,10 +6,11 @@ from django.contrib.sessions.models import Session
 from django.test import TestCase
 from django.urls import reverse
 from pdf.models.pdf_models import Pdf
-from pdf.models.shared_models import SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.services.shared_services import (
     check_shared_access_allowed,
-    check_shared_access_allowed_by_identifier,
+    check_shared_collection_access_allowed_by_identifier,
+    check_shared_pdf_access_allowed_by_identifier,
     get_future_datetime,
 )
 
@@ -67,7 +68,7 @@ class TestSharedPdfServices(TestCase):
         assert not check_shared_access_allowed(deleted_shared_pdf, request.session)
 
     @mock.patch('pdf.services.shared_services.check_shared_access_allowed')
-    def test_check_shared_access_allowed_by_identifier(self, mock_check):
+    def test_check_shared_pdf_access_allowed_by_identifier(self, mock_check):
         # get dummy request
         response = self.client.get(reverse('pdf_overview'))
         request = response.wsgi_request
@@ -77,8 +78,23 @@ class TestSharedPdfServices(TestCase):
         pdf = Pdf.objects.create(name='bla', collection_id=self.user.id)
         shared_pdf = SharedPdf.objects.create(pdf=pdf, name='share')
 
-        check_shared_access_allowed_by_identifier(shared_pdf.id, request.session)
+        check_shared_pdf_access_allowed_by_identifier(shared_pdf.id, request.session)
         mock_check.assert_called_once_with(shared_pdf, request.session)
+
+    @mock.patch('pdf.services.shared_services.check_shared_access_allowed')
+    def test_check_shared_collection_access_allowed_by_identifier(self, mock_check):
+        # get dummy request
+        response = self.client.get(reverse('pdf_overview'))
+        request = response.wsgi_request
+
+        # create dummy session
+        request.session.create()
+        shared_collection = SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='share'
+        )
+
+        check_shared_collection_access_allowed_by_identifier(shared_collection.id, request.session)
+        mock_check.assert_called_once_with(shared_collection, request.session)
 
     def test_get_future_datetime(self):
         expected_result = datetime.now(timezone.utc) + timedelta(days=1, hours=0, minutes=22)

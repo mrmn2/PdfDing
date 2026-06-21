@@ -1,0 +1,34 @@
+{% extends 'layouts/blank.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:justify-start">
+  <div class="w-full! md:w-72! lg:w-72! px-2 md:px-4 pt-2">
+    {% include 'includes/public_shared_collection_overview_sidebar.html' %}
+  </div>
+  <div class="flex flex-col w-full justify-center md:px-8 md:ml-8 lg:ml-16 lg:mr-20 p-2">
+    {% for pdf in pdfs %}
+    {% with loop_id=forloop.counter %}
+    <div id="pdf-{{loop_id}}"
+         class="flex flex-row items-center justify-between gap-x-2
+                text-md font-bold px-3 py-1 rounded-md border truncate
+                hover:border-slate-400 dark:hover:border-slate-600
+                {% if loop_id|add:1|divisibleby:2 %}
+                bg-slate-200/70 dark:bg-slate-800 border-slate-200/70 dark:border-slate-800
+                {% else %}
+                border-slate-50 dark:border-slate-900
+                {% endif %}
+      ">
+      <a class="hover:text-slate-900 dark:hover:text-white truncate"
+        href="{% url 'view_shared_collection' shared_collection_id %}?pdf={{ pdf.id }}">
+        {{ pdf.name }}
+      </a>
+      <a href="{% url 'download_pdf_shared_collection' shared_collection_id %}?pdf={{ pdf.id }}">
+        {% include 'includes/svg/download.html' %}
+      </a>
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

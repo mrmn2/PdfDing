@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from datetime import datetime, timezone
 from io import BytesIO
 
@@ -9,7 +10,7 @@ from django.contrib.sessions.models import Session
 from django.core.files import File
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
-from django.http import Http404, HttpRequest
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -24,11 +25,13 @@ from pdf.forms import (
     ShareForm,
     ViewSharedPasswordForm,
 )
+from pdf.models.pdf_models import Pdf
 from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.services.pdf_services import check_object_access_allowed
 from pdf.services.shared_services import (
     check_shared_access_allowed,
-    check_shared_access_allowed_by_identifier,
+    check_shared_collection_access_allowed_by_identifier,
+    check_shared_pdf_access_allowed_by_identifier,
     get_future_datetime,
 )
 from pdf.services.workspace_services import get_shared_collections_of_workspace, get_shared_pdfs_of_workspace
@@ -117,7 +120,10 @@ class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
     template_name = 'add_shared_collection.html'
 
     def get_context_get(self, request: HttpRequest, pdf_id: str):
-        """Get the context needed to be passed to the template containing the form for adding a shared collection."""
+        """
+        Get the context needed to be passed to the template containing the form for
+        adding a shared collection.
+        """
 
         collection = CollectionMixin.get_object(request, pdf_id)
         form = self.form
@@ -345,7 +351,7 @@ class PdfPublicMixin:
     def get_object(request: HttpRequest, shared_id: str):
         """Get the shared pdf specified by the ID"""
 
-        if check_shared_access_allowed_by_identifier(shared_id, request.session):
+        if check_shared_pdf_access_allowed_by_identifier(shared_id, request.session):
             shared_pdf = SharedPdf.objects.get(pk=shared_id)
 
             return shared_pdf.pdf
@@ -353,16 +359,22 @@ class PdfPublicMixin:
             raise Http404('Access to shared pdf not allowed!')
 
 
-class BaseSharedPdfPublicView(View):
+class CollectionPdfPublicMixin:
     @staticmethod
     @check_object_access_allowed
-    # first parameter needed because of the decorator
-    def get_shared_pdf_public(_, shared_id: str):
-        """Get the shared pdf specified by the ID without being logged in."""
+    def get_object(request: HttpRequest, shared_id: str):
+        """Get the pdf of a shared pdf specified by the ID"""
 
-        shared_pdf = SharedPdf.objects.get(pk=shared_id)
+        # as I do not want to rewrite the existing logic I kind of abuse it instead
+        pdf_id = request.GET.get('pdf', None)
 
-        return shared_pdf
+        if check_shared_collection_access_allowed_by_identifier(shared_id, request.session):
+            shared_collection = SharedCollection.objects.get(pk=shared_id)
+            pdf = shared_collection.collection.pdfs.get(id=pdf_id)
+
+            return pdf
+        else:
+            raise Http404('Access to shared collection not allowed!')
 
 
 class Share(AddSharedPdfMixin, base_views.BaseAdd):
@@ -457,7 +469,12 @@ class DownloadSharedCollectionQrCode(SharedCollectionMixin, base_views.BaseDownl
 
 @method_decorator(login_not_required, name="dispatch")
 class Serve(PdfPublicMixin, base_views.BaseServe):
-    """View used for serving shared PDF files specified by the shared PDF id"""
+    """View used for serving shared PDF files."""
+
+
+@method_decorator(login_not_required, name="dispatch")
+class ServeCollectionPdf(CollectionPdfPublicMixin, base_views.BaseServe):
+    """View used for serving PDF files of a shared collection."""
 
 
 @method_decorator(login_not_required, name="dispatch")
@@ -466,47 +483,91 @@ class Download(PdfPublicMixin, base_views.BaseDownload):
 
 
 @method_decorator(login_not_required, name="dispatch")
-class ViewShared(BaseSharedPdfPublicView):
+class DownloadCollectionPdf(CollectionPdfPublicMixin, base_views.BaseDownload):
+    """View for downloading the collection pdf specified by the ID."""
+
+
+@method_decorator(login_not_required, name="dispatch")
+class BasePublicViewShared(View):
     """The view responsible for displaying the shared PDF file specified by the shared PDF id in the browser."""
 
-    def get(self, request: HttpRequest, identifier: str):
-        shared_pdf = self.get_shared_pdf_public(request, identifier)
+    view_name: str
 
-        if shared_pdf.inactive or shared_pdf.deleted:
+    def get(self, request: HttpRequest, identifier: str):
+        shared_obj = self.get_shared_obj_public(request, identifier)
+        secondary_identifier = request.GET.get('pdf', None)
+
+        if shared_obj.inactive or shared_obj.deleted:
             return render(request, 'view_shared_inactive.html')
-        elif check_shared_access_allowed(shared_pdf, request.session):
-            return self.render_shared_pdf_view(request, shared_pdf)
+        elif check_shared_access_allowed(shared_obj, request.session):
+            return self.render_shared_obj(request, shared_obj, secondary_identifier)
         else:
             return render(
                 request,
                 'view_shared_info.html',
-                {'shared_pdf': shared_pdf, 'form': ViewSharedPasswordForm, 'host': request.get_host()},
+                {
+                    'shared_obj': shared_obj,
+                    'shared_class': shared_obj.__class__.__name__,
+                    'form': ViewSharedPasswordForm,
+                },
             )
 
     def post(self, request: HttpRequest, identifier: str):
-        shared_pdf = self.get_shared_pdf_public(request, identifier)
+        shared_obj = self.get_shared_obj_public(request, identifier)
 
-        if shared_pdf.inactive or shared_pdf.deleted:
+        if shared_obj.inactive or shared_obj.deleted:
             return render(request, 'view_shared_inactive.html')
         else:
-            form = ViewSharedPasswordForm(request.POST, shared_pdf=shared_pdf)
+            form = ViewSharedPasswordForm(request.POST, shared_obj=shared_obj)
 
-            if not shared_pdf.password or form.is_valid():
+            if not shared_obj.password or form.is_valid():
                 if not request.session or not request.session.session_key:
                     request.session.create()
                     # set session expiry to 1 week
                     request.session.set_expiry(604800)
                     request.session.save()
 
-                shared_pdf.sessions.add(Session.objects.get(session_key=request.session.session_key))
-                return redirect('view_shared_pdf', identifier=shared_pdf.id)
+                shared_obj.sessions.add(Session.objects.get(session_key=request.session.session_key))
+                return redirect(self.view_name, identifier=shared_obj.id)
             else:
-                return render(request, 'view_shared_info.html', {'shared_pdf': shared_pdf, 'form': form})
+                return render(
+                    request,
+                    'view_shared_info.html',
+                    {'shared_obj': shared_obj, 'shared_class': shared_obj.__class__.__name__, 'form': form},
+                )
 
     @staticmethod
-    def render_shared_pdf_view(request: HttpRequest, shared_pdf: SharedPdf):
-        shared_pdf.views += 1
-        shared_pdf.save()
+    @abstractmethod
+    @check_object_access_allowed
+    def get_shared_obj_public(request: HttpRequest, shared_id: str) -> SharedPdf | SharedCollection:
+        """Get the shared object specified by the ID without being logged in."""
+        # first parameter needed because of the decorator
+
+    @classmethod
+    @abstractmethod
+    def render_shared_obj(cls, request: HttpRequest, shared_obj, secondary_identifier: str) -> HttpResponse:
+        """Render the shared obj, e.g. view the  shared PDF"""
+
+
+class SharedPdfPublicView(BasePublicViewShared):
+    view_name = 'view_shared_pdf'
+
+    @staticmethod
+    @check_object_access_allowed
+    # first parameter needed because of the decorator
+    def get_shared_obj_public(request: HttpRequest, shared_id: str) -> SharedPdf:
+        """Get the shared pdf specified by the ID without being logged in."""
+
+        shared_pdf = SharedPdf.objects.get(pk=shared_id)
+
+        return shared_pdf
+
+    @classmethod
+    def render_shared_obj(cls, request: HttpRequest, shared_obj: SharedPdf, secondary_identifier: str) -> HttpResponse:
+        """Render the shared PDF."""
+
+        shared_obj.views += 1
+        shared_obj.save()
 
         theme, theme_color = get_viewer_theme_and_color()
 
@@ -516,10 +577,76 @@ class ViewShared(BaseSharedPdfPublicView):
             {
                 'tab_title': 'PdfDing',
                 'current_page': 1,
-                'shared_pdf_id': shared_pdf.id,
-                'revision': shared_pdf.pdf.revision,
+                'shared_pdf_id': shared_obj.id,
+                'revision': shared_obj.pdf.revision,
                 'theme': theme,
                 'theme_color': theme_color,
                 'user_view_bool': False,
             },
         )
+
+
+class SharedCollectionPublicView(BasePublicViewShared):
+    view_name = 'view_shared_collection'
+
+    @staticmethod
+    @check_object_access_allowed
+    # first parameter needed because of the decorator
+    def get_shared_obj_public(request: HttpRequest, shared_id: str) -> SharedCollection:
+        """Get the shared collection specified by the ID without being logged in."""
+
+        shared_collection = SharedCollection.objects.get(pk=shared_id)
+
+        return shared_collection
+
+    # This function kinda abuses the check_object_access_allowed function but I still use it as
+    # I do not want to repeat the logic
+    @staticmethod
+    @check_object_access_allowed
+    def get_pdf_public(shared_collection, pdf_id: str) -> Pdf:
+        """Gets the pdf of a shared collection."""
+
+        pdf = shared_collection.collection.pdfs.get(id=pdf_id)
+
+        return pdf
+
+    @classmethod
+    def render_shared_obj(
+        cls, request: HttpRequest, shared_obj: SharedCollection, secondary_identifier: str
+    ) -> HttpResponse:
+        """
+        Render the shared collection or one of its PDFs. If a secondary id is provided the PDF
+        of a collection will be rendered.
+        """
+
+        # a pdf of a shared collection needs to be rendered
+        if secondary_identifier:
+            pdf = cls.get_pdf_public(shared_obj, secondary_identifier)
+
+            theme, theme_color = get_viewer_theme_and_color()
+
+            return render(
+                request,
+                'viewer.html',
+                {
+                    'tab_title': 'PdfDing',
+                    'current_page': 1,
+                    'shared_collection_id': shared_obj.id,
+                    'pdf_id': pdf.id,
+                    'revision': pdf.revision,
+                    'theme': theme,
+                    'theme_color': theme_color,
+                    'user_view_bool': False,
+                },
+            )
+        # a shared collection needs to be rendered
+        else:
+            return render(
+                request,
+                'public_shared_collection_overview.html',
+                {
+                    'collection_name': shared_obj.collection.name,
+                    'shared_collection_id': shared_obj.id,
+                    'pdfs': shared_obj.collection.pdfs.order_by('-creation_date'),
+                },
+            )

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
+from pdf.models.pdf_models import Pdf
 from pdf.models.shared_models import SharedCollection
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
@@ -194,3 +195,45 @@ class SharedCollectionE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.get_by_text("Confirm")).not_to_be_visible()
             expect(self.page.get_by_text("Cancel")).not_to_be_visible()
             expect(self.page.locator("#delete_shared")).to_be_visible()
+
+
+class SharedCollectionNotLoggedInE2ETestCase(PdfDingE2ETestCase):
+    def setUp(self, login: bool = False) -> None:
+        super().setUp(login=login)
+        self.collection = self.user.profile.current_collection
+
+    def test_shared_collection_info_no_password(self):
+        shared_collection = SharedCollection.objects.create(name='some_shared_collection', collection=self.collection)
+
+        with sync_playwright() as p:
+            self.open(reverse('view_shared_collection', kwargs={'identifier': shared_collection.id}), p)
+            expect(self.page.locator("#heading")).to_contain_text('View Shared Collection')
+            expect(self.page.locator("#shared_obj_name")).to_contain_text('Default')
+            expect(self.page.locator("#shared_pw_form")).not_to_be_visible()
+
+    def test_shared_collection_info_password(self):
+        shared_collection = SharedCollection.objects.create(
+            name='some_shared_collection', password='some_pw', collection=self.collection
+        )
+
+        with sync_playwright() as p:
+            self.open(reverse('view_shared_collection', kwargs={'identifier': shared_collection.id}), p)
+            expect(self.page.locator("#heading")).to_contain_text('View Shared Collection')
+            expect(self.page.locator("#shared_obj_name")).to_contain_text('Default')
+            expect(self.page.locator("#shared_pw_form")).to_be_visible()
+
+    def test_shared_collection_pdf_overview(self):
+        shared_collection = SharedCollection.objects.create(name='some_shared_collection', collection=self.collection)
+
+        pdf_names = ['share-1', 'share-2', 'share-3']
+
+        for pdf_name in pdf_names:
+            Pdf.objects.create(name=pdf_name, collection=shared_collection.collection)
+
+        with sync_playwright() as p:
+            self.open(reverse('view_shared_collection', kwargs={'identifier': shared_collection.id}), p)
+            self.page.get_by_role("button", name="View").click()
+
+            # as the overview is sorted be newest first we need to reverse this list
+            for i, pdf_name in enumerate(reversed(pdf_names)):
+                expect(self.page.locator(f"#pdf-{i+1}")).to_contain_text(pdf_name)

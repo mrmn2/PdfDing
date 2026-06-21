@@ -24,14 +24,16 @@ from pdf.services.workspace_services import create_workspace, get_shared_collect
 from pdf.views.share_views import (
     AddSharedCollectionMixin,
     AddSharedPdfMixin,
-    BaseSharedPdfPublicView,
     CollectionOverviewMixin,
+    CollectionPdfPublicMixin,
     EditSharedCollectionMixin,
     EditSharedPdfMixin,
     OverviewMixin,
     PdfPublicMixin,
     SharedCollectionMixin,
+    SharedCollectionPublicView,
     SharedPdfMixin,
+    SharedPdfPublicView,
 )
 
 from pdfding.pdf.views import share_views
@@ -450,20 +452,64 @@ class TestPdfPublicMixin(TestCase):
             PdfPublicMixin.get_object(response.wsgi_request, shared_pdf.id)
 
 
-class TestBaseSharedPdfPublicView(TestCase):
+class TestCollectionPdfPublicMixin(TestCase):
     username = 'user'
     password = '12345'
 
     def setUp(self):
         set_up(self)
 
-    def test_get_object(self):
+    @patch('pdf.services.shared_services.check_shared_access_allowed', return_value=True)
+    def test_get_object(self, mock_check):
+        # get dummy request
+        request = self.client.get(reverse('pdf_overview')).wsgi_request
+        request.GET = MagicMock()
+        request.GET.get.return_value = self.pdf.id
+        shared_collection = SharedCollection.objects.create(collection=self.pdf.collection, name='share')
+
+        self.assertEqual(self.pdf, CollectionPdfPublicMixin.get_object(request, shared_collection.id))
+
+    @patch('pdf.services.shared_services.check_shared_access_allowed', return_value=False)
+    def test_get_object_404(self, mock_check):
+        # get dummy request
+        request = self.client.get(reverse('pdf_overview')).wsgi_request
+        shared_collection = SharedCollection.objects.create(collection=self.pdf.collection, name='share')
+
+        with pytest.raises(Http404, match='Access to shared collection not allowed!'):
+            CollectionPdfPublicMixin.get_object(request, shared_collection.id)
+
+
+class TestSharedPdfPublicView(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        set_up(self)
+
+    def test_get_shared_obj_public(self):
         shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='share')
 
-        self.assertEqual(shared_pdf, BaseSharedPdfPublicView.get_shared_pdf_public(None, shared_pdf.id))
+        self.assertEqual(shared_pdf, SharedPdfPublicView.get_shared_obj_public(None, shared_pdf.id))
 
 
-class TestViewSharedPdf(TestCase):
+class TestSharedCollectionPublicView(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        set_up(self)
+
+    def test_get_shared_obj_public(self):
+        shared_collection = SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='share'
+        )
+
+        self.assertEqual(
+            shared_collection, SharedCollectionPublicView.get_shared_obj_public(None, shared_collection.id)
+        )
+
+
+class TestBasePublicView(TestCase):
     username = 'user'
     password = '12345'
 
@@ -477,8 +523,7 @@ class TestViewSharedPdf(TestCase):
         response = self.client.get(reverse('view_shared_pdf', kwargs={'identifier': self.shared_pdf.id}))
 
         self.assertTemplateUsed(response, 'view_shared_info.html')
-        self.assertEqual(response.context['shared_pdf'], self.shared_pdf)
-        self.assertEqual(response.context['host'], 'testserver')
+        self.assertEqual(response.context['shared_obj'], self.shared_pdf)
         self.assertEqual(response.context['form'], ViewSharedPasswordForm)
 
     @patch('pdf.views.share_views.get_viewer_theme_and_color')
@@ -503,6 +548,46 @@ class TestViewSharedPdf(TestCase):
 
         shared_pdf = SharedPdf.objects.get(pk=self.shared_pdf.id)
         self.assertEqual(shared_pdf.views, 1)
+
+    @patch('pdf.views.share_views.get_viewer_theme_and_color')
+    @patch('pdf.views.share_views.check_shared_access_allowed', return_value=True)
+    def test_view_get_active_active_session_collection(self, mock_check, mock_get_viewer_theme_and_color):
+        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
+        shared_collection = SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='shared_collection'
+        )
+
+        response = self.client.get(reverse('view_shared_collection', kwargs={'identifier': shared_collection.id}))
+        self.assertEqual(response.context['collection_name'], shared_collection.collection.name)
+        self.assertEqual(response.context['shared_collection_id'], shared_collection.id)
+        for pdf_1, pdf_2 in zip(
+            response.context['pdfs'], self.user.profile.current_collection.pdfs.order_by('-creation_date')
+        ):
+            assert pdf_1 == pdf_2
+        self.assertTemplateUsed(response, 'public_shared_collection_overview.html')
+
+    @patch('pdf.views.share_views.get_viewer_theme_and_color')
+    @patch('pdf.views.share_views.check_shared_access_allowed', return_value=True)
+    def test_view_get_active_active_session_collection_pdf(self, mock_check, mock_get_viewer_theme_and_color):
+        mock_get_viewer_theme_and_color.return_value = 'dark', '4 4 4'
+        self.pdf.revision = 2
+        self.pdf.save()
+        shared_collection = SharedCollection.objects.create(
+            collection=self.user.profile.current_collection, name='shared_collection'
+        )
+
+        response = self.client.get(
+            f'{reverse('view_shared_collection', kwargs={'identifier': shared_collection.id})}?pdf={self.pdf.id}'
+        )
+        self.assertEqual(response.context['current_page'], 1)
+        self.assertEqual(response.context['shared_collection_id'], shared_collection.id)
+        self.assertEqual(response.context['pdf_id'], self.pdf.id)
+        self.assertEqual(response.context['revision'], 2)
+        self.assertEqual(response.context['theme_color'], '4 4 4')
+        self.assertEqual(response.context['theme'], 'dark')
+        self.assertEqual(response.context['tab_title'], 'PdfDing')
+        self.assertEqual(response.context['user_view_bool'], False)
+        self.assertTemplateUsed(response, 'viewer.html')
 
     def test_view_get_inactive(self):
         inactive_shared_pdf = SharedPdf.objects.create(pdf=self.pdf, name='inactive_shared_pdf', views=2, max_views=1)

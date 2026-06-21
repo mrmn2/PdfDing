@@ -8,16 +8,35 @@
         <!-- bg-primary needed as profile image will flicker otherwise -->
         <img class="bg-primary w-16 h-16" src="{% static 'images/logo.svg' %}" alt="Logo"/>
     </div>
-    <h1 class="pt-8">{% trans 'View Shared PDF' %}</h1>
-    <span class="text-2xl font-bold pt-4 pb-8">{{ shared_pdf.pdf.name }}</span>
-
-    <form class="w-3/4 gap-x-1" action="{% url 'view_shared_pdf' shared_pdf.id %}" method="post">
+    <h1 id="heading" class="pt-8">
+      {% if shared_class == 'SharedPdf' %}
+      {% trans 'View Shared PDF' %}
+      {% else %}
+      {% trans 'View Shared Collection' %}
+      {% endif %}
+    </h1>
+    <span id="shared_obj_name" class="text-2xl font-bold pt-4 pb-8">
+      {% if shared_class == 'SharedPdf' %}
+      {{ shared_obj.pdf.name }}
+      {% else %}
+      {{ shared_obj.collection.name }}
+      {% endif %}
+    </span>
+    <form class="flex flex-row items-end w-full gap-x-1"
+          {% if shared_class == 'SharedPdf' %}
+          action="{% url 'view_shared_pdf' shared_obj.id %}"
+          {% else %}
+          action="{% url 'view_shared_collection' shared_obj.id %}"
+          {% endif %}
+          method="post">
         {% csrf_token %}
-        {% if shared_pdf.password %}
-        {{ form.as_p }}
+        {% if shared_obj.password %}
+        <div id="shared_pw_form" class="flex flex-col">
+          {{ form.as_p }}
+        </div>
         {% endif %}
-        <div class="flex justify-center">
-          <button class="flex items-center h-12" type="submit">{% trans 'View' context 'view pdf' %}</button>
+        <div class="flex justify-center mb-10">
+          <button class="flex items-center h-12" type="submit">{% trans 'View' context 'view pdf or collection' %}</button>
         </div>
   </form>
 </div>

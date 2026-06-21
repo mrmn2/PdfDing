@@ -121,8 +121,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       {% if user_view_bool %}
       var url = "{% url 'serve_pdf' pdf_id revision %}"
-      {% else %}
+      {% elif shared_pdf_id %}
       var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}"
+      {% else %}
+      var url = "{% url 'serve_pdf_shared_collection' shared_collection_id revision %}?pdf={{ pdf_id }}"
       {% endif %}
       start_viewer(page_number, url, "{{ tab_title }}", "{{ request.LANGUAGE_CODE }}");
 

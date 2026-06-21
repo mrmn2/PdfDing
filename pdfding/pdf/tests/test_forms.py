@@ -203,7 +203,7 @@ class TestViewSharedPasswordForm(TestCase):
         shared_pdf = SharedPdf.objects.create(pdf=pdf, name='existing name', password=hashed_password)
 
         for password, expected_result in [('password', True), ('wrong_password', False)]:
-            form = forms.ViewSharedPasswordForm(data={'password_input': password}, shared_pdf=shared_pdf)
+            form = forms.ViewSharedPasswordForm(data={'password_input': password}, shared_obj=shared_pdf)
 
             self.assertEqual(form.is_valid(), expected_result)
 

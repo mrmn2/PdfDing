@@ -1,15 +1,23 @@
 from datetime import datetime, timedelta, timezone
 
 from django.contrib.sessions.models import Session
-from pdf.models.shared_models import SharedPdf
+from pdf.models.shared_models import SharedCollection, SharedPdf
 
 
-def check_shared_access_allowed_by_identifier(identifier: str, session: Session):
+def check_shared_pdf_access_allowed_by_identifier(identifier: str, session: Session):
     """Check if access to shared pdf is allowed based on session."""
 
     shared_pdf = SharedPdf.objects.get(pk=identifier)
 
     return check_shared_access_allowed(shared_pdf, session)
+
+
+def check_shared_collection_access_allowed_by_identifier(identifier: str, session: Session):
+    """Check if access to shared collection is allowed based on session."""
+
+    shared_collection = SharedCollection.objects.get(pk=identifier)
+
+    return check_shared_access_allowed(shared_collection, session)
 
 
 def check_shared_access_allowed(shared_pdf: SharedPdf, session: Session):

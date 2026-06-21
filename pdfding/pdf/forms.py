@@ -418,25 +418,25 @@ class SharedDeletionDateForm(forms.ModelForm):
 
 
 class ViewSharedPasswordForm(forms.Form):
-    """Form for changing the description of a shared PDF."""
+    """Form for entering the password when viewing a password protected share."""
 
     password_input = forms.CharField(
         required=True,
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': _('Password')}),
-        help_text=_('This PDF is password protected'),
+        help_text=_('This share is password protected'),
     )
 
     def __init__(self, *args, **kwargs):
-        """Adds the shared pdf to the form."""
+        """Adds the shared obj to the form."""
 
-        self.shared_pdf = kwargs.pop('shared_pdf', None)
+        self.shared_obj = kwargs.pop('shared_obj', None)
 
-        super(ViewSharedPasswordForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def clean_password_input(self):
         password = self.cleaned_data['password_input']
 
-        if not check_password(password, self.shared_pdf.password):
+        if not check_password(password, self.shared_obj.password):
             raise forms.ValidationError(_('Incorrect Password!'))
 
         return password

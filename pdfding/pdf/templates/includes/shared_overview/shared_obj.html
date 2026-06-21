@@ -53,7 +53,7 @@
               {% if page == 'shared_pdf_overview' %}
               @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}')"
               {% elif page == 'shared_collection_overview' %}
-              @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_pdf' shared_obj.id %}')"
+              @click="copy_to_clipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'view_shared_collection' shared_obj.id %}')"
               {% endif %}
             >
               {% trans 'Copy' %}

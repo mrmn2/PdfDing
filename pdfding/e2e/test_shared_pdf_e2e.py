@@ -39,6 +39,30 @@ class NoSharedPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("body")).to_contain_text("0/3 Views")
 
 
+class SharedPdfNotLoggedInE2ETestCase(PdfDingE2ETestCase):
+    def setUp(self, login: bool = False) -> None:
+        super().setUp(login=login)
+        self.pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='some_pdf')
+
+    def test_shared_collection_info_no_password(self):
+        shared_pdf = SharedPdf.objects.create(name='some_shared_pdf', pdf=self.pdf)
+
+        with sync_playwright() as p:
+            self.open(reverse('view_shared_pdf', kwargs={'identifier': shared_pdf.id}), p)
+            expect(self.page.locator("#heading")).to_contain_text('View Shared PDF')
+            expect(self.page.locator("#shared_obj_name")).to_contain_text('some_pdf')
+            expect(self.page.locator("#shared_pw_form")).not_to_be_visible()
+
+    def test_shared_collection_info_password(self):
+        shared_pdf = SharedPdf.objects.create(name='some_shared_pdf', password='some_pw', pdf=self.pdf)
+
+        with sync_playwright() as p:
+            self.open(reverse('view_shared_pdf', kwargs={'identifier': shared_pdf.id}), p)
+            expect(self.page.locator("#heading")).to_contain_text('View Shared PDF')
+            expect(self.page.locator("#shared_obj_name")).to_contain_text('some_pdf')
+            expect(self.page.locator("#shared_pw_form")).to_be_visible()
+
+
 class SharedPdfE2ETestCase(PdfDingE2ETestCase):
     def setUp(self, login: bool = True) -> None:
         super().setUp()
