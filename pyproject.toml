@@ -1,7 +1,7 @@
 [project]
 name = "pdfding"
 # do not change the version line position as it will break the automated update after a release
-version = "1.6.1"
+version = "1.9.0"
 description = "Selfhosted PDF manager, viewer and editor offering a seamless user experience on multiple devices."
 authors = [
   { name = "mrmn2" },
@@ -22,7 +22,7 @@ minio = "==7.2.20"
 nh3 = "==0.3.5"
 psycopg2-binary = "==2.9.12"
 pypdfium2 = "==5.8.0"
-pypdf = "==6.12.2"
+pypdf = "==6.13.3"
 python-magic = "==0.4.27"
 qrcode = { extras = ["pil"], version = "==8.2" }
 RapidFuzz = "==3.14.5"
