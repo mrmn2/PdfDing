@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.9.0 (Jun 22, 2026)
+### What's Changed
+
+* Add public sharing of collections by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/316, https://github.com/mrmn2/PdfDing/pull/317, https://github.com/mrmn2/PdfDing/pull/318, https://github.com/mrmn2/PdfDing/pull/319, https://github.com/mrmn2/PdfDing/pull/320, https://github.com/mrmn2/PdfDing/pull/321, 
+* Various minor UI tweaks and improvements by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/312, https://github.com/mrmn2/PdfDing/pull/314, https://github.com/mrmn2/PdfDing/pull/315
+* Add option to display banners by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/322
+* Update dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/322
+
 ## v1.8.0 (Jun 05, 2026)
 ### What's Changed
 * Add Bulk actions by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/310
