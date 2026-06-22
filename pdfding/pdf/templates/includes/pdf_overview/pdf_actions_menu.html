@@ -35,6 +35,16 @@
         {% trans 'Archive' %}
         {% endif %}
     </a>
+    <a id="finish-{{ loop_id }}" class="cursor-pointer"
+       hx-post="{% url 'finish' pdf.id %}"
+       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        {% include 'includes/svg/check.html' %}
+        {% if pdf.finished %}
+        {% trans 'Unfinish' %}
+        {% else %}
+        {% trans 'Finish' %}
+        {% endif %}
+    </a>
     <a id="delete-{{ loop_id }}" class="cursor-pointer"
        @click="show_delete_pdf_modal = true"
        hx-get="{% url 'delete_pdf' pdf.id %}"

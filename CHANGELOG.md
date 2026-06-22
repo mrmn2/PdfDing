@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+### What's Changed
+
+* Add "Finished Reading" feature: mark PDFs as finished with visual checkmark indicator, filter by finished/not finished status, and toggle via actions menu and details page.
+
 ## v1.9.0 (Jun 22, 2026)
 ### What's Changed
 

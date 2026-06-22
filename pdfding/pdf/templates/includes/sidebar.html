@@ -30,6 +30,12 @@
               <span class="hidden md:block">{% translate 'Starred' %}</span>
           </a>
       </div>
+      <div {% if page == 'pdf_overview_finished' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
+          <a href="{% url 'pdf_overview_query' %}?selection=finished">
+              {% include 'includes/svg/check.html' %}
+              <span class="hidden md:block">{% translate 'Finished' %}</span>
+          </a>
+      </div>
       <div>
           <a href="{% url 'pdf_highlight_overview' %}">
               {% include 'includes/svg/annotation.html' %}
@@ -47,7 +53,7 @@
 {% endblock %}
 
 {% block sidebar_extra_content %}
-{% if page == 'pdf_overview' or page == 'pdf_overview_starred' or page == 'pdf_overview_archived' %}
+{% if page == 'pdf_overview' or page == 'pdf_overview_starred' or page == 'pdf_overview_archived' or page == 'pdf_overview_finished' %}
 <div class="hidden md:block md:flex md:flex-row items-center pt-4 mt-3
             border-t border-slate-300 dark:border-slate-600 gap-x-2 pb-2 pl-2 font-semibold">
     <div class="flex flex-row items-center justify-between! w-full">
