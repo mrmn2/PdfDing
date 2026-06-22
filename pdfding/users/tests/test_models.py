@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from allauth.mfa.models import Authenticator
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
@@ -5,6 +7,7 @@ from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import Pdf
 from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.services.workspace_services import create_collection, create_workspace
+from users.models import NAGGING_INTERVAL_WEEKS
 
 
 class TestProfile(TestCase):
@@ -208,3 +211,17 @@ class TestProfile(TestCase):
 
         self.assertTrue(profile.has_access_to_workspace(other_workspace.id))
         self.assertFalse(profile.has_access_to_workspace(other_user.profile.current_workspace_id))
+
+    def test_needs_nagging_needed(self):
+        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(
+            weeks=(NAGGING_INTERVAL_WEEKS + 1)
+        )
+        self.user.profile.save()
+
+        self.assertEqual(self.user.profile.needs_nagging, True)
+
+    def test_needs_nagging_not_needed(self):
+        self.user.profile.last_time_nagged = datetime.now(tz=timezone.utc) - timedelta(weeks=NAGGING_INTERVAL_WEEKS - 1)
+        self.user.profile.save()
+
+        self.assertEqual(self.user.profile.needs_nagging, False)

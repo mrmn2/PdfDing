@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 from allauth.socialaccount.models import SocialAccount
@@ -281,6 +282,20 @@ class TestProfileSettingsViews(BaseProfileView):
         self.client.post(reverse('open_collapse_tags'), **headers)
         changed_user = User.objects.get(id=self.user.id)
         self.assertFalse(changed_user.profile.tags_open)
+
+    def test_update_last_time_nagged_no_htmx(self):
+        response = self.client.post(reverse('update_last_time_nagged'))
+
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
+    def test_a_update_last_time_nagged(self):
+        self.assertTrue((datetime.now(timezone.utc) - self.user.profile.last_time_nagged).total_seconds() > 1000)
+
+        headers = {'HTTP_HX-Request': 'true'}
+
+        self.client.post(reverse('update_last_time_nagged'), **headers)
+        changed_user = User.objects.get(id=self.user.id)
+        self.assertTrue((datetime.now(timezone.utc) - changed_user.profile.last_time_nagged).total_seconds() < 0.1)
 
     def test_change_sorting_post_shared_pdf(self):
         self.assertEqual(self.user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NEWEST)

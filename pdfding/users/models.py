@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import QuerySet
@@ -11,6 +13,11 @@ newest_trans = _('Newest')
 oldest_trans = _('Oldest')
 name_asc_trans = _('Name Asc')
 name_desc_trans = _('Name Desc')
+NAGGING_INTERVAL_WEEKS = 2
+
+
+def get_last_time_nagged_initial():  # pragma: no cover
+    return datetime.now(tz=timezone.utc) - timedelta(weeks=5)
 
 
 class Profile(models.Model):
@@ -88,6 +95,7 @@ class Profile(models.Model):
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=6, default=DarkMode.DARK)
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     language = models.CharField(choices=LanguageChoice.choices, max_length=30, default=LanguageChoice.ENGLISH)
+    last_time_nagged = models.DateTimeField(default=get_last_time_nagged_initial)
     pdf_inverted_mode = models.CharField(choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED)
     pdf_keep_screen_awake = models.CharField(
         choices=EnabledChoice.choices, max_length=8, default=EnabledChoice.DISABLED
@@ -241,6 +249,18 @@ class Profile(models.Model):
         language_codes = {'Auto': 'auto', 'English': 'en'}
 
         return language_codes[self.language]
+
+    @property
+    def needs_nagging(self):
+        """
+        Check if a user needs to be nagged. This is used for nagging users to fill out a survey
+        or support PdfDing through donations.
+        """
+
+        if (datetime.now(tz=timezone.utc) - self.last_time_nagged).days > NAGGING_INTERVAL_WEEKS * 7:
+            return True
+        else:
+            return False
 
     def has_access_to_workspace(self, workspace_id: str) -> bool:
         """Check if the profile has access to the specified workspace"""

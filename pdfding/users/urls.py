@@ -15,5 +15,6 @@ urlpatterns = [
     path('change_workspace/<workspace_id>', views.ChangeWorkspace.as_view(), name="change_workspace"),
     path('change_collection/<collection_id>', views.ChangeCollection.as_view(), name="change_collection"),
     path('open_collapse_tags', views.OpenCollapseTags.as_view(), name="open_collapse_tags"),
+    path('update_last_time_nagged', views.UpdateLastTimeNagged.as_view(), name="update_last_time_nagged"),
     path('signatures', views.Signatures.as_view(), name="signatures"),
 ]

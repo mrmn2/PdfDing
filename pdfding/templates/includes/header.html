@@ -1,7 +1,10 @@
 {% load static %}
 {% load i18n %}
 {# do not remove background as it otherwise sticky will lock strange #}
-<header class="pt-1 md:pt-2 pb-1 md:pb-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900">
+<header class="flex flex-col pt-1 md:pt-2 pb-1 md:pb-2 sticky top-0 z-40 bg-slate-50 dark:bg-slate-900">
+    {% if request.user.is_authenticated and request.user.profile.needs_nagging %}
+    {% include 'includes/nagging_banner.html' %}
+    {% endif %}
     <div class="pr-2 pl-2 md:pl-4 md:pr-4 lg:pr-6 flex items-center justify-between">
         <a class="flex items-center gap-x-2 md:pr-4 py-1" href="/">
             <div id="logo_div" class="flex items-center justify-center bg-primary h-8 w-8 rounded-full">
