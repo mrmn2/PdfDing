@@ -68,6 +68,13 @@
                                     </svg>
                                 </div>
                                 {% endif %}
+                                {% if pdf.finished %}
+                                <div id="finished_icon" class="pl-2">
+                                    <svg class="text-primary" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 12.6111L8.92308 17.5L20 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                {% endif %}
                             </div>
                             <div class="pr-0 md:pr-4">
                                 <a id="name-edit" class="cursor-pointer text-primary hover:text-secondary"
@@ -107,6 +114,18 @@
                            {% trans 'Unarchive' %}
                            {% else %}
                            {% trans 'Archive' %}
+                           {% endif %}
+                        </a>
+                        <svg class="w-5! h-5!" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12.1" cy="12.1" r="1"></circle>
+                        </svg>
+                        <a id="finish"
+                           hx-post="{% url 'finish' pdf.id %}"
+                           hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+                           {% if pdf.finished %}
+                           {% trans 'Unfinish' %}
+                           {% else %}
+                           {% trans 'Finish' %}
                            {% endif %}
                         </a>
                     </div>

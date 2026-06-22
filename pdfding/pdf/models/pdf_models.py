@@ -125,6 +125,7 @@ class Pdf(models.Model):
         help_text=_('Optional, save file in a sub directory of the pdf directory, e.g: important/pdfs'),
     )
     file = models.FileField(upload_to=get_file_path, max_length=500, blank=False)
+    finished = models.BooleanField(default=False)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     last_viewed_date = models.DateTimeField(
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)

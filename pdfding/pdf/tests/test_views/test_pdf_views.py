@@ -847,6 +847,60 @@ class TestViews(TestCase):
         response = self.client.post(reverse('archive', kwargs={'identifier': pdf.id}))
         self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
 
+    def test_filter_objects_finished(self):
+        pdf_1 = Pdf.objects.create(
+            collection=self.user.profile.current_collection, name='pdf_to_be_found_1', finished=True
+        )
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found_2')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='not_to_be_found')
+
+        response = self.client.get(f'{reverse('pdf_overview')}?selection=finished')
+
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
+
+        self.assertEqual(list(filtered_pdfs), [pdf_1])
+
+    @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
+    def test_get_extra_context_selection_finished(self, mock_get_tag_info_dict):
+        response = self.client.get(f'{reverse('pdf_overview')}?selection=finished')
+
+        generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        expected_extra_context = {
+            'search_query': '',
+            'tag_query': [],
+            'tag_info_dict': 'tag_info_dict',
+            'special_pdf_selection': 'finished',
+            'page': 'pdf_overview_finished',
+            'layout': 'Compact',
+            'current_collection_id': str(self.user.id),
+            'current_collection_name': 'Default',
+            'current_workspace_id': str(self.user.id),
+        }
+
+        self.assertEqual(generated_extra_context, expected_extra_context)
+
+    def test_finish(self):
+        headers = {'HTTP_HX-Request': 'true'}
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf', finished=False)
+
+        # mark as finished
+        response = self.client.post(reverse('finish', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertTrue(pdf.finished)
+        self.assertEqual(response.status_code, 200)
+
+        # unmark as finished
+        response = self.client.post(reverse('finish', kwargs={'identifier': pdf.id}), **headers)
+        pdf = Pdf.objects.get(id=pdf.id)
+        self.assertFalse(pdf.finished)
+        self.assertEqual(response.status_code, 200)
+
+    def test_finish_no_htmx(self):
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+
+        response = self.client.post(reverse('finish', kwargs={'identifier': pdf.id}))
+        self.assertRedirects(response, reverse('pdf_overview'), status_code=302)
+
     def test_delete_get_no_htmx(self):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 

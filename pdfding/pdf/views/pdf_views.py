@@ -164,7 +164,7 @@ class OverviewMixin(BasePdfMixin):
         search = request.GET.get('search', '')
         tags = request.GET.get('tags', [])
 
-        # filter for starred or archived pdfs
+        # filter for starred, archived or finished pdfs
         pdf_selection = request.GET.get('selection', '')
 
         if pdf_selection == 'archived':
@@ -173,6 +173,8 @@ class OverviewMixin(BasePdfMixin):
             pdfs = pdfs.filter(archived=False)
             if pdf_selection == 'starred':
                 pdfs = pdfs.filter(starred=True)
+            elif pdf_selection == 'finished':
+                pdfs = pdfs.filter(finished=True)
 
         if tags:
             tags = tags.split(' ')
@@ -209,7 +211,7 @@ class OverviewMixin(BasePdfMixin):
         if tag_query:
             tag_query = tag_query.split(' ')
 
-        if request.GET.get('selection', '') in ['starred', 'archived']:
+        if request.GET.get('selection', '') in ['starred', 'archived', 'finished']:
             special_pdf_selection = request.GET.get('selection')
             page = f'pdf_overview_{special_pdf_selection}'
 
@@ -859,6 +861,23 @@ class Archive(PdfMixin, View):
             # archived pdfs cannot be starred
             if pdf.starred:
                 pdf.starred = False
+
+            pdf.save()
+
+            return HttpResponseClientRefresh()
+
+        return redirect('pdf_overview')
+
+
+class Finish(PdfMixin, View):
+    """View for marking and unmarking pdfs as finished."""
+
+    def post(self, request: HttpRequest, identifier: str):
+        """Mark or unmark the specified pdf as finished."""
+
+        if request.htmx:
+            pdf = self.get_object(request, identifier)
+            pdf.finished = not pdf.finished
 
             pdf.save()
 

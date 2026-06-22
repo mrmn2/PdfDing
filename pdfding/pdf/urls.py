@@ -25,6 +25,7 @@ urlpatterns = [
     path('view/<identifier>', pdf_views.ViewerView.as_view(), name='view_pdf'),
     path('star/<identifier>', pdf_views.Star.as_view(), name='star'),
     path('archive/<identifier>', pdf_views.Archive.as_view(), name='archive'),
+    path('finish/<identifier>', pdf_views.Finish.as_view(), name='finish'),
     path('highlights', pdf_views.HighlightOverview.as_view(), name='pdf_highlight_overview'),
     path(
         'highlights/get_next_overview_page/<int:page>/',
