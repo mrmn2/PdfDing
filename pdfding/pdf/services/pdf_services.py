@@ -1,3 +1,4 @@
+import json
 import re
 import traceback
 from collections import defaultdict
@@ -17,6 +18,7 @@ from django.forms import ValidationError
 from django.http import Http404, HttpRequest
 from pdf.models.collection_models import Collection
 from pdf.models.pdf_models import (
+    Metadata,
     Pdf,
     PdfAnnotation,
     PdfComment,
@@ -31,8 +33,6 @@ from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_p
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
 from users.models import Profile
-
-import json
 
 logger = getLogger(__file__)
 
@@ -59,6 +59,7 @@ class PdfProcessingServices:
         )
 
         # process with pdf libraries: add number of pages, thumbnail, preview, highlights and comments
+        cls.set_metadata(pdf)
         cls.process_with_pypdfium(pdf)
         cls.set_highlights_and_comments(pdf)
 
@@ -72,6 +73,35 @@ class PdfProcessingServices:
             workspace.tag_set.add(tag)
 
         return pdf
+
+    @classmethod
+    def set_metadata(cls, pdf: Pdf):
+        """Extract the PDF's metadata and fill the object with it"""
+
+        try:
+            pypdf_pdf = PdfReader(pdf.file)
+
+            title = pypdf_pdf.metadata.get('/Title', '').strip()
+            if not title:
+                title = pdf.name
+
+            extracted_abstract = pypdf_pdf.metadata.get('/Subject', '').strip()
+            extracted_authors = pypdf_pdf.metadata.get('/Author', '').strip()
+            extracted_keywords = pypdf_pdf.metadata.get('/Keywords', '').strip()
+
+            Metadata.objects.create(
+                title=title,
+                pdf=pdf,
+                abstract=extracted_abstract,
+                authors=extracted_authors,
+                keywords=extracted_keywords,
+            )
+        except ObjectDoesNotExist as e:  # nosec # noqa
+            Metadata.objects.create(title=pdf.name, pdf=pdf)
+            logger.info(
+                f'Could not extract medatata of "{pdf.name}" of workspace "{pdf.collection.workspace.id}" with Pypdfium'
+            )
+            logger.info(traceback.format_exc())
 
     @classmethod
     def process_with_pypdfium(

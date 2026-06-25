@@ -216,6 +216,40 @@ class Pdf(models.Model):
         return mark_safe(cleaned_notes_html)  # nosec
 
 
+class Metadata(models.Model):
+    """Model for the PDF metadata"""
+
+    class ReferenceType(models.TextChoices):
+        ARTICLE = 'Article'
+        BOOK = 'Book'
+        BOOKLET = ('Booklet',)
+        CONFERENCE = ('Conference',)
+        INBOOK = ('Inbook',)
+        INCOLLECTION = ('Incollection',)
+        INPROCEEDINGS = ('Inproceedings',)
+        MANUAL = ('Manual',)
+        MASTERTHESIS = ('Masterthesis',)
+        MISC = ('Misc',)
+        PHDTHESIS = ('Phdthesis',)
+        PROCEEDINGS = ('Proceedings',)
+        TECHREPORT = ('Techreport',)
+        UNPUBLISHED = ('Unpublished',)
+
+    authors = models.CharField(max_length=256, blank=True)
+    abstract = models.TextField(default='', blank=True, help_text=_('Optional'))
+    doi = models.CharField(max_length=128, blank=True)
+    issue = models.CharField(max_length=64, blank=True)
+    journal = models.CharField(max_length=128, blank=True)
+    keywords = models.TextField(blank=True, help_text=_('Optional'))
+    pages = models.CharField(max_length=32, blank=True)
+    publisher = models.CharField(max_length=64, blank=True)
+    reference_type = models.CharField(choices=ReferenceType.choices, max_length=32, blank=True)
+    pdf = models.OneToOneField(Pdf, on_delete=models.CASCADE, blank=False)
+    title = models.CharField(max_length=512, blank=False)
+    url = models.CharField(max_length=128, blank=True)
+    volume = models.CharField(max_length=16)
+
+
 class PdfAnnotation(models.Model):
     """Model for the base pdf annotation"""
 

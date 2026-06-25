@@ -2,8 +2,10 @@ import importlib
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
 from django.apps import apps
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files import File
 from django.db import connection
 from django.db.models.functions import Lower
@@ -24,6 +26,7 @@ add_comments_highlights = importlib.import_module('pdf.migrations.0015_add_comme
 rename_pdfs_and_add_file_directory = importlib.import_module('pdf.migrations.0016_rename_pdfs_and_add_file_directory')
 fill_collections_workspaces = importlib.import_module('pdf.migrations.0020_fill_collections_workspaces')
 adjust_file_paths_to_ws_collection = importlib.import_module('pdf.migrations.0022_adjust_pdf_paths_to_ws_collection')
+set_metadata_title = importlib.import_module('pdf.migrations.0029_add_metadata')
 
 
 class TestMigrations(TestCase):
@@ -241,3 +244,13 @@ class TestMigrations(TestCase):
             self.assertFalse((MEDIA_ROOT / relative_path_old).exists())
             self.assertTrue((MEDIA_ROOT / relative_path_moved).exists())
             (MEDIA_ROOT / relative_path_moved).unlink()
+
+    def test_set_metadata_title(self):
+        # assert pdf has no metadata yet
+        with pytest.raises(ObjectDoesNotExist):
+            self.pdf.metadata
+
+        set_metadata_title.set_metadata_title(apps, connection.schema_editor())
+
+        changed_pdf = Pdf.objects.get(id=self.pdf.id)
+        assert changed_pdf.metadata.title == self.pdf.name

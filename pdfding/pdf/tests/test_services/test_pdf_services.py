@@ -5,6 +5,7 @@ from unittest import mock
 from uuid import uuid4
 
 import pdf.services.pdf_services as service
+import pytest
 from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -49,9 +50,81 @@ class TestPdfProcessingServices(TestCase):
         self.assertTrue(pdf.thumbnail)
         self.assertEqual(pdf.pdfcomment_set.count(), 2)
         self.assertEqual(pdf.pdfhighlight_set.count(), 2)
+        self.assertEqual(pdf.metadata.title, pdf_name)
 
         for tag, expected_tag_name in zip(pdf.tags.all().order_by('name'), tag_string.split(' ')):
             self.assertEqual(tag.name, expected_tag_name)
+
+    @mock.patch('pdf.services.pdf_services.PdfReader.__new__')
+    def test_setmetadata(self, mock_pdfreader):
+        # assert pdf has no metadata yet
+        with pytest.raises(AttributeError):
+            self.pdf.metadata
+
+        mocked_obj = mock.MagicMock
+        metadata_dict = {
+            '/Title': 'some_title ',
+            '/Author': ' some_author',
+            '/Subject': 'abstract',
+            '/Keywords': 'some_keywords',
+        }
+        mocked_obj.metadata = mock.PropertyMock(return_value=metadata_dict)
+        mock_pdfreader.return_value = mocked_obj
+
+        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
+        service.PdfProcessingServices.set_metadata(pdf)
+
+        assert pdf.metadata.title == 'some_title'
+        assert pdf.metadata.abstract == 'abstract'
+        assert pdf.metadata.authors == 'some_author'
+        assert pdf.metadata.keywords == 'some_keywords'
+
+    @mock.patch('pdf.services.pdf_services.PdfReader.__new__')
+    def test_setmetadata_empty_title(self, mock_pdfreader):
+        mocked_obj = mock.MagicMock
+        metadata_dict = {
+            '/Title': ' ',
+            '/Author': '',
+            '/Subject': 'abstract',
+            '/Keywords': 'some_keywords',
+        }
+        mocked_obj.metadata = mock.PropertyMock(return_value=metadata_dict)
+        mock_pdfreader.return_value = mocked_obj
+
+        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
+        service.PdfProcessingServices.set_metadata(pdf)
+
+        assert pdf.metadata.title == pdf.name
+        assert pdf.metadata.abstract == 'abstract'
+        assert not pdf.metadata.authors
+        assert pdf.metadata.keywords == 'some_keywords'
+
+    @mock.patch('pdf.services.pdf_services.PdfReader.__new__')
+    def test_setmetadata_missing_title(self, mock_pdfreader):
+        mocked_obj = mock.MagicMock
+        metadata_dict = dict()
+        mocked_obj.metadata = mock.PropertyMock(return_value=metadata_dict)
+        mock_pdfreader.return_value = mocked_obj
+
+        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
+        service.PdfProcessingServices.set_metadata(pdf)
+
+        assert pdf.metadata.title == pdf.name
+        assert not pdf.metadata.abstract
+        assert not pdf.metadata.authors
+        assert not pdf.metadata.keywords
+
+    def test_setmetadata_exception(self):
+        # assert pdf has no metadata yet
+        with pytest.raises(AttributeError):
+            self.pdf.metadata
+
+        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
+
+        with pytest.raises(TypeError):
+            service.PdfProcessingServices.set_metadata(pdf)
+
+            assert pdf.metadata.title == pdf.name
 
     @mock.patch('pdf.services.pdf_services.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):
