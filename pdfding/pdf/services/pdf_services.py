@@ -2,6 +2,7 @@ import json
 import re
 import traceback
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import datetime
 from io import BytesIO
 from logging import getLogger
@@ -37,6 +38,14 @@ from users.models import Profile
 logger = getLogger(__file__)
 
 
+@dataclass
+class TmpMetadata:
+    abstract: str
+    authors: str
+    keywords: str
+    title: str
+
+
 class PdfProcessingServices:
     @classmethod
     def create_pdf(
@@ -48,9 +57,19 @@ class PdfProcessingServices:
         notes: str = '',
         tag_string: str = '',
         file_directory: str = '',
+        use_pdf_title: bool = False,
     ):
+        tmp_metadata = cls.extract_metadata(pdf_file, collection.workspace)
+        pdf_name, tmp_metadata = cls.create_pdf_name_and_title(
+            name_from_form=name,
+            use_pdf_title=use_pdf_title,
+            tmp_metadata=tmp_metadata,
+            pdf_file=pdf_file,
+            workspace=collection.workspace,
+        )
+
         pdf = Pdf.objects.create(
-            name=name,
+            name=pdf_name,
             description=description,
             notes=notes,
             file=pdf_file,
@@ -58,8 +77,15 @@ class PdfProcessingServices:
             collection=collection,
         )
 
+        Metadata.objects.create(
+            pdf=pdf,
+            title=tmp_metadata.title,
+            abstract=tmp_metadata.abstract,
+            authors=tmp_metadata.authors,
+            keywords=tmp_metadata.keywords,
+        )
+
         # process with pdf libraries: add number of pages, thumbnail, preview, highlights and comments
-        cls.set_metadata(pdf)
         cls.process_with_pypdfium(pdf)
         cls.set_highlights_and_comments(pdf)
 
@@ -75,33 +101,51 @@ class PdfProcessingServices:
         return pdf
 
     @classmethod
-    def set_metadata(cls, pdf: Pdf):
-        """Extract the PDF's metadata and fill the object with it"""
+    def extract_metadata(cls, pdf_file: File, workspace: Workspace) -> TmpMetadata:
+        """Extract the PDF's metadata."""
 
         try:
-            pypdf_pdf = PdfReader(pdf.file)
+            pypdf_pdf = PdfReader(pdf_file)
 
-            title = pypdf_pdf.metadata.get('/Title', '').strip()
-            if not title:
-                title = pdf.name
-
+            extracted_title = pypdf_pdf.metadata.get('/Title', '').strip()
             extracted_abstract = pypdf_pdf.metadata.get('/Subject', '').strip()
             extracted_authors = pypdf_pdf.metadata.get('/Author', '').strip()
             extracted_keywords = pypdf_pdf.metadata.get('/Keywords', '').strip()
 
-            Metadata.objects.create(
-                title=title,
-                pdf=pdf,
+            tmp_metadata = TmpMetadata(
+                title=extracted_title,
                 abstract=extracted_abstract,
                 authors=extracted_authors,
                 keywords=extracted_keywords,
             )
-        except ObjectDoesNotExist as e:  # nosec # noqa
-            Metadata.objects.create(title=pdf.name, pdf=pdf)
-            logger.info(
-                f'Could not extract medatata of "{pdf.name}" of workspace "{pdf.collection.workspace.id}" with Pypdfium'
-            )
+        except Exception as e:  # nosec # noqa
+            tmp_metadata = TmpMetadata('', '', '', '')
+            logger.info(f'Could not extract medatata of "{pdf_file.name}" workspace "{workspace.id}" with Pypdfium')
             logger.info(traceback.format_exc())
+
+        return tmp_metadata
+
+    @classmethod
+    def create_pdf_name_and_title(
+        cls, name_from_form: str, use_pdf_title: bool, tmp_metadata: TmpMetadata, pdf_file: File, workspace: Workspace
+    ) -> tuple[str, TmpMetadata]:
+        """Create the pdf name and its metadata title."""
+
+        if use_pdf_title:
+            if tmp_metadata.title:
+                name = tmp_metadata.title
+            else:
+                name = create_name_from_file(pdf_file)
+        else:
+            name = name_from_form
+
+        if not tmp_metadata.title:
+            tmp_metadata.title = name
+
+        if check_if_pdf_with_name_exists(name, workspace):
+            name += f'_{str(uuid4())[:8]}'
+
+        return name, tmp_metadata
 
     @classmethod
     def process_with_pypdfium(

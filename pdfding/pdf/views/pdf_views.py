@@ -63,9 +63,6 @@ class AddPdfMixin(BasePdfMixin):
         else:
             pdf_file = form.files['file']
 
-        if form.data.get('use_file_name'):
-            name = pdf_services.create_unique_name_from_file(pdf_file, collection.workspace)
-
         PdfProcessingServices.create_pdf(
             name=name,
             collection=collection,
@@ -74,6 +71,7 @@ class AddPdfMixin(BasePdfMixin):
             notes=notes,
             tag_string=tag_string,
             file_directory=file_directory,
+            use_pdf_title=form.data.get('use_pdf_title'),
         )
 
 
@@ -121,16 +119,15 @@ class BulkAddPdfMixin(BasePdfMixin):
                 form.data.get('skip_existing')
                 and (pdf_services.create_name_from_file(file), file.size) in pdf_info_list
             ):
-                pdf_name = pdf_services.create_unique_name_from_file(file, workspace)
-
                 PdfProcessingServices.create_pdf(
-                    name=pdf_name,
+                    name='dummy',
                     collection=collection,
                     pdf_file=file,
                     description=description,
                     notes=notes,
                     file_directory=file_directory,
                     tag_string=tag_string,
+                    use_pdf_title=True,
                 )
 
 

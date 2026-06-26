@@ -55,8 +55,8 @@ class TestPdfProcessingServices(TestCase):
         for tag, expected_tag_name in zip(pdf.tags.all().order_by('name'), tag_string.split(' ')):
             self.assertEqual(tag.name, expected_tag_name)
 
-    @mock.patch('pdf.services.pdf_services.PdfReader.__new__')
-    def test_setmetadata(self, mock_pdfreader):
+    @mock.patch('pdf.services.pdf_services.PdfReader')
+    def test_extract_metadata(self, mock_pdfreader):
         # assert pdf has no metadata yet
         with pytest.raises(AttributeError):
             self.pdf.metadata
@@ -71,15 +71,14 @@ class TestPdfProcessingServices(TestCase):
         mocked_obj.metadata = mock.PropertyMock(return_value=metadata_dict)
         mock_pdfreader.return_value = mocked_obj
 
-        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
-        service.PdfProcessingServices.set_metadata(pdf)
+        metadata = service.PdfProcessingServices.extract_metadata('dummy', 'another_dummy')
 
-        assert pdf.metadata.title == 'some_title'
-        assert pdf.metadata.abstract == 'abstract'
-        assert pdf.metadata.authors == 'some_author'
-        assert pdf.metadata.keywords == 'some_keywords'
+        assert metadata.title == 'some_title'
+        assert metadata.abstract == 'abstract'
+        assert metadata.authors == 'some_author'
+        assert metadata.keywords == 'some_keywords'
 
-    @mock.patch('pdf.services.pdf_services.PdfReader.__new__')
+    @mock.patch('pdf.services.pdf_services.PdfReader')
     def test_setmetadata_empty_title(self, mock_pdfreader):
         mocked_obj = mock.MagicMock
         metadata_dict = {
@@ -91,40 +90,105 @@ class TestPdfProcessingServices(TestCase):
         mocked_obj.metadata = mock.PropertyMock(return_value=metadata_dict)
         mock_pdfreader.return_value = mocked_obj
 
-        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
-        service.PdfProcessingServices.set_metadata(pdf)
+        metadata = service.PdfProcessingServices.extract_metadata('dummy', 'another_dummy')
 
-        assert pdf.metadata.title == pdf.name
-        assert pdf.metadata.abstract == 'abstract'
-        assert not pdf.metadata.authors
-        assert pdf.metadata.keywords == 'some_keywords'
+        assert not metadata.title
+        assert metadata.abstract == 'abstract'
+        assert not metadata.authors
+        assert metadata.keywords == 'some_keywords'
 
-    @mock.patch('pdf.services.pdf_services.PdfReader.__new__')
+    @mock.patch('pdf.services.pdf_services.PdfReader')
     def test_setmetadata_missing_title(self, mock_pdfreader):
         mocked_obj = mock.MagicMock
         metadata_dict = dict()
         mocked_obj.metadata = mock.PropertyMock(return_value=metadata_dict)
         mock_pdfreader.return_value = mocked_obj
 
-        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
-        service.PdfProcessingServices.set_metadata(pdf)
+        metadata = service.PdfProcessingServices.extract_metadata('dummy', 'another_dummy')
 
-        assert pdf.metadata.title == pdf.name
-        assert not pdf.metadata.abstract
-        assert not pdf.metadata.authors
-        assert not pdf.metadata.keywords
+        assert not metadata.title
+        assert not metadata.abstract
+        assert not metadata.authors
+        assert not metadata.keywords
 
     def test_setmetadata_exception(self):
-        # assert pdf has no metadata yet
-        with pytest.raises(AttributeError):
-            self.pdf.metadata
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_1')
 
-        pdf = Pdf.objects.create(name='some_name', collection=self.user.profile.current_collection)
+        metadata = service.PdfProcessingServices.extract_metadata(pdf, self.user.profile.current_collection.workspace)
 
-        with pytest.raises(TypeError):
-            service.PdfProcessingServices.set_metadata(pdf)
+        assert not metadata.title
+        assert not metadata.abstract
+        assert not metadata.authors
+        assert not metadata.keywords
 
-            assert pdf.metadata.title == pdf.name
+    def test_create_pdf_name_and_title_from_title(self):
+        metadata = service.Metadata(title='some_title')
+
+        name, metadata = service.PdfProcessingServices.create_pdf_name_and_title(
+            'bla',
+            use_pdf_title=True,
+            tmp_metadata=metadata,
+            pdf_file='bla',
+            workspace=self.user.profile.current_collection.workspace,
+        )
+
+        assert name == 'some_title'
+
+    @mock.patch('pdf.services.pdf_services.create_name_from_file', return_value='file_name')
+    def test_create_pdf_name_and_title_from_file_name(self, mock_create_name_from_file):
+        metadata = service.Metadata()
+
+        name, metadata = service.PdfProcessingServices.create_pdf_name_and_title(
+            'bla',
+            use_pdf_title=True,
+            tmp_metadata=metadata,
+            pdf_file='bla',
+            workspace=self.user.profile.current_collection.workspace,
+        )
+
+        assert name == 'file_name'
+
+    def test_create_pdf_name_and_title_from_form(self):
+        metadata = service.Metadata(title='some_title')
+
+        name, metadata = service.PdfProcessingServices.create_pdf_name_and_title(
+            'from_form',
+            use_pdf_title=False,
+            tmp_metadata=metadata,
+            pdf_file='bla',
+            workspace=self.user.profile.current_collection.workspace,
+        )
+
+        assert name == 'from_form'
+
+    def test_create_pdf_name_and_title_set_meta(self):
+        metadata = service.Metadata()
+
+        name, metadata = service.PdfProcessingServices.create_pdf_name_and_title(
+            'from_form',
+            use_pdf_title=False,
+            tmp_metadata=metadata,
+            pdf_file='bla',
+            workspace=self.user.profile.current_collection.workspace,
+        )
+
+        assert name == 'from_form'
+        assert metadata.title == 'from_form'
+
+    @mock.patch('pdf.services.pdf_services.check_if_pdf_with_name_exists', return_value=True)
+    @mock.patch('pdf.services.pdf_services.uuid4', return_value='123456789')
+    def test_create_pdf_name_and_title_existing(self, mock_uuid4, mock_check):
+        metadata = service.Metadata(title='existing_name')
+
+        name, metadata = service.PdfProcessingServices.create_pdf_name_and_title(
+            'bla',
+            use_pdf_title=True,
+            tmp_metadata=metadata,
+            pdf_file='bla',
+            workspace=self.user.profile.current_collection.workspace,
+        )
+
+        assert name == 'existing_name_12345678'
 
     @mock.patch('pdf.services.pdf_services.PdfProcessingServices.set_thumbnail_and_preview')
     def test_set_process_with_pypdfium_no_images(self, mock_set_thumbnail_and_preview):

@@ -30,7 +30,7 @@ class AddFormNoFile(forms.ModelForm):
         ),
     )
 
-    use_file_name = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
+    use_pdf_title = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Pdf

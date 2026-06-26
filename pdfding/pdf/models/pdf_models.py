@@ -129,7 +129,7 @@ class Pdf(models.Model):
     last_viewed_date = models.DateTimeField(
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
     )
-    name = models.CharField(max_length=150, blank=False)
+    name = models.CharField(max_length=512, blank=False)
     notes = models.TextField(default='', blank=True, help_text=_('Optional, supports Markdown'))
     number_of_pages = models.IntegerField(default=-1)
     preview = models.FileField(upload_to=get_preview_path, null=True, blank=False)

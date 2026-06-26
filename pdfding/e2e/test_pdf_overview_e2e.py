@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from django.contrib.auth.models import User
 from django.test import override_settings
@@ -62,8 +62,18 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         dummy_file_path.unlink()
 
+    @patch('pdf.services.pdf_services.PdfReader')
     @patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_add_pdf_use_file_name(self, mock_from_buffer):
+    def test_add_pdf_use_title(self, mock_from_buffer, mock_reader):
+        mocked_obj = MagicMock
+        metadata_dict = {
+            '/Title': 'some_title ',
+            '/Author': ' some_author',
+            '/Subject': 'abstract',
+            '/Keywords': 'some_keywords',
+        }
+        mocked_obj.metadata = PropertyMock(return_value=metadata_dict)
+        mock_reader.return_value = mocked_obj
         # this also tests the overview
 
         # just use some dummy file for uploading
@@ -73,7 +83,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
 
         with sync_playwright() as p:
             self.open(reverse('add_pdf'), p)
-            self.page.get_by_label("Use File Name").check()
+            self.page.get_by_label("Use PDF Title").check()
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
             self.page.locator("#id_file").click()
@@ -82,7 +92,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_placeholder("Add Tags").fill("bread tag_1 banana tag_0 1")
             self.page.get_by_role("button", name="Submit").click()
 
-            expect(self.page.locator("body")).to_contain_text("dummy")
+            expect(self.page.locator("body")).to_contain_text("some_title")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
             expect(self.page.locator("body")).to_contain_text("now")
@@ -105,7 +115,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#notes")).not_to_be_visible()
 
             # add pdf and open notes field
-            self.page.get_by_label("Use File Name").check()
+            self.page.get_by_label("Use PDF Title").check()
             self.page.locator("#id_file").click()
             self.page.locator("#id_file").set_input_files(dummy_file_path)
             self.page.locator("#show_additional").click()
@@ -162,7 +172,8 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
     def test_add_pdf_demo_mode(self):
         with sync_playwright() as p:
             self.open(reverse('add_pdf'), p)
-            self.page.get_by_label("Use File Name").check()
+            self.page.get_by_placeholder("Add PDF Name").click()
+            self.page.get_by_placeholder("Add PDF Name").fill("Some Name")
             self.page.get_by_placeholder("Add Description").click()
             self.page.get_by_placeholder("Add Description").fill("Some Description")
             self.page.get_by_placeholder("Add Tags").click()
@@ -170,7 +181,7 @@ class NoPdfE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#id_file")).not_to_be_visible()
             self.page.get_by_role("button", name="Submit").click()
 
-            expect(self.page.locator("body")).to_contain_text("demo")
+            expect(self.page.locator("body")).to_contain_text("Some Name")
             expect(self.page.locator("body")).to_contain_text("#1 #banana #bread #tag_0 #tag_1")
             expect(self.page.locator("body")).to_contain_text("Some Description")
             expect(self.page.locator("body")).to_contain_text("now")

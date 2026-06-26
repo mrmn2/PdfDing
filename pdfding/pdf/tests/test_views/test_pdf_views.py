@@ -83,7 +83,7 @@ class TestAddPDFMixin(TestCase):
     @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
-    def test_obj_save_use_file_name(
+    def test_obj_save_use_pdf_title(
         self, mock_from_buffer, mock_process_with_pypdfium, mock_set_highlights_and_comments
     ):
         # do a dummy request so we can get a request object
@@ -92,7 +92,7 @@ class TestAddPDFMixin(TestCase):
             data={
                 'name': 'bla',
                 'tag_string': 'tag_a tag_2',
-                'use_file_name': True,
+                'use_pdf_title': True,
                 'collection': self.user.profile.current_collection.id,
             },
             profile=self.user.profile,

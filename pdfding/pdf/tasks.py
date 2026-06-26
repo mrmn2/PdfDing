@@ -45,17 +45,16 @@ def consume_function(skip_existing: bool):
         for file_path in user_consume_file_paths:
             try:
                 if passes_consume_condition(file_path, skip_existing, pdf_info_list):
-                    pdf_name = pdf_services.create_unique_name_from_file(file_path, user.profile)
-
                     with file_path.open(mode="rb") as f:
                         pdf_file = File(f, name=file_path.name)
                         collection = Collection.objects.get(id=user.id)
 
                         pdf_services.PdfProcessingServices.create_pdf(
-                            name=pdf_name,
+                            name='place_holder',
                             collection=collection,
                             pdf_file=pdf_file,
                             tag_string=settings.CONSUME_TAG_STRING,
+                            use_pdf_title=True,
                         )
 
             except Exception as e:  # pragma: no cover # nosec # noqa
