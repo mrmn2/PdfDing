@@ -120,7 +120,7 @@ class PdfProcessingServices:
             )
         except Exception as e:  # nosec # noqa
             tmp_metadata = TmpMetadata('', '', '', '')
-            logger.info(f'Could not extract medatata of "{pdf_file.name}" workspace "{workspace.id}" with Pypdfium')
+            logger.info(f'Could not extract medatata of "{pdf_file.name}" workspace "{workspace.id}" with Pypdf')
             logger.info(traceback.format_exc())
 
         return tmp_metadata

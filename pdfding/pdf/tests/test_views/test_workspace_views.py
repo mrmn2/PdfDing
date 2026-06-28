@@ -78,6 +78,8 @@ class TestWorkspaceDetails(WorkspaceTestCase):
         self.assertTemplateUsed(response, 'workspace_details.html')
         assert response.context['workspace'] == self.user.profile.current_workspace
         assert response.context['number_of_pdfs'] == 2
+        assert response.context['sidebar_name'] == 'includes/workspace_sidebar.html'
+        assert response.context['page'] == 'workspace_details'
         # size of two demo files
         assert response.context['pdfs_total_size'] == '58.9 KB'
 
@@ -100,6 +102,8 @@ class TestCollectionDetails(WorkspaceTestCase):
         assert response.context['collection'] == default_collection
         assert response.context['current_collection_id'] == default_collection.id
         assert response.context['current_collection_name'] == default_collection.name
+        assert response.context['sidebar_name'] == 'includes/workspace_sidebar.html'
+        assert response.context['page'] == 'collection_details'
 
 
 class TestEditWorkspaceMixin(WorkspaceTestCase):

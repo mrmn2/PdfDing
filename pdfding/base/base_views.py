@@ -158,7 +158,13 @@ class BaseDetails(View):
         """Display the details page."""
 
         obj = self.get_object(request, identifier)
-        context = {self.obj_name: obj}
+
+        if 'shared' in self.obj_name:
+            sidebar_name = 'includes/shared_details_sidebar.html'
+        else:
+            sidebar_name = f'includes/{self.obj_name}_details_sidebar.html'
+
+        context = {self.obj_name: obj, 'page': f'{self.obj_name}_details', 'sidebar_name': sidebar_name}
 
         return render(request, f'{self.obj_name}_details.html', context)
 

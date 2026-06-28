@@ -138,6 +138,8 @@ class Details(WorkspaceMixin, base_views.BaseDetails):
         context = {
             'workspace': obj,
             'number_of_pdfs': ws_pdfs.count(),
+            'sidebar_name': 'includes/workspace_sidebar.html',
+            'page': 'workspace_details',
             'pdfs_total_size': self.size_with_unit(ws_pdfs_total_size),
         }
 
@@ -168,6 +170,8 @@ class CollectionDetails(WorkspaceMixin, base_views.BaseDetails):
             'current_collection_id': identifier,
             'collection': collection,
             'current_collection_name': collection.name,
+            'sidebar_name': 'includes/workspace_sidebar.html',
+            'page': 'collection_details',
         }
 
         return render(request, 'collection_details.html', context)

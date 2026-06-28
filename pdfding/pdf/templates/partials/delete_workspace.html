@@ -1,5 +1,5 @@
 {% load i18n %}
-<div id="delete_workspace_modal" class="rounded-2xl drop-shadow-2xl shadow-black w-full py-4
+<div id="delete_modal" class="rounded-2xl drop-shadow-2xl shadow-black w-full py-4
             bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700">
     <div class="px-4">
       <h2 class="pb-2 truncate">{% blocktrans %} Delete {{ workspace_name }} {% endblocktrans %}</h2>
@@ -10,7 +10,7 @@
                     hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
               {% trans 'Submit' %}
             </button>
-            <div id="cancel_delete" @click="show_delete_workspace_modal = false"
+            <div id="cancel_delete" @click="show_delete_modal = false"
                  class="flex! items-center font-semibold text-red-500 border-2 border-red-500 rounded-md cursor-pointer hover:bg-red-500 hover:text-white">
               <span class="px-1">{% trans 'Cancel' %}</span>
             </div>

@@ -73,6 +73,19 @@ class ObjectMixin(BaseMixin):
         return pdf
 
 
+class SharedMixin(BaseMixin):
+    obj_name = 'shared_pdf'
+
+    @staticmethod
+    def get_object(request: HttpRequest, shared_id: str):
+        """Get the shared pdf specified by the ID"""
+
+        user_profile = request.user.profile
+        shared_pdf = user_profile.all_shared_pdfs.get(id=shared_id)
+
+        return shared_pdf
+
+
 class EditMixin(ObjectMixin):
     obj_class = Pdf
     fields_requiring_extra_processing = ['process_description']
@@ -123,6 +136,10 @@ class Download(ObjectMixin, base_views.BaseDownload):
 
 
 class Details(ObjectMixin, base_views.BaseDetails):
+    """Details View"""
+
+
+class SharedDetails(SharedMixin, base_views.BaseDetails):
     """Details View"""
 
 

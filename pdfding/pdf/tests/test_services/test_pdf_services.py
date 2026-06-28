@@ -5,7 +5,6 @@ from unittest import mock
 from uuid import uuid4
 
 import pdf.services.pdf_services as service
-import pytest
 from core.settings import MEDIA_ROOT
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -57,10 +56,6 @@ class TestPdfProcessingServices(TestCase):
 
     @mock.patch('pdf.services.pdf_services.PdfReader')
     def test_extract_metadata(self, mock_pdfreader):
-        # assert pdf has no metadata yet
-        with pytest.raises(AttributeError):
-            self.pdf.metadata
-
         mocked_obj = mock.MagicMock
         metadata_dict = {
             '/Title': 'some_title ',

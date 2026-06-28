@@ -82,11 +82,11 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('workspace_details'), p)
 
-            expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
+            expect(self.page.locator("#delete_modal").first).not_to_be_visible()
             self.page.locator("#delete-workspace").click()
-            expect(self.page.locator("#delete_workspace_modal").first).to_be_visible()
+            expect(self.page.locator("#delete_modal").first).to_be_visible()
             self.page.locator("#cancel_delete").get_by_text("Cancel").click()
-            expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
+            expect(self.page.locator("#delete_modal").first).not_to_be_visible()
 
     def test_delete(self):
         other_ws = create_workspace('other_ws', self.user)
@@ -98,7 +98,7 @@ class TestWorkspaceE2ETestCase(PdfDingE2ETestCase):
 
             self.page.locator("#delete-workspace").click()
             self.page.locator("#confirm_delete").get_by_text("Submit").click()
-            expect(self.page.locator("#delete_workspace_modal").first).not_to_be_visible()
+            expect(self.page.locator("#delete_modal").first).not_to_be_visible()
 
         assert not Workspace.objects.filter(id=other_ws.id).count()
 

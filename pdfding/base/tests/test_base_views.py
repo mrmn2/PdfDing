@@ -12,6 +12,7 @@ from django.urls import path, reverse
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf.forms import AddForm, DescriptionForm
 from pdf.models.pdf_models import Pdf
+from pdf.models.shared_models import SharedPdf
 from users.models import Profile
 
 test_patterns = [
@@ -22,6 +23,7 @@ test_patterns = [
     path('test/serve/<identifier>', base_view_definitions.Serve.as_view(), name='test_serve'),
     path('test/download/<identifier>', base_view_definitions.Download.as_view(), name='test_download'),
     path('test/details/<identifier>', base_view_definitions.Details.as_view(), name='test_details'),
+    path('test/details_shared/<identifier>', base_view_definitions.SharedDetails.as_view(), name='test_details_shared'),
     path('test/delete/<identifier>', base_view_definitions.Delete.as_view(), name='test_delete'),
     path('test/edit/<identifier>/<field_name>', base_view_definitions.Edit.as_view(), name='test_edit'),
 ]
@@ -198,6 +200,8 @@ class TestViews(TestCase):
         response = self.client.get(reverse('test_details', kwargs={'identifier': pdf.id}))
 
         self.assertEqual(response.context['pdf'], pdf)
+        self.assertEqual(response.context['page'], 'pdf_details')
+        self.assertEqual(response.context['sidebar_name'], 'includes/pdf_details_sidebar.html')
         self.assertTemplateUsed(response, 'pdf_details.html')
 
         # test without sort query
@@ -206,6 +210,18 @@ class TestViews(TestCase):
         )
 
         self.assertEqual(response.context['pdf'], pdf)
+
+    @override_settings(ROOT_URLCONF=__name__)
+    def test_details_get_shared(self):
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection)
+        shared_pdf = SharedPdf.objects.create(name='shared_pdf', pdf=pdf)
+
+        response = self.client.get(reverse('test_details_shared', kwargs={'identifier': shared_pdf.id}))
+
+        self.assertEqual(response.context['shared_pdf'], shared_pdf)
+        self.assertEqual(response.context['page'], 'shared_pdf_details')
+        self.assertEqual(response.context['sidebar_name'], 'includes/shared_details_sidebar.html')
+        self.assertTemplateUsed(response, 'shared_pdf_details.html')
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_get_no_htmx(self):

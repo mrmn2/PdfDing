@@ -30,28 +30,28 @@ def account_settings(request):
     uses_social = request.user.socialaccount_set.exists()
 
     # pragma: no cover
-    return render(request, 'account_settings.html', {'uses_social': uses_social})
+    return render(request, 'account_settings.html', {'uses_social': uses_social, 'page': 'account_settings'})
 
 
 def ui_settings(request):  # pragma: no cover
     """View for the ui settings page"""
 
     # pragma: no cover
-    return render(request, 'ui_settings.html')
+    return render(request, 'ui_settings.html', {'page': 'ui_settings'})
 
 
 def viewer_settings(request):  # pragma: no cover
     """View for the viewer settings page"""
 
     # pragma: no cover
-    return render(request, 'viewer_settings.html')
+    return render(request, 'viewer_settings.html', {'page': 'viewer_settings'})
 
 
 def danger_settings(request):  # pragma: no cover
     """View for the danger settings page"""
 
     # pragma: no cover
-    return render(request, 'danger_settings.html')
+    return render(request, 'danger_settings.html', {'page': 'danger_settings'})
 
 
 class ChangeSetting(View):

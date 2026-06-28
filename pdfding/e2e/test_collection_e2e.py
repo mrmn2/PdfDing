@@ -83,11 +83,11 @@ class TestCollectionE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('collection_details', kwargs={'identifier': other_collection.id}), p)
 
-            expect(self.page.locator("#delete_collection_modal").first).not_to_be_visible()
+            expect(self.page.locator("#delete_modal").first).not_to_be_visible()
             self.page.locator("#delete-collection").click()
-            expect(self.page.locator("#delete_collection_modal").first).to_be_visible()
+            expect(self.page.locator("#delete_modal").first).to_be_visible()
             self.page.locator("#cancel_delete").get_by_text("Cancel").click()
-            expect(self.page.locator("#delete_collection_modal").first).not_to_be_visible()
+            expect(self.page.locator("#delete_modal").first).not_to_be_visible()
 
     def test_delete(self):
         other_collection = create_collection(self.user.profile.current_workspace, 'other_collection')
@@ -97,7 +97,7 @@ class TestCollectionE2ETestCase(PdfDingE2ETestCase):
 
             self.page.locator("#delete-collection").click()
             self.page.locator("#confirm_delete").get_by_text("Submit").click()
-            expect(self.page.locator("#delete_collection_modal").first).not_to_be_visible()
+            expect(self.page.locator("#delete_modal").first).not_to_be_visible()
 
         assert not Collection.objects.filter(id=other_collection.id).count()
 
