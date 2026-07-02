@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
-from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
+from pdf.models.pdf_models import Metadata, Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
@@ -343,3 +343,103 @@ class PdfDetailsCommentsE2ETestCase(PdfDingE2ETestCase):
         changed_user = User.objects.get(id=self.user.id)
 
         self.assertEqual(changed_user.profile.annotation_sorting, Profile.AnnotationsSortingChoice.OLDEST)
+
+
+class PdfMetadataE2ETestCase(PdfDingE2ETestCase):
+    def setUp(self, login: bool = True) -> None:
+        super().setUp()
+
+        # create some pdfs
+        self.pdf = Pdf.objects.create(
+            collection=self.user.profile.current_collection,
+            name='some_pdf',
+        )
+
+        Metadata.objects.create(
+            pdf=self.pdf,
+            abstract='some_abstract',
+            authors='Some some_author',
+            doi='some_doi',
+            keywords='some_keywords',
+            journal='some_journal',
+            issue='21',
+            pages='20-23',
+            title='some_title',
+            reference_type=Metadata.ReferenceType.ARTICLE,
+            url='https://some.url',
+            volume='3',
+        )
+
+    def test_details_edit(self):
+        with sync_playwright() as p:
+            self.open(reverse('metadata_details', kwargs={'identifier': self.pdf.id}), p)
+
+            expect(self.page.locator("#name")).to_contain_text('some_pdf')
+            expect(self.page.locator("#abstract")).to_contain_text('some_abstract')
+            expect(self.page.locator("#authors")).to_contain_text('some_author')
+            expect(self.page.locator("#doi")).to_contain_text('some_doi')
+            expect(self.page.locator("#journal")).to_contain_text('some_journal')
+            expect(self.page.locator("#pages")).to_contain_text('20-23')
+            expect(self.page.locator("#title")).to_contain_text('some_title')
+            expect(self.page.locator("#keywords")).to_contain_text('some_keywords')
+            expect(self.page.locator("#url")).to_contain_text('https://some.url')
+            expect(self.page.locator("#volume")).to_contain_text('3')
+            expect(self.page.locator("#reference_type")).to_contain_text('Article')
+
+            for field in [
+                'abstract',
+                'authors',
+                'doi',
+                'keywords',
+                'journal',
+                'issue',
+                'pages',
+                'url',
+                'volume',
+            ]:
+                self.page.locator(f"#{field}-edit").click()
+                self.page.locator(f"#id_{field}").click()
+                self.page.locator(f"#id_{field}").fill("")
+                self.page.get_by_role("button", name="Submit").click()
+                if field in ['doi', 'url']:
+                    field_string = field.upper()
+                else:
+                    field_string = field.capitalize()
+
+                expect(self.page.locator(f"#{field}")).to_contain_text(f'No {field_string} Available')
+
+            self.page.locator("#title-edit").click()
+            self.page.locator("#id_title").click()
+            self.page.locator("#id_title").fill("other_title")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#title")).to_contain_text('other_title')
+
+            self.page.locator("#reference_type-edit").click()
+            self.page.locator("#id_reference_type").click()
+            self.page.locator("#id_reference_type").select_option("Booklet")
+            self.page.get_by_role("button", name="Submit").click()
+            expect(self.page.locator("#reference_type")).to_contain_text('Booklet')
+
+    def test_cancel_edit(self):
+        with sync_playwright() as p:
+            self.open(reverse('metadata_details', kwargs={'identifier': self.pdf.id}), p)
+
+            for field in [
+                'abstract',
+                'authors',
+                'doi',
+                'keywords',
+                'journal',
+                'issue',
+                'pages',
+                'reference_type',
+                'title',
+                'url',
+                'volume',
+            ]:
+
+                expect(self.page.locator(f"#{field}-edit")).to_contain_text("Edit")
+                self.page.locator(f"#{field}-edit").click()
+                expect(self.page.locator(f"#{field}-edit")).to_contain_text("Cancel")
+                self.page.locator(f"#{field}-edit").click()
+                expect(self.page.locator(f"#{field}-edit")).to_contain_text("Edit")

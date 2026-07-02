@@ -17,6 +17,12 @@
             <span class="hidden md:block">{% trans 'Details' %}</span>
         </a>
     </div>
+    <div {% if page == 'pdf_metadata' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
+        <a href="{% url 'metadata_details' pdf.id %}">
+            {% include 'includes/svg/tag.html' %}
+            <span class="hidden md:block">{% trans 'Metadata' %}</span>
+        </a>
+    </div>
     <div {% if page == 'pdf_details_highlights' %} class="bg-slate-200 md:bg-slate-100 dark:bg-slate-800" {% endif %}>
         <a href="{% url 'pdf_details_highlight_overview' pdf.id %}">
             {% include 'includes/svg/annotation.html' %}

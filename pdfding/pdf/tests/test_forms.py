@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from unittest import mock
 
 import pytest
+from django import forms as django_forms
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -403,3 +404,22 @@ class TestOther(TestCase):
             forms.get_collection_choices('all', 'All', self.user.profile.current_workspace.collections).choices
             == expected_choices
         )
+
+
+class TestDetailsForms(TestCase):
+    def test_create_field_form(self):
+        created_form = forms.create_field_form(Pdf, 'name')
+
+        assert created_form.Meta.model == Pdf
+        assert created_form.Meta.fields == ['name']
+
+        with pytest.raises(AttributeError):
+            created_form.Meta.widgets
+
+    def test_create_field_form_with_widget(self):
+        widget = django_forms.Textarea(attrs={'rows': 3})
+        created_form = forms.create_field_form(Pdf, 'name', widget)
+
+        assert created_form.Meta.model == Pdf
+        assert created_form.Meta.fields == ['name']
+        assert created_form.Meta.widgets == {'name': widget}

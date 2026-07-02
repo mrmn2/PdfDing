@@ -192,6 +192,18 @@ class DescriptionForm(forms.ModelForm):
         fields = ['description']
 
 
+def create_field_form(pdfding_model, field: str, field_widget=None) -> forms.ModelForm:
+    class FieldForm(forms.ModelForm):
+        class Meta:
+            model = pdfding_model
+            fields = [field]
+
+            if field_widget:
+                widgets = {field: field_widget}
+
+    return FieldForm
+
+
 class NotesForm(forms.ModelForm):
     """Form for changing the notes of a PDF."""
 

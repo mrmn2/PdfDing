@@ -7,15 +7,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_not_required
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
-from django.forms import ValidationError
-from django.http import FileResponse, HttpRequest, HttpResponse
+from django.forms import Textarea, ValidationError
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
 from pdf import forms
 from pdf.models.collection_models import Collection
-from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
+from pdf.models.pdf_models import Metadata, Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services import pdf_services
 from pdf.services.collection_services import change_collection_of_pdf
@@ -349,6 +349,59 @@ class EditPdfMixin(PdfMixin):
                 )
 
 
+class EditMetadataMixin(PdfMixin):
+    obj_name = 'metadata'
+    obj_class = Pdf
+    fields = [
+        'abstract',
+        'authors',
+        'doi',
+        'keywords',
+        'issue',
+        'journal',
+        'pages',
+        'reference_type',
+        'title',
+        'url',
+        'volume',
+    ]
+    fields_requiring_extra_processing = fields
+
+    @classmethod
+    def get_edit_form_dict(cls):
+        """Get the forms of the fields that can be edited as a dict."""
+
+        field_widgets = {'abstract': Textarea(attrs={'rows': 10}), 'keywords': Textarea(attrs={'rows': 3})}
+
+        form_dict = {
+            field: forms.create_field_form(pdfding_model=Metadata, field=field, field_widget=field_widgets.get(field))
+            for field in cls.fields
+        }
+
+        return form_dict
+
+    def get_edit_form_get(self, field_name: str, pdf: Pdf):
+        """Get the form belonging to the specified field."""
+
+        form_dict = self.get_edit_form_dict()
+        initial_dict = {field: {field: getattr(pdf.metadata, field)} for field in self.fields}
+        form = form_dict[field_name](initial=initial_dict[field_name], instance=pdf)
+
+        return form
+
+    @classmethod
+    def process_field(cls, field_name: str, pdf: Pdf, request: HttpRequest, form_data: dict):
+        """Process fields that are not covered in the base edit view."""
+
+        if field_name not in cls.fields:
+            raise Http404('Field name not found!')
+        else:
+            field_value = form_data.get(field_name)
+            field_value = field_value.replace('{', '').replace('}', '').strip()
+            setattr(pdf.metadata, field_name, field_value)
+            pdf.metadata.save()
+
+
 class AnnotationOverviewMixin:
     obj_name = 'pdf_annotation'
     overview_page_name = 'pdf_annotation_overview/overview_page'
@@ -599,6 +652,15 @@ class UpdatePdf(PdfMixin, View):
             return HttpResponse(status=422)
 
 
+class MetadataView(PdfMixin, View):
+    """View for getting a pdf's metadata page."""
+
+    def get(self, request: HttpRequest, identifier: str):
+        pdf = self.get_object(request, identifier)
+
+        return render(request, 'pdf_metadata.html', {'pdf': pdf})
+
+
 class Overview(OverviewMixin, base_views.BaseOverview):
     """
     View for the PDF overview page. This view performs the searching and sorting of the PDFs. It's also responsible for
@@ -629,6 +691,13 @@ class Details(PdfMixin, base_views.BaseDetails):
 class Edit(EditPdfMixin, base_views.BaseDetailsEdit):
     """
     The view for editing a PDF's name, tags and description. The field, that is to be changed, is specified by the
+    'field' argument.
+    """
+
+
+class MetadataEdit(EditMetadataMixin, base_views.BaseDetailsEdit):
+    """
+    The view for editing a PDF's metadata. The field, that is to be changed, is specified by the
     'field' argument.
     """
 

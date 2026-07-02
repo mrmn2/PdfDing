@@ -61,6 +61,8 @@ urlpatterns = [
         pdf_views.DetailsCommentOverview.as_view(),
         name='get_next_pdf_details_comment_overview_page',
     ),
+    path('metadata/<identifier>', pdf_views.MetadataView.as_view(), name='metadata_details'),
+    path('metadata/edit/<identifier>/<field_name>', pdf_views.MetadataEdit.as_view(), name='edit_metadata'),
     # bulk edit views
     path('bulk_actions/', pdf_bulk_action_views.BulkActions.as_view(), name='bulk_actions'),
     # sharing related views

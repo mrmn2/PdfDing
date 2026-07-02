@@ -1,0 +1,26 @@
+{% load i18n %}
+<div class="">
+  <div class="pt-2 flex flex-row items-center gap-x-3">
+      <span class="text-lg font-bold">{{ field_title }}</span>
+      <div class="pr-0 md:pr-4">
+          <a id="{{ field }}-edit" class="cursor-pointer text-primary hover:text-secondary"
+            hx-get="{% url edit_url identifier=obj_id field_name=field %}"
+            hx-target="#{{ field }}"
+            hx-swap="innerHTML" >
+              {% trans 'Edit' %}
+          </a>
+      </div>
+  </div>
+  <div class="flex flex-row items-center justify-between text-slate-600 dark:text-slate-400">
+          <div id="{{ field }}" class="w-full text-sm text-justify text-slate-600 dark:text-slate-400 overflow-hidden text-ellipsis">
+              {% if 'http' in field_value %}
+              <a class="hover:text-slate-800 hover:dark:text-slate-200"
+                href="{{ field_value }}">{{ field_value }}</a>
+              {% elif field_value %}
+              {{ field_value }}
+              {% else %}
+              {% blocktranslate context 'Field not set, e.g. authors' %} No {{ field_title }} Available {% endblocktranslate %}
+              {% endif %}
+          </div>
+  </div>
+</div>

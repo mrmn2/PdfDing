@@ -1,17 +1,19 @@
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import call, patch
 
+import pytest
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import Http404
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils.datastructures import MultiValueDict
 from pdf import forms
-from pdf.models.pdf_models import Pdf, PdfComment, PdfHighlight
+from pdf.models.pdf_models import Metadata, Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services.pdf_services import PdfProcessingServices
 from pdf.services.workspace_services import create_collection, create_workspace
@@ -1003,3 +1005,77 @@ class TestAnnotationMixin(TestCase):
         }
 
         self.assertEqual(generated_extra_context, expected_extra_context)
+
+
+class TestMetadataViews(TestCase):
+    username = 'user'
+    password = '12345'
+
+    def setUp(self):
+        self.user = None
+        set_up(self)
+
+        self.pdf = Pdf.objects.create(name='some_pdf', collection=self.user.profile.current_collection)
+        Metadata.objects.create(title='some_title', abstract='some_abstract', pdf=self.pdf)
+
+    def test_metadata_view(self):
+        response = self.client.get(reverse('metadata_details', kwargs={'identifier': self.pdf.id}))
+
+        self.assertTemplateUsed(response, 'pdf_metadata.html')
+
+        assert response.context['pdf'] == self.pdf
+
+    @patch('pdf.views.pdf_views.Textarea', return_value='textarea')
+    @patch('pdf.views.pdf_views.forms.create_field_form')
+    def test_get_edit_form_dict_widget(self, mock_create_field_form, mock_textarea):
+        edit_metadata_mixin_object = pdf_views.EditMetadataMixin()
+        edit_metadata_mixin_object.get_edit_form_dict()
+
+        assert mock_create_field_form.call_count == 11
+
+        mock_create_field_form.assert_has_calls(
+            [
+                call(pdfding_model=Metadata, field='abstract', field_widget='textarea'),
+                call(pdfding_model=Metadata, field='authors', field_widget=None),
+                call(pdfding_model=Metadata, field='doi', field_widget=None),
+                call(pdfding_model=Metadata, field='keywords', field_widget='textarea'),
+                call(pdfding_model=Metadata, field='issue', field_widget=None),
+                call(pdfding_model=Metadata, field='journal', field_widget=None),
+                call(pdfding_model=Metadata, field='pages', field_widget=None),
+                call(pdfding_model=Metadata, field='reference_type', field_widget=None),
+                call(pdfding_model=Metadata, field='title', field_widget=None),
+                call(pdfding_model=Metadata, field='url', field_widget=None),
+                call(pdfding_model=Metadata, field='volume', field_widget=None),
+            ]
+        )
+
+    def test_get_edit_form_dict_get(self):
+        # only test for a single field
+        edit_metadata_mixin_object = pdf_views.EditMetadataMixin()
+        form = edit_metadata_mixin_object.get_edit_form_get('abstract', self.pdf)
+
+        assert form.initial == {'abstract': 'some_abstract'}
+
+    def test_process_field(self):
+        # only test for a single field
+        edit_metadata_mixin_object = pdf_views.EditMetadataMixin()
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+
+        edit_metadata_mixin_object.process_field(
+            'abstract', self.pdf, response.wsgi_request, {'abstract': '{ other_abstract}}'}
+        )
+
+        changed_pdf = Pdf.objects.get(id=self.pdf.id)
+        assert changed_pdf.metadata.abstract == 'other_abstract'
+
+    def test_process_field_exception(self):
+        # only test for a single field
+        edit_metadata_mixin_object = pdf_views.EditMetadataMixin()
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+
+        with pytest.raises(Http404):
+            edit_metadata_mixin_object.process_field(
+                'wrong_field', self.pdf, response.wsgi_request, {'wrong_field': 'other'}
+            )

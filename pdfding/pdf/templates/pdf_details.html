@@ -154,13 +154,13 @@
         </div>
         <div class="flex justify-between text-slate-600 dark:text-slate-400">
             <div class="w-[86%] text-sm">
-                <span id="description">
+                <div id="description" class="text-justify">
                     {% if pdf.description %}
                     {{ pdf.description }}
                     {% else %}
                     {% trans 'no description available' %}
                     {% endif %}
-                </span>
+                </div>
             </div>
             <div class="pr-0 md:pr-4">
                 <a id="description-edit" class="cursor-pointer text-primary hover:text-secondary"

@@ -238,16 +238,16 @@ class Metadata(models.Model):
     authors = models.CharField(max_length=256, blank=True)
     abstract = models.TextField(default='', blank=True, help_text=_('Optional'))
     doi = models.CharField(max_length=128, blank=True)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     issue = models.CharField(max_length=64, blank=True)
     journal = models.CharField(max_length=128, blank=True)
     keywords = models.TextField(blank=True, help_text=_('Optional'))
     pages = models.CharField(max_length=32, blank=True)
-    publisher = models.CharField(max_length=64, blank=True)
     reference_type = models.CharField(choices=ReferenceType.choices, max_length=32, blank=True)
     pdf = models.OneToOneField(Pdf, on_delete=models.CASCADE, blank=False)
     title = models.CharField(max_length=512, blank=False)
-    url = models.CharField(max_length=128, blank=True)
-    volume = models.CharField(max_length=16)
+    url = models.URLField(max_length=256, blank=True)
+    volume = models.CharField(max_length=16, blank=True)
 
 
 class PdfAnnotation(models.Model):

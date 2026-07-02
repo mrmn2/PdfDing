@@ -1,12 +1,12 @@
 {% load i18n %}
 <form action="{{ action_url }}"
       method="post"
-      {% if field_name != "description" and field_name != "notes" %}
+      {% if field_name != "description" and field_name != "notes" and field_name != "keywords" and field_name != "abstract" %}
       class="flex gap-2 text-black dark:text-slate-200 h-8 w-11/12 my-1 ml-1
              [&>select]:bg-white dark:[&>select]:bg-slate-700
              [&>input]:bg-slate-200! dark:[&>input]:bg-slate-700!"
       {% else %}
-      class="flex gap-y-1 flex-col mt-1 text-black dark:text-slate-200 [&>textarea]:text-sm"
+      class="flex gap-y-1 flex-col mt-1 ml-1 text-black dark:text-slate-200 [&>textarea]:text-sm"
       {% endif %}
       autocomplete="off">
     {% csrf_token %}

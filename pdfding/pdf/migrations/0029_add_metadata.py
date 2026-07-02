@@ -1,3 +1,5 @@
+import uuid
+
 import django.db.models.deletion
 from django.db import migrations, models
 
@@ -27,15 +29,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Metadata',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('authors', models.CharField(blank=True, max_length=256)),
                 ('abstract', models.TextField(blank=True, default='', help_text='Optional')),
-                ('doi', models.CharField(blank=True, max_length=128)),
+                ('doi', models.URLField(blank=True, max_length=256)),
                 ('issue', models.CharField(blank=True, max_length=64)),
                 ('journal', models.CharField(blank=True, max_length=128)),
                 ('keywords', models.TextField(blank=True, help_text='Optional')),
                 ('pages', models.CharField(blank=True, max_length=32)),
-                ('publisher', models.CharField(blank=True, max_length=64)),
                 (
                     'reference_type',
                     models.CharField(
@@ -61,7 +62,7 @@ class Migration(migrations.Migration):
                 ),
                 ('title', models.CharField(max_length=512)),
                 ('url', models.CharField(blank=True, max_length=128)),
-                ('volume', models.CharField(max_length=16)),
+                ('volume', models.CharField(blank=True, max_length=16)),
                 ('pdf', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='pdf.pdf')),
             ],
         ),
