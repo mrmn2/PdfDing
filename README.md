@@ -47,7 +47,8 @@ A live demo is available at [demo.pdfding.com](https://demo.pdfding.com/).
 * Manage and export PDF highlights and comments in dedicated sections
 * Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
 * SSO support via OIDC
-* Share PDFs with an external audience via a link or a QR Code with optional access control
+* Use bulk actions to manage multiple PDFs at once
+* Share collections and PDFs with an external audience via a link or a QR Code with optional access control
 * Protect accounts with two-factor authentication (TOTP + WebAuthn)
 * Markdown Notes
 * Progress bars show the reading progress of each PDF at a quick glance
