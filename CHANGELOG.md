@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.11.0 (Jul 24, 2026)
+### What's Changed
+* Revamp admin user overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/333
+* Add user creation for admins by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/335
+* Allow admins to set the password and reset 2FA of other users by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/336
+* Update pdf.js to v6 by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/333
+* Fix vulnerabilities by updating dependencies by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/337
+
 ## v1.10.0 (Jul 09, 2026)
 ### What's Changed
 * Add PDF metadata by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/325, https://github.com/mrmn2/PdfDing/pull/328
