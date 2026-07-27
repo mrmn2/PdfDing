@@ -18,6 +18,7 @@ from pdf.models.pdf_models import Metadata, Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
 from pdf.services.workspace_services import create_collection, create_workspace
 from pdf.views import pdf_views
+from users.models import PdfReadingInformation
 from users.service import get_demo_pdf
 
 from pdfding.core.settings.base import MEDIA_ROOT
@@ -631,18 +632,23 @@ class TestViews(TestCase):
 
         # add quote too check if it is removed correctly
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name="pdf'_with_quote")
-        pdf.current_page = 4
         pdf.revision = 3
+        pdf.views = 4
         pdf.save()
-        self.assertEqual(pdf.views, 0)
-        self.assertEqual(pdf.last_viewed_date, datetime(2000, 1, 1, tzinfo=timezone.utc))
+        dt = datetime.strptime('2024-06-15 10:30:00', '%Y-%m-%d %H:%M:%S')
+        pdf_reading_info = PdfReadingInformation.objects.create(
+            pdf=pdf, profile=self.user.profile, current_page=4, last_viewed_date=dt, views=0
+        )
+        self.assertEqual(pdf.views, 4)
 
         response = self.client.get(reverse('view_pdf', kwargs={'identifier': pdf.id}))
 
         pdf = self.user.profile.current_collection.pdfs.get(name=pdf.name)
+        pdf_reading_info = PdfReadingInformation.objects.get(id=pdf_reading_info.id)
         # check that views increased by one
-        self.assertEqual(pdf.views, 1)
-        time_diff = datetime.now(timezone.utc) - pdf.last_viewed_date
+        self.assertEqual(pdf.views, 5)
+        self.assertEqual(pdf_reading_info.views, 1)
+        time_diff = datetime.now(timezone.utc) - pdf_reading_info.last_viewed_date
         self.assertLess(time_diff.total_seconds(), 1)
 
         self.assertEqual(response.context['pdf_id'], str(pdf.id))
@@ -657,8 +663,12 @@ class TestViews(TestCase):
     def test_view_get_different_page(self):
         # in this test we are just interested if the current_page is set to the value specified by the query.
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        dt = datetime.strptime('2024-06-15 10:30:00', '%Y-%m-%d %H:%M:%S')
+        pdf_reading_info = PdfReadingInformation.objects.create(
+            pdf=pdf, profile=self.user.profile, current_page=4, last_viewed_date=dt, views=0
+        )
 
-        self.assertEqual(pdf.current_page, 1)
+        self.assertEqual(pdf_reading_info.current_page, 4)
 
         response = self.client.get(f"{reverse('view_pdf', kwargs={'identifier': pdf.id})}?page=20")
 
@@ -710,13 +720,17 @@ class TestViews(TestCase):
 
     def test_update_page_post(self):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        dt = datetime.strptime('2024-06-15 10:30:00', '%Y-%m-%d %H:%M:%S')
+        pdf_reading_info = PdfReadingInformation.objects.create(
+            pdf=pdf, profile=self.user.profile, current_page=4, last_viewed_date=dt, views=0
+        )
 
         response = self.client.post(reverse('update_page'), data={'pdf_id': pdf.id, 'current_page': 10})
 
         # get pdf again with the changes
-        pdf = self.user.profile.current_pdfs.get(id=pdf.id)
+        pdf_reading_info = PdfReadingInformation.objects.get(id=pdf_reading_info.id)
 
-        self.assertEqual(pdf.current_page, 10)
+        self.assertEqual(pdf_reading_info.current_page, 10)
         self.assertEqual(200, response.status_code)
 
     def test_update_pdf_post_wrong_file_type(self):

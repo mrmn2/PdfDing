@@ -7,6 +7,7 @@ from django.urls import reverse
 from helpers import PdfDingE2ETestCase
 from pdf.models.pdf_models import Metadata, Pdf, PdfComment, PdfHighlight
 from pdf.models.tag_models import Tag
+from pdf.services.pdf_services import get_or_create_pdf_reading_info
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
 
@@ -31,10 +32,13 @@ class PdfDetailsE2ETestCase(PdfDingE2ETestCase):
     def test_details(self):
         pdf = self.user.profile.current_pdfs.get(name='pdf_1_1')
         dummy_file = SimpleUploadedFile("simple.pdf", b"these are the file contents!")
-        pdf.views = 1001
         pdf.number_of_pages = 10
+        pdf.views = 1001
         pdf.file = dummy_file
         pdf.save()
+        pdf_reading_info = get_or_create_pdf_reading_info(pdf, self.user.profile)
+        pdf_reading_info.views = 10
+        pdf_reading_info.save()
 
         with sync_playwright() as p:
             self.open(reverse('pdf_details', kwargs={'identifier': pdf.id}), p)

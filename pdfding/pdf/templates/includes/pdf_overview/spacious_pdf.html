@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load pdf_tags %}
 <div class="-ml-1!" x-data="{ show_notes_{{ loop_id }}: false }">
     <div class="flex flex-row pt-1 {% if layout == 'Grid' %} min-h-36 -mb-1! {% endif %}"
          x-data="{ tooltip_date: false }">
@@ -74,7 +75,7 @@
             </div>
             {% if pdf.number_of_pages > 0 %}
             <div class="pb-1">
-              <span class="truncate"> {{ pdf.progress }}% - {% trans 'Page' %} {{ pdf.current_page_for_progress }} {% trans 'of' context 'page x of y pages' %} {{ pdf.number_of_pages }}</span>
+              <span class="truncate"> {% get_progress pdf request.user.profile %}% - {% trans 'Page' %} {% get_current_page pdf request.user.profile %} {% trans 'of' context 'page x of y pages' %} {{ pdf.number_of_pages }}</span>
             </div>
             {% endif %}
             {% if pdf.tags.all %}

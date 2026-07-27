@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -277,3 +278,17 @@ class Profile(models.Model):
             return True
         else:
             return False
+
+
+class PdfReadingInformation(models.Model):
+    """
+    Model for storing information related to reading a PDF of a single profile. The
+    information currently includes the current page and the last time the pdf was opened.
+    """
+
+    last_viewed_date = models.DateTimeField(blank=False, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    current_page = models.IntegerField(blank=False)
+    pdf = models.ForeignKey(Pdf, on_delete=models.CASCADE, blank=False)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=False)
+    views = models.IntegerField(blank=False)

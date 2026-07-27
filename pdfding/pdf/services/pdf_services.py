@@ -3,7 +3,7 @@ import re
 import traceback
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from logging import getLogger
 from math import floor
@@ -34,7 +34,7 @@ from pdf.services.tag_services import TagServices
 from pdf.services.workspace_services import check_if_pdf_with_name_exists, get_pdfs_of_workspace
 from pypdf import PdfReader
 from pypdfium2 import PdfDocument
-from users.models import Profile
+from users.models import PdfReadingInformation, Profile
 
 logger = getLogger(__file__)
 
@@ -520,3 +520,17 @@ def get_pdf_info_list(workspace: Workspace) -> list[tuple]:
         pdf_info_list.append((pdf.name, pdf_size))
 
     return pdf_info_list
+
+
+def get_or_create_pdf_reading_info(pdf: Pdf, profile: Profile) -> PdfReadingInformation:
+    """Get the PdfReadingInformation. If it does not exist create it"""
+
+    try:
+        pdf_reading_info = PdfReadingInformation.objects.get(pdf=pdf, profile=profile)
+
+    except ObjectDoesNotExist:
+        pdf_reading_info = PdfReadingInformation.objects.create(
+            pdf=pdf, profile=profile, current_page=1, last_viewed_date=datetime.now(tz=timezone.utc), views=0
+        )
+
+    return pdf_reading_info

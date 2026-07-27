@@ -120,11 +120,6 @@
                x-bind:class="'{{ sorting }}' === 'views' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
                 {% trans 'Least Viewed' %}
             </a>
-            <a hx-post="{% url 'change_sorting' 'pdf_sorting' 'recently_viewed' %}"
-               hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-               x-bind:class="'{{ sorting }}' === '-last_viewed_date' ? 'bg-slate-200! dark:bg-slate-700!' : ''">
-                {% trans 'Recently Viewed' %}
-            </a>
         </div>
     </div>
 </div>

@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from pathlib import Path
 from unittest import mock
@@ -17,6 +17,7 @@ from django.urls import reverse
 from pdf.models.pdf_models import Metadata, Pdf, PdfComment, PdfHighlight
 from PIL import Image
 from pypdfium2 import PdfDocument
+from users.models import PdfReadingInformation
 from users.service import get_demo_pdf
 
 
@@ -272,6 +273,25 @@ class TestPdfProcessingServices(TestCase):
         expected_info_list = [(f'pdf_{i}', 8885) for i in range(3)]
 
         self.assertEqual(generated_info_list, expected_info_list)
+
+    def test_get_or_create_pdf_reading_info_get(self):
+        dt = datetime.strptime('2024-06-15 10:30:00', '%Y-%m-%d %H:%M:%S')
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+        pdf_reading_info = PdfReadingInformation.objects.create(
+            pdf=pdf, profile=self.user.profile, current_page=5, last_viewed_date=dt, views=0
+        )
+
+        assert pdf_reading_info == service.get_or_create_pdf_reading_info(pdf, self.user.profile)
+
+    def test_get_or_create_pdf_reading_info_create(self):
+        pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
+
+        pdf_reading_info = service.get_or_create_pdf_reading_info(pdf, self.user.profile)
+        assert pdf_reading_info.pdf == pdf
+        assert pdf_reading_info.profile == self.user.profile
+        assert pdf_reading_info.current_page == 1
+        assert pdf_reading_info.views == 0
+        assert (datetime.now(timezone.utc) - pdf_reading_info.last_viewed_date).total_seconds() < 0.1
 
     def test_set_highlights_and_comments(self):
         creation_date = datetime.strptime('20250311081649-+00:00', '%Y%m%d%H%M%S-%z')

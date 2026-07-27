@@ -116,7 +116,7 @@ class Pdf(models.Model):
     archived = models.BooleanField(default=False)
     creation_date = models.DateTimeField(blank=False, editable=False, auto_now_add=True)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE, blank=False)
-    current_page = models.IntegerField(default=1)
+    current_page = models.IntegerField(default=1)  # deprecated
     description = models.TextField(blank=True, help_text=_('Optional'), default='')
     file_directory = models.CharField(
         max_length=120,
@@ -128,7 +128,7 @@ class Pdf(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     last_viewed_date = models.DateTimeField(
         blank=False, editable=False, default=datetime(2000, 1, 1, tzinfo=timezone.utc)
-    )
+    )  # # deprecated
     name = models.CharField(max_length=512, blank=False)
     notes = models.TextField(default='', blank=True, help_text=_('Optional, supports Markdown'))
     number_of_pages = models.IntegerField(default=-1)
@@ -176,29 +176,6 @@ class Pdf(models.Model):
         """Get the workspace the PDF belongs to."""
 
         return self.collection.workspace
-
-    @property
-    def progress(self) -> int:
-        """Get read progress of the pdf in percent."""
-
-        progress = round(100 * self.current_page_for_progress / self.number_of_pages)
-
-        return min(progress, 100)
-
-    @property
-    def current_page_for_progress(self) -> int:
-        """
-        Get the current page for progress calculations. If there are zero views the current page should be zero. If
-        there are views we use the current page of the pdf. If the current page is negative for some reason we also
-        return 0
-        """
-
-        if self.views == 0:
-            current_page = 0
-        else:
-            current_page = self.current_page
-
-        return max(current_page, 0)
 
     @property
     def notes_html(self) -> str:

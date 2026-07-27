@@ -177,28 +177,6 @@ class TestPdf(TestCase):
 
         self.assertEqual(created_ws, created_pdf.workspace)
 
-    def test_progress(self):
-        self.pdf.number_of_pages = 1000
-        self.pdf.views = 1  # setting this to 1 will cause current_page_for_progress to be equal to current_page
-        self.pdf.save()
-
-        for current_page, expected_progress in [(0, 0), (202, 20), (995, 100), (1200, 100)]:
-            self.pdf.current_page = current_page
-            self.pdf.save()
-
-            self.assertEqual(self.pdf.progress, expected_progress)
-
-    def test_current_page_for_progress(self):
-        self.assertEqual(self.pdf.current_page_for_progress, 0)
-
-        self.pdf.views = 1
-        self.pdf.save()
-        self.assertEqual(self.pdf.current_page_for_progress, 1)
-
-        self.pdf.current_page = -1
-        self.pdf.save()
-        self.assertEqual(self.pdf.current_page_for_progress, 0)
-
     def test_notes_html(self):
         self.pdf.notes = '**Code:** `print("PdfDing")`'
         self.assertEqual(self.pdf.notes_html, '<p><strong>Code:</strong> <code>print("PdfDing")</code></p>')

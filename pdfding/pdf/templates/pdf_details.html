@@ -1,6 +1,7 @@
 {% extends 'layouts/details_with_image.html' %}
 {% load static %}
 {% load i18n %}
+{% load pdf_tags %}
 {% block inner_content %}
 <div class="flex flex-row gap-x-10">
     <div class="hidden min-[1200px]:block pt-2">
@@ -181,7 +182,7 @@
         </div>
         <div class="flex justify-between text-slate-600 dark:text-slate-400">
             <div class="w-[86%] text-sm">
-              <span id="progress">{{ pdf.progress }}% - {% trans 'Page' %} {{ pdf.current_page_for_progress }} {% trans 'of' %} {{ pdf.number_of_pages }}</span>
+              <span id="progress">{% get_progress pdf request.user.profile %}% - {% trans 'Page' %} {% get_current_page pdf request.user.profile %} {% trans 'of' %} {{ pdf.number_of_pages }}</span>
             </div>
         </div>
         {% endif %}

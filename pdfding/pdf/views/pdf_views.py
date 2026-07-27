@@ -147,7 +147,9 @@ class OverviewMixin(BasePdfMixin):
             'Name_desc': Lower('name').desc(),
             'Least_viewed': 'views',
             'Most_viewed': '-views',
-            'Recently_viewed': '-last_viewed_date',
+            # might be removed as this info is now stored for each user
+            # and therefore the current mechanisim cannot be used.
+            'Recently_viewed': '-creation_date',
         }
 
         return sorting_dict[profile.pdf_sorting]
@@ -546,8 +548,12 @@ class ViewerView(PdfMixin, View):
         # increase view counter by 1
         pdf = self.get_object(request, identifier)
         pdf.views += 1
-        pdf.last_viewed_date = datetime.now(timezone.utc)
         pdf.save()
+
+        pdf_reading_info = pdf_services.get_or_create_pdf_reading_info(pdf, request.user.profile)
+        pdf_reading_info.last_viewed_date = datetime.now(timezone.utc)
+        pdf_reading_info.views += 1
+        pdf_reading_info.save()
 
         theme, theme_color = get_viewer_theme_and_color(request.user.profile)
 
@@ -556,7 +562,7 @@ class ViewerView(PdfMixin, View):
         if page:
             current_page = page
         else:
-            current_page = pdf.current_page
+            current_page = pdf_reading_info.current_page
 
         return render(
             request,
@@ -600,11 +606,12 @@ class UpdatePage(PdfMixin, View):
 
         pdf_id = request.POST.get('pdf_id')
         pdf = self.get_object(request, pdf_id)
+        pdf_reading_info = pdf_services.get_or_create_pdf_reading_info(pdf, request.user.profile)
 
         # update current page
         current_page = request.POST.get('current_page')
-        pdf.current_page = current_page
-        pdf.save()
+        pdf_reading_info.current_page = current_page
+        pdf_reading_info.save()
 
         return HttpResponse(status=200)
 
