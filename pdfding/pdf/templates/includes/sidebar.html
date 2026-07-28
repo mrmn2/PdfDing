@@ -1,14 +1,14 @@
 {% extends 'layouts/base_sidebar.html' %}
 {% load i18n %}
 {% block sidebar_content %}
-<div class="flex flex-row md:flex-col w-full md:pb-3 gap-2 md:border-b border-slate-300 dark:border-slate-600">
+<div class="flex flex-row md:flex-col w-full md:pb-3 gap-2 md:gap-1 md:border-b border-slate-300 dark:border-slate-600">
   {% include 'partials/workspace_dropdown.html' with page='overview' %}
   {% if current_collection_id %}
   {% include 'partials/collection_dropdown.html' %}
   {% endif %}
 </div>
-<div class="pt-2 mt-1 ">
-  <div class="flex flex-row w-full justify-between! md:flex-col gap-y-1
+<div class="pt-1 mt-1">
+  <div class="flex flex-row w-full justify-between! md:flex-col
               [&>*]:font-semibold [&>div]:px-3 md:[&>div]:px-2 [&>div]:py-2 md:[&>div]:py-1 [&>div]:rounded-md
               [&>div>a]:flex [&>div>a]:flex-row [&>div>a]:items-center [&>div>a]:gap-x-2
               [&>div]:hover:bg-slate-200 dark:[&>div]:hover:bg-slate-700">
@@ -48,7 +48,7 @@
 
 {% block sidebar_extra_content %}
 {% if page == 'pdf_overview' or page == 'pdf_overview_starred' or page == 'pdf_overview_archived' %}
-<div class="hidden md:block md:flex md:flex-row items-center pt-4 mt-3
+<div class="hidden md:block md:flex md:flex-row items-center pt-3 mt-2
             border-t border-slate-300 dark:border-slate-600 gap-x-2 pb-2 pl-2 font-semibold">
     <div class="flex flex-row items-center justify-between! w-full">
         <div class="flex flex-row items-center gap-x-1">
