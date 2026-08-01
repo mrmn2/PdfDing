@@ -12,16 +12,16 @@ license-files = ["LICENSE"]
 
 [tool.poetry.dependencies]
 python = ">=3.11 <4.0"
-django = "==5.2.15"
+django = "==5.2.16"
 django-allauth = { extras = ["mfa", "socialaccount"], version = "==65.18.0" }
-django-htmx = "==1.27.0"
+django-htmx = "==1.28.0"
 gunicorn = "==26.0.0"
-huey = "==3.0.3"
+huey = "==3.3.0"
 Markdown = "==3.10.2"
 minio = "==7.2.20"
 nh3 = "==0.3.6"
 psycopg2-binary = "==2.9.12"
-pypdfium2 = "==5.11.0"
+pypdfium2 = "==5.12.1"
 pypdf = "==6.14.2"
 python-magic = "==0.4.27"
 qrcode = { extras = ["pil"], version = "==8.2" }
