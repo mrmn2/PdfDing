@@ -7,6 +7,16 @@ register = template.Library()
 
 
 @register.simple_tag
+def get_radial_progress(pdf: Pdf, profile: Profile, circumference: int = 282) -> float:
+    """Get the progress of a user in a PDF as remaining circumference."""
+
+    progress = get_progress(pdf, profile)
+    radial_progress = circumference - progress / 100 * circumference
+
+    return min(max(radial_progress, 0), circumference)
+
+
+@register.simple_tag
 def get_progress(pdf: Pdf, profile: Profile) -> float:
     """Get the progress of a user in a PDF."""
 

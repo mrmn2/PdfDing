@@ -14,6 +14,19 @@ class TestPdfTags(TestCase):
             collection=self.user.profile.current_collection,
         )
 
+    def test_get_radial_progress(self):
+        self.pdf.number_of_pages = 1000
+        self.pdf.save()
+        pdf_reading_info = get_or_create_pdf_reading_info(self.pdf, self.profile)
+        pdf_reading_info.views = 1
+        pdf_reading_info.save()
+
+        for current_page, expected_progress in [(-100, 100), (0, 100), (202, 80), (995, 0), (1200, 0)]:
+            pdf_reading_info.current_page = current_page
+            pdf_reading_info.save()
+
+            assert expected_progress == pdf_tags.get_radial_progress(self.pdf, self.profile, 100)
+
     def test_get_progress(self):
         self.pdf.number_of_pages = 1000
         self.pdf.save()

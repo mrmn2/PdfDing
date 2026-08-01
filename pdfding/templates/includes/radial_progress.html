@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load pdf_tags %}
+<div class="hover:cursor-pointer" x-data="{ tooltip_progress: false }">
+
+<svg class="h-5 w-5 transform rotate-[-87deg]" viewBox="0 0 110 110"
+     x-on:mouseenter="tooltip_progress = true" x-on:mouseleave="tooltip_progress = false" >
+  <circle class="text-slate-400/50 dark:text-slate-400"
+          cx="55" cy="55" r="45" stroke="currentColor" stroke-width="12" fill="none"/>
+  {% if radial_progress < 278 %}
+  <circle
+    class="text-primary"
+    cx="55" cy="55" r="45" stroke="currentColor" stroke-width="12" fill="none" stroke-linecap="round"
+    {# circumference = 45 * 2 * PI = 283 #}
+    stroke-dasharray="282"
+    stroke-dashoffset="{{ radial_progress}}"/>
+  {% endif %}
+</svg>
+<span x-show="tooltip_progress" x-transition:enter.duration.500ms x-cloak
+    class="z-50 absolute bg-primary text-gray-100 text-sm rounded-xs p-2 mt-1">
+  {% get_progress pdf request.user.profile %}% - {% trans 'Page' %} {% get_current_page pdf request.user.profile %} {% trans 'of' context 'page x of y pages' %} {{ pdf.number_of_pages }}
+</span>
+</div>

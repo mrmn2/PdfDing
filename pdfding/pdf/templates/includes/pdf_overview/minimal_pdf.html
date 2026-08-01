@@ -1,9 +1,14 @@
+{% load pdf_tags %}
 <div x-data="{ tooltip_date: false, show_notes_{{ loop_id }}: false }">
     <div class="flex flex-row justify-between truncate text-slate-400 dark:text-slate-500">
         <div class="flex flex-row items-center gap-x-2 truncate">
             <div x-show="show_bulk_edit_menu" x-cloak>
               <input class="" type="checkbox" name="bulk_edit_selected" value="{{ pdf.id }}" x-model="bulk_selected_pdfs">
             </div>
+            {% if user.profile.show_progress_bars %}
+            {% get_radial_progress pdf request.user.profile as radial_progress %}
+            {% include 'includes/radial_progress.html' with radial_progress=radial_progress %}
+            {% endif %}
             <a id="pdf-link-{{ loop_id }}"
               href="{% url 'view_pdf' pdf.id %}"
               class="text-md font-bold truncate text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white">
