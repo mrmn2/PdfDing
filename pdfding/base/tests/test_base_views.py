@@ -266,31 +266,31 @@ class TestViews(TestCase):
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_post_not_name_not_processed(self):
-        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection, description='something')
+        pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection, notes='something')
 
         self.client.post(
-            reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'description'}),
-            data={'description': 'new'},
+            reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'notes'}),
+            data={'notes': 'new'},
         )
 
         # get pdf again with the changes
         pdf = self.user.profile.all_pdfs.get(id=pdf.id)
 
-        self.assertEqual(pdf.description, 'new')
+        self.assertEqual(pdf.notes, 'new')
 
     @override_settings(ROOT_URLCONF=__name__)
     def test_edit_post_processed(self):
         pdf = Pdf.objects.create(name='pdf', collection=self.user.profile.current_collection, description='something')
 
         self.client.post(
-            reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'process_description'}),
-            data={'process_description': 'description'},
+            reverse('test_edit', kwargs={'identifier': pdf.id, 'field_name': 'description'}),
+            data={'description': 'other'},
         )
 
         # get pdf again with the changes
         pdf = self.user.profile.all_pdfs.get(id=pdf.id)
 
-        self.assertEqual(pdf.description, 'processed_description')
+        self.assertEqual(pdf.description, 'processed_other')
 
 
 # we need the TransactionTestCase class because otherwise django_cleanup will not delete the file

@@ -70,6 +70,9 @@ class TestAddPDFMixin(TestCase):
             files={'file': get_demo_pdf()},
         )
 
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.current_pdfs.get(name='some_pdf')
@@ -102,6 +105,9 @@ class TestAddPDFMixin(TestCase):
             files={'file': get_demo_pdf()},
         )
 
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.current_pdfs.get(name='demo')
@@ -126,6 +132,9 @@ class TestAddPDFMixin(TestCase):
             },
             profile=self.user.profile,
         )
+
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
 
         pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
 
@@ -177,6 +186,9 @@ class TestBulkAddPDFMixin(TestCase):
             files=MultiValueDict({'file': [get_demo_pdf()]}),
         )
 
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         pdf = self.user.profile.current_collection.pdfs.get(name='demo')
@@ -211,6 +223,9 @@ class TestBulkAddPDFMixin(TestCase):
             profile=self.user.profile,
             files=MultiValueDict({'file': [file_1, file_2]}),
         )
+
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
@@ -266,6 +281,9 @@ class TestBulkAddPDFMixin(TestCase):
             files=MultiValueDict({'file': files}),
         )
 
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
         expected_pdf_names = ['test1', 'test2', 'test2_12345678', 'test3']
@@ -290,6 +308,9 @@ class TestBulkAddPDFMixin(TestCase):
             },
             profile=self.user.profile,
         )
+
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
 
         pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 

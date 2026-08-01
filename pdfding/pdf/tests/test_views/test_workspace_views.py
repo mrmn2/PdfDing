@@ -46,6 +46,9 @@ class TestCreateWorkspaceMixing(WorkspaceTestCase):
             profile=self.user.profile,
         )
 
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
         workspace_views.CreateWorkspaceMixin.obj_save(form, response.wsgi_request, None)
 
         changed_user = User.objects.get(id=self.user.id)

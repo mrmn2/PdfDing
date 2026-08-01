@@ -112,7 +112,7 @@ class AddSharedPdfMixin(BaseAddSharedMixin, BaseShareMixin):
         shared_pdf.pdf = PdfMixin.get_object(request, identifier)
 
         cls.add_qr_code(shared_pdf, 'view_shared_pdf', request)
-        cls.set_access_dates(shared_pdf, form.data.get('deletion_input'))
+        cls.set_access_dates(shared_pdf, form.cleaned_data.get('deletion_input'))
 
 
 class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
@@ -140,7 +140,7 @@ class AddSharedCollectionMixin(BaseAddSharedMixin, BaseShareCollectionMixin):
         shared_collection.collection = CollectionMixin.get_object(request, identifier)
 
         cls.add_qr_code(shared_collection, 'view_shared_collection', request)
-        cls.set_access_dates(shared_collection, form.data.get('deletion_input'))
+        cls.set_access_dates(shared_collection, form.cleaned_data.get('deletion_input'))
 
 
 class BaseOverviewMixin(BaseShareMixin):

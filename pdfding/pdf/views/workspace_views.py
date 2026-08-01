@@ -30,7 +30,7 @@ class CreateWorkspaceMixin(BaseWorkspaceMixin):
         """Save the workspace based on the submitted form."""
 
         created_ws = create_workspace(
-            name=form.data['name'], description=form.data['description'], creator=request.user
+            name=form.cleaned_data['name'], description=form.cleaned_data['description'], creator=request.user
         )
 
         profile = request.user.profile

@@ -49,9 +49,8 @@
             {{ form.file }}
         </p>
         <p class="-mt-1">
-            <label
-                    class="w-auto! mr-2 inline-block! text-gray-600 dark:text-slate-300"
-                    for="id_skip_existing">{% trans 'Skip existing files' %}</label>
+            <label class="w-auto! mr-2 inline-block! text-gray-600 dark:text-slate-300"
+                   for="id_skip_existing">{% trans 'Skip existing files' %}</label>
             <input class="w-auto!" type="checkbox" name="skip_existing" id="id_skip_existing"  checked>
         </p>
         {% include 'includes/add_pdf_optionals.html' %}

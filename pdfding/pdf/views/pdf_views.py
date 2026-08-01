@@ -49,12 +49,12 @@ class AddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.AddForm | forms.AddFormNoFile, request: HttpRequest, __):
         """Save the PDF based on the submitted form."""
 
-        name = form.data['name']
-        description = form.data.get('description', '')
-        notes = form.data.get('notes', '')
-        tag_string = form.data.get('tag_string', '')
-        file_directory = form.data.get('file_directory', '')
-        collection_id = form.data.get('collection')
+        name = form.cleaned_data['name']
+        description = form.cleaned_data.get('description', '')
+        notes = form.cleaned_data.get('notes', '')
+        tag_string = form.cleaned_data.get('tag_string', '')
+        file_directory = form.cleaned_data.get('file_directory', '')
+        collection_id = form.cleaned_data.get('collection')
         collection = Collection.objects.get(id=collection_id)
 
         if settings.DEMO_MODE:
@@ -70,7 +70,7 @@ class AddPdfMixin(BasePdfMixin):
             notes=notes,
             tag_string=tag_string,
             file_directory=file_directory,
-            use_pdf_title=form.data.get('use_pdf_title'),
+            use_pdf_title=form.cleaned_data.get('use_pdf_title'),
         )
 
 
@@ -94,15 +94,17 @@ class BulkAddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.BulkAddForm | forms.BulkAddFormNoFile, request: HttpRequest, __):
         """Save the multiple PDFs based on the submitted form."""
 
-        description = form.data.get('description', '')
-        notes = form.data.get('notes', '')
-        tag_string = form.data.get('tag_string', '')
-        file_directory = form.data.get('file_directory', '')
-        collection_id = form.data.get('collection')
+        description = form.cleaned_data.get('description', '')
+        notes = form.cleaned_data.get('notes', '')
+        tag_string = form.cleaned_data.get('tag_string', '')
+        file_directory = form.cleaned_data.get('file_directory', '')
+        collection_id = form.cleaned_data.get('collection')
         collection = Collection.objects.get(id=collection_id)
         workspace = collection.workspace
+        # for skip existing we use the normal form data
+        skip_existing = form.data.get('skip_existing')
 
-        if form.data.get('skip_existing'):
+        if skip_existing:
             pdf_info_list = pdf_services.get_pdf_info_list(workspace)
         else:
             pdf_info_list = []
@@ -114,10 +116,7 @@ class BulkAddPdfMixin(BasePdfMixin):
 
         for file in files:
             # add file unless skipping existing is set and a PDF with the same name and file size already exists
-            if not (
-                form.data.get('skip_existing')
-                and (pdf_services.create_name_from_file(file), file.size) in pdf_info_list
-            ):
+            if not (skip_existing and (pdf_services.create_name_from_file(file), file.size) in pdf_info_list):
                 PdfProcessingServices.create_pdf(
                     name='dummy',
                     collection=collection,
@@ -813,7 +812,7 @@ class EditTag(TagMixin, View):
         form = forms.TagNameForm(request.POST)
 
         if form.is_valid():
-            new_name = form.data.get('name')
+            new_name = form.cleaned_data.get('name')
 
             if user_profile.tag_tree_mode:
                 tags = self.get_tags_by_name(request, original_tag_name)

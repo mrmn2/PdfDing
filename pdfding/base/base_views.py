@@ -213,7 +213,7 @@ class BaseDetailsEdit(View):
             # tags need to be deleted.
 
             if field_name in self.fields_requiring_extra_processing:
-                self.process_field(field_name, obj, request, form.data)
+                self.process_field(field_name, obj, request, form.cleaned_data)
 
             # for any other field just save it
             else:

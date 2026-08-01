@@ -2,7 +2,7 @@ from base import base_views
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from django.http import HttpRequest
-from pdf.forms import AddForm, DescriptionForm, NameForm
+from pdf.forms import AddForm, DescriptionForm, NameForm, NotesForm
 from pdf.models.pdf_models import Pdf
 
 
@@ -88,11 +88,11 @@ class SharedMixin(BaseMixin):
 
 class EditMixin(ObjectMixin):
     obj_class = Pdf
-    fields_requiring_extra_processing = ['process_description']
+    fields_requiring_extra_processing = ['description']
 
     @staticmethod
     def get_edit_form_dict():
-        form_dict = {'description': DescriptionForm, 'name': NameForm, 'process_description': DescriptionForm}
+        form_dict = {'description': DescriptionForm, 'name': NameForm, 'notes': NotesForm}
 
         return form_dict
 
@@ -110,8 +110,8 @@ class EditMixin(ObjectMixin):
 
     @staticmethod
     def process_field(field_name, pdf, request, form_data):
-        if field_name == 'process_description':
-            pdf.description = f'processed_{form_data['process_description']}'
+        if field_name == 'description':
+            pdf.description = f'processed_{form_data['description']}'
             pdf.save()
 
 

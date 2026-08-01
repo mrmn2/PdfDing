@@ -33,7 +33,9 @@ class CreateCollectionMixin(BaseCollectionMixin):
 
         workspace = request.user.profile.current_workspace
 
-        create_collection(workspace=workspace, collection_name=form.data['name'], description=form.data['description'])
+        create_collection(
+            workspace=workspace, collection_name=form.cleaned_data['name'], description=form.cleaned_data['description']
+        )
 
 
 class CollectionMixin(BaseCollectionMixin):
