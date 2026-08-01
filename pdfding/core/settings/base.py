@@ -177,7 +177,7 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_ADAPTER = 'users.adapters.DisableSignupAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapters.HandleAdminNewUserAdapter'
 
-LOGIN_REDIRECT_URL = '/pdf'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accountlogin/'
 
 SOCIALACCOUNT_OPENID_CONNECT_URL_PREFIX = ''

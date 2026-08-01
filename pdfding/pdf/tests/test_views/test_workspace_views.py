@@ -83,12 +83,6 @@ class TestWorkspaceDetails(WorkspaceTestCase):
         # size of two demo files
         assert response.context['pdfs_total_size'] == '58.9 KB'
 
-    def test_pdfs_total_size_with_unit(self):
-        assert workspace_views.Details.size_with_unit(0) == '0.0 KB'
-        assert workspace_views.Details.size_with_unit(10000) == '10.0 KB'
-        assert workspace_views.Details.size_with_unit(1234567) == '1.23 MB'
-        assert workspace_views.Details.size_with_unit(9.99 * 10**10) == '99.9 GB'
-
 
 class TestCollectionDetails(WorkspaceTestCase):
     def test_get(self):

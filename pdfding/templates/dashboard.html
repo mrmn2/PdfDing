@@ -1,0 +1,82 @@
+{% extends 'layouts/blank.html' %}
+{% load i18n %}
+
+{% block content %}
+<div id="dashboard">
+    <div class="flex flex-col md:flex-row md:justify-between pt-2 pb-4 md:pb-8">
+        <div class="w-full! md:w-72! lg:w-72! px-2 md:px-4">
+          {% include 'includes/sidebar.html' %}
+        </div>
+        <div class="flex flex-grow px-2">
+          <div class="flex flex-col w-full gap-y-4
+                      [&>div]:flex [&>div]:flex-col [&>div]:pt-3 [&>div]:pb-4 [&>div]:px-3 [&>div]:gap-y-2
+                      [&>div]:rounded-lg [&>div]:border
+                      [&>div]:bg-slate-200/50 [&>div]:border-slate-300 [&>div]:dark:bg-slate-800/50 dark:[&>div]:border-slate-700">
+            {% for key, pdfs in recently_dict.items %}
+            <div id="{{ key|slugify|lower }}">
+              <div class="text-lg font-bold">
+                {{ key }}
+              </div>
+              <div class="flex flex-col">
+                {% for pdf in pdfs %}
+                {% with loop_id=forloop.counter %}
+                <div id="{{ key|slugify|lower }}-{{ loop_id }}"
+                     x-data="{ show_details_{{ loop_id }}: false }"
+                     x-on:mouseenter="show_details_{{ loop_id }} = true" x-on:mouseleave="show_details_{{ loop_id }} = false"
+                      class="flex flex-row justify-between items-center py-1 px-3 rounded-md border
+                            hover:border-slate-400 dark:hover:border-slate-600
+                            {% if loop_id|add:1|divisibleby:2 %}
+                            bg-slate-300/50 dark:bg-slate-700/50 border-slate-200/70 dark:border-slate-700/10
+                            {% else %}
+                            border-slate-200/20 dark:border-slate-800/30
+                            {% endif %}">
+                  <div class="flex flex-row gap-x-2">
+                    <a href="{% url 'view_pdf' pdf.id %}" class="text-md font-bold">{{ pdf.name }}</a>
+                    {% if pdf.tags.all %}
+                    <div class="hidden md:block flex flex-row items-center truncate pt-[3px] pl-1 text-slate-700 dark:text-slate-300 text-[13px]">
+                        {% for tag in pdf.tags.all|dictsort:"name" %}
+                        <a href="{% url 'pdf_overview_query' %}?search=%23{{ tag.name }}"
+                          class="rounded-sm hover:bg-slate-300 dark:hover:bg-slate-700 px-[2px]">
+                            <span class="text-primary">#</span>{{ tag.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                  <a x-show="show_details_{{ loop_id }}" x-cloak href="{% url 'pdf_details' pdf.id %}"
+                     x-transition:enter="duration-100 ease-out" x-transition:enter-start="opacity-0 scale-90"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="text-slate-400 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
+                    {% include 'includes/svg/detail.html' %}
+                  </a>
+                </div>
+                {% endwith %}
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div id="ws_stats" class="hidden min-[1200px]:block md:w-72! lg:w-86! px-2 md:pr-4 md:pl-8">
+          <div class="flex flex-col pt-3 pb-4 px-3 gap-y-2 rounded-lg border
+                      bg-slate-200/50 border-slate-300 dark:bg-slate-800/50 dark:border-slate-700">
+            <div class="text-lg font-bold">
+              Workspace Statistics
+            </div>
+            <div class="rounded-md divide-y border
+                        bg-slate-200 border-slate-300 divide-slate-300
+                        dark:bg-slate-800 dark:border-slate-700 dark:divide-slate-700">
+              {% for key, value in stats_dict.items %}
+              <div id="{{ key|slugify|lower }}-stats" class="flex flex-row justify-between items-center py-[6px] px-3">
+                <span class="text-md font-bold">{{ key }}</span>
+                <span class="px-2 flex items-center text-sm font-semibold bg-primary text-slate-800 rounded-full">
+                  {{ value }}
+                </span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

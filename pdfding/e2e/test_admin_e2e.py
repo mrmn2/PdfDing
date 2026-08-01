@@ -127,13 +127,13 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
     def test_delete(self):
         with sync_playwright() as p:
             # only display one user
-            self.open(f"{reverse('user_overview')}?search=1@a.", p)
+            self.open(f"{reverse('user_overview')}?search=3@a.", p)
 
-            expect(self.page.locator("body")).to_contain_text("1@a.com")
+            expect(self.page.locator("body")).to_contain_text("3@a.com")
             self.page.locator("#open-actions-1").click()
             self.page.locator("#delete-1").click()
             self.page.get_by_role("button", name="Submit").click()
-            expect(self.page.locator("body")).not_to_contain_text("1@a.com")
+            expect(self.page.locator("body")).not_to_contain_text("3@a.com")
 
     def test_chancel_delete(self):
         with sync_playwright() as p:

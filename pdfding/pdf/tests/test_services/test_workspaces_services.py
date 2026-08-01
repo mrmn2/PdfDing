@@ -5,6 +5,7 @@ from pdf.models.pdf_models import Pdf
 from pdf.models.shared_models import SharedCollection, SharedPdf
 from pdf.models.workspace_models import WorkspaceError
 from pdf.services import workspace_services
+from users.service import get_demo_pdf
 
 
 class TestWorkspaceServices(TestCase):
@@ -114,6 +115,21 @@ class TestWorkspaceServices(TestCase):
 
         Pdf.objects.create(name='dummy', collection=self.user.profile.current_collection)
         self.assertTrue(workspace_services.check_if_pdf_with_name_exists('dummy', ws))
+
+    def test_get_size_of_all_workspace_pdfs(self):
+        default_collection = self.user.profile.current_collection
+        Pdf.objects.create(name='pdf_1', collection=default_collection, file=get_demo_pdf())
+        Pdf.objects.create(name='pdf_2', collection=default_collection, file=get_demo_pdf())
+        # create a PDF without a file to test exception handling
+        Pdf.objects.create(name='pdf_3', collection=default_collection)
+
+        assert workspace_services.get_size_of_all_workspace_pdfs(self.user.profile.current_workspace) == '58.9 KB'
+
+    def test_total_size_with_unit(self):
+        assert workspace_services.size_with_unit(0) == '0.0 KB'
+        assert workspace_services.size_with_unit(10000) == '10.0 KB'
+        assert workspace_services.size_with_unit(1234567) == '1.23 MB'
+        assert workspace_services.size_with_unit(9.99 * 10**10) == '99.9 GB'
 
     def test_get_shared_collections_of_workspace(self):
         ws = self.user.profile.current_workspace

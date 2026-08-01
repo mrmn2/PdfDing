@@ -73,6 +73,33 @@ def get_pdfs_of_workspace(workspace: Workspace) -> QuerySet[Pdf]:
     return Pdf.objects.filter(collection__in=workspace.collections)
 
 
+def get_size_of_all_workspace_pdfs(workspace: Workspace) -> str:
+    """Get the size of all PDFs of the workspace."""
+
+    ws_pdfs = get_pdfs_of_workspace(workspace)
+
+    ws_pdfs_total_size = 0
+
+    for pdf in ws_pdfs:
+        try:
+            ws_pdfs_total_size += pdf.file.size
+        except (FileNotFoundError, ValueError):
+            pass
+
+    return size_with_unit(ws_pdfs_total_size)
+
+
+def size_with_unit(pdfs_total_size: float):
+    """Return the size of all PDFs with the units KB, MB, GB depending on the size."""
+
+    if pdfs_total_size < 10**6:
+        return f'{round(pdfs_total_size / 1000, 2)} KB'
+    elif pdfs_total_size < 10**9:
+        return f'{round(pdfs_total_size / (10 ** 6), 2)} MB'
+    else:
+        return f'{round(pdfs_total_size / (10 ** 9), 2)} GB'
+
+
 def get_shared_collections_of_workspace(workspace: Workspace) -> QuerySet[SharedCollection]:
     """Get all shared collections of a workspace."""
 

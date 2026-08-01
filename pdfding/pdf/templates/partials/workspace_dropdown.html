@@ -2,7 +2,7 @@
 <div id="workspace_open_collapse_toggle"
      x-data="{ show_workspaces: false }"
      class="
-       {% if page == 'overview' or page == 'collection_details' %}
+       {% if 'overview' in page or page == 'collection_details' %}
        w-5/10 md:w-full
        {% else %}
        w-full
@@ -47,7 +47,7 @@
         {% include 'includes/svg/plus.html' %}
         <span class="">{% trans 'Create Workspace' %}</span>
       </a>
-      {% if page == 'overview' %}
+      {% if 'overview' in page or page == 'dashboard' %}
       <a href="{% url 'workspace_details' %}" class="ws-modal-child items-center gap-x-2">
         {% include 'includes/svg/settings.html' with size='dropdown' %}
         <span class="">{% trans 'Workspace Settings' %}</span>

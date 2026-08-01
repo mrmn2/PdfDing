@@ -4,7 +4,6 @@ from base import base_views
 from core.settings import MEDIA_ROOT
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_not_required
 from django.db.models import Q, QuerySet
 from django.db.models.functions import Lower
 from django.forms import Textarea, ValidationError
@@ -526,17 +525,6 @@ class DetailsCommentOverviewMixin(DetailsAnnotationOverviewMixin, PdfMixin):
             'pdf': pdf,
             'kind': 'comments',
         }
-
-
-@login_not_required
-def redirect_to_overview(request: HttpRequest):  # pragma: no cover
-    """
-    Simple view for redirecting to the pdf overview. This is used when the root url is accessed.
-
-    GET: Redirect to the PDF overview page.
-    """
-
-    return redirect('pdf_overview')
 
 
 class ViewerView(PdfMixin, View):

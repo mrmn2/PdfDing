@@ -86,7 +86,7 @@ class TestProfileSettingsViews(BaseProfileView):
         response = self.client.get(reverse('profile-setting-change', kwargs={'field_name': 'email'}))
 
         # target_status_code=302 because the '/' will redirect to the pdf overview
-        self.assertRedirects(response, '/', status_code=302, target_status_code=302)
+        self.assertRedirects(response, '/', status_code=302, target_status_code=200)
 
     def test_change_settings_get_htmx(self):
         self.user.profile.dark_mode = 'Light'

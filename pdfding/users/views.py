@@ -36,21 +36,18 @@ def account_settings(request):
 def ui_settings(request):  # pragma: no cover
     """View for the ui settings page"""
 
-    # pragma: no cover
     return render(request, 'ui_settings.html', {'page': 'ui_settings'})
 
 
 def viewer_settings(request):  # pragma: no cover
     """View for the viewer settings page"""
 
-    # pragma: no cover
     return render(request, 'viewer_settings.html', {'page': 'viewer_settings'})
 
 
 def danger_settings(request):  # pragma: no cover
     """View for the danger settings page"""
 
-    # pragma: no cover
     return render(request, 'danger_settings.html', {'page': 'danger_settings'})
 
 

@@ -23,6 +23,8 @@
             {% include 'includes/user_overview_header_extra.html' %}
             {% elif page == 'pdf_highlight_overview' or page == 'pdf_comment_overview' or page == 'pdf_details_comments' or page == 'pdf_details_highlights'%}
             {% include 'includes/pdf_annotation_overview/header_extra.html' %}
+            {% elif page == 'dashboard' %}
+            {% include 'includes/dashboard_header_extra.html' %}
             {% endif %}
             {% if 'user' not in page or not page %}
             <a id="add_pdf" class="cursor-pointer rounded-sm py-1 md:px-2 md:-ml-1! group relative
