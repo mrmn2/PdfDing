@@ -3,6 +3,7 @@ from pathlib import Path
 
 from backup.service import decrypt_file, get_encryption_key
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.core.management.base import BaseCommand
 from minio import Minio
 
@@ -68,12 +69,16 @@ class Command(BaseCommand):
         Get a file to minio. If an encryption key is provided the file will be decrypted beforehand using cryptography's
         fernet algorithm.
         """
+        target_path = (target_parent_path / obj_name).resolve()
+        target_path_parents = [str(parent) for parent in list(target_path.parents)]
 
+        if str(target_parent_path) not in target_path_parents:
+            raise SuspiciousOperation(f'Backup attempts path traversal: {obj_name}')
         if encryption_key:
             # get encrypted file from minio, decrypt it and delete the local tmp file
             encrypted_file_path = Path(__file__).parent / 'tmp_encrypted'
             minio_client.fget_object(settings.BACKUP_BUCKET_NAME, obj_name, str(encrypted_file_path))
-            decrypt_file(encryption_key, encrypted_file_path, target_parent_path / obj_name)
+            decrypt_file(encryption_key, encrypted_file_path, target_path)
             encrypted_file_path.unlink()
         else:
-            minio_client.fget_object(settings.BACKUP_BUCKET_NAME, obj_name, str(target_parent_path / obj_name))
+            minio_client.fget_object(settings.BACKUP_BUCKET_NAME, obj_name, str(target_path))

@@ -1,8 +1,10 @@
 from pathlib import Path
 from unittest import mock
 
+import pytest
 from backup.management.commands.recover_data import Command
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 from django.core.management import call_command
 from django.test import TestCase
 
@@ -40,18 +42,22 @@ class TestRecoverData(
 
     @mock.patch('backup.management.commands.recover_data.Minio.fget_object')
     def test_get_file_from_minio_no_encryption(self, mock_fget_object):
-        Command.get_file_from_minio('file_name', Path('path'), None)
+        Command.get_file_from_minio('file_name', settings.MEDIA_ROOT, None)
 
-        mock_fget_object.assert_called_with('pdfding', 'file_name', 'path/file_name')
+        mock_fget_object.assert_called_with('pdfding', 'file_name', str(settings.MEDIA_ROOT / 'file_name'))
 
     @mock.patch('backup.tasks.Path.unlink')
     @mock.patch('backup.management.commands.recover_data.decrypt_file')
     @mock.patch('backup.management.commands.recover_data.Minio.fget_object')
     def test_get_file_from_minio_with_encryption(self, mock_fput_object, mock_decrypt_file, mock_unlink):
-        Command.get_file_from_minio('file_name', Path('path'), b'key')
+        Command.get_file_from_minio('file_name', settings.MEDIA_ROOT, b'key')
 
         tmp_file_path = Path(__file__).parents[1] / 'management' / 'commands' / 'tmp_encrypted'
 
         mock_fput_object.assert_called_with('pdfding', 'file_name', str(tmp_file_path))
-        mock_decrypt_file.assert_called_with(b'key', tmp_file_path, Path('path/file_name'))
+        mock_decrypt_file.assert_called_with(b'key', tmp_file_path, settings.MEDIA_ROOT / 'file_name')
         mock_unlink.assert_called_with()
+
+    def test_get_file_from_minio_exception(self):
+        with pytest.raises(SuspiciousOperation):
+            Command.get_file_from_minio('../file_name', settings.MEDIA_ROOT, None)
