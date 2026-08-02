@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.12.0 (Aug 02, 2026)
+### What's Changed
+* Add Dashboard by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/340
+* Store PDF reading information for each workspace user separately by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/338
+* Security Fix: Don't allow users to add PDFs to collections of other users by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/342
+* Security Fix: Do not allow relative paths in backup data recovery in order to make Path Traversal / Arbitrary File Write no longer possible by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/342
+* Fix: Do not use fixed salt when creating password of shared object by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/342
+* Dependency updates by @dependabot[bot] in https://github.com/mrmn2/PdfDing/pull/339
+
+### Deprecation Information
+The functionality for creating automated  backups will be removed in the near future!
+
+
+
 ## v1.11.0 (Jul 24, 2026)
 ### What's Changed
 * Revamp admin user overview by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/333
