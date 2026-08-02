@@ -86,6 +86,31 @@ class TestAddPDFMixin(TestCase):
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
 
+    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_obj_save_no_collection_access(self, mock_from_buffer):
+        other_user = User.objects.create_user(username='other_user', password='12345', email='a@aa.com')
+
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        form = forms.AddForm(
+            data={
+                'name': 'some_pdf',
+                'tag_string': 'tag_a tag_2',
+                'description': 'some_description',
+                'notes': 'some_notes',
+                'file_directory': 'some/dir',
+                'collection': other_user.profile.current_collection_id,
+            },
+            profile=self.user.profile,
+            files={'file': get_demo_pdf()},
+        )
+
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
+        with pytest.raises(Http404, match=r'^User has no access to this collection!$'):
+            pdf_views.AddPdfMixin.obj_save(form, response.wsgi_request, None)
+
     @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.pdf_services.PdfProcessingServices.process_with_pypdfium')
     @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
@@ -199,6 +224,29 @@ class TestBulkAddPDFMixin(TestCase):
         self.assertEqual(pdf.file.size, DEMO_FILE_SIZE)
         mock_process_with_pypdfium.assert_called_once_with(pdf)
         mock_set_highlights_and_comments.assert_called_once_with(pdf)
+
+    @mock.patch('pdf.forms.magic.from_buffer', return_value='application/pdf')
+    def test_obj_save_no_collection_access(self, mock_from_buffer):
+        other_user = User.objects.create_user(username='other_user', password='12345', email='a@aa.com')
+
+        # do a dummy request so we can get a request object
+        response = self.client.get(reverse('pdf_overview'))
+        form = forms.BulkAddForm(
+            data={
+                'tag_string': 'tag_a tag_2',
+                'description': '',
+                'file_directory': 'some/dir',
+                'collection': other_user.profile.current_collection_id,
+            },
+            profile=self.user.profile,
+            files=MultiValueDict({'file': [get_demo_pdf()]}),
+        )
+
+        # need to call this, so cleaned_data can be accessed
+        form.is_valid()
+
+        with pytest.raises(Http404, match=r'^User has no access to this collection!$'):
+            pdf_views.BulkAddPdfMixin.obj_save(form, response.wsgi_request, None)
 
     @mock.patch('pdf.views.pdf_views.PdfProcessingServices.set_highlights_and_comments')
     @mock.patch('pdf.views.pdf_views.PdfProcessingServices.process_with_pypdfium')

@@ -49,13 +49,17 @@ class AddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.AddForm | forms.AddFormNoFile, request: HttpRequest, __):
         """Save the PDF based on the submitted form."""
 
+        # cleaning for collection_id not needed and would also cause problems!
+        collection_id = form.data.get('collection')
+        if not check_if_collection_part_of_workspace(request.user.profile.current_workspace, collection_id):
+            raise Http404('User has no access to this collection!')
+
+        collection = Collection.objects.get(id=collection_id)
         name = form.cleaned_data['name']
         description = form.cleaned_data.get('description', '')
         notes = form.cleaned_data.get('notes', '')
         tag_string = form.cleaned_data.get('tag_string', '')
         file_directory = form.cleaned_data.get('file_directory', '')
-        collection_id = form.cleaned_data.get('collection')
-        collection = Collection.objects.get(id=collection_id)
 
         if settings.DEMO_MODE:
             pdf_file = get_demo_pdf()
@@ -94,15 +98,18 @@ class BulkAddPdfMixin(BasePdfMixin):
     def obj_save(form: forms.BulkAddForm | forms.BulkAddFormNoFile, request: HttpRequest, __):
         """Save the multiple PDFs based on the submitted form."""
 
+        # cleaning for collection_id not needed and would also cause problems!
+        collection_id = form.data.get('collection')
+        if not check_if_collection_part_of_workspace(request.user.profile.current_workspace, collection_id):
+            raise Http404('User has no access to this collection!')
+
+        collection = Collection.objects.get(id=collection_id)
         description = form.cleaned_data.get('description', '')
         notes = form.cleaned_data.get('notes', '')
         tag_string = form.cleaned_data.get('tag_string', '')
         file_directory = form.cleaned_data.get('file_directory', '')
-        collection_id = form.cleaned_data.get('collection')
-        collection = Collection.objects.get(id=collection_id)
         workspace = collection.workspace
-        # for skip existing we use the normal form data
-        skip_existing = form.data.get('skip_existing')
+        skip_existing = form.data.get('skip_existing')  # skip existing needs no cleaning
 
         if skip_existing:
             pdf_info_list = pdf_services.get_pdf_info_list(workspace)

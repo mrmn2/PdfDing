@@ -82,6 +82,9 @@ class AddFormNoFile(forms.ModelForm):
     def clean_file_directory(self) -> str:  # pragma: no cover
         return CleanHelpers.clean_file_directory(self.cleaned_data['file_directory'])
 
+    def clean_collection(self):
+        return self.cleaned_data['collection']
+
 
 class AddForm(AddFormNoFile):
     """Class for creating the form for adding PDFs."""
