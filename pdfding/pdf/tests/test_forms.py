@@ -284,8 +284,10 @@ class TestCleanHelpers(TestCase):
     def test_clean_password_no_password(self):
         self.assertEqual(forms.CleanHelpers.clean_password(''), '')
 
-    def test_clean_password_password(self):
-        self.assertEqual(forms.CleanHelpers.clean_password('password'), make_password('password', salt='pdfding'))
+    @mock.patch('pdf.forms.make_password')
+    def test_clean_password_password(self, mock_make_password):
+        forms.CleanHelpers.clean_password('password')
+        mock_make_password.assert_called_once_with('password')
 
     def test_clean_max_views_correct(self):
         self.assertEqual(forms.CleanHelpers.clean_max_views(10), 10)

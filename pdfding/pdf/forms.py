@@ -653,7 +653,7 @@ class CleanHelpers:
         """Hash the password"""
 
         if password:
-            password = make_password(password, salt='pdfding')
+            password = make_password(password)
 
         return password
 
