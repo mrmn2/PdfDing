@@ -1,5 +1,5 @@
 {% load i18n %}
-<div x-data="{ sortOpen: false, layoutOpen: false }" class="relative flex flex-row grow justify-end items-center md:gap-x-1">
+<div class="relative flex flex-row grow justify-end items-center md:gap-x-1">
     <form class="flex grow md:max-w-120 lg:max-w-160 px-3 md:px-5 md:mr-33" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form"> <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
                       bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
               type="text" placeholder="{% translate 'Search for PDFs or #tags' %}"
