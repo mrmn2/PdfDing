@@ -623,6 +623,38 @@ class CollectionDescriptionForm(forms.ModelForm):
         fields = ['description']
 
 
+class AdvancedSearchForm(forms.Form):
+    """Form for the advanced search."""
+
+    # normal fields
+    name = forms.CharField(required=False)
+    name.group = 'PDF Details'
+    tags = forms.CharField(required=False)
+    tags.group = 'PDF Details'
+    description = forms.CharField(required=False)
+    description.group = 'PDF Details'
+    notes = forms.CharField(required=False)
+    notes.group = 'PDF Details'
+
+    # metadata fields
+    title = forms.CharField(required=False)
+    title.group = 'PDF Metadata'
+    author = forms.CharField(required=False)
+    author.group = 'PDF Metadata'
+    abstract = forms.CharField(required=False)
+    abstract.group = 'PDF Metadata'
+    keywords = forms.CharField(required=False)
+    keywords.group = 'PDF Metadata'
+    doi = forms.CharField(required=False, label='DOI')
+    doi.group = 'PDF Metadata'
+    journal = forms.CharField(required=False)
+    journal.group = 'PDF Metadata'
+    publisher = forms.CharField(required=False)
+    publisher.group = 'PDF Metadata'
+    year = forms.CharField(required=False)
+    year.group = 'PDF Metadata'
+
+
 class CleanHelpers:
     @staticmethod
     def clean_file(file: File) -> File:

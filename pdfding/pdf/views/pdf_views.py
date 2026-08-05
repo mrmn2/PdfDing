@@ -9,6 +9,7 @@ from django.db.models.functions import Lower
 from django.forms import Textarea, ValidationError
 from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_htmx.http import HttpResponseClientRedirect, HttpResponseClientRefresh
@@ -187,6 +188,9 @@ class OverviewMixin(BasePdfMixin):
         if search:
             pdfs = cls.fuzzy_filter_pdfs(pdfs, search)
 
+        if request.GET.get('advanced_search', '') == 'true':
+            pdfs = cls.advanced_search_filtering(pdfs, request.GET)
+
         return pdfs
 
     @staticmethod
@@ -206,6 +210,22 @@ class OverviewMixin(BasePdfMixin):
         return pdfs
 
     @staticmethod
+    def advanced_search_filtering(pdfs: QuerySet, query_dict: dict) -> QuerySet:
+        details_filter_dict = {
+            f'{key}__icontains': value for key, value in query_dict.items() if key in ['description', 'notes']
+        }
+        metadata_filter_dict = {
+            f'metadata__{key}__icontains': value
+            for key, value in query_dict.items()
+            if key in ['author', 'abstract', 'doi', 'keywords', 'journal', 'publisher', 'title', 'year']
+        }
+
+        pdfs = pdfs.filter(**details_filter_dict)
+        pdfs = pdfs.filter(**metadata_filter_dict)
+
+        return pdfs
+
+    @staticmethod
     def get_extra_context(request: HttpRequest) -> dict:
         """get further information that needs to be passed to the template."""
 
@@ -221,12 +241,18 @@ class OverviewMixin(BasePdfMixin):
             special_pdf_selection = ''
             page = 'pdf_overview'
 
+        if request.GET.get('advanced_search', '') == 'true':
+            advanced_search = True
+        else:
+            advanced_search = False
+
         extra_context = {
             'layout': request.user.profile.layout,
             'page': page,
-            'search_query': request.GET.get('search', ''),
             'special_pdf_selection': special_pdf_selection,
             'tag_info_dict': TagServices.get_tag_info_dict(request.user.profile),
+            'advanced_search': advanced_search,
+            'search_query': request.GET.get('search', ''),
             'tag_query': tag_query,
             'current_collection_id': request.user.profile.current_collection_id,
             'current_collection_name': request.user.profile.current_collection_name,
@@ -1015,3 +1041,35 @@ class ExportAnnotations(View, PdfMixin):
             response = FileResponse(annotations_buffer, as_attachment=True, filename='export.json')
 
             return response
+
+
+class AdvancedSearch(View):
+    """View for the advanced PDF search."""
+
+    def get(self, request: HttpRequest):  # pragma: no cover
+        """Display the form for adding an object."""
+
+        context = {'form': forms.AdvancedSearchForm()}
+
+        return render(request, 'advanced_search.html', context)
+
+
+class AdvancedSearchQuery(View):
+    """View for the advanced PDF search query."""
+
+    def get(self, request: HttpRequest):
+        query_dict = dict(request.GET)
+        query_dict['search'] = query_dict.pop('name', '')
+        query_dict['advanced_search'] = ['true']
+
+        # If sep is not specified or is None, a different splitting algorithm is applied:
+        # runs of consecutive whitespace are regarded as a single separator
+        # a query item looks like this: key: ['value']
+        query_string = '&'.join(
+            f'{key}={"+".join(query[0].strip().split())}'
+            for key, query in query_dict.items()
+            if query not in [[], ['']]
+        )
+        redirect_url = f'{reverse('pdf_overview')}?{query_string}'
+
+        return redirect(redirect_url)

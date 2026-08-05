@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.test import override_settings
 from django.urls import reverse
 from helpers import PdfDingE2ETestCase
-from pdf.models.pdf_models import Pdf
+from pdf.models.pdf_models import Metadata, Pdf
 from pdf.models.tag_models import Tag
 from playwright.sync_api import expect, sync_playwright
 from users.models import Profile
@@ -501,6 +501,23 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.page.locator("#tag_tag_filter").get_by_role("img").click()
             expect(self.page.locator("#search_filter")).not_to_be_visible()
             expect(self.page.locator("#tag_tag_filter")).not_to_be_visible()
+
+    def test_advanced_search(self):
+        pdf = Pdf.objects.get(name='pdf_1_1')
+        Metadata.objects.create(pdf=pdf, keywords='some_keyword')
+
+        with sync_playwright() as p:
+            self.open(reverse('advanced_search'), p)
+
+            self.page.locator("#id_name").click()
+            self.page.locator("#id_name").fill("pdf")
+            self.page.locator("#id_keywords").click()
+            self.page.locator("#id_keywords").fill("some_keyword")
+            self.page.get_by_role("button", name="Search").click()
+
+            # assert there is only one pdf matching the search
+            expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_1")
+            expect(self.page.locator("#pdf-link-2")).not_to_be_visible()
 
     def test_sort(self):
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.MOST_VIEWED

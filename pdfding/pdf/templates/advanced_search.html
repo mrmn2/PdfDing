@@ -1,0 +1,31 @@
+{% extends 'layouts/add_box.html' %}
+{% load i18n %}
+
+{% block content %}
+
+<h1>{% trans 'Advanced Search' %}</h1>
+
+<form action="{% url 'advanced_search_query' %}" method="GET" id="advanced_search_form">
+  <div class="flex flex-col pb-4 gap-y-2">
+    {% regroup form by field.group as field_groups %}
+    {% for field_group in field_groups %}
+    <div class="text-2xl font-bold {% if field_group.grouper == 'PDF Metadata' %}pt-4{% endif %}">
+    {{ field_group.grouper }}
+    </div>
+    <div class="gap-y-2 md:grid md:grid-cols-2 md:gap-x-10">
+    {% for field in field_group.list %}
+      <div>
+        {{ field.errors }}
+        <div class="[&>input]:rounded-md! [&>input]:py-2!">
+          <span class="font-semibold">{{ field.label }}</span>
+          {{ field }}
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <button type="submit" >{% trans 'Search' %}</button>
+</form>
+
+{% endblock %}

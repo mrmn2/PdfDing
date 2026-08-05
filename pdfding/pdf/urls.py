@@ -9,6 +9,8 @@ urlpatterns = [
     # pdf related views
     path('', pdf_views.Overview.as_view(), name='pdf_overview'),
     path('query/', pdf_views.OverviewQuery.as_view(), name='pdf_overview_query'),
+    path('advanced_search', pdf_views.AdvancedSearch.as_view(), name='advanced_search'),
+    path('advanced_search_query', pdf_views.AdvancedSearchQuery.as_view(), name='advanced_search_query'),
     path('get_next_overview_page/<int:page>/', pdf_views.Overview.as_view(), name='get_next_pdf_overview_page'),
     path('add', pdf_views.Add.as_view(), name='add_pdf'),
     path('bulk_add', pdf_views.BulkAdd.as_view(), name='bulk_add_pdfs'),

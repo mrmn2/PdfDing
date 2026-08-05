@@ -23,12 +23,14 @@
                         md:ml-10 min-[850px]:ml-10! lg:mx-10!
                         {% endif %}
                         w-full pb-4">
-                {% if search_query or tag_query %}
+                {% if advanced_search %}
+                {% querystring %}
+                {% elif search_query or tag_query %}
                 {% include 'includes/pdf_overview/search_filters.html' %}
                 {% endif %}
                 {% if not page_obj %}
                 <div class="pt-4 *:flex *:justify-center">
-                    {% if search_query or tag_query or special_pdf_selection %}
+                    {% if search_query or tag_query or special_pdf_selection or advanced_search %}
                     <span class="text-2xl">{% trans "There aren't any PDFs matching the current filters" %}</span>
                     <span class="pt-4 text-lg">{% trans 'Please try different filters' %}.</span>
                     {% else %}

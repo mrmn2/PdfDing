@@ -381,7 +381,8 @@ class TestOverviewMixin(TestCase):
         self.user = None
         set_up(self)
 
-    def test_filter_objects(self):
+    @patch('pdf.views.pdf_views.OverviewMixin.advanced_search_filtering')
+    def test_filter_objects(self, mock_advanced_filtering):
         # create some pdfs
         for i in range(1, 15):
             pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name=f'pdf_{i % 5}_{i}')
@@ -404,11 +405,14 @@ class TestOverviewMixin(TestCase):
         pdf_2.tags.set(tags[2:3])
         pdf_3.tags.set(tags)
 
-        response = self.client.get(f'{reverse('pdf_overview')}?search=pdf_&tags=programming/python')
+        response = self.client.get(
+            f'{reverse('pdf_overview')}?search=pdf_&tags=programming/python&advanced_search=false'
+        )
 
         filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
 
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_1, pdf_2])
+        mock_advanced_filtering.assert_not_called()
 
     def test_filter_objects_starred(self):
         pdf_1 = Pdf.objects.create(
@@ -463,6 +467,18 @@ class TestOverviewMixin(TestCase):
 
         self.assertEqual(list(filtered_pdfs), [pdf_1])
 
+    @patch('pdf.views.pdf_views.OverviewMixin.advanced_search_filtering')
+    def test_filter_objects_advanced(self, mock_advanced_filtering):
+        pdf_1 = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_to_be_found')
+        Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_not_to_be_found')
+
+        mock_advanced_filtering.return_value = self.user.profile.current_pdfs.filter(name='pdf_to_be_found')
+        response = self.client.get(f'{reverse('pdf_overview')}?advanced_search=true')
+
+        filtered_pdfs = pdf_views.OverviewMixin.filter_objects(response.wsgi_request)
+        assert filtered_pdfs.count() == 1
+        assert filtered_pdfs.first() == pdf_1
+
     def test_fuzzy_filter_pdfs(self):
         Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf_not_to_be_found')
         pdf_self_hosted = Pdf.objects.create(
@@ -476,12 +492,32 @@ class TestOverviewMixin(TestCase):
         filtered_pdfs = pdf_views.OverviewMixin.fuzzy_filter_pdfs(Pdf.objects.all(), 'self hosted')
         self.assertEqual(sorted(list(filtered_pdfs), key=lambda a: a.name), [pdf_self_hosting, pdf_self_hosted])
 
+    def test_advanced_search_filtering(self):
+        collection = self.user.profile.current_collection
+        pdf_1 = Pdf.objects.create(collection=collection, name='eggplant')
+        pdf_2 = Pdf.objects.create(collection=collection, name='eggplant_2', description='Vegetables')
+        pdf_3 = Pdf.objects.create(collection=collection, name='eggplant_3', description='Vegetables')
+        pdf_4 = Pdf.objects.create(collection=collection, name='tomato')
+        Pdf.objects.create(collection=collection, name='tomato_2', description='Vegetables')
+        Metadata.objects.create(pdf=pdf_1, title='Eggplant', year=2016)
+        Metadata.objects.create(pdf=pdf_2, title='All about vegetables: Eggplant', year=2016)
+        Metadata.objects.create(pdf=pdf_3, title='All about vegetables: Tomato', year=2017)
+        Metadata.objects.create(pdf=pdf_4, title='Tomato', year=2017)
+
+        filtered_pdfs = pdf_views.OverviewMixin.advanced_search_filtering(
+            Pdf.objects.all(), {'description': 'vegetable', 'title': 'About', 'year': 2016}
+        )
+
+        assert filtered_pdfs.count() == 1
+        assert filtered_pdfs.first() == pdf_2
+
     @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context(self, mock_get_tag_info_dict):
-        response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging')
+        response = self.client.get(f'{reverse('pdf_overview')}?search=searching&tags=tagging&advanced_search=false')
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
         expected_extra_context = {
+            'advanced_search': False,
             'search_query': 'searching',
             'tag_query': ['tagging'],
             'tag_info_dict': 'tag_info_dict',
@@ -501,6 +537,7 @@ class TestOverviewMixin(TestCase):
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
         expected_extra_context = {
+            'advanced_search': False,
             'search_query': '',
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
@@ -515,11 +552,19 @@ class TestOverviewMixin(TestCase):
         self.assertEqual(generated_extra_context, expected_extra_context)
 
     @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
+    def test_get_extra_context_advanced_search_true(self, mock_get_tag_info_dict):
+        response = self.client.get(f'{reverse('pdf_overview')}?advanced_search=true')
+
+        generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
+        assert generated_extra_context['advanced_search']
+
+    @patch('pdf.services.tag_services.TagServices.get_tag_info_dict', return_value='tag_info_dict')
     def test_get_extra_context_selection_invalid(self, mock_get_tag_info_dict):
         response = self.client.get(f'{reverse('pdf_overview')}?selection=invalid')
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
         expected_extra_context = {
+            'advanced_search': False,
             'search_query': '',
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
@@ -539,6 +584,7 @@ class TestOverviewMixin(TestCase):
 
         generated_extra_context = pdf_views.OverviewMixin.get_extra_context(response.wsgi_request)
         expected_extra_context = {
+            'advanced_search': False,
             'search_query': '',
             'tag_query': [],
             'tag_info_dict': 'tag_info_dict',
@@ -1034,6 +1080,17 @@ class TestViews(TestCase):
         self.client.get(reverse('export_annotations', kwargs={'kind': 'highlights'}))
 
         mock_export_annotations.assert_called_once_with(self.user.profile, 'highlights')
+
+    def test_advanced_search_query(self):
+        queries = (
+            '?name=some_name&tags=&description=some_description&title=The+Title&doi=&journal=&publisher=&year=2017'
+        )
+        response = self.client.get(f'{reverse("advanced_search_query")}{queries}')
+
+        expected_queries = (
+            '?description=some_description&title=The+Title&year=2017&search=some_name&advanced_search=true'
+        )
+        self.assertRedirects(response, f'{reverse('pdf_overview')}{expected_queries}', status_code=302)
 
 
 class TestAnnotationMixin(TestCase):
