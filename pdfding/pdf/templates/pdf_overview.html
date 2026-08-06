@@ -24,7 +24,7 @@
                         {% endif %}
                         w-full pb-4">
                 {% if advanced_search %}
-                {% querystring %}
+                {% include 'includes/pdf_overview/advanced_search_filter.html' %}
                 {% elif search_query or tag_query %}
                 {% include 'includes/pdf_overview/search_filters.html' %}
                 {% endif %}

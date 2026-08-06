@@ -519,6 +519,24 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_1")
             expect(self.page.locator("#pdf-link-2")).not_to_be_visible()
 
+    def test_advanced_search_filter(self):
+        with sync_playwright() as p:
+            self.open(f'{reverse("pdf_overview")}?tags=some_tag&author=some_author&advanced_search=true', p)
+
+            expect(self.page.locator("#advanced_search_filter")).to_be_visible()
+            self.page.locator("#advanced_search_filter_close").click()
+            expect(self.page.locator("#advanced_search_filter")).not_to_be_visible()
+
+    def test_advanced_search_adjust_search(self):
+        with sync_playwright() as p:
+            self.open(f'{reverse("pdf_overview")}?tags=some_tag&author=some_author&advanced_search=true', p)
+
+            self.page.locator("#adjust_advanced_search").click()
+            expect(self.page.locator("#id_tags")).to_have_value('some_tag')
+            expect(self.page.locator("#id_author")).to_have_value('some_author')
+            # just make sure aother fields are empty
+            expect(self.page.locator("#id_name")).to_have_value('')
+
     def test_sort(self):
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.MOST_VIEWED
         self.user.profile.save()

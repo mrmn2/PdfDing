@@ -1081,6 +1081,17 @@ class TestViews(TestCase):
 
         mock_export_annotations.assert_called_once_with(self.user.profile, 'highlights')
 
+    @mock.patch('pdf.views.pdf_views.forms.AdvancedSearchForm')
+    def test_advanced_search(self, mock_form):
+        self.client.get(reverse('advanced_search'))
+        mock_form.assert_called_once_with(initial={})
+
+    @mock.patch('pdf.views.pdf_views.forms.AdvancedSearchForm')
+    def test_advanced_search_initial(self, mock_form):
+        queries = '?tags=books&year=2017&search=favorite+book&bla=blub'
+        self.client.get(f'{reverse("advanced_search")}{queries}')
+        mock_form.assert_called_once_with(initial={'tags': 'books', 'year': '2017', 'name': 'favorite book'})
+
     def test_advanced_search_query(self):
         queries = (
             '?name=some_name&tags=&description=some_description&title=The+Title&doi=&journal=&publisher=&year=2017'

@@ -219,9 +219,9 @@ class OverviewMixin(BasePdfMixin):
             for key, value in query_dict.items()
             if key in ['author', 'abstract', 'doi', 'keywords', 'journal', 'publisher', 'title', 'year']
         }
+        filter_dict = details_filter_dict | metadata_filter_dict
 
-        pdfs = pdfs.filter(**details_filter_dict)
-        pdfs = pdfs.filter(**metadata_filter_dict)
+        pdfs = pdfs.filter(**filter_dict)
 
         return pdfs
 
@@ -1049,7 +1049,28 @@ class AdvancedSearch(View):
     def get(self, request: HttpRequest):  # pragma: no cover
         """Display the form for adding an object."""
 
-        context = {'form': forms.AdvancedSearchForm()}
+        query_dict = dict(request.GET)
+
+        allowed_fields = [
+            'author',
+            'abstract',
+            'description',
+            'doi',
+            'keywords',
+            'journal',
+            'name',
+            'notes',
+            'publisher',
+            'tags',
+            'title',
+            'year',
+        ]
+
+        if query_dict.get('search'):
+            query_dict['name'] = query_dict.pop('search')
+
+        initial_dict = {field: value[0].strip() for field, value in query_dict.items() if field in allowed_fields}
+        context = {'form': forms.AdvancedSearchForm(initial=initial_dict)}
 
         return render(request, 'advanced_search.html', context)
 

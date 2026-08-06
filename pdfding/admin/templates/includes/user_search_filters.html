@@ -1,7 +1,8 @@
 {% load i18n %}
-<div class="flex flex-wrap gap-x-2 gap-y-2 pt-3">
-    <div class="flex items-center text-slate-500 dark:text-slate-300 text-sm">
-      <span>{% trans 'Filters' %}</span>
+<div class="flex flex-wrap gap-x-2 pb-1 md:pb-2">
+    <div class="flex flex-row items-center text-slate-500 dark:text-slate-300 text-sm">
+        {% include 'includes/svg/filter.html' %}
+        <span>{% trans 'Filters' %}</span>
     </div>
     {% if search_query %}
     <div id="search_filter" x-data="{}"
@@ -9,11 +10,7 @@
                 bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700
                 border border-slate-400/70 dark:border-slate-500">
         <div class="flex flex-row items-center">
-            <svg class="w-4 h-4 mt-[1px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!--source: https://www.svgrepo.com/svg/489122/search -->
-                <!--License: PD-->
-                <path d="M13.3891 13.3891L19 19M9.5 15C12.5376 15 15 12.5376 15 9.5C15 6.46243 12.5376 4 9.5 4C6.46243 4 4 6.46243 4 9.5C4 12.5376 6.46243 15 9.5 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            {% include 'includes/svg/search.html' %}
             <span>{{ search_query|truncatechars:40 }}</span>
         </div>
         <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"
