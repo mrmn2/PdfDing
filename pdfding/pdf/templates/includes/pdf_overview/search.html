@@ -1,0 +1,41 @@
+{% load i18n %}
+
+<div class="px-2 md:px-4" x-data="{ search_open: false }">
+  <div class="flex flex-row gap-x-1 items-center md:border md:px-2 h-10 md:w-72 rounded-sm cursor-pointer
+              text-primary md:text-gray-500 md:dark:text-slate-400 truncate
+              md:bg-slate-100 md:dark:bg-slate-800! border-slate-400 dark:border-slate-600"
+       id="search_bar"
+       @click="search_open = true; $nextTick(() => { $refs.search_input.focus(); });">
+    {% include 'includes/svg/search.html' with size='6' %}
+    <span class="hidden md:block">{% trans 'Search' %}</span>
+  </div>
+  <div class="flex flex-col justify-start absolute z-20 -top-1 md:-top-2 lg:top-0
+              w-screen lg:w-3xl xl:w-4xl 2xl:w-6xl
+              -right-18 md:-right-24 lg:right-32"
+       id="search_modal"
+       x-show="search_open" x-cloak
+       @click.away="search_open = false"
+       @keyup.escape.window="search_open = false">
+    <div class="flex flex-col gap-y-3 py-4 ml-1 border-b border-x lg:border-t rounded-b-md lg:rounded-md [&>*]:px-4
+                divide-y divide-slate-400 dark:divide-slate-600
+                bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600">
+      <form class="w-full pb-4" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form">
+        <div class="flex flex-row items-center pl-2
+                    border-2 border-primary rounded-md text-gray-500 md:dark:text-slate-400">
+          {% include 'includes/svg/search.html' with size='5' %}
+          <input class="-ml-1! h-10 rounded-sm! align-text-center focus:border-none! outline-none!
+                        bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
+                  type="text" placeholder="{% translate 'Search for PDFs or #tags' %}"
+                  id="search_input"
+                  name="search"
+                  x-ref="search_input"
+                  @keyup.enter="document.getElementById('search_form').submit()"
+          />
+        </div>
+      </form>
+      <a class="pt-2 text-sm text-primary hover:underline" href="{% url 'advanced_search' %}">
+        {% trans 'Advanced Search' %}
+      </a>
+    </div>
+  </div>
+</div>

@@ -10,7 +10,7 @@
                 bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700
                 border border-slate-400/70 dark:border-slate-500">
         <div class="flex flex-row items-center">
-            {% include 'includes/svg/search.html' %}
+            {% include 'includes/svg/search.html' with size='4' %}
             <span>{{ search_query|truncatechars:40 }}</span>
         </div>
         <div class="dark:hover:text-white hover:text-black hover:cursor-pointer"

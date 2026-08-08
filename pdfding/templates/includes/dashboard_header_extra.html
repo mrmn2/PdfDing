@@ -1,11 +1,8 @@
 {% load i18n %}
-<div class="relative flex flex-row grow justify-end items-center md:gap-x-1">
-    <form class="flex grow md:max-w-120 lg:max-w-160 px-3 md:px-5 md:mr-33" action="{% url 'pdf_overview_query' %}" method="GET" id="search_form"> <input class="border h-10 rounded-sm! align-text-center focus:border-primary!
-                      bg-slate-100 dark:bg-slate-800! border-slate-400 dark:border-slate-600"
-              type="text" placeholder="{% translate 'Search for PDFs or #tags' %}"
-                id="search_input"
-                name="search"
-                @keyup.enter="document.getElementById('search_form').submit()"
-        />
-    </form>
+
+<div class="flex relative flex-row">
+  {% include 'includes/pdf_overview/search.html' %}
+  {# div is used to get pop up search to correct possition #}
+  <div class="pl-33">
+  </div>
 </div>

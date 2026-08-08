@@ -6,7 +6,7 @@
   <a id="adjust_advanced_search"
      class="flex flex-row items-center"
      href="{% url 'advanced_search' %}{% querystring %}">
-    {% include 'includes/svg/search.html' %}
+    {% include 'includes/svg/search.html' with size='4' %}
     <span>{% trans 'Adjust Search' %}</span>
     <span class="ml-1">|</span>
   </a>

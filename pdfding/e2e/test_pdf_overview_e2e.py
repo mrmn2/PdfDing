@@ -444,6 +444,37 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             self.page.get_by_role("banner").click()
             expect(self.page.locator("#preview_inner")).not_to_be_visible()
 
+    def test_search_modal_search(self):
+        tag = Tag.objects.create(name='some_tag', workspace=self.user.profile.current_workspace)
+        pdf = Pdf.objects.get(name='pdf_1_11')
+        pdf.tags.set([tag])
+
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            self.page.locator("#search_bar").click()
+            self.page.locator("#search_input").click()
+            self.page.locator("#search_input").fill("#some_tag")
+            self.page.locator("#search_input").press("Enter")
+
+            # assert there is only one pdf matching the search
+            expect(self.page.locator("#pdf-link-1")).to_contain_text("pdf_1_11")
+            expect(self.page.locator("#pdf-link-2")).not_to_be_visible()
+
+    def test_search_modal_open_close(self):
+        with sync_playwright() as p:
+            self.open(reverse('pdf_overview'), p)
+
+            expect(self.page.locator("#search_modal")).not_to_be_visible()
+            self.page.locator("#search_bar").click()
+            expect(self.page.locator("#search_modal")).to_be_visible()
+            self.page.locator("body").click()
+            expect(self.page.locator("#search_modal")).not_to_be_visible()
+            self.page.locator("#search_bar").click()
+            expect(self.page.locator("#search_modal")).to_be_visible()
+            self.page.locator("#search_modal").press("Escape")
+            expect(self.page.locator("#search_modal")).not_to_be_visible()
+
     def test_search_tags(self):
         with sync_playwright() as p:
             # trigger search by clicking on sidebar
