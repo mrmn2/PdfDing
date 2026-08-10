@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+{% if not request.user.is_authenticated %}
+<html data-theme="{{ DEFAULT_THEME_COLOR }}" lang="en">
+{% else %}
+<html data-theme="{{ request.user.profile.theme_color }}" lang="en">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PdfDing</title>
+    <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo_with_circle.svg' %}">
+    <script>
+      (function() {
+        {% if not request.user.is_authenticated %}
+        const theme = '{{ DEFAULT_THEME }}';
+        {% else %}
+        const theme = '{{ request.user.profile.dark_mode_str }}';
+        {% endif %}
+
+        if (theme === 'system') {
+          const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+          if (isSystemDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.add('light');
+          }
+
+          // Listen for system theme changes
+          window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+            document.documentElement.classList.toggle('dark', event.matches);
+          });
+        } else {
+          document.documentElement.classList.add(theme);
+        }
+      })();
+    </script>
+    <script src="{% static 'js/alpine.min.js' %}" defer></script>
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+    {% if request.user.profile.theme_color == 'Custom' %}
+    <style>
+        html[data-theme="Custom"] {
+          --color-primary: {{ request.user.profile.custom_theme_color }};
+          --color-secondary: {{ request.user.profile.custom_theme_color_secondary }};
+        }
+    </style>
+    {% endif %}
+</head>
+<body class="flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+      x-data="{ show_bulk_edit_menu: false }">
+    {# fix FOUC for firefox #}
+    <script>0</script>
+    {% block header %}
+    {% endblock %}
+
+    <div class="h-full">
+        {% include 'includes/messages.html' %}
+
+        {% block layout %}
+        {% endblock %}
+    </div>
+</body>
+</html>
