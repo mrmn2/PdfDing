@@ -90,7 +90,6 @@ class TestProfileSettingsViews(BaseProfileView):
 
     def test_change_settings_get_htmx(self):
         self.user.profile.dark_mode = 'Light'
-        self.user.profile.theme_color = 'Green'
         self.user.profile.save()
 
         headers = {'HTTP_HX-Request': 'true'}
@@ -98,17 +97,13 @@ class TestProfileSettingsViews(BaseProfileView):
         field_names = [
             'pdf_inverted_mode',
             "pdf_keep_screen_awake",
-            'custom_theme_color',
             'theme',
-            'theme_color',
             'email',
             'show_progress_bars',
             'language',
         ]
         form_list = [
             forms.GenericUserFieldForm,
-            forms.GenericUserFieldForm,
-            forms.CustomThemeColorForm,
             forms.GenericUserFieldForm,
             forms.GenericUserFieldForm,
             forms.EmailForm,
@@ -118,9 +113,7 @@ class TestProfileSettingsViews(BaseProfileView):
         initial_dicts = [
             {'pdf_inverted_mode': 'Disabled'},
             {'pdf_keep_screen_awake': 'Disabled'},
-            {'custom_theme_color': '#ffa385'},
             {'dark_mode': 'Light'},
-            {'theme_color': 'Green'},
             {'email': 'a@a.com'},
             {'show_progress_bars': 'Enabled'},
             {'language': 'English'},
@@ -135,13 +128,13 @@ class TestProfileSettingsViews(BaseProfileView):
     def test_change_settings_post_invalid_form(self):
         # follow=True is needed for getting the message
         response = self.client.post(
-            reverse('profile-setting-change', kwargs={'field_name': 'custom_theme_color'}),
-            data={"custom_theme_color": 'invalid'},
+            reverse('profile-setting-change', kwargs={'field_name': 'theme'}),
+            data={"dark_mode": 'invalid'},
             follow=True,
         )
         message = list(response.context['messages'])[0]
 
-        self.assertEqual(message.message, 'Only valid hex colors are allowed! E.g.: #ffa385.')
+        self.assertEqual(message.message, 'Input is not valid!')
         self.assertEqual(message.tags, 'warning')
 
     def test_change_settings_email_post_email_exists(self):
@@ -164,17 +157,6 @@ class TestProfileSettingsViews(BaseProfileView):
         mock_send.assert_called()
         self.assertEqual(user.email, 'a@c.com')
 
-    def test_change_settings_custom_theme_color(self):
-        self.client.post(
-            reverse('profile-setting-change', kwargs={'field_name': 'custom_theme_color'}),
-            data={'custom_theme_color': '#b5edff'},
-        )
-
-        # get the user and check if email was changed
-        user = User.objects.get(username=self.username)
-        self.assertEqual(user.profile.custom_theme_color, '#b5edff')
-        self.assertEqual(user.profile.custom_theme_color_secondary, '#91becc')
-
     def test_change_settings_dark_mode_post_correct(self):
         self.user.profile.dark_mode = 'Light'
         self.user.profile.save()
@@ -188,20 +170,6 @@ class TestProfileSettingsViews(BaseProfileView):
         # get the user and check if dark mode was changed
         user = User.objects.get(username=self.username)
         self.assertEqual(user.profile.dark_mode, 'Dark')
-
-    def test_change_settings_theme_color_post_correct(self):
-        self.user.profile.theme_color = 'Green'
-        self.user.profile.save()
-
-        self.assertEqual(self.user.profile.theme_color, 'Green')
-        self.client.post(
-            reverse('profile-setting-change', kwargs={'field_name': 'theme_color'}),
-            data={'theme_color': 'Blue'},
-        )
-
-        # get the user and check if dark mode was changed
-        user = User.objects.get(username=self.username)
-        self.assertEqual(user.profile.theme_color, 'Blue')
 
     def test_change_settings_normal_post_correct(self):
         for field_name, val_before, val_after in zip(

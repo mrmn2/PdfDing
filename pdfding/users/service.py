@@ -43,27 +43,17 @@ def get_secondary_color(custom_color: str) -> str:
 def get_viewer_theme_and_color(user_profile: Profile | None = None) -> tuple[str, str]:
     theme_color_dict = {
         'Green': '74 222 128',
-        'Blue': '71 147 204',
-        'Gray': '151 170 189',
-        'Red': '248 113 113',
-        'Pink': '218 123 147',
-        'Orange': '255 203 133',
-        'Brown': '76 37 24',
     }
 
     if user_profile:
-        rgb_as_str = [str(val) for val in convert_hex_to_rgb(user_profile.custom_theme_color)]
-        custom_color_rgb_str = ' '.join(rgb_as_str)
-        theme_color_dict['Custom'] = custom_color_rgb_str
-
-        theme_color = user_profile.theme_color
+        theme_color = 'Green'
 
         if user_profile.pdf_inverted_mode == 'Enabled':
             theme = 'inverted'
         else:
             theme = user_profile.dark_mode_str
     else:
-        theme_color = settings.DEFAULT_THEME_COLOR
+        theme_color = 'Green'
         theme = settings.DEFAULT_THEME
 
     return theme, theme_color_dict[theme_color]

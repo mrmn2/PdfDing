@@ -31,36 +31,6 @@
       --color-primary: #4ade80;
       --color-secondary: #3bb166;
     }
-
-    html[data-theme="Blue"] {
-      --color-primary: #4793cc;
-      --color-secondary: #3875a3;
-    }
-
-    html[data-theme="Gray"] {
-      --color-primary: #97aabd;
-      --color-secondary: #788897;
-    }
-
-    html[data-theme="Red"] {
-      --color-primary: #f87171;
-      --color-secondary: #c65a5a;
-    }
-
-    html[data-theme="Pink"] {
-      --color-primary: #da7b93;
-      --color-secondary: #ae6275;
-    }
-
-    html[data-theme="Orange"] {
-      --color-primary: #ffcb85;
-      --color-secondary: #cca26a;
-    }
-
-    html[data-theme="Brown"] {
-      --color-primary: #4c2518;
-      --color-secondary: #3c1d13;
-    }
 }
 
 h1 {

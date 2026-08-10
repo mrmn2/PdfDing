@@ -45,7 +45,7 @@ A live demo is available at [demo.pdfding.com](https://demo.pdfding.com/).
 * Edit PDFs by adding text, highlighting and drawings
 * Add signatures to PDFs and access them on all devices
 * Manage and export PDF highlights and comments in dedicated sections
-* Clean, intuitive UI with dark mode, inverted color mode, custom theme colors and multiple layouts
+* Clean, intuitive UI with dark mode, inverted color mode and multiple layouts
 * SSO support via OIDC
 * Use bulk actions to manage multiple PDFs at once
 * Share collections and PDFs with an external audience via a link or a QR Code with optional access control

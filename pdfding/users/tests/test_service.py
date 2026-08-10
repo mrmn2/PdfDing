@@ -20,7 +20,6 @@ class TestUserServices(TestCase):
         user = User.objects.create_user(username='user', password="password")
 
         profile = user.profile
-        profile.theme_color = 'Green'
         profile.dark_mode = 'light'
 
         generated_theme, generated_color = service.get_viewer_theme_and_color(profile)
@@ -29,20 +28,19 @@ class TestUserServices(TestCase):
         self.assertEqual(generated_theme, 'light')
 
         # also test custom color and inverted mode
-        profile.theme_color = 'Custom'
         profile.pdf_inverted_mode = 'Enabled'
-        profile.custom_theme_color = '#000000'
+        profile.save()
 
         generated_theme, generated_color = service.get_viewer_theme_and_color(profile)
 
-        self.assertEqual(generated_color, '0 0 0')
         self.assertEqual(generated_theme, 'inverted')
+        self.assertEqual(generated_color, '74 222 128')
 
-    @override_settings(DEFAULT_THEME='dark', DEFAULT_THEME_COLOR='Brown')
+    @override_settings(DEFAULT_THEME='dark')
     def test_get_viewer_colors_no_profile(self):
         generated_theme, generated_color = service.get_viewer_theme_and_color()
 
-        self.assertEqual(generated_color, '76 37 24')
+        self.assertEqual(generated_color, '74 222 128')
         self.assertEqual(generated_theme, 'dark')
 
     def test_get_demo_pdf(self):

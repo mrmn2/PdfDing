@@ -54,7 +54,6 @@ COPY --from=npm-build /build/pdfding pdfding
 # prepare the static files for production
 # need to set the default theme and default theme color to some dummy values beforehand
 ARG DEFAULT_THEME=''
-ARG DEFAULT_THEME_COLOR=''
 
 RUN poetry run pdfding/manage.py collectstatic
 

@@ -21,7 +21,7 @@ from django_htmx.http import HttpResponseClientRefresh
 from pdf.services.workspace_services import check_if_collection_part_of_workspace
 from users import forms
 from users.models import Profile
-from users.service import create_demo_user, get_secondary_color
+from users.service import create_demo_user
 
 
 def account_settings(request):
@@ -58,10 +58,8 @@ class ChangeSetting(View):
         'email': forms.EmailForm,
         'language': forms.create_user_field_form(['language']),
         'theme': forms.create_user_field_form(['dark_mode']),
-        'theme_color': forms.create_user_field_form(['theme_color']),
         'pdf_inverted_mode': forms.create_user_field_form(['pdf_inverted_mode']),
         'pdf_keep_screen_awake': forms.create_user_field_form(['pdf_keep_screen_awake']),
-        'custom_theme_color': forms.CustomThemeColorForm,
         'show_progress_bars': forms.create_user_field_form(['show_progress_bars']),
     }
 
@@ -72,8 +70,6 @@ class ChangeSetting(View):
             'email': {'email': request.user.email},
             'language': {'language': request.user.profile.language},
             'theme': {'dark_mode': request.user.profile.dark_mode},
-            'theme_color': {'theme_color': request.user.profile.theme_color},
-            'custom_theme_color': {'custom_theme_color': request.user.profile.custom_theme_color},
             'pdf_inverted_mode': {'pdf_inverted_mode': request.user.profile.pdf_inverted_mode},
             'pdf_keep_screen_awake': {'pdf_keep_screen_awake': request.user.profile.pdf_keep_screen_awake},
             'show_progress_bars': {'show_progress_bars': request.user.profile.show_progress_bars},
@@ -112,13 +108,6 @@ class ChangeSetting(View):
 
                 # Then send confirmation email
                 send_verification_email_for_user(request, request.user)
-            elif field_name == 'custom_theme_color':
-                form.save()
-
-                # calculate shades for custom theme colors
-                profile = request.user.profile
-                profile.custom_theme_color_secondary = get_secondary_color(request.user.profile.custom_theme_color)
-                profile.save()
             else:
                 form.save()
 

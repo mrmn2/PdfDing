@@ -1,10 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-{% if not request.user.is_authenticated %}
-<html data-theme="{{ DEFAULT_THEME_COLOR }}" lang="en">
-{% else %}
-<html data-theme="{{ request.user.profile.theme_color }}" lang="en">
-{% endif %}
+<html data-theme="Green" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -45,14 +41,6 @@
             display: none !important;
         }
     </style>
-    {% if request.user.profile.theme_color == 'Custom' %}
-    <style>
-        html[data-theme="Custom"] {
-          --color-primary: {{ request.user.profile.custom_theme_color }};
-          --color-secondary: {{ request.user.profile.custom_theme_color_secondary }};
-        }
-    </style>
-    {% endif %}
 </head>
 <body class="flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
       x-data="{ show_bulk_edit_menu: false }">

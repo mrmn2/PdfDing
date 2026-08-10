@@ -7,7 +7,7 @@ from users.signals import oidc_handle_admin_rights
 
 
 class TestSignals(TestCase):
-    @override_settings(DEFAULT_THEME='dark', DEFAULT_THEME_COLOR='Gray')
+    @override_settings(DEFAULT_THEME='dark')
     def test_user_postsave(self):
         input_mail = 'a@a.com'
 
@@ -19,7 +19,6 @@ class TestSignals(TestCase):
         self.assertEqual(profile.current_workspace_id, str(user.id))
         self.assertEqual(profile.current_collection_id, str(user.id))
         self.assertEqual(profile.dark_mode, 'Dark')
-        self.assertEqual(profile.theme_color, 'Gray')
 
         # check that email address object does not exist yet:
         email_address = EmailAddress.objects.get_primary(user)

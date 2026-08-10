@@ -41,36 +41,6 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             # check that selected option is correct
             expect(self.page.locator("#id_dark_mode")).to_have_value("Dark")
 
-    def test_settings_change_theme_color(self):
-        self.user.profile.theme_color = 'Green'
-        self.user.profile.custom_theme_color = '#ffa385'
-        self.user.profile.save()
-
-        with sync_playwright() as p:
-            self.open(reverse('ui_settings'), p)
-
-            # test that light theme is used
-            expect(self.page.locator('html')).to_have_attribute('data-theme', 'Green')
-            expect(self.page.locator("#theme_color")).to_contain_text("Green")
-            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(74, 222, 128)')
-
-            # change to dark mode
-            self.page.locator("#theme_color_edit").click()
-            # check that selected option is correct
-            expect(self.page.locator("#id_theme_color")).to_have_value("Green")
-            self.page.locator("#id_theme_color").select_option("Custom")
-            self.page.get_by_role("button", name="Submit").click()
-
-            # check that theme was changed to dark
-            expect(self.page.locator('html')).to_have_attribute('data-theme', 'Custom')
-            expect(self.page.locator("#theme_color")).to_contain_text("Custom")
-            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(255, 163, 133)')
-
-            # trigger dropdown again
-            self.page.locator("#theme_color_edit").click()
-            # check that selected option is correct
-            expect(self.page.locator("#id_theme_color")).to_have_value("Custom")
-
     def test_settings_email_change(self):
         with sync_playwright() as p:
             self.open(reverse('account_settings'), p)
@@ -108,21 +78,6 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
             self.open(reverse('account_settings'), p)
 
             expect(self.page.locator("#language")).not_to_be_visible()
-
-    def test_settings_change_custom_color(self):
-        with sync_playwright() as p:
-            self.open(reverse('ui_settings'), p)
-
-            # check custom color before changing
-            expect(self.page.locator("#custom_theme_color")).to_contain_text("#ffa385")
-
-            # change custom color
-            self.page.locator("#custom_theme_color_edit").click()
-            self.page.locator("#id_custom_theme_color").fill("#95c2d6")
-            self.page.get_by_role("button", name="Submit").click()
-
-            # check custom color after changing
-            expect(self.page.locator("#custom_theme_color")).to_contain_text("95c2d6")
 
     def test_settings_change_inverted_pdf(self):
         with sync_playwright() as p:
@@ -188,7 +143,7 @@ class UsersE2ETestCase(PdfDingE2ETestCase):
         with sync_playwright() as p:
             self.open(reverse('ui_settings'), p)
 
-            for name in ['#theme_edit', '#theme_color_edit', '#custom_theme_color_edit', '#show_progress_bars_edit']:
+            for name in ['#theme_edit', '#show_progress_bars_edit']:
                 self.page.locator(name).click()
                 expect(self.page.locator(name)).to_contain_text('Cancel')
                 self.page.get_by_text("Cancel").click()
@@ -315,16 +270,16 @@ class UsersLoginE2ETestCase(PdfDingE2ENoLoginTestCase):
             # signup should not be displayed in signup_disabled mode
             expect(self.page.get_by_role("link", name="Sign up", exact=True)).not_to_be_visible()
 
-    @override_settings(DEFAULT_THEME='dark', DEFAULT_THEME_COLOR='Blue')
+    @override_settings(DEFAULT_THEME='dark')
     def test_default_theme(self):
         with sync_playwright() as p:
             self.open(reverse('home'), p)
 
             # test that light theme is used
             expect(self.page.locator('html')).to_have_attribute('class', 'dark')
-            expect(self.page.locator('html')).to_have_attribute('data-theme', 'Blue')
+            expect(self.page.locator('html')).to_have_attribute('data-theme', 'Green')
             expect(self.page.locator('body')).to_have_css('background-color', 'oklch(0.208 0.042 265.755)')
-            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(71, 147, 204)')
+            expect(self.page.locator('#logo_div')).to_have_css('background-color', 'rgb(74, 222, 128)')
 
     @patch('users.views.create_demo_user')
     @patch('users.views.uuid4', return_value='123456789')

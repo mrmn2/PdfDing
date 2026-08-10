@@ -36,16 +36,6 @@ class Profile(models.Model):
         p_50 = 50, '50'
         p_100 = 100, '100'
 
-    class ThemeColor(models.TextChoices):
-        GREEN = 'Green', _('Green')
-        BLUE = 'Blue', _('Blue')
-        GRAY = 'Gray', _('Gray')
-        RED = 'Red', _('Red')
-        PINK = 'Pink', _('Pink')
-        ORANGE = 'Orange', _('Orange')
-        BROWN = 'Brown', _('Brown')
-        CUSTOM = 'Custom', _('Custom')
-
     class EnabledChoice(models.TextChoices):
         ENABLED = 'Enabled', _('Enabled')
         DISABLED = 'Disabled', _('Disabled')
@@ -90,9 +80,6 @@ class Profile(models.Model):
     )
     current_collection_id = models.CharField(max_length=36, editable=False, blank=False)
     current_workspace_id = models.CharField(max_length=36, editable=False, blank=False)
-    # set dummy default colors, will be overwritten in users/signals.py
-    custom_theme_color = models.CharField(max_length=7, default='#ffa385')
-    custom_theme_color_secondary = models.CharField(max_length=7, default='#cc826a')
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=6, default=DarkMode.DARK)
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     language = models.CharField(choices=LanguageChoice.choices, max_length=30, default=LanguageChoice.ENGLISH)
@@ -109,7 +96,6 @@ class Profile(models.Model):
     signatures = models.JSONField(default=dict)
     tags_open = models.BooleanField(default=False)
     tag_tree_mode = models.BooleanField(default=True)
-    theme_color = models.CharField(choices=ThemeColor.choices, max_length=6, default=ThemeColor.RED)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_sorting = models.CharField(choices=UserSortingChoice, max_length=15, default=UserSortingChoice.NEWEST)
 

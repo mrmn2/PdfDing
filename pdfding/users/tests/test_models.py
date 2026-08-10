@@ -17,12 +17,11 @@ class TestProfile(TestCase):
 
     # override_settings is not working with this test as the models default value is not overwritten
     # therefore do not change the theme defined in dev.py
-    @override_settings(DEFAULT_THEME='dark', DEFAULT_THEME_COLOR='Red')
+    @override_settings(DEFAULT_THEME='dark')
     def test_default_theme(self):
         user = User.objects.create_user(username='bla', password='12345', email='bla@a.com')
 
         self.assertEqual(user.profile.dark_mode, 'Dark')
-        self.assertEqual(user.profile.theme_color, 'Red')
 
     def test_dark_mode_str(self):
         self.user.profile.dark_mode = 'Dark'

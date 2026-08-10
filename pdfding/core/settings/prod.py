@@ -182,7 +182,6 @@ if environ.get('OIDC_ENABLE') in ['TRUE', 'True']:
     }
 
 # themes
-theme_colors = ['green', 'blue', 'gray', 'red', 'pink', 'orange', 'brown']
 themes = ['light', 'dark', 'system']
 
 if not environ.get('DEFAULT_THEME'):
@@ -193,17 +192,6 @@ else:
     raise ValueError(
         f'Provided DEFAULT_THEME value {environ.get('DEFAULT_THEME')} is not valid. '
         f'Valid values are: {", ".join(themes)}.'
-    )
-
-if not environ.get('DEFAULT_THEME_COLOR'):
-    DEFAULT_THEME_COLOR = 'Green'
-elif environ.get('DEFAULT_THEME_COLOR') in theme_colors:
-    # tailwind css expects a leading capitalized letter, see pdfding/static/css/tailwind.css.
-    DEFAULT_THEME_COLOR = environ.get('DEFAULT_THEME_COLOR', '').capitalize()
-else:
-    raise ValueError(
-        f'Provided DEFAULT_THEME_COLOR value {environ.get('DEFAULT_THEME_COLOR')} is not valid. '
-        f'Valid values are: {", ".join(theme_colors)}.'
     )
 
 # Allow subdirectories when saving PDFs to the media dir in the UI

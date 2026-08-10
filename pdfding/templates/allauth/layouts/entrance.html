@@ -8,7 +8,7 @@
   <div class="flex flex-col md:my-auto lg:items-center gap-y-8 md:gap-y-12 lg:w-1/2 px-8 py-8 md:py-14">
     <a class="flex items-center gap-x-5" href="/">
         <div id="logo_div"
-              class="flex items-center justify-center bg-primary h-14 w-14 md:h-19 md:w-19 rounded-full">
+             class="flex items-center justify-center bg-primary h-14 w-14 md:h-19 md:w-19 rounded-full">
             {# bg-primary needed as profile image will flicker otherwise #}
             <img class="bg-primary rounded-lg h-10 w-10 md:h-14 md:w-14" src="{% static 'images/logo.svg' %}" alt="Logo"/>
         </div>
@@ -28,18 +28,18 @@
   <div class="hidden lg:block flex flex-col min-h-screen lg:w-1/2
               bg-linear-to-br from-emerald-500 bg-linear-to-br to-primary">
     <div class="flex justify-end pt-6 pr-6">
-        {% if not SOCIALACCOUNT_ONLY and not SIGNUP_CLOSED %}
+      {% if not SOCIALACCOUNT_ONLY and not SIGNUP_CLOSED %}
       <div class="flex flex-row items-center">
           <a class="py-2 px-3 text-sm font-semibold rounded-md bg-slate-200 hover:bg-slate-50 text-slate-700"
              href="{% url 'signup' %}">
             Sign up
           </a>
       </div>
-          {% endif %}
+      {% endif %}
     </div>
     <div class="flex flex-col gap-y-4 justify-center items-center text-center h-8/10 text-slate-100 px-4">
       <span class="text-5xl font-bold">
-        Take Control over your PDFs
+        Take Control Over Your PDFs
       </span>
       <span class="text-2xl">
         Manage, view and edit your PDFs seamlessly on all your devices whereever you are.

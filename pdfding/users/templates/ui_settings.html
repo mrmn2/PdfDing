@@ -20,38 +20,6 @@
     </div>
 </div>
 <div class="pt-2">
-  <span class="text-lg font-bold">{% trans 'Theme Color' %}</span>
-</div>
-<div class="flex justify-between text-slate-600 dark:text-slate-400">
-    <div class="w-5/6">
-        <span id="theme_color">{{ user.profile.theme_color }}</span>
-    </div>
-    <div class="pr-0 md:pr-6">
-        <a id="theme_color_edit" class="cursor-pointer text-primary hover:text-secondary"
-            hx-get="{% url 'profile-setting-change' 'theme_color' %}"
-            hx-target="#theme_color"
-            hx-swap="innerHTML" >
-            {{ edit }}
-        </a>
-    </div>
-</div>
-<div class="pt-2">
-  <span class="text-lg font-bold">{% trans 'Custom Theme Color' %}</span>
-</div>
-<div class="flex justify-between text-slate-600 dark:text-slate-400">
-    <div class="w-5/6">
-        <span id="custom_theme_color">{{ user.profile.custom_theme_color }}</span>
-    </div>
-    <div class="pr-0 md:pr-6">
-        <a id="custom_theme_color_edit" class="cursor-pointer text-primary hover:text-secondary"
-            hx-get="{% url 'profile-setting-change' 'custom_theme_color' %}"
-            hx-target="#custom_theme_color"
-            hx-swap="innerHTML" >
-            {{ edit }}
-        </a>
-    </div>
-</div>
-<div class="pt-2">
   <span class="text-lg font-bold">{% trans 'Show Progress Bars' %}</span>
 </div>
 <div class="flex justify-between text-slate-600 dark:text-slate-400">
