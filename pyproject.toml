@@ -22,7 +22,7 @@ minio = "==7.2.20"
 nh3 = "==0.3.6"
 psycopg2-binary = "==2.9.12"
 pypdfium2 = "==5.12.1"
-pypdf = "==6.14.2"
+pypdf = "==6.15.0"
 python-magic = "==0.4.27"
 qrcode = { extras = ["pil"], version = "==8.2" }
 RapidFuzz = "==3.14.5"
