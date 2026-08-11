@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.13.0 (Aug 11, 2026)
+### What's Changed
+* Advanced PDF search by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/343
+* Add search modal for PDF search by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/345
+* Adjust the last advanced PDF search by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/345
+* Improve login / signup UI by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/346
+* Remove theme color selection by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/347
+* Update dependencies by @mrmn2, @dependabot[bot] in https://github.com/mrmn2/PdfDing/pull/344, https://github.com/mrmn2/PdfDing/pull/346
+
+
+
 ## v1.12.0 (Aug 02, 2026)
 ### What's Changed
 * Add Dashboard by @mrmn2 in https://github.com/mrmn2/PdfDing/pull/340
