@@ -90,7 +90,7 @@ if environ.get('BACKUP_ENABLE') in ['TRUE', 'True']:
         BACKUP_ENCRYPTION_SALT = None
 else:
     BACKUP_ENABLED = False
-    BACKUP_SCHEDULE = '*/1 * * * *'
+    BACKUP_SCHEDULE = '0 2 * * *'
 
 # consume settings
 if environ.get('CONSUME_ENABLE') in ['TRUE', 'True']:
@@ -104,7 +104,7 @@ if environ.get('CONSUME_ENABLE') in ['TRUE', 'True']:
 else:
     CONSUME_ENABLED = False
     CONSUME_SKIP_EXISTING = False
-    CONSUME_SCHEDULE = '*/5 * * * *'
+    CONSUME_SCHEDULE = '0 2 * * *'
 
 # mail settings
 if environ.get('EMAIL_BACKEND') == 'SMTP':

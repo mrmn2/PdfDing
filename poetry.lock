@@ -2027,21 +2027,6 @@ files = [
 ]
 
 [[package]]
-name = "supervisor"
-version = "4.3.0"
-description = "A system for controlling process state under UNIX"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "supervisor-4.3.0-py2.py3-none-any.whl", hash = "sha256:0bcb763fddafba410f35cbde226aa7f8514b9fb82eb05a0c85f6588d1c13f8db"},
-    {file = "supervisor-4.3.0.tar.gz", hash = "sha256:4a2bf149adf42997e1bb44b70c43b613275ec9852c3edacca86a9166b27e945e"},
-]
-
-[package.extras]
-test = ["pytest", "pytest-cov"]
-
-[[package]]
 name = "text-unidecode"
 version = "1.3"
 description = "The most basic Text::Unidecode port"
@@ -2117,4 +2102,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12 <4.0"
-content-hash = "7e8e7b197b650f7c8ad950e1d6025371558447b0327786661ac55d0d9a2205c7"
+content-hash = "513b1a888b47eb0173e9614e4c07fd8e6454d372e84ec1215819d6a0a0f23315"

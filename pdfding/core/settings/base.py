@@ -236,5 +236,10 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        "huey": {
+            "handlers": ["console"],
+            "level": log_level,
+            "propagate": False,
+        },
     },
 }
