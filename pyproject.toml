@@ -11,8 +11,8 @@ license = "AGPL-3.0-only"
 license-files = ["LICENSE"]
 
 [tool.poetry.dependencies]
-python = ">=3.11 <4.0"
-django = "==5.2.16"
+python = ">=3.12 <4.0"
+django = "==6.1"
 django-allauth = { extras = ["mfa", "socialaccount"], version = "==65.18.0" }
 django-htmx = "==1.28.0"
 gunicorn = "==26.0.0"
