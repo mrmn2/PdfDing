@@ -81,6 +81,11 @@ jobs:
           npm ci --ignore-scripts
           npm run build
           npx --yes @tailwindcss/cli -i pdfding/static/css/input.css -o pdfding/static/css/tailwind.css --minify
+      - name: Install pdf.js
+        run: |
+          sudo apt-get update
+          sudo apt-get install curl unzip -y
+          npm run build:pdfjs
       - name: Run tests
         run: poetry run python -m pytest pdfding/e2e
 

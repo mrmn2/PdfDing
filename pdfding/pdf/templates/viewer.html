@@ -460,7 +460,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                 </div>
                 <div class="toolbarHorizontalGroup" >
                   {% if user_view_bool %}
-                  <button onclick="update_pdf('{{ pdf_id }}', '{% url 'update_pdf'%}', '{{ csrf_token }}', '{{ tab_title }}')" class="button1" title="Save">
+                  <button id="savePdf" onclick="update_pdf('{{ pdf_id }}', '{% url 'update_pdf'%}', '{{ csrf_token }}', '{{ tab_title }}')" class="button1" title="Save">
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
                       <!--Source: https://www.svgrepo.com/svg/502821/save-->
