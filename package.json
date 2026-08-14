@@ -10,9 +10,13 @@
     "@tailwindcss/cli": "4.3.3",
     "terser": "5.49.0"
   },
+  "config": {
+    "pdfjs_version": "6.1.200"
+  },
   "scripts": {
     "build:alpine": "cp node_modules/alpinejs/dist/cdn.min.js pdfding/static/js/alpine.min.js",
     "build:htmx": "cp node_modules/htmx.org/dist/htmx.min.js pdfding/static/js/htmx.min.js",
+    "build:pdfjs": "curl -L https://github.com/mozilla/pdf.js/releases/download/v$npm_package_config_pdfjs_version/pdfjs-$npm_package_config_pdfjs_version-dist.zip > pdfjs.zip && unzip pdfjs.zip -d pdfding/static/pdfjs",
     "build": "npm run build:alpine && npm run build:htmx"
   }
 }

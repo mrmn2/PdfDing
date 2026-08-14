@@ -20,4 +20,5 @@ pdfding/static/js/*
 pdfding/static/pdfjs
 
 **/htmlcov
+**/pdfjs.zip
 **/.coverage

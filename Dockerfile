@@ -4,7 +4,6 @@ FROM python:3.12.13-alpine AS python-base
 FROM node:22.23.1-bookworm-slim AS npm-build
 
 # do not add the 'v' of the version, only use x.y.z instead of vx.y.z
-ARG PDFJS_VERSION=6.1.200
 
 WORKDIR /build
 
@@ -15,10 +14,9 @@ COPY pdfding ./pdfding
 # don't build if dev.py is present
 RUN if [ -f pdfding/core/settings/dev.py ]; then exit 1; fi
 
+# install pdf.js
 RUN apt-get update && apt-get install curl unzip -y
-# get pdfjs
-RUN curl -L https://github.com/mozilla/pdf.js/releases/download/v$PDFJS_VERSION/pdfjs-$PDFJS_VERSION-dist.zip > pdfjs.zip
-RUN unzip pdfjs.zip -d pdfding/static/pdfjs
+RUN npm run build:pdfjs
 RUN rm -rf pdfding/static/pdfjs/web/locale \
     pdfding/static/pdfjs/web/standard_fonts \
     pdfding/static/pdfjs/web/compressed.tracemonkey-pldi-09.pdf
