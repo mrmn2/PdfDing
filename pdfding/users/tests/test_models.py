@@ -196,6 +196,16 @@ class TestProfile(TestCase):
 
         self.assertEqual('All', self.user.profile.current_collection_name)
 
+    def test_hours_spent_reading(self):
+        profile = self.user.profile
+        assert profile.hours_spent_reading == 0
+
+        profile.minutes_spent_reading = 150
+        assert profile.hours_spent_reading == 2
+
+        profile.minutes_spent_reading = 60025
+        assert profile.hours_spent_reading == 1000
+
     def test_mfa_activated(self):
         Authenticator.objects.create(user=self.user, type='totp', data={})
 

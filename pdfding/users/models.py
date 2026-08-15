@@ -81,6 +81,7 @@ class Profile(models.Model):
     current_collection_id = models.CharField(max_length=36, editable=False, blank=False)
     current_workspace_id = models.CharField(max_length=36, editable=False, blank=False)
     dark_mode = models.CharField(choices=DarkMode.choices, max_length=6, default=DarkMode.DARK)
+    minutes_spent_reading = models.PositiveIntegerField(default=0, blank=False)
     layout = models.CharField(choices=LayoutChoice.choices, max_length=7, default=LayoutChoice.COMPACT)
     language = models.CharField(choices=LanguageChoice.choices, max_length=30, default=LanguageChoice.ENGLISH)
     last_time_nagged = models.DateTimeField(default=get_last_time_nagged_initial)
@@ -207,6 +208,12 @@ class Profile(models.Model):
         workspace = self.workspaces.get(id=self.current_workspace_id)
 
         return workspace.collections
+
+    @property
+    def hours_spent_reading(self) -> int:
+        """Return the hours spent reading PDFs"""
+
+        return self.minutes_spent_reading // 60
 
     @property
     def mfa_activated(self) -> bool:

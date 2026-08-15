@@ -636,6 +636,17 @@ class UpdatePage(PdfMixin, View):
         return HttpResponse(status=200)
 
 
+class UpdateMinutesSpent(PdfMixin, View):
+    """View for updating the minutes spent reading PDFs."""
+
+    def post(self, request: HttpRequest):
+        profile = request.user.profile
+        profile.minutes_spent_reading += 1
+        profile.save()
+
+        return HttpResponse(status=200)
+
+
 class UpdatePdf(PdfMixin, View):
     """
     View for updating the PDF file. This is triggered everytime the user saves a modified PDF.

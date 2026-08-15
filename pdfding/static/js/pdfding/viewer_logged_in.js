@@ -37,6 +37,27 @@ function set_current_page(current_page, pdf_id, update_url, csrf_token) {
   });
 }
 
+// page visibility api cannot be used as switching windows with alt+tab is not caught
+window.onfocus = function () {
+  is_reader_active = true;
+};
+
+window.onblur = function () {
+  is_reader_active = false;
+};
+
+// function for updating the minutes spent reding PDFS.
+function update_minutes_spent_reading(update_url, csrf_token) {
+  if (is_reader_active) {
+    fetch(update_url, {
+      method: "POST",
+      headers: {
+        'X-CSRFToken': csrf_token,
+      },
+    });
+  }
+}
+
 // function for updating the remote signatures
 async function update_remote_signatures(signature_url, csrf_token) {
   const previous_signatures = localStorage.getItem("previous_pdfjs.signature");

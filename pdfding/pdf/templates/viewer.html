@@ -120,11 +120,12 @@ See https://github.com/adobe-type-tools/cmap-resources
       var page_number = {{ current_page }};
 
       {% if user_view_bool %}
-      var url = "{% url 'serve_pdf' pdf_id revision %}"
+      var url = "{% url 'serve_pdf' pdf_id revision %}";
+      var is_reader_active;
       {% elif shared_pdf_id %}
-      var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}"
+      var url = "{% url 'serve_shared_pdf' shared_pdf_id revision %}";
       {% else %}
-      var url = "{% url 'serve_pdf_shared_collection' shared_collection_id revision %}?pdf={{ pdf_id }}"
+      var url = "{% url 'serve_pdf_shared_collection' shared_collection_id revision %}?pdf={{ pdf_id }}";
       {% endif %}
       start_viewer(page_number, url, "{{ tab_title }}", "{{ request.LANGUAGE_CODE }}");
 
@@ -136,6 +137,9 @@ See https://github.com/adobe-type-tools/cmap-resources
 
       {# check every 5 seconds if remote signatures need updating #}
       setInterval(update_remote_signatures, 5000, '{% url 'signatures' %}', '{{ csrf_token }}');
+
+      {# update minutes spent reading PDFs every minute #}
+      setInterval(update_minutes_spent_reading, 60000, '{% url 'update_minutes_spent_reading' %}', '{{ csrf_token }}');
 
       {% if keep_screen_awake == 'Enabled' %}
       requestWakeLock();

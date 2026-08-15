@@ -848,6 +848,16 @@ class TestViews(TestCase):
         self.assertEqual(pdf_reading_info.current_page, 10)
         self.assertEqual(200, response.status_code)
 
+    def test_update_minutes_spent_reading_post(self):
+        profile = self.user.profile
+        profile.minutes_spent_reading = 7
+        profile.save()
+
+        self.client.post(reverse('update_minutes_spent_reading'))
+
+        changed_user = User.objects.get(id=self.user.id)
+        assert changed_user.profile.minutes_spent_reading == 8
+
     def test_update_pdf_post_wrong_file_type(self):
         pdf = Pdf.objects.create(collection=self.user.profile.current_collection, name='pdf')
 
