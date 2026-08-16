@@ -33,7 +33,7 @@ PdfDing is a PDF manager, viewer and editor that you can host yourself. It offer
 devices. It's designed be to be minimal, fast, and easy to set up using Docker.
 
 The name is a combination of PDF and *ding*. Ding is the German word for thing. Thus, PdfDing is a thing for
-your PDFs. Initially inspired by [linkding](https://github.com/sissbruecker/linkding).
+your PDFs.
 
 A live demo is available at [demo.pdfding.com](https://demo.pdfding.com/).
 
@@ -55,10 +55,19 @@ A live demo is available at [demo.pdfding.com](https://demo.pdfding.com/).
 
 ## Getting started
 
+### Self-Host
+
 Ready to dive into PdfDing? Then head over to the
 [Getting Started](https://docs.pdfding.com/getting_started/docker/) pages of the
 documentation and find instructions for setting up PdfDing via Docker, Docker Compose
 and Helm. Configuration options can be found [here](https://docs.pdfding.com/configuration/).
+
+### PikaPods
+
+You can deploy PdfDing [via PikaPods](https://www.pikapods.com/pods?run=pdfding) (~2.70 $/month)
+and get started in less than two minutes. Ideal for non-technical users that want to use PdfDing.
+
+PikaPods donates 20% of the fees people like you pay to run PdfDing on their servers to PdfDing.
 
 ## Contributing
 
