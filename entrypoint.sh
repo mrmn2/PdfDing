@@ -15,8 +15,6 @@ if [ "$DATABASE_TYPE" = "POSTGRES" ]; then
   echo "PostgreSQL started"
 fi
 
-HOST_PORT="${HOST_PORT:-8000}"
-
 python manage.py migrate
 python manage.py clean_up
 
@@ -24,5 +22,9 @@ if [ "$BACKUP_ENABLE" = "TRUE" ] || [ "$BACKUP_ENABLE" = True ] || [ "$CONSUME_E
   python manage.py run_huey &
 fi
 
+HOST_PORT="${HOST_PORT:-8000}"
+WORKERS="${WORKERS:-1}"
+THREADS="${THREADS:-3}"
 WORKER_TIMEOUT="${WORKER_TIMEOUT:-30}"
-exec python -m gunicorn --bind 0.0.0.0:$HOST_PORT --workers 3 --timeout $WORKER_TIMEOUT core.wsgi:application
+
+exec python -m gunicorn --bind 0.0.0.0:$HOST_PORT --workers $WORKERS --threads $THREADS --timeout $WORKER_TIMEOUT core.wsgi:application

@@ -95,8 +95,8 @@ COPY --from=python-build /app/.venv ${VIRTUAL_ENV}
 COPY --chown=$USERNAME --from=python-build /app/pdfding /home/$USERNAME/pdfding
 
 WORKDIR /home/$USERNAME
-COPY --chmod=0555 bootstrap.sh ./
+COPY --chmod=0555 entrypoint.sh ./
 
 USER $USERNAME
 
-CMD ["./bootstrap.sh"]
+CMD ["./entrypoint.sh"]
