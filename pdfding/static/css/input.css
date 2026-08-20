@@ -98,8 +98,8 @@ input[name="remember"] {
 }
 .alert-info { @apply bg-secondary }
 .alert-success { @apply bg-secondary }
-.alert-warning { @apply bg-red-500 }
-.alert-danger { @apply bg-red-500 }
+.alert-warning { @apply bg-rose-600 }
+.alert-danger { @apply bg-rose-600 }
 form[action="/accountsignup/"] ul {
     @apply hidden
 }

@@ -46,12 +46,11 @@
       x-data="{ show_bulk_edit_menu: false }">
     {# fix FOUC for firefox #}
     <script>0</script>
+    {% include 'includes/messages.html' %}
     {% block header %}
     {% endblock %}
 
     <div class="h-full">
-        {% include 'includes/messages.html' %}
-
         {% block layout %}
         {% endblock %}
     </div>
