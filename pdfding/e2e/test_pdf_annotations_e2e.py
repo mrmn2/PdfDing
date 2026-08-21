@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -30,7 +31,8 @@ class HighlightOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#annotation-2")).to_contain_text("some_pdf")
             expect(self.page.locator("#annotation-text-2")).to_contain_text("highlight_old")
 
-    def test_load_next_page(self):
+    @patch('users.models.Profile.get_items_per_page', return_value=12)
+    def test_load_next_page(self, mock_get_items_per_page):
         self.user.profile.annotation_sorting = Profile.AnnotationsSortingChoice.OLDEST
         self.user.profile.save()
 
@@ -109,7 +111,8 @@ class CommentOverviewE2ETestCase(PdfDingE2ETestCase):
             expect(self.page.locator("#annotation-2")).to_contain_text("some_pdf")
             expect(self.page.locator("#annotation-text-2")).to_contain_text("comment_old")
 
-    def test_load_next_page(self):
+    @patch('users.models.Profile.get_items_per_page', return_value=12)
+    def test_load_next_page(self, mock_get_items_per_page):
         self.user.profile.annotation_sorting = Profile.AnnotationsSortingChoice.OLDEST
         self.user.profile.save()
 

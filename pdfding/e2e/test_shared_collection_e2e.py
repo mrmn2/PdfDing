@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -66,7 +67,8 @@ class SharedCollectionE2ETestCase(PdfDingE2ETestCase):
 
         self.assertEqual(changed_user.profile.shared_pdf_sorting, Profile.SharedPdfSortingChoice.NAME_ASC)
 
-    def test_load_next_page(self):
+    @patch('users.models.Profile.get_items_per_page', return_value=12)
+    def test_load_next_page(self, mock_get_items_per_page):
         self.user.profile.shared_pdf_sorting = Profile.SharedPdfSortingChoice.OLDEST
         self.user.profile.save()
 

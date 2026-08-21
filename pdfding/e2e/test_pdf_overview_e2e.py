@@ -351,7 +351,8 @@ class PdfOverviewE2ETestCase(PdfDingE2ETestCase):
             if i % 5 == 1:
                 pdf.tags.set([tag])
 
-    def test_load_next_page(self):
+    @patch('users.models.Profile.get_items_per_page', return_value=12)
+    def test_load_next_page(self, mock_get_items_per_page):
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.OLDEST
         self.user.profile.save()
 

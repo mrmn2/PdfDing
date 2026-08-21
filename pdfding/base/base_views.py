@@ -45,16 +45,18 @@ class BaseOverview(View):
         """
 
         sorting = self.get_sorting(request)
-        page_object, next_page_available = self.get_page_objects(request, sorting, page, **kwargs)
+        extra_context = self.get_extra_context(request, **kwargs)
+        items_per_page = self.request.user.profile.get_items_per_page(extra_context.get(page))
+        page_object, next_page_available = self.get_page_objects(request, sorting, page, items_per_page, **kwargs)
         context = {
+            'items_per_page': items_per_page,
             'page_obj': page_object,
             'sorting': sorting,
-            'items_per_page': self.request.user.profile.items_per_page,
             'next_page_available': next_page_available,
             'current_page': page,
         }
 
-        context |= self.get_extra_context(request, **kwargs)
+        context |= extra_context
 
         if request.htmx:
             return render(request, f'includes/{self.overview_page_name}.html', context)
@@ -68,13 +70,12 @@ class BaseOverview(View):
             except AttributeError:
                 return render(request, f'{self.obj_name}_overview.html', context)
 
-    def get_page_objects(self, request: HttpRequest, sorting: str, page: int, **kwargs):
+    def get_page_objects(self, request: HttpRequest, sorting: str, page: int, items_per_page: int, **kwargs):
         # filter objects
         objects = self.filter_objects(request, **kwargs)
 
         # sort objects
         objects = objects.order_by(sorting)
-        items_per_page = self.request.user.profile.items_per_page
 
         paginator = Paginator(objects, per_page=items_per_page, allow_empty_first_page=True)
         page_object = paginator.get_page(page)

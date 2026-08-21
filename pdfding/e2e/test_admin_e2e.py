@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from allauth.mfa.models import Authenticator
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
@@ -57,7 +59,8 @@ class AdminE2ETestCase(PdfDingE2ETestCase):
 
         self.assertEqual(changed_user.profile.user_sorting, Profile.UserSortingChoice.EMAIL_ASC)
 
-    def test_load_next_page(self):
+    @patch('users.models.Profile.get_items_per_page', return_value=12)
+    def test_load_next_page(self, mock_get_items_per_page):
         self.user.profile.user_sorting = Profile.UserSortingChoice.OLDEST
         self.user.profile.save()
 

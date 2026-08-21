@@ -228,15 +228,6 @@ class Profile(models.Model):
             return False
 
     @property
-    def items_per_page(self) -> int:  # pragma: no cover
-        """Get the number of items of overview paginations"""
-
-        if self.layout == self.LayoutChoice.MINIMAL:
-            return 30
-        else:
-            return 12
-
-    @property
     def language_code(self) -> str:  # pragma: no cover
         """Return the language code of the selected language"""
 
@@ -271,6 +262,17 @@ class Profile(models.Model):
             return True
         else:
             return False
+
+    def get_items_per_page(self, page: str) -> int:  # pragma: no cover
+        """Get the number of items of overview paginations"""
+
+        if page == 'pdf_overview':
+            if self.layout == self.LayoutChoice.MINIMAL:
+                return 30
+            else:
+                return 12
+        else:
+            return 20
 
 
 class PdfReadingInformation(models.Model):

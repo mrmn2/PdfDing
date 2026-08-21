@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 from base.tests import base_view_definitions
 from core.settings import MEDIA_ROOT
@@ -89,12 +89,10 @@ class TestViews(TestCase):
         self.assertEqual(len(pdfs), 1)
         self.assertRedirects(response, reverse('pdf_overview'))
 
-    @patch('users.models.Profile.items_per_page', new_callable=PropertyMock)
+    @patch('users.models.Profile.get_items_per_page', return_value=3)
     @patch('base.base_views.BaseOverview.do_extra_action')
     @override_settings(ROOT_URLCONF=__name__)
     def test_overview_get(self, mock_do_extra_action, mock_items_per_page):
-        mock_items_per_page.return_value = 3
-
         # Also test sorting by title with capitalization taken into account
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
         self.user.profile.save()
@@ -115,11 +113,10 @@ class TestViews(TestCase):
         self.assertTemplateUsed(response, 'pdf_overview.html')
         mock_do_extra_action.assert_called_once_with(response.wsgi_request)
 
-    @patch('users.models.Profile.items_per_page', new_callable=PropertyMock)
+    @patch('users.models.Profile.get_items_per_page', return_value=3)
     @patch('base.base_views.BaseOverview.do_extra_action')
     @override_settings(ROOT_URLCONF=__name__)
     def test_overview_get_htmx(self, mock_do_extra_action, mock_items_per_page):
-        mock_items_per_page.return_value = 3
         # Also test sorting by title with capitalization taken into account
         self.user.profile.pdf_sorting = Profile.PdfSortingChoice.NAME_DESC
         self.user.profile.save()
