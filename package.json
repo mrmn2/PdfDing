@@ -4,11 +4,11 @@
   "license": "AGPL-3.0-only",
   "private": true,
   "dependencies": {
-    "alpinejs": "3.15.12",
+    "alpinejs": "3.16.3",
     "htmx.org": "2.0.10",
     "tailwindcss": "4.3.3",
     "@tailwindcss/cli": "4.3.3",
-    "terser": "5.49.0"
+    "terser": "5.50.0"
   },
   "config": {
     "pdfjs_version": "6.1.200"
