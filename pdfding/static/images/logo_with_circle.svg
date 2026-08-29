@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<!-- source: https://www.svgrepo.com/svg/499596/doc-paper -->
+
+<!-- license: PD License -->
+
+<svg
+   width="1200"
+   height="1200"
+   viewBox="0 0 36 36"
+   fill="none"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="logo_with_circle.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.5"
+     inkscape:cx="399"
+     inkscape:cy="480"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <circle
+     style="fill:#4ade80;fill-opacity:1;stroke-width:0.03"
+     id="path2"
+     cx="18.023663"
+     cy="18.025352"
+     r="17.839436" />
+  <path
+     d="M 20.3,8.26946 V 12.4 c 0,0.56005 0,0.84008 0.109,1.05399 0.0959,0.18816 0.2488,0.34114 0.437,0.43702 C 21.0599,14 21.3399,14 21.9,14 h 4.1305 M 26.3,15.98822 V 23.2 c 0,1.6802 0,2.5202 -0.327,3.162 -0.2876,0.5645 -0.7465,1.0234 -1.311,1.311 C 24.0202,28 23.1802,28 21.5,28 H 15.1 C 13.41984,28 12.57976,28 11.93803,27.673 11.37354,27.3854 10.9146,26.9265 10.62698,26.362 10.3,25.7202 10.3,24.8802 10.3,23.2 V 12.8 c 0,-1.68016 0,-2.52024 0.32698,-3.16197 C 10.9146,9.07354 11.37354,8.6146 11.93803,8.32698 12.57976,8 13.41984,8 15.1,8 h 3.2118 c 0.7337,0 1.1006,0 1.4459,0.08289 0.3061,0.07349 0.5987,0.1947 0.8672,0.35919 0.3027,0.18552 0.5621,0.44495 1.081,0.96381 l 3.1882,3.18822 c 0.5189,0.51886 0.7783,0.77829 0.9638,1.08104 0.1645,0.26841 0.2857,0.56105 0.3592,0.86715 C 26.3,14.88757 26.3,15.25445 26.3,15.98822 Z"
+     stroke="#ffffff"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     id="path1" />
+</svg>
